@@ -36,6 +36,11 @@ namespace NCKH.VR.Clinic
         [SerializeField, Min(0f)] private float level3Weight = 20f;
         [SerializeField, Min(0f)] private float level4Weight = 10f;
 
+        [Header("Emergency Guarantee")]
+        [SerializeField] private bool guaranteeEmergencyEachRound = true;
+        [Tooltip("Elapsed round time after which the next patient is forced to severity 4 if no emergency has spawned naturally.")]
+        [SerializeField, Min(0f)] private float emergencyGuaranteeCheckpoint = 30f;
+
         [Header("Scoring - Cure Rewards")]
         [FormerlySerializedAs("cureReward")]
         [SerializeField, Min(0)] private int baseCureScore = 1;
@@ -56,6 +61,7 @@ namespace NCKH.VR.Clinic
         private readonly List<XRDisplaySubsystem> xrDisplays = new List<XRDisplaySubsystem>(1);
         private float arrivalCountdown;
         private bool roundEndRaised;
+        private bool emergencySpawnedThisRound;
 
         public event Action<int> ScoreChanged;
         public event Action<int> RoundEnded;
@@ -171,6 +177,7 @@ namespace NCKH.VR.Clinic
             Score = 0;
             ScoreChanged?.Invoke(Score);
             roundEndRaised = false;
+            emergencySpawnedThisRound = false;
             clock.Begin(initialPreparationDelay, roundDuration);
 
             if (clock.State == ClinicRoundState.Running)
@@ -253,12 +260,22 @@ namespace NCKH.VR.Clinic
 
         private void ActivatePatient(PatientActor patient)
         {
-            int severity = ClinicRoundRules.SelectSeverity(
-                UnityEngine.Random.value,
-                level1Weight,
-                level2Weight,
-                level3Weight,
-                level4Weight);
+            float elapsedRoundTime = Mathf.Max(0f, roundDuration - clock.RemainingRoundTime);
+            bool forceEmergency = guaranteeEmergencyEachRound
+                && !emergencySpawnedThisRound
+                && elapsedRoundTime >= emergencyGuaranteeCheckpoint;
+
+            int severity = forceEmergency
+                ? ClinicRoundRules.MaximumSeverity
+                : ClinicRoundRules.SelectSeverity(
+                    UnityEngine.Random.value,
+                    level1Weight,
+                    level2Weight,
+                    level3Weight,
+                    level4Weight);
+
+            if (severity == ClinicRoundRules.MaximumSeverity)
+                emergencySpawnedThisRound = true;
 
             float treatmentDuration = ClinicRoundRules.TreatmentDuration(
                 severity,
@@ -376,6 +393,14 @@ namespace NCKH.VR.Clinic
             level2TimeoutPenalty = Mathf.Max(0, level2TimeoutPenalty);
             level3TimeoutPenalty = Mathf.Max(0, level3TimeoutPenalty);
             level4TimeoutPenalty = Mathf.Max(0, level4TimeoutPenalty);
+            emergencyGuaranteeCheckpoint = ClampEmergencyGuaranteeCheckpoint(
+                emergencyGuaranteeCheckpoint,
+                roundDuration);
+        }
+
+        private static float ClampEmergencyGuaranteeCheckpoint(float checkpoint, float duration)
+        {
+            return Mathf.Clamp(checkpoint, 0f, Mathf.Max(0f, duration));
         }
     }
 }

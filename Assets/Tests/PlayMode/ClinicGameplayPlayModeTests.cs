@@ -55,6 +55,106 @@ namespace NCKH.VR.Clinic.Tests
         }
 
         [UnityTest]
+        public IEnumerator EmergencyGuaranteeForcesNextSpawnAfterCheckpoint()
+        {
+            ClinicGameManager manager = CreateEmergencyGuaranteeManager(
+                out GameObject managerObject,
+                out GameObject templateObject,
+                out GameObject bedObject,
+                out GameObject headObject);
+            PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
+
+            SetSeverityWeights(manager, 100f, 0f);
+            SetField(manager, "emergencyGuaranteeCheckpoint", 0.05f);
+            manager.StartRound();
+            yield return null;
+
+            Assert.That(bed.Patient.Severity, Is.EqualTo(1));
+
+            yield return new WaitForSeconds(0.06f);
+            InvokeNonPublic(bed.Patient, "Resolve", PatientResolution.Cured);
+            yield return null;
+
+            Assert.That(bed.Patient.Severity, Is.EqualTo(ClinicRoundRules.MaximumSeverity));
+
+            DestroyEmergencyGuaranteeObjects(managerObject, templateObject, bedObject, headObject);
+        }
+
+        [UnityTest]
+        public IEnumerator NaturalEmergencyBeforeCheckpointPreventsForcedEmergency()
+        {
+            ClinicGameManager manager = CreateEmergencyGuaranteeManager(
+                out GameObject managerObject,
+                out GameObject templateObject,
+                out GameObject bedObject,
+                out GameObject headObject);
+            PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
+
+            SetSeverityWeights(manager, 0f, 100f);
+            SetField(manager, "emergencyGuaranteeCheckpoint", 0.05f);
+            manager.StartRound();
+            yield return null;
+
+            Assert.That(bed.Patient.Severity, Is.EqualTo(ClinicRoundRules.MaximumSeverity));
+
+            SetSeverityWeights(manager, 100f, 0f);
+            yield return new WaitForSeconds(0.06f);
+            InvokeNonPublic(bed.Patient, "Resolve", PatientResolution.Cured);
+            yield return null;
+
+            Assert.That(bed.Patient.Severity, Is.EqualTo(1));
+
+            DestroyEmergencyGuaranteeObjects(managerObject, templateObject, bedObject, headObject);
+        }
+
+        [UnityTest]
+        public IEnumerator EmergencyGuaranteeResetsForEachRound()
+        {
+            ClinicGameManager manager = CreateEmergencyGuaranteeManager(
+                out GameObject managerObject,
+                out GameObject templateObject,
+                out GameObject bedObject,
+                out GameObject headObject);
+            PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
+
+            SetSeverityWeights(manager, 0f, 100f);
+            SetField(manager, "emergencyGuaranteeCheckpoint", 0f);
+            manager.StartRound();
+            yield return null;
+            Assert.That(bed.Patient.Severity, Is.EqualTo(ClinicRoundRules.MaximumSeverity));
+
+            manager.StopRound();
+            SetSeverityWeights(manager, 100f, 0f);
+            manager.StartRound();
+            yield return null;
+
+            Assert.That(bed.Patient.Severity, Is.EqualTo(ClinicRoundRules.MaximumSeverity));
+
+            DestroyEmergencyGuaranteeObjects(managerObject, templateObject, bedObject, headObject);
+        }
+
+        [UnityTest]
+        public IEnumerator DisabledEmergencyGuaranteeUsesConfiguredWeights()
+        {
+            ClinicGameManager manager = CreateEmergencyGuaranteeManager(
+                out GameObject managerObject,
+                out GameObject templateObject,
+                out GameObject bedObject,
+                out GameObject headObject);
+            PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
+
+            SetSeverityWeights(manager, 100f, 0f);
+            SetField(manager, "guaranteeEmergencyEachRound", false);
+            SetField(manager, "emergencyGuaranteeCheckpoint", 0f);
+            manager.StartRound();
+            yield return null;
+
+            Assert.That(bed.Patient.Severity, Is.EqualTo(1));
+
+            DestroyEmergencyGuaranteeObjects(managerObject, templateObject, bedObject, headObject);
+        }
+
+        [UnityTest]
         public IEnumerator AutomaticStartWaitsForStableFramesBeforePreparation()
         {
             ClinicGameManager manager = CreateManagerForHudTest(
@@ -493,6 +593,48 @@ namespace NCKH.VR.Clinic.Tests
             SetField(manager, "automaticStartStableFrames", automaticStartStableFrames);
             managerObject.SetActive(true);
             return manager;
+        }
+
+        private static ClinicGameManager CreateEmergencyGuaranteeManager(
+            out GameObject managerObject,
+            out GameObject templateObject,
+            out GameObject bedObject,
+            out GameObject headObject)
+        {
+            ClinicGameManager manager = CreateManagerForHudTest(
+                0f,
+                1f,
+                out managerObject,
+                out templateObject,
+                out bedObject,
+                out headObject);
+            SetField(manager, "patientFadeDuration", 0f);
+            SetField(manager, "resolvedBedCooldown", 0f);
+            SetField(manager, "guaranteeEmergencyEachRound", true);
+            return manager;
+        }
+
+        private static void SetSeverityWeights(
+            ClinicGameManager manager,
+            float level1Weight,
+            float level4Weight)
+        {
+            SetField(manager, "level1Weight", level1Weight);
+            SetField(manager, "level2Weight", 0f);
+            SetField(manager, "level3Weight", 0f);
+            SetField(manager, "level4Weight", level4Weight);
+        }
+
+        private static void DestroyEmergencyGuaranteeObjects(
+            GameObject managerObject,
+            GameObject templateObject,
+            GameObject bedObject,
+            GameObject headObject)
+        {
+            Object.Destroy(managerObject);
+            Object.Destroy(templateObject);
+            Object.Destroy(bedObject);
+            Object.Destroy(headObject);
         }
 
         private static ClinicRoundHud CreateHud(

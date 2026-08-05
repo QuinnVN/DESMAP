@@ -1,3 +1,4 @@
+using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -136,6 +137,18 @@ namespace NCKH.VR.Clinic.Tests
             Assert.That(clock.State, Is.EqualTo(ClinicRoundState.Finished));
             Assert.That(clock.RemainingRoundTime, Is.EqualTo(60f));
             Assert.That(transition, Is.EqualTo(ClinicClockTransition.None));
+        }
+
+        [Test]
+        public void EmergencyGuaranteeCheckpointIsClampedToRoundDuration()
+        {
+            MethodInfo clampMethod = typeof(ClinicGameManager).GetMethod(
+                "ClampEmergencyGuaranteeCheckpoint",
+                BindingFlags.Static | BindingFlags.NonPublic);
+
+            Assert.That(clampMethod, Is.Not.Null);
+            Assert.That(clampMethod.Invoke(null, new object[] { 30f, 20f }), Is.EqualTo(20f));
+            Assert.That(clampMethod.Invoke(null, new object[] { -5f, 20f }), Is.EqualTo(0f));
         }
     }
 
