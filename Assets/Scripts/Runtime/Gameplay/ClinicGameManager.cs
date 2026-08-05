@@ -14,6 +14,7 @@ namespace NCKH.VR.Clinic
         [SerializeField] private PatientActor patientPrefab;
         [SerializeField] private Transform playerHead;
         [SerializeField] private PatientBedSlot[] bedSlots = Array.Empty<PatientBedSlot>();
+        [SerializeField] private SicknessDatabase sicknessDatabase;
 
         [Header("Round")]
         [SerializeField, Min(0f)] private float initialPreparationDelay = 2f;
@@ -30,16 +31,14 @@ namespace NCKH.VR.Clinic
         [FormerlySerializedAs("curedBedCooldown")]
         [SerializeField, Min(0f)] private float resolvedBedCooldown = 5f;
 
-        [Header("Severity Weights")]
-        [SerializeField, Min(0f)] private float level1Weight = 40f;
-        [SerializeField, Min(0f)] private float level2Weight = 30f;
-        [SerializeField, Min(0f)] private float level3Weight = 20f;
-        [SerializeField, Min(0f)] private float level4Weight = 10f;
-
         [Header("Emergency Guarantee")]
         [SerializeField] private bool guaranteeEmergencyEachRound = true;
         [Tooltip("Elapsed round time after which the next patient is forced to severity 4 if no emergency has spawned naturally.")]
         [SerializeField, Min(0f)] private float emergencyGuaranteeCheckpoint = 30f;
+
+        [Header("Debug")]
+        [Tooltip("Show each patient's severity next to the sickness name.")]
+        [SerializeField] private bool debugMode;
 
         [Header("Scoring - Cure Rewards")]
         [FormerlySerializedAs("cureReward")]
@@ -54,14 +53,13 @@ namespace NCKH.VR.Clinic
         [FormerlySerializedAs("missedEmergencyPenalty")]
         [SerializeField, Min(0)] private int level4TimeoutPenalty = 2;
 
-        [Header("Patient Display")]
-        [SerializeField] private string sicknessPlaceholder = "Sickness: [Placeholder]";
-
         private readonly ClinicRoundClock clock = new ClinicRoundClock();
         private readonly List<XRDisplaySubsystem> xrDisplays = new List<XRDisplaySubsystem>(1);
         private float arrivalCountdown;
         private bool roundEndRaised;
         private bool emergencySpawnedThisRound;
+        private bool missingSicknessWarningRaised;
+        private bool missingEmergencySicknessWarningRaised;
 
         public event Action<int> ScoreChanged;
         public event Action<int> RoundEnded;
@@ -178,6 +176,8 @@ namespace NCKH.VR.Clinic
             ScoreChanged?.Invoke(Score);
             roundEndRaised = false;
             emergencySpawnedThisRound = false;
+            missingSicknessWarningRaised = false;
+            missingEmergencySicknessWarningRaised = false;
             clock.Begin(initialPreparationDelay, roundDuration);
 
             if (clock.State == ClinicRoundState.Running)
@@ -265,14 +265,19 @@ namespace NCKH.VR.Clinic
                 && !emergencySpawnedThisRound
                 && elapsedRoundTime >= emergencyGuaranteeCheckpoint;
 
-            int severity = forceEmergency
-                ? ClinicRoundRules.MaximumSeverity
-                : ClinicRoundRules.SelectSeverity(
-                    UnityEngine.Random.value,
-                    level1Weight,
-                    level2Weight,
-                    level3Weight,
-                    level4Weight);
+            SicknessEntry sickness = null;
+            bool selected = sicknessDatabase != null
+                && (forceEmergency
+                    ? sicknessDatabase.TrySelectRandom(ClinicRoundRules.MaximumSeverity, out sickness)
+                    : sicknessDatabase.TrySelectRandom(out sickness));
+
+            if (!selected)
+            {
+                WarnMissingSickness(forceEmergency);
+                return;
+            }
+
+            int severity = sickness.Severity;
 
             if (severity == ClinicRoundRules.MaximumSeverity)
                 emergencySpawnedThisRound = true;
@@ -283,11 +288,37 @@ namespace NCKH.VR.Clinic
                 emergencyTreatmentDuration);
 
             patient.Activate(
+                sickness.SicknessName,
                 severity,
                 treatmentDuration,
-                sicknessPlaceholder,
                 playerHead,
-                patientFadeDuration);
+                patientFadeDuration,
+                debugMode);
+        }
+
+        private void WarnMissingSickness(bool emergencyRequired)
+        {
+            if (emergencyRequired)
+            {
+                if (missingEmergencySicknessWarningRaised)
+                    return;
+
+                missingEmergencySicknessWarningRaised = true;
+                Debug.LogWarning(
+                    "Sickness Database has no valid severity 4 entry with a positive weight. "
+                    + "The forced emergency spawn was skipped.",
+                    this);
+                return;
+            }
+
+            if (missingSicknessWarningRaised)
+                return;
+
+            missingSicknessWarningRaised = true;
+            Debug.LogWarning(
+                "ClinicGameManager requires a Sickness Database containing at least one named entry "
+                + "with a positive weight. The patient spawn was skipped.",
+                this);
         }
 
         private void OnPatientResolved(PatientActor patient, PatientResolution resolution)

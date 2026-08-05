@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
@@ -149,6 +150,158 @@ namespace NCKH.VR.Clinic.Tests
             Assert.That(clampMethod, Is.Not.Null);
             Assert.That(clampMethod.Invoke(null, new object[] { 30f, 20f }), Is.EqualTo(20f));
             Assert.That(clampMethod.Invoke(null, new object[] { -5f, 20f }), Is.EqualTo(0f));
+        }
+    }
+
+    public sealed class SicknessDatabaseTests
+    {
+        private const string MainScenePath = "Assets/Scenes/Main Scene.unity";
+
+        [TestCase(0f, "Cold")]
+        [TestCase(0.2499f, "Cold")]
+        [TestCase(0.25f, "Fracture")]
+        [TestCase(1f, "Fracture")]
+        public void WeightedSelectionUsesConfiguredBoundaries(float roll, string expectedName)
+        {
+            SicknessDatabase database = CreateDatabase(
+                new SicknessEntry("Cold", 1, 1f),
+                new SicknessEntry("Fracture", 2, 3f));
+
+            Assert.That(TrySelect(database, roll, null, out SicknessEntry selected), Is.True);
+            Assert.That(selected.SicknessName, Is.EqualTo(expectedName));
+
+            Object.DestroyImmediate(database.gameObject);
+        }
+
+        [Test]
+        public void SeverityFilterSelectsOnlyMatchingEntries()
+        {
+            SicknessDatabase database = CreateDatabase(
+                new SicknessEntry("Cold", 1, 100f),
+                new SicknessEntry("Cardiac Arrest", 4, 1f));
+
+            Assert.That(TrySelect(database, 0f, 4, out SicknessEntry selected), Is.True);
+            Assert.That(selected.SicknessName, Is.EqualTo("Cardiac Arrest"));
+            Assert.That(selected.Severity, Is.EqualTo(4));
+
+            Object.DestroyImmediate(database.gameObject);
+        }
+
+        [Test]
+        public void InvalidEntriesAreIgnored()
+        {
+            SicknessDatabase database = CreateDatabase(
+                new SicknessEntry("", 1, 10f),
+                new SicknessEntry("No Weight", 2, 0f),
+                new SicknessEntry("Valid", 3, 1f));
+
+            Assert.That(TrySelect(database, 0f, null, out SicknessEntry selected), Is.True);
+            Assert.That(selected.SicknessName, Is.EqualTo("Valid"));
+
+            Object.DestroyImmediate(database.gameObject);
+        }
+
+        [Test]
+        public void EmptyOrZeroWeightDatabaseCannotSelect()
+        {
+            SicknessDatabase empty = CreateDatabase();
+            SicknessDatabase zeroWeight = CreateDatabase(new SicknessEntry("Cold", 1, 0f));
+
+            Assert.That(empty.TrySelectRandom(out _), Is.False);
+            Assert.That(zeroWeight.TrySelectRandom(out _), Is.False);
+            Assert.That(zeroWeight.TrySelectRandom(4, out _), Is.False);
+
+            Object.DestroyImmediate(empty.gameObject);
+            Object.DestroyImmediate(zeroWeight.gameObject);
+        }
+
+        [Test]
+        public void MainSceneContainsDatabaseReferencedByManager()
+        {
+            Scene scene = SceneManager.GetSceneByPath(MainScenePath);
+            bool openedForTest = !scene.IsValid() || !scene.isLoaded;
+            if (openedForTest)
+                scene = EditorSceneManager.OpenScene(MainScenePath, OpenSceneMode.Additive);
+
+            try
+            {
+                GameObject databaseObject = FindGameObject(scene, "Sickness Database");
+                GameObject managerObject = FindGameObject(scene, "Clinic Game Manager");
+
+                Assert.That(databaseObject, Is.Not.Null);
+                Assert.That(managerObject, Is.Not.Null);
+
+                SicknessDatabase database = databaseObject.GetComponent<SicknessDatabase>();
+                Assert.That(database, Is.Not.Null);
+                Assert.That(database.Entries, Is.Not.Null);
+
+                SerializedObject manager = new SerializedObject(managerObject.GetComponent<ClinicGameManager>());
+                SerializedProperty databaseReference = manager.FindProperty("sicknessDatabase");
+                Assert.That(databaseReference, Is.Not.Null);
+                Assert.That(databaseReference.objectReferenceValue, Is.EqualTo(database));
+                Assert.That(manager.FindProperty("debugMode").boolValue, Is.False);
+            }
+            finally
+            {
+                if (openedForTest)
+                    EditorSceneManager.CloseScene(scene, true);
+            }
+        }
+
+        private static SicknessDatabase CreateDatabase(params SicknessEntry[] entries)
+        {
+            SicknessDatabase database = new GameObject("Sickness Database").AddComponent<SicknessDatabase>();
+            FieldInfo entriesField = typeof(SicknessDatabase).GetField(
+                "entries",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(entriesField, Is.Not.Null);
+            entriesField.SetValue(database, new List<SicknessEntry>(entries));
+            return database;
+        }
+
+        private static bool TrySelect(
+            SicknessDatabase database,
+            float roll,
+            int? requiredSeverity,
+            out SicknessEntry selected)
+        {
+            MethodInfo method = typeof(SicknessDatabase).GetMethod(
+                "TrySelect",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(method, Is.Not.Null);
+
+            object[] arguments = { roll, requiredSeverity, null };
+            bool result = (bool)method.Invoke(database, arguments);
+            selected = (SicknessEntry)arguments[2];
+            return result;
+        }
+
+        private static GameObject FindGameObject(Scene scene, string objectName)
+        {
+            GameObject[] roots = scene.GetRootGameObjects();
+            for (int i = 0; i < roots.Length; i++)
+            {
+                Transform match = FindDescendant(roots[i].transform, objectName);
+                if (match != null)
+                    return match.gameObject;
+            }
+
+            return null;
+        }
+
+        private static Transform FindDescendant(Transform current, string objectName)
+        {
+            if (current.name == objectName)
+                return current;
+
+            for (int i = 0; i < current.childCount; i++)
+            {
+                Transform match = FindDescendant(current.GetChild(i), objectName);
+                if (match != null)
+                    return match;
+            }
+
+            return null;
         }
     }
 

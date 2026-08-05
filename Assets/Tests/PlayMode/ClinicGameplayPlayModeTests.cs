@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
 using TMPro;
@@ -29,6 +30,7 @@ namespace NCKH.VR.Clinic.Tests
             SetField(manager, "patientPrefab", template);
             SetField(manager, "playerHead", headObject.transform);
             SetField(manager, "bedSlots", new[] { bed });
+            SetSicknessEntries(manager, new SicknessEntry("Common Cold", 1, 1f));
             SetField(manager, "initialPreparationDelay", 0.05f);
             SetField(manager, "roundDuration", 1f);
             SetField(manager, "patientFadeDuration", 0f);
@@ -47,6 +49,8 @@ namespace NCKH.VR.Clinic.Tests
             yield return new WaitForSeconds(0.05f);
             Assert.That(manager.RoundState, Is.EqualTo(ClinicRoundState.Running));
             Assert.That(bed.IsOccupied, Is.True);
+            Assert.That(bed.Patient.SicknessName, Is.EqualTo("Common Cold"));
+            Assert.That(bed.Patient.Severity, Is.EqualTo(1));
 
             Object.Destroy(managerObject);
             Object.Destroy(templateObject);
@@ -64,7 +68,7 @@ namespace NCKH.VR.Clinic.Tests
                 out GameObject headObject);
             PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
 
-            SetSeverityWeights(manager, 100f, 0f);
+            SetSicknessEntries(manager, new SicknessEntry("Common Cold", 1, 1f));
             SetField(manager, "emergencyGuaranteeCheckpoint", 0.05f);
             manager.StartRound();
             yield return null;
@@ -72,11 +76,59 @@ namespace NCKH.VR.Clinic.Tests
             Assert.That(bed.Patient.Severity, Is.EqualTo(1));
 
             yield return new WaitForSeconds(0.06f);
+            SetSicknessEntries(manager, new SicknessEntry("Cardiac Arrest", 4, 1f));
             InvokeNonPublic(bed.Patient, "Resolve", PatientResolution.Cured);
             yield return null;
 
             Assert.That(bed.Patient.Severity, Is.EqualTo(ClinicRoundRules.MaximumSeverity));
+            Assert.That(bed.Patient.SicknessName, Is.EqualTo("Cardiac Arrest"));
 
+            DestroyEmergencyGuaranteeObjects(managerObject, templateObject, bedObject, headObject);
+        }
+
+        [UnityTest]
+        public IEnumerator EmptyDatabaseSkipsSpawnAndWarns()
+        {
+            ClinicGameManager manager = CreateEmergencyGuaranteeManager(
+                out GameObject managerObject,
+                out GameObject templateObject,
+                out GameObject bedObject,
+                out GameObject headObject);
+            PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
+            SetField(manager, "guaranteeEmergencyEachRound", false);
+            SetSicknessEntries(manager);
+
+            LogAssert.Expect(
+                LogType.Warning,
+                "ClinicGameManager requires a Sickness Database containing at least one named entry "
+                + "with a positive weight. The patient spawn was skipped.");
+            manager.StartRound();
+            yield return null;
+
+            Assert.That(bed.IsOccupied, Is.False);
+            DestroyEmergencyGuaranteeObjects(managerObject, templateObject, bedObject, headObject);
+        }
+
+        [UnityTest]
+        public IEnumerator MissingSeverityFourEntrySkipsForcedEmergencyAndWarns()
+        {
+            ClinicGameManager manager = CreateEmergencyGuaranteeManager(
+                out GameObject managerObject,
+                out GameObject templateObject,
+                out GameObject bedObject,
+                out GameObject headObject);
+            PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
+            SetField(manager, "emergencyGuaranteeCheckpoint", 0f);
+            SetSicknessEntries(manager, new SicknessEntry("Common Cold", 1, 1f));
+
+            LogAssert.Expect(
+                LogType.Warning,
+                "Sickness Database has no valid severity 4 entry with a positive weight. "
+                + "The forced emergency spawn was skipped.");
+            manager.StartRound();
+            yield return null;
+
+            Assert.That(bed.IsOccupied, Is.False);
             DestroyEmergencyGuaranteeObjects(managerObject, templateObject, bedObject, headObject);
         }
 
@@ -90,14 +142,14 @@ namespace NCKH.VR.Clinic.Tests
                 out GameObject headObject);
             PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
 
-            SetSeverityWeights(manager, 0f, 100f);
+            SetSicknessEntries(manager, new SicknessEntry("Cardiac Arrest", 4, 1f));
             SetField(manager, "emergencyGuaranteeCheckpoint", 0.05f);
             manager.StartRound();
             yield return null;
 
             Assert.That(bed.Patient.Severity, Is.EqualTo(ClinicRoundRules.MaximumSeverity));
 
-            SetSeverityWeights(manager, 100f, 0f);
+            SetSicknessEntries(manager, new SicknessEntry("Common Cold", 1, 1f));
             yield return new WaitForSeconds(0.06f);
             InvokeNonPublic(bed.Patient, "Resolve", PatientResolution.Cured);
             yield return null;
@@ -117,14 +169,14 @@ namespace NCKH.VR.Clinic.Tests
                 out GameObject headObject);
             PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
 
-            SetSeverityWeights(manager, 0f, 100f);
+            SetSicknessEntries(manager, new SicknessEntry("Cardiac Arrest", 4, 1f));
             SetField(manager, "emergencyGuaranteeCheckpoint", 0f);
             manager.StartRound();
             yield return null;
             Assert.That(bed.Patient.Severity, Is.EqualTo(ClinicRoundRules.MaximumSeverity));
 
             manager.StopRound();
-            SetSeverityWeights(manager, 100f, 0f);
+            SetSicknessEntries(manager, new SicknessEntry("Stroke", 4, 1f));
             manager.StartRound();
             yield return null;
 
@@ -143,7 +195,7 @@ namespace NCKH.VR.Clinic.Tests
                 out GameObject headObject);
             PatientBedSlot bed = bedObject.GetComponent<PatientBedSlot>();
 
-            SetSeverityWeights(manager, 100f, 0f);
+            SetSicknessEntries(manager, new SicknessEntry("Common Cold", 1, 1f));
             SetField(manager, "guaranteeEmergencyEachRound", false);
             SetField(manager, "emergencyGuaranteeCheckpoint", 0f);
             manager.StartRound();
@@ -298,7 +350,7 @@ namespace NCKH.VR.Clinic.Tests
             };
             patient.BecameInactive += _ => inactiveCount++;
 
-            patient.Activate(1, 30f, "Sickness: [Placeholder]", head, 0f);
+            patient.Activate("Common Cold", 1, 30f, head, 0f, false);
             yield return null;
 
             Assert.That(patient.State, Is.EqualTo(PatientActorState.Active));
@@ -332,7 +384,7 @@ namespace NCKH.VR.Clinic.Tests
 
             Assert.That((float)GetField(patient, "orbitRadius"), Is.EqualTo(1.1f));
 
-            patient.Activate(1, 30f, "Sickness: [Placeholder]", head, 0f);
+            patient.Activate("Common Cold", 1, 30f, head, 0f, false);
             yield return null;
 
             Assert.That(pivot.position.y, Is.EqualTo(0.5f).Within(0.001f));
@@ -347,7 +399,7 @@ namespace NCKH.VR.Clinic.Tests
         }
 
         [UnityTest]
-        public IEnumerator PatientLabelIncludesSeverity()
+        public IEnumerator PatientLabelRespectsDebugMode()
         {
             PatientActor patient = CreateInteractivePatient(out _, out Transform head);
             GameObject textObject = new GameObject(
@@ -359,10 +411,14 @@ namespace NCKH.VR.Clinic.Tests
             TMP_Text text = textObject.GetComponent<TMP_Text>();
             SetField(patient, "sicknessText", text);
 
-            patient.Activate(4, 5f, "Sickness: [Placeholder]", head, 0f);
+            patient.Activate("Cardiac Arrest", 4, 5f, head, 0f, false);
             yield return null;
 
-            Assert.That(text.text, Is.EqualTo("Sickness: [Placeholder] (Severity 4)"));
+            Assert.That(patient.SicknessName, Is.EqualTo("Cardiac Arrest"));
+            Assert.That(text.text, Is.EqualTo("Sickness: Cardiac Arrest"));
+
+            patient.Activate("Cardiac Arrest", 4, 5f, head, 0f, true);
+            Assert.That(text.text, Is.EqualTo("Sickness: Cardiac Arrest (Severity 4)"));
 
             Object.Destroy(head.gameObject);
             Object.Destroy(patient.gameObject);
@@ -376,7 +432,7 @@ namespace NCKH.VR.Clinic.Tests
             SetField(patient, "dyingSfx", clip);
             SetField(patient, "emergencyFlashInterval", 0.05f);
 
-            patient.Activate(ClinicRoundRules.MaximumSeverity, 5f, "Sickness", head, 0f);
+            patient.Activate("Cardiac Arrest", ClinicRoundRules.MaximumSeverity, 5f, head, 0f, false);
             yield return null;
 
             AudioSource source = patient.GetComponent<AudioSource>();
@@ -439,6 +495,7 @@ namespace NCKH.VR.Clinic.Tests
             SetField(manager, "patientPrefab", template);
             SetField(manager, "playerHead", head);
             SetField(manager, "bedSlots", new[] { bed });
+            SetSicknessEntries(manager, new SicknessEntry("Common Cold", 1, 1f));
             SetField(manager, "initialPreparationDelay", 0f);
             SetField(manager, "roundDuration", 1f);
             SetField(manager, "patientFadeDuration", 0f);
@@ -491,6 +548,7 @@ namespace NCKH.VR.Clinic.Tests
             SetField(manager, "patientPrefab", template);
             SetField(manager, "playerHead", head);
             SetField(manager, "bedSlots", new[] { bed });
+            SetSicknessEntries(manager, new SicknessEntry("Common Cold", 1, 1f));
             SetField(manager, "initialPreparationDelay", 0f);
             SetField(manager, "roundDuration", 1f);
             SetField(manager, "patientFadeDuration", 0f);
@@ -585,6 +643,7 @@ namespace NCKH.VR.Clinic.Tests
             SetField(manager, "patientPrefab", template);
             SetField(manager, "playerHead", headObject.transform);
             SetField(manager, "bedSlots", new[] { bed });
+            SetSicknessEntries(manager, new SicknessEntry("Common Cold", 1, 1f));
             SetField(manager, "initialPreparationDelay", preparationDuration);
             SetField(manager, "roundDuration", roundDuration);
             SetField(manager, "patientFadeDuration", 0f);
@@ -614,15 +673,18 @@ namespace NCKH.VR.Clinic.Tests
             return manager;
         }
 
-        private static void SetSeverityWeights(
+        private static void SetSicknessEntries(
             ClinicGameManager manager,
-            float level1Weight,
-            float level4Weight)
+            params SicknessEntry[] entries)
         {
-            SetField(manager, "level1Weight", level1Weight);
-            SetField(manager, "level2Weight", 0f);
-            SetField(manager, "level3Weight", 0f);
-            SetField(manager, "level4Weight", level4Weight);
+            SicknessDatabase database = (SicknessDatabase)GetField(manager, "sicknessDatabase");
+            if (database == null)
+            {
+                database = manager.gameObject.AddComponent<SicknessDatabase>();
+                SetField(manager, "sicknessDatabase", database);
+            }
+
+            SetField(database, "entries", new List<SicknessEntry>(entries));
         }
 
         private static void DestroyEmergencyGuaranteeObjects(

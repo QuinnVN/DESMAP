@@ -62,6 +62,7 @@ namespace NCKH.VR.Clinic
         public event Action<PatientActor> BecameInactive;
 
         public PatientActorState State { get; private set; } = PatientActorState.Inactive;
+        public string SicknessName { get; private set; } = string.Empty;
         public int Severity { get; private set; }
         public float RemainingTreatmentTime { get; private set; }
 
@@ -129,12 +130,14 @@ namespace NCKH.VR.Clinic
         }
 
         public void Activate(
+            string sicknessName,
             int severity,
             float treatmentSeconds,
-            string placeholder,
             Transform trackedHead,
-            float transitionDuration)
+            float transitionDuration,
+            bool showSeverity)
         {
+            SicknessName = sicknessName ?? string.Empty;
             Severity = Mathf.Clamp(severity, ClinicRoundRules.MinimumSeverity, ClinicRoundRules.MaximumSeverity);
             treatmentDuration = Mathf.Max(0f, treatmentSeconds);
             RemainingTreatmentTime = treatmentDuration;
@@ -145,7 +148,11 @@ namespace NCKH.VR.Clinic
             State = PatientActorState.FadingIn;
 
             if (sicknessText != null)
-                sicknessText.text = $"{placeholder} (Severity {Severity})";
+            {
+                sicknessText.text = showSeverity
+                    ? $"Sickness: {SicknessName} (Severity {Severity})"
+                    : $"Sickness: {SicknessName}";
+            }
 
             SetColliderState(false);
             if (!gameObject.activeSelf)

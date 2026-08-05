@@ -145,7 +145,7 @@ namespace NCKH.VR.Clinic.Editor
                 SetFloat(serializedPatient, "emergencyAudioMaxDistance", 15f);
                 serializedPatient.ApplyModifiedPropertiesWithoutUndo();
 
-                sicknessText.text = "Sickness: [Placeholder] (Severity 1)";
+                sicknessText.text = "Sickness: [Placeholder]";
                 EditorUtility.SetDirty(sicknessText);
                 PrefabUtility.SaveAsPrefabAsset(root, PatientPrefabPath);
             }
@@ -213,6 +213,14 @@ namespace NCKH.VR.Clinic.Editor
             if (manager == null)
                 manager = managerObject.AddComponent<ClinicGameManager>();
 
+            GameObject sicknessDatabaseObject = FindRoot(scene, "Sickness Database");
+            if (sicknessDatabaseObject == null)
+                sicknessDatabaseObject = new GameObject("Sickness Database");
+
+            SicknessDatabase sicknessDatabase = sicknessDatabaseObject.GetComponent<SicknessDatabase>();
+            if (sicknessDatabase == null)
+                sicknessDatabase = sicknessDatabaseObject.AddComponent<SicknessDatabase>();
+
             GameObject vrPlayer = FindRoot(scene, "VR Player");
             Camera trackedCamera = vrPlayer != null ? vrPlayer.GetComponentInChildren<Camera>(true) : null;
             PatientActor patientPrefab = AssetDatabase.LoadAssetAtPath<PatientActor>(PatientPrefabPath);
@@ -223,6 +231,7 @@ namespace NCKH.VR.Clinic.Editor
             SetReference(serializedManager, "patientPrefab", patientPrefab);
             SetReference(serializedManager, "playerHead", trackedCamera.transform);
             SetObjectArray(serializedManager, "bedSlots", bedSlots.Cast<UnityEngine.Object>().ToArray());
+            SetReference(serializedManager, "sicknessDatabase", sicknessDatabase);
             SetFloat(serializedManager, "resolvedBedCooldown", 5f);
             SetFloat(serializedManager, "automaticStartReadinessTimeout", 10f);
             SetInteger(serializedManager, "automaticStartStableFrames", 2);
@@ -231,6 +240,7 @@ namespace NCKH.VR.Clinic.Editor
             ConfigurePlayerHud(manager, vrPlayer, trackedCamera);
 
             EditorUtility.SetDirty(manager);
+            EditorUtility.SetDirty(sicknessDatabase);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }
