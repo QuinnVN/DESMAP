@@ -40,13 +40,23 @@ namespace NCKH.VR.Clinic
         [SerializeField] private Canvas[] patientCanvases = Array.Empty<Canvas>();
         [SerializeField] private Collider[] patientColliders = Array.Empty<Collider>();
 
+        [Header("Severity 4 Alert")]
+        [SerializeField] private AudioClip dyingSfx;
+        [SerializeField, Min(0.01f)] private float emergencyFlashInterval = 0.5f;
+        [SerializeField] private Color emergencyFlashColor = Color.red;
+        [SerializeField, Min(0f)] private float emergencyAudioMinDistance = 1f;
+        [SerializeField, Min(0f)] private float emergencyAudioMaxDistance = 15f;
+
         private MaterialPropertyBlock propertyBlock;
         private Color[] rendererColors = Array.Empty<Color>();
+        private AudioSource emergencyAudioSource;
         private Transform playerHead;
         private float fadeDuration;
         private float visualAlpha;
         private float proximityAlpha;
         private float treatmentDuration;
+        private float emergencyFlashCountdown;
+        private bool emergencyFlashRed;
 
         public event Action<PatientActor, PatientResolution> Resolved;
         public event Action<PatientActor> BecameInactive;
@@ -72,6 +82,8 @@ namespace NCKH.VR.Clinic
         {
             if (cureButton != null)
                 cureButton.onClick.RemoveListener(OnCureClicked);
+
+            StopEmergencyAlert();
         }
 
         private void Update()
@@ -106,6 +118,7 @@ namespace NCKH.VR.Clinic
                     break;
             }
 
+            UpdateEmergencyFlash(deltaTime);
             UpdateProximity(deltaTime);
             ApplyVisuals();
         }
@@ -140,6 +153,7 @@ namespace NCKH.VR.Clinic
             if (!enabled)
                 enabled = true;
 
+            StartEmergencyAlert();
             UpdateCureButtonOrbit();
             ApplyVisuals();
         }
@@ -150,6 +164,7 @@ namespace NCKH.VR.Clinic
                 return;
 
             State = PatientActorState.FadingOut;
+            StopEmergencyAlert();
             SetColliderState(false);
             SetButtonInteractable(false);
         }
@@ -160,6 +175,7 @@ namespace NCKH.VR.Clinic
             visualAlpha = 0f;
             proximityAlpha = 0f;
             RemainingTreatmentTime = 0f;
+            StopEmergencyAlert();
             SetColliderState(false);
             SetButtonInteractable(false);
             ApplyVisuals();
@@ -178,6 +194,7 @@ namespace NCKH.VR.Clinic
                 return;
 
             State = PatientActorState.FadingOut;
+            StopEmergencyAlert();
             SetColliderState(false);
             SetButtonInteractable(false);
             Resolved?.Invoke(this, resolution);
@@ -189,6 +206,7 @@ namespace NCKH.VR.Clinic
             visualAlpha = 0f;
             proximityAlpha = 0f;
             RemainingTreatmentTime = 0f;
+            StopEmergencyAlert();
             SetColliderState(false);
             SetButtonInteractable(false);
             ApplyVisuals();
@@ -227,6 +245,50 @@ namespace NCKH.VR.Clinic
             cureCanvas.localRotation = Quaternion.Euler(0f, canvasYawOffset, 0f);
         }
 
+        private void StartEmergencyAlert()
+        {
+            StopEmergencyAlert();
+            if (Severity != ClinicRoundRules.MaximumSeverity)
+                return;
+
+            emergencyFlashRed = true;
+            emergencyFlashCountdown = Mathf.Max(0.01f, emergencyFlashInterval);
+
+            if (dyingSfx == null)
+                return;
+
+            EnsureEmergencyAudioSource();
+            emergencyAudioSource.clip = dyingSfx;
+            emergencyAudioSource.Play();
+        }
+
+        private void StopEmergencyAlert()
+        {
+            emergencyFlashRed = false;
+            emergencyFlashCountdown = 0f;
+
+            if (emergencyAudioSource != null)
+                emergencyAudioSource.Stop();
+        }
+
+        private void UpdateEmergencyFlash(float deltaTime)
+        {
+            if (Severity != ClinicRoundRules.MaximumSeverity
+                || (State != PatientActorState.FadingIn && State != PatientActorState.Active))
+            {
+                emergencyFlashRed = false;
+                return;
+            }
+
+            emergencyFlashCountdown -= deltaTime;
+            float interval = Mathf.Max(0.01f, emergencyFlashInterval);
+            while (emergencyFlashCountdown <= 0f)
+            {
+                emergencyFlashRed = !emergencyFlashRed;
+                emergencyFlashCountdown += interval;
+            }
+        }
+
         private void ApplyVisuals()
         {
             EnsureRuntimeCache();
@@ -239,6 +301,12 @@ namespace NCKH.VR.Clinic
 
                 targetRenderer.enabled = visualAlpha > 0f;
                 Color color = i < rendererColors.Length ? rendererColors[i] : Color.white;
+                if (emergencyFlashRed)
+                {
+                    float originalAlpha = color.a;
+                    color = emergencyFlashColor;
+                    color.a = originalAlpha;
+                }
                 color.a *= visualAlpha;
                 targetRenderer.GetPropertyBlock(propertyBlock);
                 propertyBlock.SetColor(BaseColorId, color);
@@ -307,6 +375,24 @@ namespace NCKH.VR.Clinic
 
             if (rendererColors == null || rendererColors.Length != fadeRenderers.Length)
                 CacheRendererColors();
+        }
+
+        private void EnsureEmergencyAudioSource()
+        {
+            if (emergencyAudioSource == null)
+                emergencyAudioSource = GetComponent<AudioSource>();
+            if (emergencyAudioSource == null)
+                emergencyAudioSource = gameObject.AddComponent<AudioSource>();
+
+            emergencyAudioSource.playOnAwake = false;
+            emergencyAudioSource.loop = true;
+            emergencyAudioSource.spatialBlend = 1f;
+            emergencyAudioSource.dopplerLevel = 0f;
+            emergencyAudioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+            emergencyAudioSource.minDistance = Mathf.Max(0f, emergencyAudioMinDistance);
+            emergencyAudioSource.maxDistance = Mathf.Max(
+                emergencyAudioSource.minDistance + 0.01f,
+                emergencyAudioMaxDistance);
         }
 
         private void SetColliderState(bool enabled)

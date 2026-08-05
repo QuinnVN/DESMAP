@@ -19,6 +19,7 @@ namespace NCKH.VR.Clinic.Editor
         private const string BedPrefabPath = "Assets/Prefabs/Bed.prefab";
         private const string ScenePath = "Assets/Scenes/Main Scene.unity";
         private const string PatientMaterialPath = "Assets/Materials/Patient Fade.mat";
+        private const string DyingSfxPath = "Assets/SFX/dyingsfx.mp3";
 
         [MenuItem("Tools/NCKH VR/Configure Clinic Gameplay")]
         public static void Configure()
@@ -110,6 +111,21 @@ namespace NCKH.VR.Clinic.Editor
                 if (patient == null)
                     patient = root.AddComponent<PatientActor>();
 
+                AudioSource emergencyAudioSource = root.GetComponent<AudioSource>();
+                if (emergencyAudioSource == null)
+                    emergencyAudioSource = root.AddComponent<AudioSource>();
+                emergencyAudioSource.playOnAwake = false;
+                emergencyAudioSource.loop = true;
+                emergencyAudioSource.spatialBlend = 1f;
+                emergencyAudioSource.dopplerLevel = 0f;
+                emergencyAudioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+                emergencyAudioSource.minDistance = 1f;
+                emergencyAudioSource.maxDistance = 15f;
+
+                AudioClip dyingSfx = AssetDatabase.LoadAssetAtPath<AudioClip>(DyingSfxPath);
+                if (dyingSfx == null)
+                    throw new InvalidOperationException($"Could not load severity 4 SFX at {DyingSfxPath}.");
+
                 SerializedObject serializedPatient = new SerializedObject(patient);
                 SetReference(serializedPatient, "sicknessText", sicknessText);
                 SetReference(serializedPatient, "cureButton", cureButton);
@@ -123,6 +139,10 @@ namespace NCKH.VR.Clinic.Editor
                 SetObjectArray(serializedPatient, "fadeRenderers", renderers.Cast<UnityEngine.Object>().ToArray());
                 SetObjectArray(serializedPatient, "patientCanvases", root.GetComponentsInChildren<Canvas>(true).Cast<UnityEngine.Object>().ToArray());
                 SetObjectArray(serializedPatient, "patientColliders", root.GetComponentsInChildren<Collider>(true).Cast<UnityEngine.Object>().ToArray());
+                SetReference(serializedPatient, "dyingSfx", dyingSfx);
+                SetFloat(serializedPatient, "emergencyFlashInterval", 0.5f);
+                SetFloat(serializedPatient, "emergencyAudioMinDistance", 1f);
+                SetFloat(serializedPatient, "emergencyAudioMaxDistance", 15f);
                 serializedPatient.ApplyModifiedPropertiesWithoutUndo();
 
                 sicknessText.text = "Sickness: [Placeholder] (Severity 1)";

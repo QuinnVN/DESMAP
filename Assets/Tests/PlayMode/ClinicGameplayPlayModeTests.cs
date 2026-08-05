@@ -268,6 +268,44 @@ namespace NCKH.VR.Clinic.Tests
             Object.Destroy(patient.gameObject);
         }
 
+        [UnityTest]
+        public IEnumerator SeverityFourStartsDirectionalAudioAndFlashesRed()
+        {
+            PatientActor patient = CreateInteractivePatient(out _, out Transform head);
+            AudioClip clip = AudioClip.Create("Dying SFX Test", 4410, 1, 44100, false);
+            SetField(patient, "dyingSfx", clip);
+            SetField(patient, "emergencyFlashInterval", 0.05f);
+
+            patient.Activate(ClinicRoundRules.MaximumSeverity, 5f, "Sickness", head, 0f);
+            yield return null;
+
+            AudioSource source = patient.GetComponent<AudioSource>();
+            Assert.That(source, Is.Not.Null);
+            Assert.That(source.clip, Is.SameAs(clip));
+            Assert.That(source.loop, Is.True);
+            Assert.That(source.spatialBlend, Is.EqualTo(1f));
+            Assert.That(source.dopplerLevel, Is.EqualTo(0f));
+            Assert.That(source.minDistance, Is.EqualTo(1f));
+            Assert.That(source.maxDistance, Is.EqualTo(15f));
+
+            Renderer renderer = ((Renderer[])GetField(patient, "fadeRenderers"))[0];
+            MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(propertyBlock);
+            Assert.That(propertyBlock.GetColor("_BaseColor"), Is.EqualTo(Color.red));
+
+            InvokeNonPublic(patient, "UpdateEmergencyFlash", 0.05f);
+            InvokeNonPublic(patient, "ApplyVisuals");
+            renderer.GetPropertyBlock(propertyBlock);
+            Assert.That(propertyBlock.GetColor("_BaseColor"), Is.EqualTo(Color.white));
+
+            patient.DeactivateImmediately();
+            Assert.That(source.isPlaying, Is.False);
+
+            Object.Destroy(clip);
+            Object.Destroy(head.gameObject);
+            Object.Destroy(patient.gameObject);
+        }
+
         [Test]
         public void BedCooldownBlocksPatientUntilItExpires()
         {
