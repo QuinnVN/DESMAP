@@ -1,0 +1,30 @@
+* text=auto
+
+# Source and project configuration
+*.cs text eol=lf diff=csharp
+*.asmdef text eol=lf
+*.asmref text eol=lf
+*.json text eol=lf
+*.inputactions text eol=lf
+*.md text eol=lf
+*.ps1 text eol=crlf
+*.shader text eol=lf
+*.shadergraph text eol=lf
+*.shadersubgraph text eol=lf
+*.txt text eol=lf
+*.xml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Unity YAML assets remain mergeable rather than being stored in LFS.
+*.anim text eol=lf merge=unityyamlmerge
+*.asset text eol=lf merge=unityyamlmerge
+*.controller text eol=lf merge=unityyamlmerge
+*.mat text eol=lf merge=unityyamlmerge
+*.meta text eol=lf merge=unityyamlmerge
+*.playable text eol=lf merge=unityyamlmerge
+*.prefab text eol=lf merge=unityyamlmerge
+*.unity text eol=lf merge=unityyamlmerge
+
+# Large binary assets use Git LFS.
+
