@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: Placeholder Case C
+  m_EditorClassIdentifier: NCKH.Doctor:NCKH.VR.Doctor:DoctorCaseDefinition
+  patientName: Taylor Nguyen
+  selectionWeight: 1
+  initialDialogue:
+    transcript: I became short of breath after cleaning a dusty room about an hour
+      ago. There is tightness in my chest, and my neighbour recently painted their
+      door blue.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: c-time
+      text: Started about one hour ago
+      correctCategory: 0
+      essential: 1
+    - id: c-symptom-breath
+      text: Shortness of breath
+      correctCategory: 2
+      essential: 1
+    - id: c-symptom-tight
+      text: Chest tightness
+      correctCategory: 2
+      essential: 1
+    - id: c-door
+      text: Neighbour painted a door blue
+      correctCategory: 0
+      essential: 0
+  timeFollowUp:
+    transcript: It started roughly one hour ago while I was cleaning.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: c-cleaning
+      text: Was cleaning when it began
+      correctCategory: 0
+      essential: 0
+  travelHistoryFollowUp:
+    transcript: I have not travelled outside the region in the last year.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: c-travel
+      text: No travel outside the region in the last year
+      correctCategory: 1
+      essential: 1
+  symptomsFollowUp:
+    transcript: I am wheezing as well, especially when I breathe out.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: c-symptom-wheeze
+      text: Wheezing
+      correctCategory: 2
+      essential: 1
+  medicalHistoryFollowUp:
+    transcript: I had childhood asthma, but I have not used an inhaler recently.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: c-history
+      text: History of childhood asthma
+      correctCategory: 3
+      essential: 1
+    - id: c-inhaler
+      text: Has not used an inhaler recently
+      correctCategory: 0
+      essential: 0
+  conclusion: Placeholder airway irritation
+  treatment: Send the patient to the respiratory treatment area for immediate assessment.

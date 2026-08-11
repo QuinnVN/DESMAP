@@ -155,7 +155,7 @@ namespace NCKH.VR.Clinic.Tests
 
     public sealed class SicknessDatabaseTests
     {
-        private const string MainScenePath = "Assets/Scenes/Main Scene.unity";
+        private const string MainScenePath = "Assets/Scenes/Doctor/Game 1.unity";
 
         [TestCase(0f, "Cold")]
         [TestCase(0.2499f, "Cold")]
@@ -307,7 +307,7 @@ namespace NCKH.VR.Clinic.Tests
 
     public sealed class ClinicHudLayoutTests
     {
-        private const string MainScenePath = "Assets/Scenes/Main Scene.unity";
+        private const string MainScenePath = "Assets/Scenes/Doctor/Game 1.unity";
 
         [Test]
         public void MainSceneHudUsesXrSafeLayoutAndReferences()

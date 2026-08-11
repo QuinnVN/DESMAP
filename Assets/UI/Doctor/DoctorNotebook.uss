@@ -1,0 +1,383 @@
+.app-root {
+    flex-grow: 1;
+    color: rgb(42, 45, 48);
+    font-size: 22px;
+}
+
+.screen-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-badge {
+    position: absolute;
+    top: 26px;
+    left: 50%;
+    translate: -50% 0;
+    min-width: 164px;
+    height: 64px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(17, 27, 34, 0.9);
+    border-radius: 18px;
+    border-width: 2px;
+    border-color: rgb(116, 181, 173);
+}
+
+.timer-label {
+    color: rgb(240, 248, 244);
+    font-size: 36px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+}
+
+.preparation-overlay,
+.result-overlay {
+    background-color: rgba(12, 29, 35, 0.94);
+}
+
+.overlay-kicker {
+    color: rgb(133, 205, 194);
+    font-size: 30px;
+    -unity-font-style: bold;
+    letter-spacing: 6px;
+    margin-bottom: 20px;
+}
+
+.preparation-label {
+    color: rgb(255, 248, 220);
+    font-size: 190px;
+    -unity-font-style: bold;
+    margin-top: -16px;
+    margin-bottom: -12px;
+}
+
+.overlay-subtitle {
+    color: rgb(220, 233, 230);
+    font-size: 25px;
+    max-width: 760px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.notebook-overlay {
+    padding: 48px 62px;
+    background-color: rgba(7, 18, 21, 0.84);
+}
+
+.notebook-shell {
+    width: 100%;
+    height: 100%;
+    max-width: 1740px;
+    max-height: 980px;
+    padding: 26px 32px 24px 32px;
+    background-color: rgb(232, 220, 188);
+    border-radius: 24px;
+    border-width: 4px;
+    border-color: rgb(91, 66, 44);
+}
+
+.notebook-header {
+    min-height: 96px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 14px;
+    padding-right: 14px;
+    border-bottom-width: 2px;
+    border-bottom-color: rgba(75, 65, 51, 0.35);
+}
+
+.notebook-kicker,
+.section-title,
+.category-title {
+    color: rgb(61, 102, 98);
+    font-size: 18px;
+    -unity-font-style: bold;
+    letter-spacing: 3px;
+}
+
+.patient-name {
+    color: rgb(39, 42, 43);
+    font-size: 38px;
+    -unity-font-style: bold;
+}
+
+.header-actions {
+    flex-direction: row;
+    align-items: center;
+}
+
+.question-count {
+    color: rgb(75, 70, 62);
+    font-size: 20px;
+    margin-right: 18px;
+}
+
+.notebook-hint {
+    color: rgb(83, 76, 66);
+    min-height: 42px;
+    padding: 9px 14px;
+    font-size: 19px;
+    -unity-text-align: middle-center;
+}
+
+.notebook-pages {
+    flex-grow: 1;
+    flex-direction: row;
+    min-height: 0;
+}
+
+.page {
+    flex-grow: 1;
+    padding: 18px;
+    background-color: rgb(250, 244, 222);
+    border-radius: 12px;
+}
+
+.page-left {
+    width: 38%;
+}
+
+.page-right {
+    width: 62%;
+}
+
+.binding {
+    width: 18px;
+    margin-left: 8px;
+    margin-right: 8px;
+    background-color: rgb(92, 68, 47);
+    border-radius: 9px;
+}
+
+.drop-zone {
+    flex-grow: 1;
+    min-height: 120px;
+    padding: 12px;
+    border-width: 3px;
+    border-color: rgba(73, 112, 108, 0.55);
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.42);
+    overflow: hidden;
+}
+
+.card-scroll {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.unfiled-drop {
+    margin-top: 10px;
+}
+
+.category-row {
+    flex-grow: 1;
+    flex-direction: row;
+    min-height: 0;
+}
+
+.first-category-row {
+    margin-bottom: 10px;
+}
+
+.category-zone {
+    width: 50%;
+    margin: 5px;
+}
+
+.category-title {
+    min-height: 30px;
+    -unity-text-align: middle-center;
+}
+
+.card-list {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.info-card {
+    min-height: 58px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding: 12px 14px;
+    justify-content: center;
+    background-color: rgb(255, 253, 241);
+    border-radius: 9px;
+    border-width: 2px;
+    border-color: rgb(184, 164, 124);
+    color: rgb(44, 46, 45);
+}
+
+.compact-list .info-card {
+    min-height: 48px;
+    padding: 8px 10px;
+    font-size: 18px;
+}
+
+.info-card:hover {
+    background-color: rgb(246, 239, 205);
+    border-color: rgb(76, 129, 121);
+}
+
+.info-card.selected {
+    background-color: rgb(217, 239, 230);
+    border-width: 4px;
+    border-color: rgb(46, 123, 113);
+}
+
+.info-card.dragging {
+    opacity: 0.92;
+    border-width: 4px;
+    border-color: rgb(41, 119, 109);
+}
+
+.notebook-footer {
+    height: 82px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.footer-tip {
+    color: rgb(91, 78, 60);
+    font-size: 18px;
+    -unity-font-style: italic;
+}
+
+.button {
+    min-height: 52px;
+    padding-left: 24px;
+    padding-right: 24px;
+    border-radius: 10px;
+    border-width: 2px;
+    font-size: 21px;
+    -unity-font-style: bold;
+}
+
+.button-primary {
+    background-color: rgb(40, 116, 106);
+    border-color: rgb(29, 80, 74);
+    color: white;
+}
+
+.button-primary:hover {
+    background-color: rgb(54, 142, 130);
+}
+
+.button-secondary {
+    background-color: rgb(226, 213, 179);
+    border-color: rgb(116, 91, 61);
+    color: rgb(61, 50, 38);
+}
+
+.button-secondary:hover {
+    background-color: rgb(240, 229, 197);
+}
+
+.action-button {
+    min-width: 190px;
+}
+
+.modal-overlay {
+    background-color: rgba(7, 18, 21, 0.78);
+}
+
+.modal-card,
+.conclusion-card {
+    width: 720px;
+    padding: 42px;
+    align-items: center;
+    background-color: rgb(250, 244, 222);
+    border-radius: 22px;
+    border-width: 4px;
+    border-color: rgb(91, 66, 44);
+}
+
+.modal-title {
+    color: rgb(44, 90, 84);
+    font-size: 40px;
+    -unity-font-style: bold;
+    letter-spacing: 4px;
+}
+
+.modal-subtitle {
+    color: rgb(78, 74, 67);
+    font-size: 20px;
+    margin-top: 8px;
+    margin-bottom: 24px;
+}
+
+.question-grid {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.question-button {
+    width: 47%;
+    height: 68px;
+    margin: 8px;
+    background-color: rgb(213, 232, 223);
+    border-color: rgb(65, 121, 112);
+    color: rgb(38, 72, 67);
+}
+
+.cancel-button {
+    margin-top: 20px;
+    min-width: 180px;
+}
+
+.conclusion-overlay {
+    background-color: rgba(8, 21, 24, 0.88);
+}
+
+.dark-kicker {
+    color: rgb(54, 119, 111);
+}
+
+.conclusion-title {
+    color: rgb(40, 43, 43);
+    font-size: 42px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.conclusion-body {
+    color: rgb(70, 66, 59);
+    font-size: 25px;
+    margin-top: 24px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.conclusion-wait {
+    color: rgb(89, 110, 105);
+    font-size: 18px;
+    margin-top: 30px;
+    -unity-font-style: italic;
+}
+
+.result-score {
+    color: rgb(255, 248, 220);
+    font-size: 86px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 26px;
+}
+
+.drag-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
