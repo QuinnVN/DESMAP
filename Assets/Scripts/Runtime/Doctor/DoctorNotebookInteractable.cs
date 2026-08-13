@@ -1,36 +1,33 @@
 using System;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.UI;
 
 namespace NCKH.VR.Doctor
 {
     [DisallowMultipleComponent]
     public sealed class DoctorNotebookInteractable : MonoBehaviour
     {
-        [SerializeField] private XRSimpleInteractable interactable;
+        [SerializeField] private Button activationButton;
 
         public event Action Activated;
 
         private void OnEnable()
         {
-            if (interactable != null)
-                interactable.selectEntered.AddListener(OnSelected);
+            activationButton?.onClick.AddListener(OnPressed);
         }
 
         private void OnDisable()
         {
-            if (interactable != null)
-                interactable.selectEntered.RemoveListener(OnSelected);
+            activationButton?.onClick.RemoveListener(OnPressed);
         }
 
         public void SetInteractionEnabled(bool enabled)
         {
-            if (interactable != null)
-                interactable.enabled = enabled;
+            if (activationButton != null)
+                activationButton.interactable = enabled;
         }
 
-        private void OnSelected(SelectEnterEventArgs args)
+        private void OnPressed()
         {
             Activated?.Invoke();
         }

@@ -45,16 +45,34 @@ namespace NCKH.VR.Doctor
         public AudioClip AudioClip => audioClip;
         public IReadOnlyList<DoctorInfoCard> SelectableCards => selectableCards;
 
-        public DoctorDialogue(
-            string transcript,
-            AudioClip audioClip,
-            IEnumerable<DoctorInfoCard> selectableCards)
+        public DoctorDialogue(string transcript, AudioClip audioClip, IEnumerable<DoctorInfoCard> selectableCards)
         {
             this.transcript = transcript ?? string.Empty;
             this.audioClip = audioClip;
             this.selectableCards = selectableCards != null
                 ? new List<DoctorInfoCard>(selectableCards)
                 : new List<DoctorInfoCard>();
+        }
+    }
+
+    [Serializable]
+    public sealed class DoctorQuestionPhase
+    {
+        [SerializeField] private string id = string.Empty;
+        [SerializeField, TextArea(2, 4)] private string question = string.Empty;
+        [SerializeField] private DoctorDialogue response =
+            new DoctorDialogue("Placeholder response.", null, null);
+
+        public string Id => id;
+        public string Question => question;
+        public DoctorDialogue Response => response;
+        public bool IsValid => !string.IsNullOrWhiteSpace(id) && !string.IsNullOrWhiteSpace(question);
+
+        public DoctorQuestionPhase(string id, string question, DoctorDialogue response)
+        {
+            this.id = id ?? string.Empty;
+            this.question = question ?? string.Empty;
+            this.response = response ?? new DoctorDialogue(string.Empty, null, null);
         }
     }
 }

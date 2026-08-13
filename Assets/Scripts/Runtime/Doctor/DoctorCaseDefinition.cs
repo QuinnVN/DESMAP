@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NCKH.VR.Doctor
@@ -9,73 +10,50 @@ namespace NCKH.VR.Doctor
         [SerializeField] private string patientName = "Placeholder Patient";
         [SerializeField, Min(0f)] private float selectionWeight = 1f;
 
-        [Header("Initial Conversation")]
+        [Header("Opening Statement")]
         [SerializeField] private DoctorDialogue initialDialogue =
-            new DoctorDialogue("Placeholder initial conversation.", null, null);
+            new DoctorDialogue("Placeholder opening statement.", null, null);
 
-        [Header("Follow-up Answers")]
-        [SerializeField] private DoctorDialogue timeFollowUp =
-            new DoctorDialogue("Placeholder time answer.", null, null);
-        [SerializeField] private DoctorDialogue travelHistoryFollowUp =
-            new DoctorDialogue("Placeholder travel answer.", null, null);
-        [SerializeField] private DoctorDialogue symptomsFollowUp =
-            new DoctorDialogue("Placeholder symptoms answer.", null, null);
-        [SerializeField] private DoctorDialogue medicalHistoryFollowUp =
-            new DoctorDialogue("Placeholder medical history answer.", null, null);
-
-        [Header("Conclusion")]
-        [SerializeField, TextArea(2, 5)] private string conclusion = "Placeholder conclusion";
-        [SerializeField, TextArea(2, 5)] private string treatment = "Send the patient to placeholder treatment.";
+        [Header("Question / Response Phases")]
+        [SerializeField] private List<DoctorQuestionPhase> phases = new List<DoctorQuestionPhase>();
 
         public string PatientName => patientName;
         public float SelectionWeight => selectionWeight;
         public DoctorDialogue InitialDialogue => initialDialogue;
-        public string Conclusion => conclusion;
-        public string Treatment => treatment;
+        public IReadOnlyList<DoctorQuestionPhase> Phases => phases;
         public bool IsSelectable => !string.IsNullOrWhiteSpace(patientName) && selectionWeight > 0f;
 
-        public DoctorDialogue GetFollowUp(DoctorInfoCategory category)
+        public DoctorQuestionPhase GetPhase(string phaseId)
         {
-            switch (category)
+            if (string.IsNullOrWhiteSpace(phaseId))
+                return null;
+
+            for (int i = 0; i < phases.Count; i++)
             {
-                case DoctorInfoCategory.Time:
-                    return timeFollowUp;
-                case DoctorInfoCategory.TravelHistory:
-                    return travelHistoryFollowUp;
-                case DoctorInfoCategory.Symptoms:
-                    return symptomsFollowUp;
-                default:
-                    return medicalHistoryFollowUp;
+                DoctorQuestionPhase phase = phases[i];
+                if (phase != null && phase.Id == phaseId)
+                    return phase;
             }
+
+            return null;
         }
 
 #if UNITY_EDITOR
         public void ConfigureInEditor(
             string name,
             float weight,
-            DoctorDialogue initial,
-            DoctorDialogue time,
-            DoctorDialogue travel,
-            DoctorDialogue symptoms,
-            DoctorDialogue medicalHistory,
-            string diagnosisConclusion,
-            string treatmentInstruction)
+            DoctorDialogue opening,
+            IEnumerable<DoctorQuestionPhase> configuredPhases)
         {
             patientName = name ?? string.Empty;
             selectionWeight = Mathf.Max(0f, weight);
-            initialDialogue = initial;
-            timeFollowUp = time;
-            travelHistoryFollowUp = travel;
-            symptomsFollowUp = symptoms;
-            medicalHistoryFollowUp = medicalHistory;
-            conclusion = diagnosisConclusion ?? string.Empty;
-            treatment = treatmentInstruction ?? string.Empty;
+            initialDialogue = opening ?? new DoctorDialogue(string.Empty, null, null);
+            phases = configuredPhases != null
+                ? new List<DoctorQuestionPhase>(configuredPhases)
+                : new List<DoctorQuestionPhase>();
         }
 #endif
 
-        private void OnValidate()
-        {
-            selectionWeight = Mathf.Max(0f, selectionWeight);
-        }
+        private void OnValidate() => selectionWeight = Mathf.Max(0f, selectionWeight);
     }
 }

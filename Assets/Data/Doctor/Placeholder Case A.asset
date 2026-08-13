@@ -23,11 +23,11 @@ MonoBehaviour:
       text: Started yesterday evening
       correctCategory: 0
       essential: 1
-    - id: a-symptom-cough
+    - id: a-cough
       text: Dry cough
       correctCategory: 2
       essential: 1
-    - id: a-symptom-fever
+    - id: a-fever
       text: Mild fever
       correctCategory: 2
       essential: 1
@@ -35,46 +35,46 @@ MonoBehaviour:
       text: Watched a movie last night
       correctCategory: 0
       essential: 0
-  timeFollowUp:
-    transcript: It began around seven in the evening, just after dinner.
-    audioClip: {fileID: 0}
-    selectableCards:
-    - id: a-time-extra
-      text: Had dinner before symptoms began
-      correctCategory: 0
-      essential: 0
-  travelHistoryFollowUp:
-    transcript: I have not travelled recently, not even out of the city.
-    audioClip: {fileID: 0}
-    selectableCards:
-    - id: a-travel
-      text: No recent travel
-      correctCategory: 1
-      essential: 1
-    - id: a-city
-      text: Stayed in the city
-      correctCategory: 0
-      essential: 0
-  symptomsFollowUp:
-    transcript: The cough is dry and the fever has stayed mild. My favourite tea
-      has not helped.
-    audioClip: {fileID: 0}
-    selectableCards:
-    - id: a-tea
-      text: Tried drinking tea
-      correctCategory: 0
-      essential: 0
-  medicalHistoryFollowUp:
-    transcript: I have a history of asthma, although it has been controlled for years.
-    audioClip: {fileID: 0}
-    selectableCards:
-    - id: a-history
-      text: History of asthma
-      correctCategory: 3
-      essential: 1
-    - id: a-years
-      text: Asthma has been controlled for years
-      correctCategory: 0
-      essential: 0
-  conclusion: Placeholder viral respiratory illness
-  treatment: Send the patient to the respiratory treatment area for assessment.
+  phases:
+  - id: a-when
+    question: Exactly when did this begin?
+    response:
+      transcript: It began around seven in the evening, just after dinner.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-dinner
+        text: Had dinner before symptoms began
+        correctCategory: 0
+        essential: 0
+  - id: a-travel-q
+    question: Have you travelled recently?
+    response:
+      transcript: I have not travelled recently, not even out of the city.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-travel
+        text: No recent travel
+        correctCategory: 1
+        essential: 1
+  - id: a-symptoms-q
+    question: Can you describe the symptoms in more detail?
+    response:
+      transcript: The cough is dry and the fever has stayed mild. My favourite tea
+        has not helped.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-tea
+        text: Tried drinking tea
+        correctCategory: 0
+        essential: 0
+  - id: a-history-q
+    question: Do you have any relevant medical history?
+    response:
+      transcript: I have a history of asthma, although it has been controlled for
+        years.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-history
+        text: History of asthma
+        correctCategory: 3
+        essential: 1

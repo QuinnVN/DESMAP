@@ -1,298 +1,306 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace NCKH.VR.Doctor
 {
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(PanelRenderer))]
     public sealed class DoctorNotebookUI : MonoBehaviour
     {
-        private const float DragThreshold = 6f;
+        [Header("Core HUD")]
+        [SerializeField] private GameObject timerBadge;
+        [SerializeField] private TMP_Text timerLabel;
+        [SerializeField] private GameObject preparationOverlay;
+        [SerializeField] private TMP_Text preparationLabel;
+        [SerializeField] private GameObject dialoguePanel;
+        [SerializeField] private TMP_Text dialoguePatientName;
+        [SerializeField] private TMP_Text dialogueText;
+        [SerializeField] private TMP_Text hudHintLabel;
+        [SerializeField] private GameObject questionPanel;
+        [SerializeField] private TMP_Text questionCounterLabel;
+        [SerializeField] private ScrollRect questionScroll;
+        [SerializeField] private RectTransform questionArea;
+        [SerializeField] private RectTransform questionContent;
+        [SerializeField] private DoctorQuestionItemView questionItemTemplate;
+        [SerializeField] private GameObject resultOverlay;
+        [SerializeField] private TMP_Text resultScore;
 
-        [SerializeField] private PanelRenderer panelRenderer;
-        [SerializeField] private GameObject locomotionRoot;
+        [Header("Question Layout")]
+        [SerializeField, Min(1f)] private float questionPreferredPillHeight = 40f;
+        [SerializeField, Min(0f)] private float questionSpacing = 8f;
+        [SerializeField, Min(0f)] private float questionHorizontalPadding = 6f;
+        [SerializeField, Min(0f)] private float questionVerticalPadding = 6f;
+        [SerializeField, Min(1f)] private float questionMinimumFontSize = 5f;
+        [SerializeField, Min(1f)] private float questionMaximumFontSize = 21f;
+
+        [Header("Portrait Notebook")]
+        [SerializeField] private GameObject notebookCanvasRoot;
+        [SerializeField] private GameObject notebookOverlay;
+        [SerializeField] private TMP_Text patientNameLabel;
+        [SerializeField] private TMP_Text notebookHintLabel;
+        [SerializeField] private RectTransform unfiledDrop;
+        [SerializeField] private RectTransform unfiledContent;
+        [SerializeField] private RectTransform timeDrop;
+        [SerializeField] private RectTransform timeContent;
+        [SerializeField] private RectTransform travelDrop;
+        [SerializeField] private RectTransform travelContent;
+        [SerializeField] private RectTransform historyDrop;
+        [SerializeField] private RectTransform historyContent;
+        [SerializeField] private RectTransform symptomsDrop;
+        [SerializeField] private RectTransform symptomsContent;
+        [SerializeField] private RectTransform dragLayer;
+        [SerializeField] private DoctorInfoCardView cardTemplate;
+
+        [Header("Notebook Controls")]
+        [SerializeField] private Button doneButton;
+        [SerializeField] private Button unfiledDropButton;
+        [SerializeField] private Button timeDropButton;
+        [SerializeField] private Button travelDropButton;
+        [SerializeField] private Button historyDropButton;
+        [SerializeField] private Button symptomsDropButton;
+
+        [Header("Configurable Controller Actions")]
+        [SerializeField] private InputActionReference questionNavigateAction;
+        [SerializeField] private InputActionReference questionSelectAction;
+        [SerializeField] private InputActionReference notebookCloseAction;
+        [SerializeField, Range(0.1f, 0.95f)] private float navigationDeadzone = 0.55f;
+        [SerializeField, Min(0.05f)] private float navigationRepeatDelay = 0.35f;
+        [SerializeField, Min(0.05f)] private float navigationRepeatRate = 0.16f;
 
         private readonly Dictionary<string, DoctorInfoCard> cardsById =
             new Dictionary<string, DoctorInfoCard>(StringComparer.Ordinal);
-        private readonly Dictionary<DoctorInfoCategory, VisualElement> dropZones =
-            new Dictionary<DoctorInfoCategory, VisualElement>();
-        private readonly Dictionary<DoctorInfoCategory, VisualElement> dropContents =
-            new Dictionary<DoctorInfoCategory, VisualElement>();
-        private readonly Dictionary<string, VisualElement> cardElements =
-            new Dictionary<string, VisualElement>(StringComparer.Ordinal);
-
-        private VisualElement timerBadge;
-        private Label timerLabel;
-        private VisualElement preparationOverlay;
-        private Label preparationLabel;
-        private VisualElement notebookOverlay;
-        private Label patientNameLabel;
-        private Label questionCountLabel;
-        private Label notebookHintLabel;
-        private VisualElement unfiledDrop;
-        private VisualElement unfiledContent;
-        private VisualElement questionModal;
-        private VisualElement conclusionOverlay;
-        private Label conclusionTitle;
-        private Label conclusionBody;
-        private VisualElement resultOverlay;
-        private Label resultScore;
-        private VisualElement dragLayer;
-        private Button askButton;
-        private Button diagnoseButton;
-        private Button closeButton;
-        private Button questionTimeButton;
-        private Button questionTravelButton;
-        private Button questionSymptomsButton;
-        private Button questionHistoryButton;
-        private Button questionCancelButton;
+        private readonly Dictionary<string, DoctorInfoCardView> cardViews =
+            new Dictionary<string, DoctorInfoCardView>(StringComparer.Ordinal);
+        private readonly Dictionary<DoctorInfoCategory, RectTransform> dropZones =
+            new Dictionary<DoctorInfoCategory, RectTransform>();
+        private readonly Dictionary<DoctorInfoCategory, RectTransform> dropContents =
+            new Dictionary<DoctorInfoCategory, RectTransform>();
+#if UNITY_EDITOR
+        [NonSerialized] private bool questionPreviewUpdateScheduled;
+#endif
+        private readonly List<DoctorQuestionPhase> visibleQuestions = new List<DoctorQuestionPhase>();
+        private readonly List<DoctorQuestionItemView> questionViews = new List<DoctorQuestionItemView>();
 
         private IReadOnlyDictionary<string, DoctorInfoCategory?> placements;
-        private DoctorQuestionTracker questionTracker;
         private string selectedCardId;
-        private string draggedCardId;
-        private VisualElement draggedElement;
-        private Vector3 dragStartPosition;
-        private int dragPointerId = -1;
-        private bool dragInProgress;
-        private bool initialized;
-        private bool locomotionLocked;
-        private bool locomotionWasActive;
+        private int selectedQuestionIndex;
+        private Vector2 navigationValue;
+        private float nextNavigationTime;
+        private bool navigationLatched;
         private int displayedRoundSeconds = int.MinValue;
         private int displayedPreparationSeconds = int.MinValue;
-        private VisualElement rootVisualElement;
-        private PanelRenderer.UIReloadCallback uiReloadCallback;
 
         public event Action CloseRequested;
-        public event Action<DoctorInfoCategory> QuestionRequested;
-        public event Action DiagnoseRequested;
+        public event Action DoneRequested;
+        public event Action<string> QuestionRequested;
         public event Action<string, DoctorInfoCategory?> PlacementChanged;
 
-        public bool IsNotebookOpen => initialized
-            && notebookOverlay.style.display == DisplayStyle.Flex;
+        public bool IsNotebookOpen => notebookOverlay != null && notebookOverlay.activeInHierarchy;
+        public bool IsQuestionHudOpen => questionPanel != null && questionPanel.activeInHierarchy;
+        public int SelectedQuestionIndex => selectedQuestionIndex;
+
+        private void Awake()
+        {
+            SetActive(notebookCanvasRoot, true);
+            dropZones[DoctorInfoCategory.Time] = timeDrop;
+            dropZones[DoctorInfoCategory.TravelHistory] = travelDrop;
+            dropZones[DoctorInfoCategory.MedicalHistory] = historyDrop;
+            dropZones[DoctorInfoCategory.Symptoms] = symptomsDrop;
+            dropContents[DoctorInfoCategory.Time] = timeContent;
+            dropContents[DoctorInfoCategory.TravelHistory] = travelContent;
+            dropContents[DoctorInfoCategory.MedicalHistory] = historyContent;
+            dropContents[DoctorInfoCategory.Symptoms] = symptomsContent;
+            ConfigureQuestionViewport();
+            HideAllPrimaryPanels();
+        }
 
         private void OnEnable()
         {
-            if (panelRenderer == null)
-                panelRenderer = GetComponent<PanelRenderer>();
-
-            uiReloadCallback = OnUiReloaded;
-            panelRenderer?.RegisterUIReloadCallback(uiReloadCallback);
+            doneButton?.onClick.AddListener(HandleDone);
+            unfiledDropButton?.onClick.AddListener(PlaceUnfiled);
+            timeDropButton?.onClick.AddListener(PlaceTime);
+            travelDropButton?.onClick.AddListener(PlaceTravel);
+            historyDropButton?.onClick.AddListener(PlaceHistory);
+            symptomsDropButton?.onClick.AddListener(PlaceSymptoms);
+            Subscribe(questionNavigateAction, OnNavigatePerformed, OnNavigateCanceled);
+            Subscribe(questionSelectAction, OnSelectQuestionPerformed, null);
+            Subscribe(notebookCloseAction, OnCloseNotebookPerformed, null);
         }
 
         private void OnDisable()
         {
-            if (panelRenderer != null && uiReloadCallback != null)
-                panelRenderer.UnregisterUIReloadCallback(uiReloadCallback);
+            doneButton?.onClick.RemoveListener(HandleDone);
+            unfiledDropButton?.onClick.RemoveListener(PlaceUnfiled);
+            timeDropButton?.onClick.RemoveListener(PlaceTime);
+            travelDropButton?.onClick.RemoveListener(PlaceTravel);
+            historyDropButton?.onClick.RemoveListener(PlaceHistory);
+            symptomsDropButton?.onClick.RemoveListener(PlaceSymptoms);
+            Unsubscribe(questionNavigateAction, OnNavigatePerformed, OnNavigateCanceled);
+            Unsubscribe(questionSelectAction, OnSelectQuestionPerformed, null);
+            Unsubscribe(notebookCloseAction, OnCloseNotebookPerformed, null);
+        }
 
-            rootVisualElement = null;
-            initialized = false;
-            RestoreLocomotion();
+        private void Update()
+        {
+            if (!IsQuestionHudOpen || Mathf.Abs(navigationValue.y) < navigationDeadzone)
+            {
+                navigationLatched = false;
+                return;
+            }
+
+            if (!navigationLatched || Time.unscaledTime >= nextNavigationTime)
+            {
+                CycleQuestion(navigationValue.y < 0f ? 1 : -1);
+                nextNavigationTime = Time.unscaledTime + (navigationLatched ? navigationRepeatRate : navigationRepeatDelay);
+                navigationLatched = true;
+            }
         }
 
         public void ShowPreparation(float seconds)
         {
-            if (!EnsureInitialized())
-                return;
             HideAllPrimaryPanels();
-            preparationOverlay.style.display = DisplayStyle.Flex;
+            SetActive(preparationOverlay, true);
             int wholeSeconds = Mathf.Max(1, Mathf.CeilToInt(seconds));
             if (wholeSeconds != displayedPreparationSeconds)
             {
                 displayedPreparationSeconds = wholeSeconds;
                 preparationLabel.text = wholeSeconds.ToString();
             }
-            SetLocomotionLocked(true);
         }
 
         public void ShowRunning()
         {
-            if (!EnsureInitialized())
-                return;
-            preparationOverlay.style.display = DisplayStyle.None;
-            resultOverlay.style.display = DisplayStyle.None;
-            conclusionOverlay.style.display = DisplayStyle.None;
-            timerBadge.style.display = DisplayStyle.Flex;
-            SetLocomotionLocked(false);
+            SetActive(preparationOverlay, false);
+            SetActive(resultOverlay, false);
+            SetActive(timerBadge, true);
         }
 
         public void SetRoundTime(float seconds)
         {
-            if (!EnsureInitialized())
-                return;
             int wholeSeconds = Mathf.Max(0, Mathf.CeilToInt(seconds));
             if (wholeSeconds == displayedRoundSeconds)
                 return;
-
             displayedRoundSeconds = wholeSeconds;
             timerLabel.text = $"{wholeSeconds / 60:0}:{wholeSeconds % 60:00}";
         }
 
-        public void SetNotebookHint(string text)
+        public void ShowDialogue(string patientName, string transcript, string hint = "")
         {
-            if (!EnsureInitialized())
-                return;
-            notebookHintLabel.text = text ?? string.Empty;
+            dialoguePatientName.text = patientName ?? string.Empty;
+            dialogueText.text = transcript ?? string.Empty;
+            hudHintLabel.text = hint ?? string.Empty;
+            SetActive(dialoguePanel, true);
         }
+
+        public void SetDialogueVisible(bool visible) => SetActive(dialoguePanel, visible);
+
+        public void SetHudHint(string hint) => hudHintLabel.text = hint ?? string.Empty;
+        public void SetNotebookHint(string hint) => notebookHintLabel.text = hint ?? string.Empty;
 
         public void OpenNotebook(
             string patientName,
             IReadOnlyList<DoctorInfoCard> cards,
-            IReadOnlyDictionary<string, DoctorInfoCategory?> currentPlacements,
-            DoctorQuestionTracker tracker)
+            IReadOnlyDictionary<string, DoctorInfoCategory?> currentPlacements)
         {
-            if (!EnsureInitialized())
-                return;
             placements = currentPlacements;
-            questionTracker = tracker;
             patientNameLabel.text = patientName ?? string.Empty;
-            questionModal.style.display = DisplayStyle.None;
-            conclusionOverlay.style.display = DisplayStyle.None;
-            notebookOverlay.style.display = DisplayStyle.Flex;
+            SetActive(notebookCanvasRoot, true);
+            SetDialogueVisible(false);
+            SetActive(questionPanel, false);
+            SetActive(notebookOverlay, true);
             selectedCardId = null;
             CacheCards(cards);
-            RefreshQuestionControls();
             RebuildCards();
-            SetLocomotionLocked(true);
         }
 
         public void RefreshNotebook(
             IReadOnlyList<DoctorInfoCard> cards,
-            IReadOnlyDictionary<string, DoctorInfoCategory?> currentPlacements,
-            DoctorQuestionTracker tracker)
+            IReadOnlyDictionary<string, DoctorInfoCategory?> currentPlacements)
         {
-            if (!IsNotebookOpen)
-                return;
-
             placements = currentPlacements;
-            questionTracker = tracker;
             CacheCards(cards);
-            RefreshQuestionControls();
-            RebuildCards();
+            if (IsNotebookOpen)
+                RebuildCards();
         }
 
-        public void CloseNotebook()
+        public void CloseNotebook() => SetActive(notebookOverlay, false);
+
+        public void ShowQuestionHud(IReadOnlyList<DoctorQuestionPhase> questions, int preferredIndex)
         {
-            if (!EnsureInitialized())
-                return;
-            CancelDrag();
-            questionModal.style.display = DisplayStyle.None;
-            notebookOverlay.style.display = DisplayStyle.None;
-            selectedCardId = null;
-            SetLocomotionLocked(false);
+            visibleQuestions.Clear();
+            if (questions != null)
+                for (int i = 0; i < questions.Count; i++)
+                    if (questions[i] != null)
+                        visibleQuestions.Add(questions[i]);
+
+            selectedQuestionIndex = visibleQuestions.Count == 0
+                ? -1
+                : Mathf.Clamp(preferredIndex, 0, visibleQuestions.Count - 1);
+            SetActive(notebookOverlay, false);
+            SetDialogueVisible(true);
+            SetActive(questionPanel, visibleQuestions.Count > 0);
+            RebuildQuestionList();
         }
 
-        public void ShowConclusion(string conclusion, string treatment)
-        {
-            if (!EnsureInitialized())
-                return;
-            notebookOverlay.style.display = DisplayStyle.None;
-            questionModal.style.display = DisplayStyle.None;
-            conclusionTitle.text = conclusion ?? string.Empty;
-            conclusionBody.text = treatment ?? string.Empty;
-            conclusionOverlay.style.display = DisplayStyle.Flex;
-            SetLocomotionLocked(true);
-        }
-
-        public void HideConclusion()
-        {
-            if (!EnsureInitialized())
-                return;
-            conclusionOverlay.style.display = DisplayStyle.None;
-            SetLocomotionLocked(false);
-        }
+        public void HideQuestionHud() => SetActive(questionPanel, false);
 
         public void ShowFinished(int score)
         {
-            if (!EnsureInitialized())
-                return;
             HideAllPrimaryPanels();
-            timerBadge.style.display = DisplayStyle.None;
+            SetActive(timerBadge, false);
             resultScore.text = $"TOTAL SCORE\n{score}";
-            resultOverlay.style.display = DisplayStyle.Flex;
-            SetLocomotionLocked(true);
+            SetActive(resultOverlay, true);
         }
 
-        private void OnUiReloaded(PanelRenderer source, VisualElement rootElement)
+        public void SelectCard(string cardId)
         {
-            if (source != panelRenderer || rootElement == null)
-                return;
-
-            rootVisualElement = rootElement;
-            initialized = false;
-            dropZones.Clear();
-            dropContents.Clear();
-            EnsureInitialized();
+            selectedCardId = cardId;
+            UpdateSelectionStyles();
         }
 
-        private bool EnsureInitialized()
+        public void BeginCardDrag(DoctorInfoCardView view, PointerEventData eventData)
         {
-            if (initialized)
-                return true;
-
-            VisualElement root = rootVisualElement;
-            if (root == null)
-                return false;
-
-            timerBadge = root.Q<VisualElement>("timer-badge");
-            timerLabel = root.Q<Label>("timer-label");
-            preparationOverlay = root.Q<VisualElement>("preparation-overlay");
-            preparationLabel = root.Q<Label>("preparation-label");
-            notebookOverlay = root.Q<VisualElement>("notebook-overlay");
-            patientNameLabel = root.Q<Label>("patient-name-label");
-            questionCountLabel = root.Q<Label>("question-count-label");
-            notebookHintLabel = root.Q<Label>("notebook-hint-label");
-            unfiledDrop = root.Q<VisualElement>("unfiled-drop");
-            unfiledContent = root.Q<VisualElement>("unfiled-content");
-            questionModal = root.Q<VisualElement>("question-modal");
-            conclusionOverlay = root.Q<VisualElement>("conclusion-overlay");
-            conclusionTitle = root.Q<Label>("conclusion-title");
-            conclusionBody = root.Q<Label>("conclusion-body");
-            resultOverlay = root.Q<VisualElement>("result-overlay");
-            resultScore = root.Q<Label>("result-score");
-            dragLayer = root.Q<VisualElement>("drag-layer");
-            askButton = root.Q<Button>("ask-button");
-            diagnoseButton = root.Q<Button>("diagnose-button");
-            closeButton = root.Q<Button>("close-button");
-            questionTimeButton = root.Q<Button>("question-time-button");
-            questionTravelButton = root.Q<Button>("question-travel-button");
-            questionSymptomsButton = root.Q<Button>("question-symptoms-button");
-            questionHistoryButton = root.Q<Button>("question-history-button");
-            questionCancelButton = root.Q<Button>("question-cancel-button");
-
-            RegisterDropZone(root, DoctorInfoCategory.Time, "time-drop", "time-content");
-            RegisterDropZone(root, DoctorInfoCategory.TravelHistory, "travel-drop", "travel-content");
-            RegisterDropZone(root, DoctorInfoCategory.Symptoms, "symptoms-drop", "symptoms-content");
-            RegisterDropZone(root, DoctorInfoCategory.MedicalHistory, "history-drop", "history-content");
-
-            closeButton.clicked += () => CloseRequested?.Invoke();
-            askButton.clicked += OpenQuestionModal;
-            diagnoseButton.clicked += () => DiagnoseRequested?.Invoke();
-            questionTimeButton.clicked += () => RequestQuestion(DoctorInfoCategory.Time);
-            questionTravelButton.clicked += () => RequestQuestion(DoctorInfoCategory.TravelHistory);
-            questionSymptomsButton.clicked += () => RequestQuestion(DoctorInfoCategory.Symptoms);
-            questionHistoryButton.clicked += () => RequestQuestion(DoctorInfoCategory.MedicalHistory);
-            questionCancelButton.clicked += () => questionModal.style.display = DisplayStyle.None;
-            unfiledDrop.RegisterCallback<ClickEvent>(_ => PlaceSelectedCard(null));
-
-            initialized = true;
-            HideAllPrimaryPanels();
-            timerBadge.style.display = DisplayStyle.None;
-            return true;
+            SelectCard(view.CardId);
+            view.transform.SetParent(dragLayer, true);
+            view.SetDragging(true);
+            DragCard(view, eventData);
         }
 
-        private void RegisterDropZone(
-            VisualElement root,
-            DoctorInfoCategory category,
-            string zoneName,
-            string contentName)
+        public void DragCard(DoctorInfoCardView view, PointerEventData eventData)
         {
-            VisualElement zone = root.Q<VisualElement>(zoneName);
-            dropZones.Add(category, zone);
-            dropContents.Add(category, root.Q<VisualElement>(contentName));
-            zone.RegisterCallback<ClickEvent>(_ => PlaceSelectedCard(category));
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                dragLayer, eventData.position, eventData.pressEventCamera, out Vector2 point))
+            {
+                view.RectTransform.anchoredPosition = point;
+            }
+        }
+
+        public void EndCardDrag(DoctorInfoCardView view, PointerEventData eventData)
+        {
+            view.SetDragging(false);
+            foreach (KeyValuePair<DoctorInfoCategory, RectTransform> pair in dropZones)
+            {
+                if (RectTransformUtility.RectangleContainsScreenPoint(pair.Value, eventData.position, eventData.pressEventCamera))
+                {
+                    PlacementChanged?.Invoke(view.CardId, pair.Key);
+                    return;
+                }
+            }
+
+            if (RectTransformUtility.RectangleContainsScreenPoint(unfiledDrop, eventData.position, eventData.pressEventCamera))
+                PlacementChanged?.Invoke(view.CardId, null);
+            else
+                RebuildCards();
+        }
+
+        public void PlaceSelected(DoctorInfoCategory? category)
+        {
+            if (!string.IsNullOrEmpty(selectedCardId))
+                PlacementChanged?.Invoke(selectedCardId, category);
         }
 
         private void CacheCards(IReadOnlyList<DoctorInfoCard> cards)
@@ -300,245 +308,275 @@ namespace NCKH.VR.Doctor
             cardsById.Clear();
             if (cards == null)
                 return;
-
             for (int i = 0; i < cards.Count; i++)
             {
                 DoctorInfoCard card = cards[i];
-                if (card == null || string.IsNullOrWhiteSpace(card.Id) || cardsById.ContainsKey(card.Id))
-                    continue;
-                cardsById.Add(card.Id, card);
+                if (card != null && !string.IsNullOrWhiteSpace(card.Id) && !cardsById.ContainsKey(card.Id))
+                    cardsById.Add(card.Id, card);
             }
         }
 
         private void RebuildCards()
         {
-            CancelDragWithoutRebuild();
-            unfiledContent.Clear();
-            foreach (VisualElement content in dropContents.Values)
-                content.Clear();
-            cardElements.Clear();
+            foreach (DoctorInfoCardView existing in cardViews.Values)
+                if (existing != null)
+                    Destroy(existing.gameObject);
+            cardViews.Clear();
 
             foreach (KeyValuePair<string, DoctorInfoCard> pair in cardsById)
             {
                 DoctorInfoCategory? placement = null;
-                if (placements != null)
-                    placements.TryGetValue(pair.Key, out placement);
-
-                VisualElement card = CreateCard(pair.Value);
-                cardElements.Add(pair.Key, card);
-                if (placement.HasValue)
-                    dropContents[placement.Value].Add(card);
-                else
-                    unfiledContent.Add(card);
+                placements?.TryGetValue(pair.Key, out placement);
+                RectTransform parent = placement.HasValue ? dropContents[placement.Value] : unfiledContent;
+                DoctorInfoCardView view = Instantiate(cardTemplate, parent);
+                view.gameObject.SetActive(true);
+                view.Initialize(this, pair.Key, pair.Value.Text);
+                cardViews.Add(pair.Key, view);
             }
-
+            UpdateCategoryHeight(timeDrop, timeContent);
+            UpdateCategoryHeight(travelDrop, travelContent);
+            UpdateCategoryHeight(historyDrop, historyContent);
+            UpdateCategoryHeight(symptomsDrop, symptomsContent);
             UpdateSelectionStyles();
         }
 
-        private VisualElement CreateCard(DoctorInfoCard cardData)
+        private static void UpdateCategoryHeight(RectTransform drop, RectTransform content)
         {
-            VisualElement card = new VisualElement();
-            card.name = $"card-{cardData.Id}";
-            card.AddToClassList("info-card");
-            card.focusable = true;
-            card.Add(new Label(cardData.Text));
-            card.RegisterCallback<PointerDownEvent>(evt => OnCardPointerDown(evt, cardData.Id, card));
-            card.RegisterCallback<PointerMoveEvent>(OnCardPointerMove);
-            card.RegisterCallback<PointerUpEvent>(OnCardPointerUp);
-            card.RegisterCallback<PointerCancelEvent>(OnCardPointerCancel);
-            return card;
-        }
-
-        private void OnCardPointerDown(PointerDownEvent evt, string cardId, VisualElement card)
-        {
-            if (draggedElement != null)
+            if (drop == null || content == null || !drop.TryGetComponent(out LayoutElement layout))
                 return;
 
-            selectedCardId = cardId;
-            draggedCardId = cardId;
-            draggedElement = card;
-            dragStartPosition = evt.position;
-            dragPointerId = evt.pointerId;
-            dragInProgress = false;
-            card.CapturePointer(evt.pointerId);
-            UpdateSelectionStyles();
-            evt.StopPropagation();
+            const float headerAndPadding = 68f;
+            const float cardHeightAndSpacing = 90f;
+            layout.preferredHeight = Mathf.Max(215f, headerAndPadding + content.childCount * cardHeightAndSpacing);
         }
 
-        private void OnCardPointerMove(PointerMoveEvent evt)
+        private void RebuildQuestionList()
         {
-            if (draggedElement == null || evt.pointerId != dragPointerId)
-                return;
+            for (int i = 0; i < questionViews.Count; i++)
+                if (questionViews[i] != null)
+                    Destroy(questionViews[i].gameObject);
+            questionViews.Clear();
+            NormalizeQuestionContentPosition();
 
-            if (!dragInProgress
-                && Vector3.Distance(evt.position, dragStartPosition) < DragThreshold)
+            for (int i = 0; i < visibleQuestions.Count; i++)
             {
-                return;
+                DoctorQuestionItemView view = Instantiate(questionItemTemplate, questionContent);
+                view.gameObject.SetActive(true);
+                view.SetContent(visibleQuestions[i].Question, i == selectedQuestionIndex);
+                questionViews.Add(view);
             }
 
-            if (!dragInProgress)
-            {
-                dragInProgress = true;
-                float width = Mathf.Max(160f, draggedElement.resolvedStyle.width);
-                draggedElement.style.width = width;
-                draggedElement.style.position = Position.Absolute;
-                draggedElement.AddToClassList("dragging");
-                dragLayer.Add(draggedElement);
-            }
+            FitQuestionsToViewport();
 
-            draggedElement.style.left = evt.position.x - draggedElement.resolvedStyle.width * 0.5f;
-            draggedElement.style.top = evt.position.y - draggedElement.resolvedStyle.height * 0.5f;
-            evt.StopPropagation();
+            questionCounterLabel.text = visibleQuestions.Count == 0
+                ? "No questions remaining"
+                : $"{selectedQuestionIndex + 1}/{visibleQuestions.Count}  |  Left stick: choose  |  A: ask";
         }
 
-        private void OnCardPointerUp(PointerUpEvent evt)
+        private void CycleQuestion(int direction)
         {
-            if (draggedElement == null || evt.pointerId != dragPointerId)
+            selectedQuestionIndex = DoctorGameRules.CycleSelection(selectedQuestionIndex, direction, visibleQuestions.Count);
+            for (int i = 0; i < questionViews.Count; i++)
+                questionViews[i].SetContent(visibleQuestions[i].Question, i == selectedQuestionIndex);
+            questionCounterLabel.text = $"{selectedQuestionIndex + 1}/{visibleQuestions.Count}  |  Left stick: choose  |  A: ask";
+        }
+
+        private void ConfigureQuestionViewport()
+        {
+            if (questionScroll == null)
                 return;
 
-            draggedElement.ReleasePointer(evt.pointerId);
-            string cardId = draggedCardId;
-            bool wasDragging = dragInProgress;
-            Vector2 pointerPosition = evt.position;
-            CancelDragWithoutRebuild();
-
-            if (wasDragging && TryGetDropCategory(pointerPosition, out DoctorInfoCategory? category))
-                PlacementChanged?.Invoke(cardId, category);
-            else
-                RebuildCards();
-
-            evt.StopPropagation();
+            questionScroll.horizontal = false;
+            questionScroll.vertical = false;
+            if (questionScroll.verticalScrollbar != null)
+                SetActive(questionScroll.verticalScrollbar.gameObject, false);
+            questionScroll.enabled = false;
+            ConfigureQuestionLayoutGeometry();
         }
 
-        private void OnCardPointerCancel(PointerCancelEvent evt)
+        private void FitQuestionsToViewport()
         {
-            if (evt.pointerId == dragPointerId)
-                CancelDrag();
-        }
-
-        private bool TryGetDropCategory(Vector2 panelPosition, out DoctorInfoCategory? category)
-        {
-            foreach (KeyValuePair<DoctorInfoCategory, VisualElement> pair in dropZones)
-            {
-                if (pair.Value.worldBound.Contains(panelPosition))
-                {
-                    category = pair.Key;
-                    return true;
-                }
-            }
-
-            if (unfiledDrop.worldBound.Contains(panelPosition))
-            {
-                category = null;
-                return true;
-            }
-
-            category = null;
-            return false;
-        }
-
-        private void PlaceSelectedCard(DoctorInfoCategory? category)
-        {
-            if (string.IsNullOrEmpty(selectedCardId))
+            RectTransform area = questionArea != null
+                ? questionArea
+                : questionScroll != null ? questionScroll.viewport : null;
+            if (questionViews.Count == 0 || area == null || questionContent == null)
                 return;
 
-            PlacementChanged?.Invoke(selectedCardId, category);
+            VerticalLayoutGroup layout = questionContent != null
+                ? questionContent.GetComponent<VerticalLayoutGroup>()
+                : null;
+            float spacing = Mathf.Max(0f, questionSpacing);
+            float horizontalPadding = Mathf.Max(0f, questionHorizontalPadding);
+            float verticalPadding = Mathf.Max(0f, questionVerticalPadding);
+            if (layout != null)
+            {
+                layout.spacing = spacing;
+                layout.padding = new RectOffset(
+                    Mathf.RoundToInt(horizontalPadding),
+                    Mathf.RoundToInt(horizontalPadding),
+                    Mathf.RoundToInt(verticalPadding),
+                    Mathf.RoundToInt(verticalPadding));
+                layout.childAlignment = TextAnchor.LowerCenter;
+                layout.childControlWidth = true;
+                layout.childControlHeight = true;
+                layout.childForceExpandWidth = true;
+                layout.childForceExpandHeight = false;
+            }
+
+            Canvas.ForceUpdateCanvases();
+            float itemHeight = DoctorGameRules.CalculateQuestionItemHeight(
+                area.rect.height,
+                questionViews.Count,
+                verticalPadding,
+                spacing,
+                Mathf.Max(1f, questionPreferredPillHeight));
+            float minimumFontSize = Mathf.Max(1f, questionMinimumFontSize);
+            float maximumFontSize = Mathf.Max(minimumFontSize, questionMaximumFontSize);
+            for (int i = 0; i < questionViews.Count; i++)
+                questionViews[i].ConfigureLayout(itemHeight, minimumFontSize, maximumFontSize);
+
+            float stackHeight = itemHeight * questionViews.Count
+                + spacing * Mathf.Max(0, questionViews.Count - 1)
+                + verticalPadding * 2f;
+            Vector2 size = questionContent.sizeDelta;
+            size.y = Mathf.Min(area.rect.height, stackHeight);
+            questionContent.sizeDelta = size;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(questionContent);
+            NormalizeQuestionContentPosition();
         }
 
-        private void OpenQuestionModal()
+        private void NormalizeQuestionContentPosition()
         {
-            if (questionTracker == null || !questionTracker.CanAskAny)
+            if (questionContent == null)
                 return;
-            questionModal.style.display = DisplayStyle.Flex;
+
+            questionContent.localScale = Vector3.one;
+            questionContent.anchorMin = new Vector2(0f, 0f);
+            questionContent.anchorMax = new Vector2(1f, 0f);
+            questionContent.pivot = new Vector2(0.5f, 0f);
+            questionContent.anchoredPosition = Vector2.zero;
+            Vector2 size = questionContent.sizeDelta;
+            size.x = 0f;
+            questionContent.sizeDelta = size;
         }
 
-        private void RequestQuestion(DoctorInfoCategory category)
+        private void ConfigureQuestionLayoutGeometry()
         {
-            questionModal.style.display = DisplayStyle.None;
-            QuestionRequested?.Invoke(category);
+            if (questionArea == null && questionScroll != null)
+                questionArea = questionScroll.viewport;
+
+            if (questionContent != null && questionContent.TryGetComponent(out ContentSizeFitter fitter))
+                fitter.enabled = false;
+            NormalizeQuestionContentPosition();
+
+            if (questionItemTemplate != null)
+                questionItemTemplate.ConfigureLayout(
+                    Mathf.Max(1f, questionPreferredPillHeight),
+                    Mathf.Max(1f, questionMinimumFontSize),
+                    Mathf.Max(questionMinimumFontSize, questionMaximumFontSize));
         }
 
-        private void RefreshQuestionControls()
+        private void OnValidate()
         {
-            int asked = questionTracker != null ? questionTracker.QuestionsAsked : 0;
-            int maximum = questionTracker != null ? questionTracker.MaximumQuestions : 0;
-            questionCountLabel.text = $"Questions: {asked}/{maximum}";
-            askButton.SetEnabled(questionTracker != null && questionTracker.CanAskAny);
-            SetQuestionButtonEnabled(questionTimeButton, DoctorInfoCategory.Time);
-            SetQuestionButtonEnabled(questionTravelButton, DoctorInfoCategory.TravelHistory);
-            SetQuestionButtonEnabled(questionSymptomsButton, DoctorInfoCategory.Symptoms);
-            SetQuestionButtonEnabled(questionHistoryButton, DoctorInfoCategory.MedicalHistory);
+            questionPreferredPillHeight = Mathf.Max(1f, questionPreferredPillHeight);
+            questionSpacing = Mathf.Max(0f, questionSpacing);
+            questionHorizontalPadding = Mathf.Max(0f, questionHorizontalPadding);
+            questionVerticalPadding = Mathf.Max(0f, questionVerticalPadding);
+            questionMinimumFontSize = Mathf.Max(1f, questionMinimumFontSize);
+            questionMaximumFontSize = Mathf.Max(questionMinimumFontSize, questionMaximumFontSize);
+
+#if UNITY_EDITOR
+            // RectTransform and layout changes are not legal during Unity's validation pass.
+            // Defer the preview refresh so inspector edits still update the question template.
+            if (!questionPreviewUpdateScheduled)
+            {
+                questionPreviewUpdateScheduled = true;
+                UnityEditor.EditorApplication.delayCall += ApplyQuestionLayoutPreview;
+            }
+#endif
         }
 
-        private void SetQuestionButtonEnabled(Button button, DoctorInfoCategory category)
+#if UNITY_EDITOR
+        private void ApplyQuestionLayoutPreview()
         {
-            button.SetEnabled(questionTracker != null
-                && questionTracker.CanAskAny
-                && !questionTracker.HasAsked(category));
+            questionPreviewUpdateScheduled = false;
+            if (this == null || UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+                return;
+
+            ConfigureQuestionLayoutGeometry();
         }
+#endif
 
         private void UpdateSelectionStyles()
         {
-            foreach (KeyValuePair<string, VisualElement> pair in cardElements)
-                pair.Value.EnableInClassList("selected", pair.Key == selectedCardId);
+            foreach (KeyValuePair<string, DoctorInfoCardView> pair in cardViews)
+                pair.Value.SetSelected(pair.Key == selectedCardId);
         }
 
-        private void CancelDrag()
+        private void HandleDone() => DoneRequested?.Invoke();
+        private void PlaceUnfiled() => PlaceSelected(null);
+        private void PlaceTime() => PlaceSelected(DoctorInfoCategory.Time);
+        private void PlaceTravel() => PlaceSelected(DoctorInfoCategory.TravelHistory);
+        private void PlaceHistory() => PlaceSelected(DoctorInfoCategory.MedicalHistory);
+        private void PlaceSymptoms() => PlaceSelected(DoctorInfoCategory.Symptoms);
+
+        private void OnNavigatePerformed(InputAction.CallbackContext context) => navigationValue = context.ReadValue<Vector2>();
+        private void OnNavigateCanceled(InputAction.CallbackContext context) => navigationValue = Vector2.zero;
+
+        private void OnSelectQuestionPerformed(InputAction.CallbackContext context)
         {
-            bool hadDrag = draggedElement != null;
-            CancelDragWithoutRebuild();
-            if (hadDrag)
-                RebuildCards();
+            if (IsQuestionHudOpen && selectedQuestionIndex >= 0 && selectedQuestionIndex < visibleQuestions.Count)
+                QuestionRequested?.Invoke(visibleQuestions[selectedQuestionIndex].Id);
         }
 
-        private void CancelDragWithoutRebuild()
+        private void OnCloseNotebookPerformed(InputAction.CallbackContext context)
         {
-            if (draggedElement != null && dragPointerId >= 0 && draggedElement.HasPointerCapture(dragPointerId))
-                draggedElement.ReleasePointer(dragPointerId);
+            if (IsNotebookOpen)
+                CloseRequested?.Invoke();
+        }
 
-            draggedElement = null;
-            draggedCardId = null;
-            dragPointerId = -1;
-            dragInProgress = false;
+        private static void Subscribe(
+            InputActionReference reference,
+            Action<InputAction.CallbackContext> performed,
+            Action<InputAction.CallbackContext> canceled)
+        {
+            if (reference == null || reference.action == null)
+                return;
+            if (performed != null)
+                reference.action.performed += performed;
+            if (canceled != null)
+                reference.action.canceled += canceled;
+            reference.action.Enable();
+        }
+
+        private static void Unsubscribe(
+            InputActionReference reference,
+            Action<InputAction.CallbackContext> performed,
+            Action<InputAction.CallbackContext> canceled)
+        {
+            if (reference == null || reference.action == null)
+                return;
+            if (performed != null)
+                reference.action.performed -= performed;
+            if (canceled != null)
+                reference.action.canceled -= canceled;
+            reference.action.Disable();
         }
 
         private void HideAllPrimaryPanels()
         {
-            if (!initialized)
-                return;
-
-            preparationOverlay.style.display = DisplayStyle.None;
-            notebookOverlay.style.display = DisplayStyle.None;
-            questionModal.style.display = DisplayStyle.None;
-            conclusionOverlay.style.display = DisplayStyle.None;
-            resultOverlay.style.display = DisplayStyle.None;
+            SetActive(preparationOverlay, false);
+            SetActive(dialoguePanel, false);
+            SetActive(questionPanel, false);
+            SetActive(notebookOverlay, false);
+            SetActive(resultOverlay, false);
+            SetActive(timerBadge, false);
         }
 
-        private void SetLocomotionLocked(bool locked)
+        private static void SetActive(GameObject target, bool active)
         {
-            if (locomotionRoot == null || locomotionLocked == locked)
-                return;
-
-            if (locked)
-            {
-                locomotionWasActive = locomotionRoot.activeSelf;
-                locomotionLocked = true;
-                if (locomotionWasActive)
-                    locomotionRoot.SetActive(false);
-                return;
-            }
-
-            RestoreLocomotion();
-        }
-
-        private void RestoreLocomotion()
-        {
-            if (!locomotionLocked)
-                return;
-
-            if (locomotionRoot != null && locomotionRoot.activeSelf != locomotionWasActive)
-                locomotionRoot.SetActive(locomotionWasActive);
-            locomotionLocked = false;
+            if (target != null && target.activeSelf != active)
+                target.SetActive(active);
         }
     }
 }

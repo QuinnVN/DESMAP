@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals;
 
 namespace NCKH.VR.Doctor
 {
@@ -11,8 +12,7 @@ namespace NCKH.VR.Doctor
         Preparing,
         Listening,
         Arranging,
-        FollowUpListening,
-        Diagnosing,
+        QuestionSelecting,
         Transitioning,
         Finished
     }
@@ -25,6 +25,9 @@ namespace NCKH.VR.Doctor
         [SerializeField] private DoctorPatientPresenter patientPresenter;
         [SerializeField] private DoctorNotebookInteractable notebookInteractable;
         [SerializeField] private DoctorNotebookUI notebookUI;
+        [SerializeField] private GameObject moveProviderRoot;
+        [SerializeField] private GameObject jumpProviderRoot;
+        [SerializeField] private XRInteractorLineVisual rightRayLineVisual;
 
         [Header("Round")]
         [SerializeField, Min(0f)] private float preparationDuration = 10f;
@@ -33,9 +36,7 @@ namespace NCKH.VR.Doctor
 
         [Header("Patient Flow")]
         [SerializeField, Min(0.01f)] private float dialogueFallbackDuration = 4f;
-        [SerializeField, Min(0f)] private float conclusionDisplayDuration = 3f;
         [SerializeField, Min(0f)] private float patientTransitionDelay = 1f;
-        [SerializeField, Min(0)] private int maximumQuestionsPerPatient = 2;
 
         [Header("Scoring")]
         [SerializeField, Min(0)] private int pointsPerCorrectInfo = 1;
@@ -45,13 +46,18 @@ namespace NCKH.VR.Doctor
         private readonly HashSet<string> revealedCardIds = new HashSet<string>(StringComparer.Ordinal);
         private readonly Dictionary<string, DoctorInfoCategory?> placements =
             new Dictionary<string, DoctorInfoCategory?>(StringComparer.Ordinal);
+        private readonly List<DoctorQuestionPhase> remainingQuestions = new List<DoctorQuestionPhase>();
+        private readonly DoctorQuestionTracker questionTracker = new DoctorQuestionTracker();
 
-        private DoctorQuestionTracker questionTracker;
         private DoctorCaseDefinition currentCase;
         private DoctorCaseDefinition lastCase;
         private int caseQueueIndex;
+        private int preferredQuestionIndex;
         private float stateCountdown;
         private float preparationRemaining;
+        private bool moveWasActive;
+        private bool jumpWasActive;
+        private bool locomotionStateCaptured;
 
         public event Action<int> RoundEnded;
 
@@ -63,11 +69,6 @@ namespace NCKH.VR.Doctor
         public IReadOnlyList<DoctorInfoCard> RevealedCards => revealedCards;
         public IReadOnlyDictionary<string, DoctorInfoCategory?> Placements => placements;
 
-        private void Awake()
-        {
-            questionTracker = new DoctorQuestionTracker(maximumQuestionsPerPatient);
-        }
-
         private void OnEnable()
         {
             if (notebookInteractable != null)
@@ -76,8 +77,8 @@ namespace NCKH.VR.Doctor
             if (notebookUI != null)
             {
                 notebookUI.CloseRequested += OnNotebookCloseRequested;
+                notebookUI.DoneRequested += OnDoneRequested;
                 notebookUI.QuestionRequested += OnQuestionRequested;
-                notebookUI.DiagnoseRequested += OnDiagnoseRequested;
                 notebookUI.PlacementChanged += OnPlacementChanged;
             }
         }
@@ -90,10 +91,13 @@ namespace NCKH.VR.Doctor
             if (notebookUI != null)
             {
                 notebookUI.CloseRequested -= OnNotebookCloseRequested;
+                notebookUI.DoneRequested -= OnDoneRequested;
                 notebookUI.QuestionRequested -= OnQuestionRequested;
-                notebookUI.DiagnoseRequested -= OnDiagnoseRequested;
                 notebookUI.PlacementChanged -= OnPlacementChanged;
             }
+
+            SetNotebookInteractionEnabled(false);
+            RestoreTranslationProviders();
         }
 
         private IEnumerator Start()
@@ -106,7 +110,6 @@ namespace NCKH.VR.Doctor
         private void Update()
         {
             float deltaTime = Time.deltaTime;
-
             if (State == DoctorGameState.Preparing)
             {
                 preparationRemaining = Mathf.Max(0f, preparationRemaining - deltaTime);
@@ -127,46 +130,32 @@ namespace NCKH.VR.Doctor
                 return;
             }
 
-            if (State != DoctorGameState.Listening
-                && State != DoctorGameState.FollowUpListening
-                && State != DoctorGameState.Diagnosing
-                && State != DoctorGameState.Transitioning)
-            {
+            if (State != DoctorGameState.Listening && State != DoctorGameState.Transitioning)
                 return;
-            }
 
             stateCountdown = Mathf.Max(0f, stateCountdown - deltaTime);
             if (stateCountdown > 0f)
                 return;
 
-            switch (State)
-            {
-                case DoctorGameState.Listening:
-                case DoctorGameState.FollowUpListening:
-                    EnterArrangingState();
-                    break;
-                case DoctorGameState.Diagnosing:
-                    BeginTransition();
-                    break;
-                case DoctorGameState.Transitioning:
-                    BeginNextCase();
-                    break;
-            }
+            if (State == DoctorGameState.Listening)
+                EnterArrangingState();
+            else
+                BeginNextCase();
         }
 
         public void StartRound()
         {
+            CaptureAndDisableTranslationProviders();
             Score = 0;
             RemainingRoundTime = Mathf.Max(0f, roundDuration);
             preparationRemaining = Mathf.Max(0f, preparationDuration);
             currentCase = null;
-            revealedCards.Clear();
-            revealedCardIds.Clear();
-            placements.Clear();
+            lastCase = null;
             caseQueue.Clear();
             caseQueueIndex = 0;
+            ClearPatientNotes();
             patientPresenter?.SetVisible(false);
-            notebookInteractable?.SetInteractionEnabled(false);
+            SetNotebookInteractionEnabled(false);
 
             if (preparationRemaining > 0f)
             {
@@ -198,26 +187,20 @@ namespace NCKH.VR.Doctor
             currentCase = GetNextCase();
             if (currentCase == null)
             {
-                Debug.LogError(
-                    "DoctorGameManager requires at least one named case with a positive selection weight.",
-                    this);
+                Debug.LogError("DoctorGameManager requires at least one selectable case.", this);
                 FinishRound();
                 return;
             }
 
-            revealedCards.Clear();
-            revealedCardIds.Clear();
-            placements.Clear();
-            questionTracker.Reset(maximumQuestionsPerPatient);
+            ClearPatientNotes();
             AddRevealedCards(currentCase.InitialDialogue);
-            notebookInteractable?.SetInteractionEnabled(false);
+            SetNotebookInteractionEnabled(false);
             notebookUI?.CloseNotebook();
-            notebookUI?.SetNotebookHint("Listen to the patient, then select the notebook.");
+            notebookUI?.HideQuestionHud();
+            notebookUI?.ShowDialogue(currentCase.PatientName, currentCase.InitialDialogue?.Transcript,
+                "Listen to the patient. The notebook opens automatically afterward.");
             stateCountdown = patientPresenter != null
-                ? patientPresenter.PresentDialogue(
-                    currentCase.PatientName,
-                    currentCase.InitialDialogue,
-                    dialogueFallbackDuration)
+                ? patientPresenter.PresentDialogue(currentCase.InitialDialogue, dialogueFallbackDuration)
                 : Mathf.Max(0.01f, dialogueFallbackDuration);
             State = DoctorGameState.Listening;
         }
@@ -225,95 +208,92 @@ namespace NCKH.VR.Doctor
         private void EnterArrangingState()
         {
             State = DoctorGameState.Arranging;
-            notebookInteractable?.SetInteractionEnabled(true);
-            notebookUI?.SetNotebookHint("Select the notebook to arrange the patient notes.");
+            SetNotebookInteractionEnabled(true);
+            notebookUI?.SetHudHint("B: close notebook and view questions");
+            notebookUI?.SetNotebookHint("Drag details into the left categories, or select a card then a category.");
+            notebookUI?.OpenNotebook(currentCase.PatientName, revealedCards, placements);
         }
 
         private void OnNotebookActivated()
         {
-            if (State != DoctorGameState.Arranging || currentCase == null || notebookUI == null)
+            if ((State != DoctorGameState.Arranging && State != DoctorGameState.QuestionSelecting)
+                || currentCase == null || notebookUI == null || notebookUI.IsNotebookOpen)
                 return;
 
-            patientPresenter?.SetDialogueVisible(false);
-            notebookUI.OpenNotebook(
-                currentCase.PatientName,
-                revealedCards,
-                placements,
-                questionTracker);
+            if (State == DoctorGameState.QuestionSelecting)
+                preferredQuestionIndex = Mathf.Max(0, notebookUI.SelectedQuestionIndex);
+            State = DoctorGameState.Arranging;
+            notebookUI.HideQuestionHud();
+            notebookUI.OpenNotebook(currentCase.PatientName, revealedCards, placements);
         }
 
         private void OnNotebookCloseRequested()
         {
-            if (State == DoctorGameState.Arranging)
-            {
-                notebookUI?.CloseNotebook();
-                patientPresenter?.SetDialogueVisible(true);
-            }
-        }
-
-        private void OnQuestionRequested(DoctorInfoCategory category)
-        {
-            if (State != DoctorGameState.Arranging
-                || currentCase == null
-                || !questionTracker.TryAsk(category))
-            {
+            if (State != DoctorGameState.Arranging || currentCase == null)
                 return;
-            }
 
-            DoctorDialogue response = currentCase.GetFollowUp(category);
-            AddRevealedCards(response);
             notebookUI?.CloseNotebook();
-            notebookInteractable?.SetInteractionEnabled(false);
-            stateCountdown = patientPresenter != null
-                ? patientPresenter.PresentDialogue(
-                    currentCase.PatientName,
-                    response,
-                    dialogueFallbackDuration)
-                : Mathf.Max(0.01f, dialogueFallbackDuration);
-            State = DoctorGameState.FollowUpListening;
+            notebookUI?.SetDialogueVisible(true);
+            RefreshRemainingQuestions();
+            if (remainingQuestions.Count > 0)
+            {
+                notebookUI?.ShowQuestionHud(remainingQuestions, preferredQuestionIndex);
+                notebookUI?.SetHudHint("Left stick: choose a question. A: ask. Ray-select the notebook to reopen it.");
+                State = DoctorGameState.QuestionSelecting;
+            }
+            else
+            {
+                notebookUI?.SetNotebookHint("No questions remain. File the details and press Done.");
+                notebookUI?.SetHudHint("No questions remain. Ray-select the notebook to reopen it, then press Done.");
+            }
         }
 
-        private void OnDiagnoseRequested()
+        private void OnQuestionRequested(string questionId)
+        {
+            if (State != DoctorGameState.QuestionSelecting || currentCase == null || !questionTracker.TryAsk(questionId))
+                return;
+
+            preferredQuestionIndex = Mathf.Max(0, notebookUI != null ? notebookUI.SelectedQuestionIndex : 0);
+            DoctorQuestionPhase phase = currentCase.GetPhase(questionId);
+            if (phase == null)
+                return;
+
+            AddRevealedCards(phase.Response);
+            RefreshRemainingQuestions();
+            preferredQuestionIndex = Mathf.Clamp(preferredQuestionIndex, 0, Mathf.Max(0, remainingQuestions.Count - 1));
+            notebookUI?.HideQuestionHud();
+            SetNotebookInteractionEnabled(false);
+            notebookUI?.ShowDialogue(currentCase.PatientName, phase.Response?.Transcript,
+                "Listen to the response. The notebook opens automatically afterward.");
+            stateCountdown = patientPresenter != null
+                ? patientPresenter.PresentDialogue(phase.Response, dialogueFallbackDuration)
+                : Mathf.Max(0.01f, dialogueFallbackDuration);
+            State = DoctorGameState.Listening;
+        }
+
+        private void OnDoneRequested()
         {
             if (State != DoctorGameState.Arranging || currentCase == null)
                 return;
 
-            int correctNotes = DoctorGameRules.CountCorrectNotes(revealedCards, placements);
-            Score += correctNotes * Mathf.Max(0, pointsPerCorrectInfo);
-            notebookInteractable?.SetInteractionEnabled(false);
+            Score += DoctorGameRules.CountCorrectNotes(revealedCards, placements) * Mathf.Max(0, pointsPerCorrectInfo);
+            SetNotebookInteractionEnabled(false);
             notebookUI?.CloseNotebook();
-            patientPresenter?.SetDialogueVisible(false);
-            notebookUI?.ShowConclusion(currentCase.Conclusion, currentCase.Treatment);
-            patientPresenter?.ShowConclusion(currentCase.Conclusion);
-            stateCountdown = Mathf.Max(0f, conclusionDisplayDuration);
-            State = DoctorGameState.Diagnosing;
-
+            notebookUI?.HideQuestionHud();
+            patientPresenter?.SetVisible(false);
+            stateCountdown = Mathf.Max(0f, patientTransitionDelay);
+            State = DoctorGameState.Transitioning;
             if (stateCountdown <= 0f)
-                BeginTransition();
+                BeginNextCase();
         }
 
         private void OnPlacementChanged(string cardId, DoctorInfoCategory? category)
         {
-            if (State != DoctorGameState.Arranging
-                || string.IsNullOrWhiteSpace(cardId)
-                || !revealedCardIds.Contains(cardId))
-            {
+            if (State != DoctorGameState.Arranging || string.IsNullOrWhiteSpace(cardId) || !revealedCardIds.Contains(cardId))
                 return;
-            }
 
             placements[cardId] = category;
-            notebookUI?.RefreshNotebook(revealedCards, placements, questionTracker);
-        }
-
-        private void BeginTransition()
-        {
-            notebookUI?.HideConclusion();
-            patientPresenter?.SetVisible(false);
-            stateCountdown = Mathf.Max(0f, patientTransitionDelay);
-            State = DoctorGameState.Transitioning;
-
-            if (stateCountdown <= 0f)
-                BeginNextCase();
+            notebookUI?.RefreshNotebook(revealedCards, placements);
         }
 
         private void FinishRound()
@@ -323,28 +303,38 @@ namespace NCKH.VR.Doctor
 
             State = DoctorGameState.Finished;
             RemainingRoundTime = 0f;
-            notebookInteractable?.SetInteractionEnabled(false);
+            SetNotebookInteractionEnabled(false);
             patientPresenter?.SetVisible(false);
             notebookUI?.ShowFinished(Score);
             RoundEnded?.Invoke(Score);
         }
 
+        private void ClearPatientNotes()
+        {
+            revealedCards.Clear();
+            revealedCardIds.Clear();
+            placements.Clear();
+            remainingQuestions.Clear();
+            questionTracker.Reset();
+            preferredQuestionIndex = 0;
+        }
+
+        private void RefreshRemainingQuestions()
+        {
+            questionTracker.GetRemaining(currentCase?.Phases, remainingQuestions);
+        }
+
         private void AddRevealedCards(DoctorDialogue dialogue)
         {
-            if (dialogue == null || dialogue.SelectableCards == null)
+            IReadOnlyList<DoctorInfoCard> cards = dialogue?.SelectableCards;
+            if (cards == null)
                 return;
 
-            IReadOnlyList<DoctorInfoCard> cards = dialogue.SelectableCards;
             for (int i = 0; i < cards.Count; i++)
             {
                 DoctorInfoCard card = cards[i];
-                if (card == null
-                    || string.IsNullOrWhiteSpace(card.Id)
-                    || !revealedCardIds.Add(card.Id))
-                {
+                if (card == null || string.IsNullOrWhiteSpace(card.Id) || !revealedCardIds.Add(card.Id))
                     continue;
-                }
-
                 revealedCards.Add(card);
                 placements.Add(card.Id, null);
             }
@@ -354,10 +344,8 @@ namespace NCKH.VR.Doctor
         {
             if (caseQueueIndex >= caseQueue.Count)
                 RebuildCaseQueue();
-
             if (caseQueue.Count == 0)
                 return null;
-
             DoctorCaseDefinition selected = caseQueue[caseQueueIndex++];
             lastCase = selected;
             return selected;
@@ -367,47 +355,63 @@ namespace NCKH.VR.Doctor
         {
             caseQueue.Clear();
             caseQueueIndex = 0;
-
-            if (caseDatabase == null || caseDatabase.Cases == null)
+            IReadOnlyList<DoctorCaseDefinition> configuredCases = caseDatabase?.Cases;
+            if (configuredCases == null)
                 return;
 
             List<DoctorCaseDefinition> candidates = new List<DoctorCaseDefinition>();
-            IReadOnlyList<DoctorCaseDefinition> configuredCases = caseDatabase.Cases;
             for (int i = 0; i < configuredCases.Count; i++)
-            {
-                DoctorCaseDefinition candidate = configuredCases[i];
-                if (candidate != null && candidate.IsSelectable)
-                    candidates.Add(candidate);
-            }
+                if (configuredCases[i] != null && configuredCases[i].IsSelectable)
+                    candidates.Add(configuredCases[i]);
 
             while (candidates.Count > 0)
             {
                 float totalWeight = 0f;
                 for (int i = 0; i < candidates.Count; i++)
                     totalWeight += candidates[i].SelectionWeight;
-
                 float roll = UnityEngine.Random.value * totalWeight;
                 int chosenIndex = candidates.Count - 1;
                 for (int i = 0; i < candidates.Count; i++)
                 {
                     roll -= candidates[i].SelectionWeight;
-                    if (roll <= 0f)
-                    {
-                        chosenIndex = i;
-                        break;
-                    }
+                    if (roll <= 0f) { chosenIndex = i; break; }
                 }
-
                 caseQueue.Add(candidates[chosenIndex]);
                 candidates.RemoveAt(chosenIndex);
             }
 
             if (caseQueue.Count > 1 && caseQueue[0] == lastCase)
+                (caseQueue[0], caseQueue[1]) = (caseQueue[1], caseQueue[0]);
+        }
+
+        private void CaptureAndDisableTranslationProviders()
+        {
+            if (!locomotionStateCaptured)
             {
-                DoctorCaseDefinition swap = caseQueue[0];
-                caseQueue[0] = caseQueue[1];
-                caseQueue[1] = swap;
+                moveWasActive = moveProviderRoot != null && moveProviderRoot.activeSelf;
+                jumpWasActive = jumpProviderRoot != null && jumpProviderRoot.activeSelf;
+                locomotionStateCaptured = true;
             }
+            moveProviderRoot?.SetActive(false);
+            jumpProviderRoot?.SetActive(false);
+        }
+
+        private void SetNotebookInteractionEnabled(bool enabled)
+        {
+            notebookInteractable?.SetInteractionEnabled(enabled);
+            if (rightRayLineVisual != null)
+                rightRayLineVisual.enabled = enabled;
+        }
+
+        private void RestoreTranslationProviders()
+        {
+            if (!locomotionStateCaptured)
+                return;
+            if (moveProviderRoot != null)
+                moveProviderRoot.SetActive(moveWasActive);
+            if (jumpProviderRoot != null)
+                jumpProviderRoot.SetActive(jumpWasActive);
+            locomotionStateCaptured = false;
         }
 
         private void OnValidate()
@@ -415,9 +419,7 @@ namespace NCKH.VR.Doctor
             preparationDuration = Mathf.Max(0f, preparationDuration);
             roundDuration = Mathf.Max(0f, roundDuration);
             dialogueFallbackDuration = Mathf.Max(0.01f, dialogueFallbackDuration);
-            conclusionDisplayDuration = Mathf.Max(0f, conclusionDisplayDuration);
             patientTransitionDelay = Mathf.Max(0f, patientTransitionDelay);
-            maximumQuestionsPerPatient = Mathf.Max(0, maximumQuestionsPerPatient);
             pointsPerCorrectInfo = Mathf.Max(0, pointsPerCorrectInfo);
         }
     }
