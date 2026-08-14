@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: Placeholder Case C
+  m_EditorClassIdentifier: NCKH.Doctor:NCKH.VR.Doctor:DoctorCaseDefinition
+  patientName: Sam Rivera
+  selectionWeight: 1
+  initialDialogue:
+    transcript: My throat became tight late this afternoon and I have been wheezing.
+      I reorganized my desk before coming here.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: c-time
+      text: Began late this afternoon
+      correctCategory: 0
+      essential: 1
+    - id: c-tight
+      text: Throat tightness
+      correctCategory: 2
+      essential: 1
+    - id: c-wheeze
+      text: Wheezing
+      correctCategory: 2
+      essential: 1
+    - id: c-desk
+      text: Reorganized a desk
+      correctCategory: 0
+      essential: 0
+  phases:
+  - id: c-exposure-q
+    question: What were you doing before this began?
+    response:
+      transcript: It began shortly after I cleaned a dusty storage room.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: c-exposure
+        text: Symptoms followed dusty-room exposure
+        correctCategory: 0
+        essential: 1
+  - id: c-travel-q
+    question: Have you travelled recently?
+    response:
+      transcript: I have not travelled outside the area in the past month.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: c-travel
+        text: No travel in the past month
+        correctCategory: 1
+        essential: 1
+  - id: c-symptoms-q
+    question: Do you have any other symptoms?
+    response:
+      transcript: I am short of breath, but I do not have a fever.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: c-breath
+        text: Shortness of breath
+        correctCategory: 2
+        essential: 1
+      - id: c-no-fever
+        text: No fever
+        correctCategory: 2
+        essential: 1
+  - id: c-history-q
+    question: Do you have allergies or breathing conditions?
+    response:
+      transcript: I have a pollen allergy and used an inhaler as a child.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: c-allergy
+        text: Pollen allergy
+        correctCategory: 3
+        essential: 1
+      - id: c-inhaler
+        text: Used an inhaler in childhood
+        correctCategory: 3
+        essential: 1

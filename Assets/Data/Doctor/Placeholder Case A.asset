@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: Placeholder Case A
+  m_EditorClassIdentifier: NCKH.Doctor:NCKH.VR.Doctor:DoctorCaseDefinition
+  patientName: Alex Morgan
+  selectionWeight: 1
+  initialDialogue:
+    transcript: I started feeling unwell yesterday evening after my usual long commute.
+      I have a dry cough and a mild fever. I also watched a movie last night.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: a-time
+      text: Started yesterday evening
+      correctCategory: 0
+      essential: 1
+    - id: a-cough
+      text: Dry cough
+      correctCategory: 2
+      essential: 1
+    - id: a-fever
+      text: Mild fever
+      correctCategory: 2
+      essential: 1
+    - id: a-movie
+      text: Watched a movie last night
+      correctCategory: 0
+      essential: 0
+  phases:
+  - id: a-when
+    question: Exactly when did this begin?
+    response:
+      transcript: It began around seven in the evening, just after dinner.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-dinner
+        text: Had dinner before symptoms began
+        correctCategory: 0
+        essential: 0
+  - id: a-travel-q
+    question: Have you travelled recently?
+    response:
+      transcript: I have not travelled recently, not even out of the city.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-travel
+        text: No recent travel
+        correctCategory: 1
+        essential: 1
+  - id: a-symptoms-q
+    question: Can you describe the symptoms in more detail?
+    response:
+      transcript: The cough is dry and the fever has stayed mild. My favourite tea
+        has not helped.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-tea
+        text: Tried drinking tea
+        correctCategory: 0
+        essential: 0
+  - id: a-history-q
+    question: Do you have any relevant medical history?
+    response:
+      transcript: I have a history of asthma, although it has been controlled for
+        years.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-history
+        text: History of asthma
+        correctCategory: 3
+        essential: 1

@@ -1,0 +1,20 @@
+{
+    "name": "Doctor Controls",
+    "maps": [
+        {
+            "name": "Doctor",
+            "id": "9ecfef4e-409f-4634-a27f-c55c6f56646a",
+            "actions": [
+                { "name": "NavigateQuestions", "type": "Value", "id": "931eb653-3178-4458-9ae5-60ec9d808fac", "expectedControlType": "Vector2", "processors": "", "interactions": "", "initialStateCheck": true },
+                { "name": "SelectQuestion", "type": "Button", "id": "f165294f-813e-4df7-b0dd-f6347e4ee813", "expectedControlType": "Button", "processors": "", "interactions": "Press", "initialStateCheck": false },
+                { "name": "CloseNotebook", "type": "Button", "id": "929d1b4b-e5b4-47d0-8dfb-ef10e50558ed", "expectedControlType": "Button", "processors": "", "interactions": "Press", "initialStateCheck": false }
+            ],
+            "bindings": [
+                { "name": "", "id": "ed9c90f0-45a7-4537-81a6-c00be80ba213", "path": "<XRController>{LeftHand}/primary2DAxis", "interactions": "", "processors": "", "groups": "", "action": "NavigateQuestions", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "742e6550-54f1-438f-b9a8-9038a6e0ea85", "path": "<XRController>{RightHand}/primaryButton", "interactions": "", "processors": "", "groups": "", "action": "SelectQuestion", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2261c80a-6678-4aab-86bf-751e55fc20b9", "path": "<XRController>{RightHand}/secondaryButton", "interactions": "", "processors": "", "groups": "", "action": "CloseNotebook", "isComposite": false, "isPartOfComposite": false }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
