@@ -399,6 +399,50 @@ namespace NCKH.VR.Clinic.Tests
         }
 
         [UnityTest]
+        public IEnumerator SicknessWindowBillboardsWithYawOnlyAndKeepsItsPosition()
+        {
+            PatientActor patient = CreateInteractivePatient(out _, out Transform head);
+            GameObject chatObject = new GameObject(
+                "Chat box",
+                typeof(RectTransform),
+                typeof(CanvasGroup));
+            chatObject.transform.SetParent(patient.transform, false);
+            chatObject.transform.localPosition = new Vector3(0f, 2.5f, 0f);
+            CanvasGroup chatGroup = chatObject.GetComponent<CanvasGroup>();
+            SetField(patient, "chatCanvasGroup", chatGroup);
+
+            Vector3 initialPosition = chatObject.transform.position;
+            head.position = new Vector3(2f, 8f, 3f);
+
+            patient.Activate("Common Cold", 1, 30f, head, 0f, false);
+            yield return null;
+
+            Quaternion firstRotation = ExpectedCanvasRotation(patient.transform.position, head.position);
+            Assert.That(Quaternion.Angle(chatObject.transform.rotation, firstRotation), Is.LessThan(0.001f));
+            Assert.That(Vector3.Distance(chatObject.transform.position, initialPosition), Is.LessThan(0.001f));
+            Assert.That(Mathf.Abs(Vector3.Dot(chatObject.transform.forward, Vector3.up)), Is.LessThan(0.001f));
+            Assert.That(Vector3.Dot(chatObject.transform.up, Vector3.up), Is.GreaterThan(0.999f));
+
+            head.position = new Vector3(2f, -5f, 3f);
+            yield return null;
+
+            Assert.That(Quaternion.Angle(chatObject.transform.rotation, firstRotation), Is.LessThan(0.001f));
+            Assert.That(Vector3.Distance(chatObject.transform.position, initialPosition), Is.LessThan(0.001f));
+
+            head.position = new Vector3(-4f, 12f, 1f);
+            yield return null;
+
+            Quaternion secondRotation = ExpectedCanvasRotation(patient.transform.position, head.position);
+            Assert.That(Quaternion.Angle(chatObject.transform.rotation, secondRotation), Is.LessThan(0.001f));
+            Assert.That(Vector3.Distance(chatObject.transform.position, initialPosition), Is.LessThan(0.001f));
+            Assert.That(Mathf.Abs(Vector3.Dot(chatObject.transform.forward, Vector3.up)), Is.LessThan(0.001f));
+            Assert.That(Vector3.Dot(chatObject.transform.up, Vector3.up), Is.GreaterThan(0.999f));
+
+            Object.Destroy(head.gameObject);
+            Object.Destroy(patient.gameObject);
+        }
+
+        [UnityTest]
         public IEnumerator PatientLabelRespectsDebugMode()
         {
             PatientActor patient = CreateInteractivePatient(out _, out Transform head);
@@ -615,6 +659,14 @@ namespace NCKH.VR.Clinic.Tests
             head = new GameObject("Head").transform;
             head.position = Vector3.forward;
             return patient;
+        }
+
+        private static Quaternion ExpectedCanvasRotation(Vector3 patientPosition, Vector3 headPosition)
+        {
+            Vector3 flatDirection = headPosition - patientPosition;
+            flatDirection.y = 0f;
+            return Quaternion.LookRotation(flatDirection.normalized, Vector3.up)
+                * Quaternion.Euler(0f, 180f, 0f);
         }
 
         private static ClinicGameManager CreateManagerForHudTest(

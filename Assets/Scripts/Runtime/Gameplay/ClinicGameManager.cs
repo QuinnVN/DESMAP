@@ -15,6 +15,13 @@ namespace NCKH.VR.Clinic
         [SerializeField] private Transform playerHead;
         [SerializeField] private PatientBedSlot[] bedSlots = Array.Empty<PatientBedSlot>();
         [SerializeField] private SicknessDatabase sicknessDatabase;
+        [SerializeField] private GameObject glucoseStandPrefab;
+        [SerializeField] private GameObject ekgMachinePrefab;
+        [SerializeField] private Transform decorationRoot;
+
+        [Header("Patient Decorations")]
+        [SerializeField, Min(0f)] private float glucoseStandScale = 1.41f;
+        [SerializeField, Min(0f)] private float ekgMachineScale = 1.15f;
 
         [Header("Round")]
         [SerializeField, Min(0f)] private float initialPreparationDelay = 2f;
@@ -148,12 +155,17 @@ namespace NCKH.VR.Clinic
         {
             for (int i = 0; i < bedSlots.Length; i++)
             {
-                PatientActor patient = bedSlots[i] != null ? bedSlots[i].Patient : null;
+                PatientBedSlot slot = bedSlots[i];
+                PatientActor patient = slot != null ? slot.Patient : null;
                 if (patient == null)
+                {
+                    slot?.HideDecoration();
                     continue;
+                }
 
                 patient.Resolved -= OnPatientResolved;
                 patient.BecameInactive -= OnPatientBecameInactive;
+                slot.HideDecoration();
             }
         }
 
@@ -170,6 +182,8 @@ namespace NCKH.VR.Clinic
                 PatientActor patient = slot != null ? slot.Patient : null;
                 if (patient != null)
                     patient.DeactivateImmediately();
+
+                slot?.HideDecoration();
             }
 
             Score = 0;
@@ -255,11 +269,15 @@ namespace NCKH.VR.Clinic
             }
 
             if (chosenIndex >= 0)
-                ActivatePatient(bedSlots[chosenIndex].Patient);
+                ActivatePatient(bedSlots[chosenIndex]);
         }
 
-        private void ActivatePatient(PatientActor patient)
+        private void ActivatePatient(PatientBedSlot slot)
         {
+            PatientActor patient = slot != null ? slot.Patient : null;
+            if (patient == null)
+                return;
+
             float elapsedRoundTime = Mathf.Max(0f, roundDuration - clock.RemainingRoundTime);
             bool forceEmergency = guaranteeEmergencyEachRound
                 && !emergencySpawnedThisRound
@@ -286,6 +304,13 @@ namespace NCKH.VR.Clinic
                 severity,
                 standardTreatmentDuration,
                 emergencyTreatmentDuration);
+
+            bool emergency = severity == ClinicRoundRules.MaximumSeverity;
+            slot.ShowDecoration(
+                emergency,
+                emergency ? ekgMachinePrefab : glucoseStandPrefab,
+                emergency ? ekgMachineScale : glucoseStandScale,
+                decorationRoot != null ? decorationRoot : transform);
 
             patient.Activate(
                 sickness.SicknessName,
@@ -355,11 +380,12 @@ namespace NCKH.VR.Clinic
                 return;
 
             PatientBedSlot slot = bedSlots[slotIndex];
+            slot.HideDecoration();
             bool shouldReplace = clock.State == ClinicRoundState.Running
                 && slot.RemainingCooldown <= 0f;
 
             if (shouldReplace)
-                ActivatePatient(patient);
+                ActivatePatient(slot);
         }
 
         private void UpdateBedCooldowns(float deltaTime)
@@ -371,7 +397,7 @@ namespace NCKH.VR.Clinic
                     continue;
 
                 if (slot.CanAcceptPatient && slot.Patient != null)
-                    ActivatePatient(slot.Patient);
+                    ActivatePatient(slot);
             }
         }
 
@@ -424,6 +450,8 @@ namespace NCKH.VR.Clinic
             level2TimeoutPenalty = Mathf.Max(0, level2TimeoutPenalty);
             level3TimeoutPenalty = Mathf.Max(0, level3TimeoutPenalty);
             level4TimeoutPenalty = Mathf.Max(0, level4TimeoutPenalty);
+            glucoseStandScale = Mathf.Max(0f, glucoseStandScale);
+            ekgMachineScale = Mathf.Max(0f, ekgMachineScale);
             emergencyGuaranteeCheckpoint = ClampEmergencyGuaranteeCheckpoint(
                 emergencyGuaranteeCheckpoint,
                 roundDuration);

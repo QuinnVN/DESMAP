@@ -10,7 +10,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals;
 using UnityEngine.XR.Interaction.Toolkit.UI;
@@ -28,6 +27,7 @@ namespace NCKH.VR.Doctor.Editor
         private const string MaterialFolder = "Assets/Materials/Doctor";
         private const string UiOverlayMaterialPath = MaterialFolder + "/Doctor UI Overlay.mat";
         private const string TmpOverlayMaterialPath = MaterialFolder + "/Doctor TMP Overlay.mat";
+        private const string MonitorPrefabPath = "Assets/Hospital Equipments/Prefabs/Monitor Variant.prefab";
         private const string UiOverlayShaderName = "NCKH/Doctor/UI Overlay";
         private const string HudLayerName = "DoctorHUD";
 
@@ -132,7 +132,7 @@ namespace NCKH.VR.Doctor.Editor
         {
             Scene scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
             GameObject npc = FindRoot(scene, "NPC") ?? CreatePlaceholderNpc();
-            GameObject notebook = FindRoot(scene, "Notebook") ?? CreatePlaceholderNotebook();
+            GameObject monitor = FindRoot(scene, "Monitor Variant") ?? CreateMonitor(scene);
             GameObject vrPlayer = FindRequiredRoot(scene, "VR Player");
             Transform cameraTransform = FindRequiredDescendant(vrPlayer.transform, "Main Camera");
             Camera xrCamera = cameraTransform.GetComponent<Camera>();
@@ -152,11 +152,10 @@ namespace NCKH.VR.Doctor.Editor
             DoctorPatientPresenter presenter = GetOrAdd<DoctorPatientPresenter>(npc);
             SetReferences(presenter, ("modelRoot", model.gameObject), ("voiceSource", voiceSource));
 
-            Transform notebookVisual = FindRequiredDescendant(notebook.transform, "Cube");
-            XRSimpleInteractable oldGrab = notebookVisual.GetComponent<XRSimpleInteractable>();
-            if (oldGrab != null)
-                UnityEngine.Object.DestroyImmediate(oldGrab);
-            DoctorNotebookInteractable notebookActivation = ConfigureRayButton(notebook, notebookVisual, xrCamera, hudLayer);
+            DoctorNotebookInteractable notebookActivation = ConfigureMonitorRayButton(monitor, xrCamera, hudLayer);
+            GameObject obsoleteNotebook = FindRoot(scene, "Notebook");
+            if (obsoleteNotebook != null)
+                UnityEngine.Object.DestroyImmediate(obsoleteNotebook);
 
             Transform existingHud = FindDescendant(cameraTransform, "Doctor HUD");
             bool createdHud = existingHud == null;
@@ -217,9 +216,9 @@ namespace NCKH.VR.Doctor.Editor
             EditorSceneManager.SaveScene(scene);
         }
 
-        private static DoctorNotebookInteractable ConfigureRayButton(GameObject notebook, Transform visual, Camera xrCamera, int layer)
+        private static DoctorNotebookInteractable ConfigureMonitorRayButton(GameObject monitor, Camera xrCamera, int layer)
         {
-            Transform existing = notebook.transform.Find("Notebook Ray Button");
+            Transform existing = monitor.transform.Find("Monitor Ray Button");
             if (existing != null && !(existing is RectTransform))
             {
                 UnityEngine.Object.DestroyImmediate(existing.gameObject);
@@ -227,17 +226,15 @@ namespace NCKH.VR.Doctor.Editor
             }
             bool created = existing == null;
             GameObject target = created
-                ? new GameObject("Notebook Ray Button", typeof(RectTransform))
+                ? new GameObject("Monitor Ray Button", typeof(RectTransform))
                 : existing.gameObject;
             RectTransform rect = target.GetComponent<RectTransform>();
             if (created)
-            {
-                rect.SetParent(notebook.transform, false);
-                rect.localPosition = visual.localPosition + new Vector3(0f, 0.1f, 0f);
-                rect.localRotation = Quaternion.Euler(90f, 0f, 0f);
-                rect.localScale = Vector3.one * 0.001f;
-                rect.sizeDelta = new Vector2(700f, 850f);
-            }
+                rect.SetParent(monitor.transform, false);
+            rect.localPosition = new Vector3(0.184f, 0.224f, 0f);
+            rect.localRotation = Quaternion.Euler(0f, -90f, 0f);
+            rect.localScale = Vector3.one * 0.001f;
+            rect.sizeDelta = new Vector2(520f, 400f);
             Canvas canvas = GetOrAdd<Canvas>(target);
             canvas.renderMode = RenderMode.WorldSpace;
             canvas.worldCamera = xrCamera;
@@ -251,7 +248,7 @@ namespace NCKH.VR.Doctor.Editor
             image.raycastTarget = true;
             Button button = GetOrAdd<Button>(target);
             button.targetGraphic = image;
-            DoctorNotebookInteractable interactable = GetOrAdd<DoctorNotebookInteractable>(notebook);
+            DoctorNotebookInteractable interactable = GetOrAdd<DoctorNotebookInteractable>(monitor);
             SetReferences(interactable, ("activationButton", button));
             SetLayerRecursively(target, layer);
             return interactable;
@@ -662,14 +659,19 @@ namespace NCKH.VR.Doctor.Editor
             return npc;
         }
 
-        private static GameObject CreatePlaceholderNotebook()
+        private static GameObject CreateMonitor(Scene scene)
         {
-            GameObject notebook = new GameObject("Notebook");
-            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.name = "Cube";
-            cube.transform.SetParent(notebook.transform, false);
-            cube.transform.localScale = new Vector3(.4f, .04f, .57f);
-            return notebook;
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MonitorPrefabPath);
+            if (prefab == null)
+                throw new InvalidOperationException($"Missing monitor prefab at '{MonitorPrefabPath}'.");
+
+            GameObject monitor = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
+            monitor.name = "Monitor Variant";
+            monitor.transform.SetPositionAndRotation(
+                new Vector3(0.669f, 0.887f, 1.026f),
+                Quaternion.Euler(0f, 90f, 0f));
+            monitor.transform.localScale = Vector3.one * 1.2033f;
+            return monitor;
         }
 
         private static Material EnsureUiOverlayMaterial()

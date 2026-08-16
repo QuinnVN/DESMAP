@@ -126,7 +126,7 @@ namespace NCKH.VR.Clinic
 
         private void LateUpdate()
         {
-            UpdateCureButtonOrbit();
+            UpdatePatientUiFacing();
         }
 
         public void Activate(
@@ -161,7 +161,7 @@ namespace NCKH.VR.Clinic
                 enabled = true;
 
             StartEmergencyAlert();
-            UpdateCureButtonOrbit();
+            UpdatePatientUiFacing();
             ApplyVisuals();
         }
 
@@ -235,9 +235,9 @@ namespace NCKH.VR.Clinic
             proximityAlpha = MoveAlpha(proximityAlpha, target, deltaTime, proximityFadeDuration);
         }
 
-        private void UpdateCureButtonOrbit()
+        private void UpdatePatientUiFacing()
         {
-            if (playerHead == null || cureOrbitPivot == null || cureCanvas == null)
+            if (playerHead == null)
                 return;
 
             Vector3 flatDirection = playerHead.position - transform.position;
@@ -246,10 +246,18 @@ namespace NCKH.VR.Clinic
                 return;
 
             Quaternion worldRotation = Quaternion.LookRotation(flatDirection.normalized, Vector3.up);
-            cureOrbitPivot.localPosition = Vector3.up * orbitHeight;
-            cureOrbitPivot.rotation = worldRotation;
-            cureCanvas.localPosition = new Vector3(orbitSideOffset, 0f, orbitRadius);
-            cureCanvas.localRotation = Quaternion.Euler(0f, canvasYawOffset, 0f);
+            Quaternion canvasRotation = worldRotation * Quaternion.Euler(0f, canvasYawOffset, 0f);
+
+            if (cureOrbitPivot != null && cureCanvas != null)
+            {
+                cureOrbitPivot.localPosition = Vector3.up * orbitHeight;
+                cureOrbitPivot.rotation = worldRotation;
+                cureCanvas.localPosition = new Vector3(orbitSideOffset, 0f, orbitRadius);
+                cureCanvas.localRotation = Quaternion.Euler(0f, canvasYawOffset, 0f);
+            }
+
+            if (chatCanvasGroup != null)
+                chatCanvasGroup.transform.rotation = canvasRotation;
         }
 
         private void StartEmergencyAlert()

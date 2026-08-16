@@ -198,7 +198,7 @@ namespace NCKH.VR.Doctor
             notebookUI?.CloseNotebook();
             notebookUI?.HideQuestionHud();
             notebookUI?.ShowDialogue(currentCase.PatientName, currentCase.InitialDialogue?.Transcript,
-                "Listen to the patient. The notebook opens automatically afterward.");
+                "Listen to the patient. The notes open automatically afterward.");
             stateCountdown = patientPresenter != null
                 ? patientPresenter.PresentDialogue(currentCase.InitialDialogue, dialogueFallbackDuration)
                 : Mathf.Max(0.01f, dialogueFallbackDuration);
@@ -238,13 +238,13 @@ namespace NCKH.VR.Doctor
             if (remainingQuestions.Count > 0)
             {
                 notebookUI?.ShowQuestionHud(remainingQuestions, preferredQuestionIndex);
-                notebookUI?.SetHudHint("Left stick: choose a question. A: ask. Ray-select the notebook to reopen it.");
+                notebookUI?.SetHudHint("Left stick: choose a question. A: ask. Ray-select the monitor to reopen the notes.");
                 State = DoctorGameState.QuestionSelecting;
             }
             else
             {
                 notebookUI?.SetNotebookHint("No questions remain. File the details and press Done.");
-                notebookUI?.SetHudHint("No questions remain. Ray-select the notebook to reopen it, then press Done.");
+                notebookUI?.SetHudHint("No questions remain. Ray-select the monitor to reopen the notes, then press Done.");
             }
         }
 
@@ -264,7 +264,7 @@ namespace NCKH.VR.Doctor
             notebookUI?.HideQuestionHud();
             SetNotebookInteractionEnabled(false);
             notebookUI?.ShowDialogue(currentCase.PatientName, phase.Response?.Transcript,
-                "Listen to the response. The notebook opens automatically afterward.");
+                "Listen to the response. The notes open automatically afterward.");
             stateCountdown = patientPresenter != null
                 ? patientPresenter.PresentDialogue(phase.Response, dialogueFallbackDuration)
                 : Mathf.Max(0.01f, dialogueFallbackDuration);
