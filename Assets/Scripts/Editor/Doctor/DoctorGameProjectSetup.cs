@@ -56,44 +56,44 @@ namespace NCKH.VR.Doctor.Editor
             return new[]
             {
                 CreateOrUpdateCase(DataFolder + "/Placeholder Case A.asset", "Alex Morgan",
-                    Dialogue("I started feeling unwell yesterday evening after my usual long commute. I have a dry cough and a mild fever. I also watched a movie last night.",
-                        Card("a-time", "Started yesterday evening", DoctorInfoCategory.Time),
-                        Card("a-cough", "Dry cough", DoctorInfoCategory.Symptoms),
-                        Card("a-fever", "Mild fever", DoctorInfoCategory.Symptoms),
-                        Noise("a-movie", "Watched a movie last night")),
+                    Dialogue("Tôi bắt đầu thấy không khỏe từ tối qua sau chuyến đi làm dài như thường lệ. Tôi bị ho khan và sốt nhẹ. Tối qua tôi cũng xem một bộ phim.",
+                        Card("a-time", "Khởi phát từ tối qua", DoctorInfoCategory.Time),
+                        Card("a-cough", "Ho khan", DoctorInfoCategory.Symptoms),
+                        Card("a-fever", "Sốt nhẹ", DoctorInfoCategory.Symptoms),
+                        Noise("a-movie", "Xem phim tối qua")),
                     new[]
                     {
-                        Phase("a-when", "Exactly when did this begin?", "It began around seven in the evening, just after dinner.", Noise("a-dinner", "Had dinner before symptoms began")),
-                        Phase("a-travel-q", "Have you travelled recently?", "I have not travelled recently, not even out of the city.", Card("a-travel", "No recent travel", DoctorInfoCategory.TravelHistory)),
-                        Phase("a-symptoms-q", "Can you describe the symptoms in more detail?", "The cough is dry and the fever has stayed mild. My favourite tea has not helped.", Noise("a-tea", "Tried drinking tea")),
-                        Phase("a-history-q", "Do you have any relevant medical history?", "I have a history of asthma, although it has been controlled for years.", Card("a-history", "History of asthma", DoctorInfoCategory.MedicalHistory))
+                        Phase("a-when", "Bệnh bắt đầu chính xác khi nào?", "Bệnh bắt đầu khoảng bảy giờ tối, ngay sau bữa tối.", Noise("a-dinner", "Ăn tối trước khi xuất hiện triệu chứng")),
+                        Phase("a-travel-q", "Gần đây bạn có đi xa không?", "Gần đây tôi không đi xa, thậm chí không ra khỏi thành phố.", Card("a-travel", "Gần đây không đi xa", DoctorInfoCategory.TravelHistory)),
+                        Phase("a-symptoms-q", "Bạn có thể mô tả triệu chứng chi tiết hơn không?", "Tôi ho khan và chỉ sốt nhẹ. Uống loại trà yêu thích cũng không đỡ.", Noise("a-tea", "Đã thử uống trà")),
+                        Phase("a-history-q", "Bạn có tiền sử bệnh nào liên quan không?", "Tôi có tiền sử hen suyễn, nhưng bệnh đã được kiểm soát nhiều năm.", Card("a-history", "Tiền sử hen suyễn", DoctorInfoCategory.MedicalHistory))
                     }),
                 CreateOrUpdateCase(DataFolder + "/Placeholder Case B.asset", "Jordan Lee",
-                    Dialogue("My stomach started hurting this morning. I feel nauseous and have vomited twice. Yesterday I bought a new umbrella.",
-                        Card("b-time", "Started this morning", DoctorInfoCategory.Time),
-                        Card("b-pain", "Stomach pain", DoctorInfoCategory.Symptoms),
-                        Card("b-nausea", "Nausea", DoctorInfoCategory.Symptoms),
-                        Card("b-vomit", "Vomited twice", DoctorInfoCategory.Symptoms),
-                        Noise("b-umbrella", "Bought a new umbrella")),
+                    Dialogue("Tôi bắt đầu đau bụng từ sáng nay. Tôi thấy buồn nôn và đã nôn hai lần. Hôm qua tôi mua một chiếc ô mới.",
+                        Card("b-time", "Khởi phát sáng nay", DoctorInfoCategory.Time),
+                        Card("b-pain", "Đau bụng", DoctorInfoCategory.Symptoms),
+                        Card("b-nausea", "Buồn nôn", DoctorInfoCategory.Symptoms),
+                        Card("b-vomit", "Đã nôn hai lần", DoctorInfoCategory.Symptoms),
+                        Noise("b-umbrella", "Mua một chiếc ô mới")),
                     new[]
                     {
-                        Phase("b-when", "When did the pain start?", "The pain began shortly after breakfast this morning.", Noise("b-breakfast", "Ate breakfast before the pain")),
-                        Phase("b-travel-q", "Have you travelled recently?", "I returned from a coastal trip two days ago and spent most of it reading.", Card("b-travel", "Returned from a coastal trip two days ago", DoctorInfoCategory.TravelHistory), Noise("b-reading", "Read during the trip")),
-                        Phase("b-symptoms-q", "Are there any other symptoms?", "No other symptoms, although I am tired because I stayed up late.", Noise("b-late", "Stayed up late")),
-                        Phase("b-history-q", "What is your medical history?", "I have no significant medical history and take no regular medicine.", Card("b-history", "No significant medical history", DoctorInfoCategory.MedicalHistory))
+                        Phase("b-when", "Cơn đau bắt đầu khi nào?", "Cơn đau bắt đầu ngay sau bữa sáng nay.", Noise("b-breakfast", "Ăn sáng trước khi đau")),
+                        Phase("b-travel-q", "Gần đây bạn có đi xa không?", "Tôi trở về từ chuyến đi biển hai ngày trước và dành phần lớn thời gian để đọc sách.", Card("b-travel", "Trở về từ chuyến đi biển hai ngày trước", DoctorInfoCategory.TravelHistory), Noise("b-reading", "Đọc sách trong chuyến đi")),
+                        Phase("b-symptoms-q", "Bạn còn triệu chứng nào khác không?", "Không còn triệu chứng nào khác, nhưng tôi mệt vì đã thức khuya.", Noise("b-late", "Đã thức khuya")),
+                        Phase("b-history-q", "Tiền sử bệnh của bạn thế nào?", "Tôi không có tiền sử bệnh đáng kể và không dùng thuốc thường xuyên.", Card("b-history", "Không có tiền sử bệnh đáng kể", DoctorInfoCategory.MedicalHistory))
                     }),
                 CreateOrUpdateCase(DataFolder + "/Placeholder Case C.asset", "Sam Rivera",
-                    Dialogue("My throat became tight late this afternoon and I have been wheezing. I reorganized my desk before coming here.",
-                        Card("c-time", "Began late this afternoon", DoctorInfoCategory.Time),
-                        Card("c-tight", "Throat tightness", DoctorInfoCategory.Symptoms),
-                        Card("c-wheeze", "Wheezing", DoctorInfoCategory.Symptoms),
-                        Noise("c-desk", "Reorganized a desk")),
+                    Dialogue("Cuối chiều nay cổ họng tôi bắt đầu thắt lại và tôi bị khò khè. Trước khi đến đây, tôi đã sắp xếp lại bàn làm việc.",
+                        Card("c-time", "Khởi phát cuối chiều nay", DoctorInfoCategory.Time),
+                        Card("c-tight", "Thắt cổ họng", DoctorInfoCategory.Symptoms),
+                        Card("c-wheeze", "Khò khè", DoctorInfoCategory.Symptoms),
+                        Noise("c-desk", "Sắp xếp lại bàn làm việc")),
                     new[]
                     {
-                        Phase("c-exposure-q", "What were you doing before this began?", "It began shortly after I cleaned a dusty storage room.", Card("c-exposure", "Symptoms followed dusty-room exposure", DoctorInfoCategory.Time)),
-                        Phase("c-travel-q", "Have you travelled recently?", "I have not travelled outside the area in the past month.", Card("c-travel", "No travel in the past month", DoctorInfoCategory.TravelHistory)),
-                        Phase("c-symptoms-q", "Do you have any other symptoms?", "I am short of breath, but I do not have a fever.", Card("c-breath", "Shortness of breath", DoctorInfoCategory.Symptoms), Card("c-no-fever", "No fever", DoctorInfoCategory.Symptoms)),
-                        Phase("c-history-q", "Do you have allergies or breathing conditions?", "I have a pollen allergy and used an inhaler as a child.", Card("c-allergy", "Pollen allergy", DoctorInfoCategory.MedicalHistory), Card("c-inhaler", "Used an inhaler in childhood", DoctorInfoCategory.MedicalHistory))
+                        Phase("c-exposure-q", "Bạn đã làm gì trước khi triệu chứng xuất hiện?", "Triệu chứng bắt đầu ngay sau khi tôi dọn một kho chứa đầy bụi.", Card("c-exposure", "Triệu chứng xuất hiện sau khi tiếp xúc phòng bụi", DoctorInfoCategory.Time)),
+                        Phase("c-travel-q", "Gần đây bạn có đi xa không?", "Trong tháng qua tôi không đi ra ngoài khu vực này.", Card("c-travel", "Không đi xa trong tháng qua", DoctorInfoCategory.TravelHistory)),
+                        Phase("c-symptoms-q", "Bạn còn triệu chứng nào khác không?", "Tôi bị khó thở nhưng không sốt.", Card("c-breath", "Khó thở", DoctorInfoCategory.Symptoms), Card("c-no-fever", "Không sốt", DoctorInfoCategory.Symptoms)),
+                        Phase("c-history-q", "Bạn có dị ứng hoặc bệnh hô hấp không?", "Tôi bị dị ứng phấn hoa và từng dùng ống hít khi còn nhỏ.", Card("c-allergy", "Dị ứng phấn hoa", DoctorInfoCategory.MedicalHistory), Card("c-inhaler", "Từng dùng ống hít khi còn nhỏ", DoctorInfoCategory.MedicalHistory))
                     })
             };
         }
@@ -298,16 +298,16 @@ namespace NCKH.VR.Doctor.Editor
             RectTransform timer = CreatePanel(root, "Timer Badge", new Vector2(.41f, .92f), new Vector2(.59f, .985f), dark);
             CreateLabel(timer, "Timer Label", "5:00", Vector2.zero, Vector2.one, 36, Color.white, true);
             RectTransform prep = CreatePanel(root, "Preparation Overlay", Vector2.zero, Vector2.one, dark);
-            CreateLabel(prep, "Preparation Title", "GET READY", new Vector2(.15f, .62f), new Vector2(.85f, .74f), 44, teal, true);
+            CreateLabel(prep, "Preparation Title", "CHUẨN BỊ", new Vector2(.15f, .62f), new Vector2(.85f, .74f), 44, teal, true);
             CreateLabel(prep, "Preparation Label", "10", new Vector2(.2f, .32f), new Vector2(.8f, .62f), 170, Color.white, true);
 
             RectTransform dialogue = CreatePanel(root, "Dialogue Panel", new Vector2(.07f, .035f), new Vector2(.93f, .27f), dark);
-            CreateLabel(dialogue, "Dialogue Patient Name", "Placeholder Patient", new Vector2(.04f, .7f), new Vector2(.96f, .96f), 30, teal, true, TextAlignmentOptions.MidlineLeft);
-            CreateLabel(dialogue, "Dialogue Text", "Placeholder dialogue", new Vector2(.04f, .25f), new Vector2(.96f, .7f), 28, Color.white, false, TextAlignmentOptions.TopLeft);
+            CreateLabel(dialogue, "Dialogue Patient Name", "Bệnh nhân mẫu", new Vector2(.04f, .7f), new Vector2(.96f, .96f), 30, teal, true, TextAlignmentOptions.MidlineLeft);
+            CreateLabel(dialogue, "Dialogue Text", "Lời thoại mẫu", new Vector2(.04f, .25f), new Vector2(.96f, .7f), 28, Color.white, false, TextAlignmentOptions.TopLeft);
             CreateLabel(dialogue, "HUD Hint Label", "", new Vector2(.04f, .02f), new Vector2(.96f, .24f), 20, new Color(.75f, .88f, .85f), false, TextAlignmentOptions.MidlineLeft);
 
             RectTransform questions = CreatePanel(root, "Question Panel", new Vector2(.48f, .30f), new Vector2(.94f, .55f), Color.clear);
-            CreateLabel(questions, "Question Counter", "1/1  |  Left stick: choose  |  A: ask", new Vector2(.03f, .84f), new Vector2(.97f, .99f), 18, Color.white, false, TextAlignmentOptions.MidlineRight);
+            CreateLabel(questions, "Question Counter", "1/1  |  Cần trái: chọn  |  A: hỏi", new Vector2(.03f, .84f), new Vector2(.97f, .99f), 18, Color.white, false, TextAlignmentOptions.MidlineRight);
             CreateScrollArea(questions, "Question Scroll", Vector2.zero, Vector2.one, out ScrollRect qScroll, out RectTransform qContent);
             RectTransform questionArea = qScroll.viewport;
             questionArea.name = "Question Area";
@@ -316,7 +316,7 @@ namespace NCKH.VR.Doctor.Editor
             DoctorQuestionItemView qTemplate = CreateQuestionTemplate(questions);
 
             RectTransform result = CreatePanel(root, "Result Overlay", Vector2.zero, Vector2.one, dark);
-            CreateLabel(result, "Result Score", "TOTAL SCORE\n0", new Vector2(.15f, .25f), new Vector2(.85f, .75f), 72, Color.white, true);
+            CreateLabel(result, "Result Score", "TỔNG ĐIỂM\n0", new Vector2(.15f, .25f), new Vector2(.85f, .75f), 72, Color.white, true);
             questions.gameObject.SetActive(false);
             result.gameObject.SetActive(false);
             qTemplate.gameObject.SetActive(false);
@@ -330,23 +330,23 @@ namespace NCKH.VR.Doctor.Editor
             Color teal = new Color(.17f, .48f, .43f, 1f);
             RectTransform overlay = CreatePanel(root, "Notebook Overlay", new Vector2(.18f, .015f), new Vector2(.82f, .985f), new Color(.02f, .04f, .04f, .98f));
             RectTransform shell = CreatePanel(overlay, "Notebook Shell", new Vector2(.018f, .012f), new Vector2(.982f, .988f), paper);
-            CreateLabel(shell, "Patient Name Label", "PATIENT NOTES", new Vector2(.04f, .91f), new Vector2(.96f, .98f), 34, ink, true, TextAlignmentOptions.MidlineLeft);
-            CreateLabel(shell, "Notebook Hint Label", "Drag a detail left, or select it then select a category.", new Vector2(.04f, .855f), new Vector2(.96f, .91f), 18, ink, false, TextAlignmentOptions.MidlineLeft);
+            CreateLabel(shell, "Patient Name Label", "GHI CHÚ BỆNH NHÂN", new Vector2(.04f, .91f), new Vector2(.96f, .98f), 34, ink, true, TextAlignmentOptions.MidlineLeft);
+            CreateLabel(shell, "Notebook Hint Label", "Kéo chi tiết sang trái, hoặc chọn chi tiết rồi chọn một mục.", new Vector2(.04f, .855f), new Vector2(.96f, .91f), 18, ink, false, TextAlignmentOptions.MidlineLeft);
 
             RectTransform left = CreatePanel(shell, "Category Column", new Vector2(.025f, .12f), new Vector2(.49f, .85f), pale);
             CreateScrollArea(left, "Category Scroll", new Vector2(.02f, .02f), new Vector2(.98f, .98f), out _, out RectTransform categoryContent);
-            CreateCategory(categoryContent, "Time Drop", "TIME", out _, out _);
-            CreateCategory(categoryContent, "Travel Drop", "TRAVEL HISTORY", out _, out _);
-            CreateCategory(categoryContent, "History Drop", "MEDICAL HISTORY", out _, out _);
-            CreateCategory(categoryContent, "Symptoms Drop", "SYMPTOMS", out _, out _);
+            CreateCategory(categoryContent, "Time Drop", "THỜI GIAN", out _, out _);
+            CreateCategory(categoryContent, "Travel Drop", "LỊCH SỬ ĐI LẠI", out _, out _);
+            CreateCategory(categoryContent, "History Drop", "TIỀN SỬ BỆNH", out _, out _);
+            CreateCategory(categoryContent, "Symptoms Drop", "TRIỆU CHỨNG", out _, out _);
 
             RectTransform right = CreatePanel(shell, "Unfiled Drop", new Vector2(.51f, .12f), new Vector2(.975f, .85f), pale);
             Button rightButton = right.gameObject.AddComponent<Button>();
             rightButton.targetGraphic = right.GetComponent<Image>();
-            CreateLabel(right, "Details Title", "DETAILS", new Vector2(.04f, .91f), new Vector2(.96f, .99f), 25, teal, true, TextAlignmentOptions.MidlineLeft);
+            CreateLabel(right, "Details Title", "CHI TIẾT", new Vector2(.04f, .91f), new Vector2(.96f, .99f), 25, teal, true, TextAlignmentOptions.MidlineLeft);
             CreateScrollArea(right, "Details Scroll", new Vector2(.025f, .02f), new Vector2(.975f, .90f), out _, out RectTransform detailsContent);
 
-            Button done = CreateButton(shell, "Done Button", "DONE", new Vector2(.34f, .02f), new Vector2(.66f, .095f), teal, Color.white);
+            Button done = CreateButton(shell, "Done Button", "HOÀN TẤT", new Vector2(.34f, .02f), new Vector2(.66f, .095f), teal, Color.white);
             RectTransform dragLayer = CreateRect(root, "Drag Layer");
             Stretch(dragLayer);
             DoctorInfoCardView cardTemplate = CreateCardTemplate(root);
@@ -518,7 +518,7 @@ namespace NCKH.VR.Doctor.Editor
             rect.sizeDelta = new Vector2(380, 82);
             LayoutElement element = rect.gameObject.AddComponent<LayoutElement>();
             element.preferredHeight = 82;
-            TMP_Text label = CreateLabel(rect, "Card Label", "Detail card", new Vector2(.04f, .06f), new Vector2(.96f, .94f), 20, new Color(.12f, .15f, .15f), false, TextAlignmentOptions.MidlineLeft);
+            TMP_Text label = CreateLabel(rect, "Card Label", "Thẻ chi tiết", new Vector2(.04f, .06f), new Vector2(.96f, .94f), 20, new Color(.12f, .15f, .15f), false, TextAlignmentOptions.MidlineLeft);
             DoctorInfoCardView view = rect.gameObject.AddComponent<DoctorInfoCardView>();
             SetReferences(view, ("background", rect.GetComponent<Image>()), ("label", label));
             return view;
@@ -533,7 +533,7 @@ namespace NCKH.VR.Doctor.Editor
             rect.sizeDelta = new Vector2(500, 40);
             LayoutElement element = rect.gameObject.AddComponent<LayoutElement>();
             element.preferredHeight = 40;
-            TMP_Text label = CreateLabel(rect, "Question Label", "Question?", new Vector2(.05f, .08f), new Vector2(.95f, .92f), 21, Color.white, false, TextAlignmentOptions.Center);
+            TMP_Text label = CreateLabel(rect, "Question Label", "Câu hỏi?", new Vector2(.05f, .08f), new Vector2(.95f, .92f), 21, Color.white, false, TextAlignmentOptions.Center);
             label.enableAutoSizing = true;
             label.fontSizeMin = 5f;
             label.fontSizeMax = 21f;

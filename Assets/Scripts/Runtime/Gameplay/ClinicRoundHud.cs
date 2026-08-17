@@ -161,7 +161,7 @@ namespace NCKH.VR.Clinic
                 return;
 
             displayedScore = gameManager.Score;
-            totalScoreText.SetText("TOTAL SCORE\n{0:0}", displayedScore);
+            totalScoreText.SetText("TỔNG ĐIỂM\n{0:0}", displayedScore);
         }
 
         private void UpdatePreparationFade()

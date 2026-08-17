@@ -280,7 +280,7 @@ namespace NCKH.VR.Clinic.Tests
             Assert.That(overlay.alpha, Is.EqualTo(1f));
             Assert.That(preparationTimer.gameObject.activeSelf, Is.False);
             Assert.That(totalScore.gameObject.activeSelf, Is.True);
-            Assert.That(totalScore.text, Is.EqualTo("TOTAL SCORE\n42"));
+            Assert.That(totalScore.text, Is.EqualTo("TỔNG ĐIỂM\n42"));
             Assert.That(totalScore.rectTransform.anchoredPosition, Is.EqualTo(scorePosition));
 
             hud.enabled = false;
@@ -327,7 +327,7 @@ namespace NCKH.VR.Clinic.Tests
             Assert.That(overlay.gameObject.activeSelf, Is.True);
             Assert.That(overlay.alpha, Is.EqualTo(1f));
             Assert.That(totalScore.gameObject.activeSelf, Is.True);
-            Assert.That(totalScore.text, Is.EqualTo("TOTAL SCORE\n0"));
+            Assert.That(totalScore.text, Is.EqualTo("TỔNG ĐIỂM\n0"));
 
             Object.Destroy(hud.gameObject);
             Object.Destroy(locomotion);
@@ -459,10 +459,10 @@ namespace NCKH.VR.Clinic.Tests
             yield return null;
 
             Assert.That(patient.SicknessName, Is.EqualTo("Cardiac Arrest"));
-            Assert.That(text.text, Is.EqualTo("Sickness: Cardiac Arrest"));
+            Assert.That(text.text, Is.EqualTo("Bệnh: Cardiac Arrest"));
 
             patient.Activate("Cardiac Arrest", 4, 5f, head, 0f, true);
-            Assert.That(text.text, Is.EqualTo("Sickness: Cardiac Arrest (Severity 4)"));
+            Assert.That(text.text, Is.EqualTo("Bệnh: Cardiac Arrest (Mức độ 4)"));
 
             Object.Destroy(head.gameObject);
             Object.Destroy(patient.gameObject);

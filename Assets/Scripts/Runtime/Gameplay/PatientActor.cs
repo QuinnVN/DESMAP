@@ -150,8 +150,8 @@ namespace NCKH.VR.Clinic
             if (sicknessText != null)
             {
                 sicknessText.text = showSeverity
-                    ? $"Sickness: {SicknessName} (Severity {Severity})"
-                    : $"Sickness: {SicknessName}";
+                    ? $"Bệnh: {SicknessName} (Mức độ {Severity})"
+                    : $"Bệnh: {SicknessName}";
             }
 
             SetColliderState(false);

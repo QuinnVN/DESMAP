@@ -15,73 +15,73 @@ MonoBehaviour:
   patientName: Jordan Lee
   selectionWeight: 1
   initialDialogue:
-    transcript: My stomach started hurting this morning. I feel nauseous and have
-      vomited twice. Yesterday I bought a new umbrella.
+    transcript: Tôi bắt đầu đau bụng từ sáng nay. Tôi thấy buồn nôn và đã nôn hai lần.
+      Hôm qua tôi mua một chiếc ô mới.
     audioClip: {fileID: 0}
     selectableCards:
     - id: b-time
-      text: Started this morning
+      text: Khởi phát sáng nay
       correctCategory: 0
       essential: 1
     - id: b-pain
-      text: Stomach pain
+      text: Đau bụng
       correctCategory: 2
       essential: 1
     - id: b-nausea
-      text: Nausea
+      text: Buồn nôn
       correctCategory: 2
       essential: 1
     - id: b-vomit
-      text: Vomited twice
+      text: Đã nôn hai lần
       correctCategory: 2
       essential: 1
     - id: b-umbrella
-      text: Bought a new umbrella
+      text: Mua một chiếc ô mới
       correctCategory: 0
       essential: 0
   phases:
   - id: b-when
-    question: When did the pain start?
+    question: Cơn đau bắt đầu khi nào?
     response:
-      transcript: The pain began shortly after breakfast this morning.
+      transcript: Cơn đau bắt đầu ngay sau bữa sáng nay.
       audioClip: {fileID: 0}
       selectableCards:
       - id: b-breakfast
-        text: Ate breakfast before the pain
+        text: Ăn sáng trước khi đau
         correctCategory: 0
         essential: 0
   - id: b-travel-q
-    question: Have you travelled recently?
+    question: Gần đây bạn có đi xa không?
     response:
-      transcript: I returned from a coastal trip two days ago and spent most of it
-        reading.
+      transcript: Tôi trở về từ chuyến đi biển hai ngày trước và dành phần lớn thời gian
+        để đọc sách.
       audioClip: {fileID: 0}
       selectableCards:
       - id: b-travel
-        text: Returned from a coastal trip two days ago
+        text: Trở về từ chuyến đi biển hai ngày trước
         correctCategory: 1
         essential: 1
       - id: b-reading
-        text: Read during the trip
+        text: Đọc sách trong chuyến đi
         correctCategory: 0
         essential: 0
   - id: b-symptoms-q
-    question: Are there any other symptoms?
+    question: Bạn còn triệu chứng nào khác không?
     response:
-      transcript: No other symptoms, although I am tired because I stayed up late.
+      transcript: Không còn triệu chứng nào khác, nhưng tôi mệt vì đã thức khuya.
       audioClip: {fileID: 0}
       selectableCards:
       - id: b-late
-        text: Stayed up late
+        text: Đã thức khuya
         correctCategory: 0
         essential: 0
   - id: b-history-q
-    question: What is your medical history?
+    question: Tiền sử bệnh của bạn thế nào?
     response:
-      transcript: I have no significant medical history and take no regular medicine.
+      transcript: Tôi không có tiền sử bệnh đáng kể và không dùng thuốc thường xuyên.
       audioClip: {fileID: 0}
       selectableCards:
       - id: b-history
-        text: No significant medical history
+        text: Không có tiền sử bệnh đáng kể
         correctCategory: 3
         essential: 1

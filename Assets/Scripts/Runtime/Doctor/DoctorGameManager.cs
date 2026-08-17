@@ -198,7 +198,7 @@ namespace NCKH.VR.Doctor
             notebookUI?.CloseNotebook();
             notebookUI?.HideQuestionHud();
             notebookUI?.ShowDialogue(currentCase.PatientName, currentCase.InitialDialogue?.Transcript,
-                "Listen to the patient. The notes open automatically afterward.");
+                "Hãy lắng nghe bệnh nhân. Sổ ghi chú sẽ tự động mở sau đó.");
             stateCountdown = patientPresenter != null
                 ? patientPresenter.PresentDialogue(currentCase.InitialDialogue, dialogueFallbackDuration)
                 : Mathf.Max(0.01f, dialogueFallbackDuration);
@@ -209,8 +209,8 @@ namespace NCKH.VR.Doctor
         {
             State = DoctorGameState.Arranging;
             SetNotebookInteractionEnabled(true);
-            notebookUI?.SetHudHint("B: close notebook and view questions");
-            notebookUI?.SetNotebookHint("Drag details into the left categories, or select a card then a category.");
+            notebookUI?.SetHudHint("B: đóng sổ ghi chú và xem câu hỏi");
+            notebookUI?.SetNotebookHint("Kéo các chi tiết vào những mục bên trái, hoặc chọn một thẻ rồi chọn mục.");
             notebookUI?.OpenNotebook(currentCase.PatientName, revealedCards, placements);
         }
 
@@ -238,13 +238,13 @@ namespace NCKH.VR.Doctor
             if (remainingQuestions.Count > 0)
             {
                 notebookUI?.ShowQuestionHud(remainingQuestions, preferredQuestionIndex);
-                notebookUI?.SetHudHint("Left stick: choose a question. A: ask. Ray-select the monitor to reopen the notes.");
+                notebookUI?.SetHudHint("Cần trái: chọn câu hỏi. A: hỏi. Dùng tia chọn màn hình để mở lại ghi chú.");
                 State = DoctorGameState.QuestionSelecting;
             }
             else
             {
-                notebookUI?.SetNotebookHint("No questions remain. File the details and press Done.");
-                notebookUI?.SetHudHint("No questions remain. Ray-select the monitor to reopen the notes, then press Done.");
+                notebookUI?.SetNotebookHint("Không còn câu hỏi. Hãy phân loại chi tiết rồi nhấn Hoàn tất.");
+                notebookUI?.SetHudHint("Không còn câu hỏi. Dùng tia chọn màn hình để mở lại ghi chú, rồi nhấn Hoàn tất.");
             }
         }
 
@@ -264,7 +264,7 @@ namespace NCKH.VR.Doctor
             notebookUI?.HideQuestionHud();
             SetNotebookInteractionEnabled(false);
             notebookUI?.ShowDialogue(currentCase.PatientName, phase.Response?.Transcript,
-                "Listen to the response. The notes open automatically afterward.");
+                "Hãy lắng nghe câu trả lời. Sổ ghi chú sẽ tự động mở sau đó.");
             stateCountdown = patientPresenter != null
                 ? patientPresenter.PresentDialogue(phase.Response, dialogueFallbackDuration)
                 : Mathf.Max(0.01f, dialogueFallbackDuration);

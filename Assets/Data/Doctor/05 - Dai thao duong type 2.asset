@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 05 - Dai thao duong type 2
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "V\u0169 \u0110\u1EE9c Long"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "Kho\u1EA3ng ba th\xE1ng nay t\xF4i hay kh\xE1t n\u01B0\u1EDBc, \u0111i
+      ti\u1EC3u nhi\u1EC1u, mau \u0111\xF3i v\xE0 th\u01B0\u1EDDng m\u1EC7t v\xE0o
+      bu\u1ED5i chi\u1EC1u."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: dm-time
+      text: "Tri\u1EC7u ch\u1EE9ng k\xE9o d\xE0i kho\u1EA3ng ba th\xE1ng"
+      correctCategory: 0
+      essential: 1
+    - id: dm-thirst
+      text: "Kh\xE1t n\u01B0\u1EDBc nhi\u1EC1u"
+      correctCategory: 2
+      essential: 1
+    - id: dm-urine
+      text: "\u0110i ti\u1EC3u nhi\u1EC1u"
+      correctCategory: 2
+      essential: 1
+    - id: dm-fatigue
+      text: "Mau \u0111\xF3i v\xE0 m\u1EC7t"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: dm-q1
+    question: "C\xE2n n\u1EB7ng v\xE0 th\u1ECB l\u1EF1c g\u1EA7n \u0111\xE2y c\xF3
+      thay \u0111\u1ED5i kh\xF4ng?"
+    response:
+      transcript: "T\xF4i gi\u1EA3m ba c\xE2n d\xF9 kh\xF4ng \u0103n ki\xEAng v\xE0
+        \u0111\xF4i l\xFAc nh\xECn h\u01A1i m\u1EDD."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: dm-weight
+        text: "S\u1EE5t ba c\xE2n kh\xF4ng ch\u1EE7 \xFD"
+        correctCategory: 2
+        essential: 1
+      - id: dm-vision
+        text: "\u0110\xF4i l\xFAc nh\xECn m\u1EDD"
+        correctCategory: 2
+        essential: 1
+  - id: dm-q2
+    question: "Anh c\xF3 v\u1EBFt th\u01B0\u01A1ng l\xE2u l\xE0nh ho\u1EB7c nhi\u1EC5m
+      tr\xF9ng t\xE1i di\u1EC5n kh\xF4ng?"
+    response:
+      transcript: "V\u1EBFt x\u01B0\u1EDBc \u1EDF ch\xE2n c\u1EE7a t\xF4i m\u1EA5t
+        g\u1EA7n ba tu\u1EA7n m\u1EDBi l\xE0nh."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: dm-heal
+        text: "V\u1EBFt th\u01B0\u01A1ng l\xE2u l\xE0nh"
+        correctCategory: 2
+        essential: 1
+  - id: dm-q3
+    question: "Trong gia \u0111\xECnh c\xF3 ai m\u1EAFc \u0111\xE1i th\xE1o \u0111\u01B0\u1EDDng
+      kh\xF4ng?"
+    response:
+      transcript: "M\u1EB9 t\xF4i m\u1EAFc \u0111\xE1i th\xE1o \u0111\u01B0\u1EDDng
+        type 2 v\xE0 \u0111ang u\u1ED1ng thu\u1ED1c m\u1ED7i ng\xE0y."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: dm-family
+        text: "M\u1EB9 m\u1EAFc \u0111\xE1i th\xE1o \u0111\u01B0\u1EDDng type 2"
+        correctCategory: 3
+        essential: 1
+  - id: dm-q4
+    question: "L\u1EA7n g\u1EA7n nh\u1EA5t anh ki\u1EC3m tra \u0111\u01B0\u1EDDng
+      huy\u1EBFt l\xE0 khi n\xE0o?"
+    response:
+      transcript: "H\xF4m qua t\xF4i \u0111o \u0111\u01B0\u1EDDng huy\u1EBFt l\xFAc
+        \u0111\xF3i \u1EDF nh\xE0 \u0111\u01B0\u1EE3c 8,4 mmol/L, nh\u01B0ng ch\u01B0a
+        \u0111i kh\xE1m x\xE1c nh\u1EADn."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: dm-glucose
+        text: "\u0110\u01B0\u1EDDng huy\u1EBFt \u0111\xF3i t\u1EA1i nh\xE0 8,4 mmol/L"
+        correctCategory: 3
+        essential: 1

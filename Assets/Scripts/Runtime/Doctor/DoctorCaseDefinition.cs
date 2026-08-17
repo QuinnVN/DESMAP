@@ -7,12 +7,12 @@ namespace NCKH.VR.Doctor
     public sealed class DoctorCaseDefinition : ScriptableObject
     {
         [Header("Patient")]
-        [SerializeField] private string patientName = "Placeholder Patient";
+        [SerializeField] private string patientName = "Bệnh nhân mẫu";
         [SerializeField, Min(0f)] private float selectionWeight = 1f;
 
         [Header("Opening Statement")]
         [SerializeField] private DoctorDialogue initialDialogue =
-            new DoctorDialogue("Placeholder opening statement.", null, null);
+            new DoctorDialogue("Lời mở đầu mẫu.", null, null);
 
         [Header("Question / Response Phases")]
         [SerializeField] private List<DoctorQuestionPhase> phases = new List<DoctorQuestionPhase>();

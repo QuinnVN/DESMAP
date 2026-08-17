@@ -61,7 +61,7 @@ namespace NCKH.VR.Doctor
         [SerializeField] private string id = string.Empty;
         [SerializeField, TextArea(2, 4)] private string question = string.Empty;
         [SerializeField] private DoctorDialogue response =
-            new DoctorDialogue("Placeholder response.", null, null);
+            new DoctorDialogue("Câu trả lời mẫu.", null, null);
 
         public string Id => id;
         public string Question => question;

@@ -252,7 +252,7 @@ namespace NCKH.VR.Doctor
         {
             HideAllPrimaryPanels();
             SetActive(timerBadge, false);
-            resultScore.text = $"TOTAL SCORE\n{score}";
+            resultScore.text = $"TỔNG ĐIỂM\n{score}";
             SetActive(resultOverlay, true);
         }
 
@@ -369,8 +369,8 @@ namespace NCKH.VR.Doctor
             FitQuestionsToViewport();
 
             questionCounterLabel.text = visibleQuestions.Count == 0
-                ? "No questions remaining"
-                : $"{selectedQuestionIndex + 1}/{visibleQuestions.Count}  |  Left stick: choose  |  A: ask";
+                ? "Không còn câu hỏi"
+                : $"{selectedQuestionIndex + 1}/{visibleQuestions.Count}  |  Cần trái: chọn  |  A: hỏi";
         }
 
         private void CycleQuestion(int direction)
@@ -378,7 +378,7 @@ namespace NCKH.VR.Doctor
             selectedQuestionIndex = DoctorGameRules.CycleSelection(selectedQuestionIndex, direction, visibleQuestions.Count);
             for (int i = 0; i < questionViews.Count; i++)
                 questionViews[i].SetContent(visibleQuestions[i].Question, i == selectedQuestionIndex);
-            questionCounterLabel.text = $"{selectedQuestionIndex + 1}/{visibleQuestions.Count}  |  Left stick: choose  |  A: ask";
+            questionCounterLabel.text = $"{selectedQuestionIndex + 1}/{visibleQuestions.Count}  |  Cần trái: chọn  |  A: hỏi";
         }
 
         private void ConfigureQuestionViewport()

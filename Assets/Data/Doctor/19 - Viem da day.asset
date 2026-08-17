@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 19 - Viem da day
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "H\u1ED3 Quang Ph\xFAc"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "Ba ng\xE0y nay t\xF4i \u0111au r\xE1t v\xF9ng tr\xEAn r\u1ED1n,
+      \u0111\u1EA7y b\u1EE5ng v\xE0 bu\u1ED3n n\xF4n, nh\u1EA5t l\xE0 khi \u0111\u1EC3
+      b\u1EE5ng \u0111\xF3i."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: gastritis-time
+      text: "Tri\u1EC7u ch\u1EE9ng k\xE9o d\xE0i ba ng\xE0y"
+      correctCategory: 0
+      essential: 1
+    - id: gastritis-pain
+      text: "\u0110au r\xE1t v\xF9ng th\u01B0\u1EE3ng v\u1ECB"
+      correctCategory: 2
+      essential: 1
+    - id: gastritis-nausea
+      text: "\u0110\u1EA7y b\u1EE5ng v\xE0 bu\u1ED3n n\xF4n"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: gastritis-q1
+    question: "Anh c\xF3 n\xF4n ra m\xE1u, \u0111i ngo\xE0i ph\xE2n \u0111en ho\u1EB7c
+      s\u1EE5t c\xE2n kh\xF4ng?"
+    response:
+      transcript: "T\xF4i kh\xF4ng n\xF4n ra m\xE1u, ph\xE2n v\u1EABn m\xE0u b\xECnh
+        th\u01B0\u1EDDng v\xE0 c\xE2n n\u1EB7ng kh\xF4ng \u0111\u1ED5i."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: gastritis-redflags
+        text: "Kh\xF4ng xu\u1EA5t huy\u1EBFt ti\xEAu h\xF3a hay s\u1EE5t c\xE2n"
+        correctCategory: 2
+        essential: 1
+  - id: gastritis-q2
+    question: "Anh c\xF3 d\xF9ng thu\u1ED1c gi\u1EA3m \u0111au, r\u01B0\u1EE3u bia
+      ho\u1EB7c t\u1EEBng b\u1EC7nh d\u1EA1 d\xE0y kh\xF4ng?"
+    response:
+      transcript: "Tu\u1EA7n qua t\xF4i u\u1ED1ng ibuprofen v\xEC \u0111au l\u01B0ng
+        v\xE0 u\u1ED1ng bia g\u1EA7n nh\u01B0 m\u1ED7i t\u1ED1i; tr\u01B0\u1EDBc
+        \u0111\xE2y t\u1EEBng vi\xEAm d\u1EA1 d\xE0y."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: gastritis-nsaid
+        text: "D\xF9ng ibuprofen trong tu\u1EA7n qua v\xE0 u\u1ED1ng bia th\u01B0\u1EDDng
+          xuy\xEAn"
+        correctCategory: 3
+        essential: 1
+      - id: gastritis-history
+        text: "Ti\u1EC1n s\u1EED vi\xEAm d\u1EA1 d\xE0y"
+        correctCategory: 3
+        essential: 1

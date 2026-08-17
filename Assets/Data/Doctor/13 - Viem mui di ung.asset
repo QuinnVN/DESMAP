@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 13 - Viem mui di ung
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: Mai Anh Khoa
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "M\u1ED7i s\xE1ng t\xF4i h\u1EAFt h\u01A1i li\xEAn t\u1EE5c, ng\u1EE9a
+      m\u0169i, ch\u1EA3y n\u01B0\u1EDBc m\u0169i trong v\xE0 ng\u1EE9a m\u1EAFt
+      nh\u01B0ng kh\xF4ng s\u1ED1t."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: allergy-time
+      text: "T\xE1i di\u1EC5n v\xE0o m\u1ED7i bu\u1ED5i s\xE1ng"
+      correctCategory: 0
+      essential: 1
+    - id: allergy-sneeze
+      text: "H\u1EAFt h\u01A1i, ng\u1EE9a m\u0169i v\xE0 ch\u1EA3y m\u0169i trong"
+      correctCategory: 2
+      essential: 1
+    - id: allergy-eyes
+      text: "Ng\u1EE9a m\u1EAFt"
+      correctCategory: 2
+      essential: 1
+    - id: allergy-no-fever
+      text: "Kh\xF4ng s\u1ED1t"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: allergy-q1
+    question: "Tri\u1EC7u ch\u1EE9ng c\xF3 li\xEAn quan \u0111\u1EBFn m\xF4i tr\u01B0\u1EDDng
+      n\xE0o kh\xF4ng?"
+    response:
+      transcript: "T\xF4i n\u1EB7ng h\u01A1n khi qu\xE9t nh\xE0 ho\u1EB7c \u0111\u1EBFn
+        n\u01A1i c\xF3 nhi\u1EC1u ph\u1EA5n hoa, ra ngo\xE0i tho\xE1ng th\xEC \u0111\u1EE1."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: allergy-trigger
+        text: "N\u1EB7ng h\u01A1n khi g\u1EB7p b\u1EE5i v\xE0 ph\u1EA5n hoa"
+        correctCategory: 1
+        essential: 1
+  - id: allergy-q2
+    question: "Anh c\xF3 \u0111au h\u1ECDng, \u0111au nh\u1EE9c ho\u1EB7c d\u1ECBch
+      m\u0169i \u0111\u1EB7c kh\xF4ng?"
+    response:
+      transcript: "T\xF4i kh\xF4ng \u0111au nh\u1EE9c, ch\u1EC9 h\u01A1i ngh\u1EB9t
+        m\u0169i v\xE0 d\u1ECBch lu\xF4n trong."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: allergy-detail
+        text: "D\u1ECBch m\u0169i trong, kh\xF4ng \u0111au nh\u1EE9c"
+        correctCategory: 2
+        essential: 1
+  - id: allergy-q3
+    question: "Anh c\xF3 ti\u1EC1n s\u1EED d\u1ECB \u1EE9ng ho\u1EB7c hen kh\xF4ng?"
+    response:
+      transcript: "T\xF4i b\u1ECB d\u1ECB \u1EE9ng m\u1EA1t b\u1EE5i t\u1EEB nh\u1ECF,
+        m\u1EB9 t\xF4i c\u0169ng b\u1ECB vi\xEAm m\u0169i d\u1ECB \u1EE9ng."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: allergy-history
+        text: "Ti\u1EC1n s\u1EED d\u1ECB \u1EE9ng m\u1EA1t b\u1EE5i"
+        correctCategory: 3
+        essential: 1
+      - id: allergy-family
+        text: "M\u1EB9 b\u1ECB vi\xEAm m\u0169i d\u1ECB \u1EE9ng"
+        correctCategory: 3
+        essential: 1

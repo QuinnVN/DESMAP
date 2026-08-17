@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 08 - Viem phoi
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "\u0110\u1ED7 V\u0103n H\xF9ng"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "T\xF4i s\u1ED1t cao, ho c\xF3 \u0111\u1EDDm v\xE0ng v\xE0 \u0111au
+      nh\xF3i b\xEAn ng\u1EF1c ph\u1EA3i m\u1ED7i khi h\xEDt s\xE2u t\u1EEB b\u1ED1n
+      ng\xE0y nay."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: pne-time
+      text: "Tri\u1EC7u ch\u1EE9ng k\xE9o d\xE0i b\u1ED1n ng\xE0y"
+      correctCategory: 0
+      essential: 1
+    - id: pne-fever
+      text: "S\u1ED1t cao"
+      correctCategory: 2
+      essential: 1
+    - id: pne-sputum
+      text: "Ho \u0111\u1EDDm v\xE0ng"
+      correctCategory: 2
+      essential: 1
+    - id: pne-pain
+      text: "\u0110au ng\u1EF1c t\u0103ng khi h\xEDt s\xE2u"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: pne-q1
+    question: "Anh c\xF3 kh\xF3 th\u1EDF ho\u1EB7c th\u1EDF nhanh kh\xF4ng?"
+    response:
+      transcript: "T\xF4i h\u1EE5t h\u01A1i ngay c\u1EA3 khi \u0111i ch\u1EADm v\xE0
+        v\u1EE3 t\xF4i n\xF3i t\xF4i th\u1EDF nhanh h\u01A1n b\xECnh th\u01B0\u1EDDng."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: pne-breath
+        text: "Kh\xF3 th\u1EDF v\xE0 th\u1EDF nhanh"
+        correctCategory: 2
+        essential: 1
+  - id: pne-q2
+    question: "Tr\u01B0\u1EDBc khi b\u1EC7nh anh c\xF3 \u0111i xa ho\u1EB7c ti\u1EBFp
+      x\xFAc ng\u01B0\u1EDDi b\u1ECB b\u1EC7nh kh\xF4ng?"
+    response:
+      transcript: "T\xF4i kh\xF4ng \u0111i xa, nh\u01B0ng ch\xE1u t\xF4i v\u1EEBa
+        b\u1ECB nhi\u1EC5m tr\xF9ng h\xF4 h\u1EA5p tu\u1EA7n tr\u01B0\u1EDBc."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: pne-contact
+        text: "Ti\u1EBFp x\xFAc ng\u01B0\u1EDDi th\xE2n b\u1ECB nhi\u1EC5m tr\xF9ng
+          h\xF4 h\u1EA5p"
+        correctCategory: 1
+        essential: 1
+  - id: pne-q3
+    question: "Anh c\xF3 b\u1EC7nh n\u1EC1n ho\u1EB7c h\xFAt thu\u1ED1c kh\xF4ng?"
+    response:
+      transcript: "T\xF4i h\xFAt thu\u1ED1c nhi\u1EC1u n\u0103m v\xE0 \u0111\u01B0\u1EE3c
+        ch\u1EA9n \u0111o\xE1n b\u1EC7nh ph\u1ED5i t\u1EAFc ngh\u1EBDn m\u1EA1n t\xEDnh."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: pne-smoking
+        text: "H\xFAt thu\u1ED1c nhi\u1EC1u n\u0103m"
+        correctCategory: 3
+        essential: 1
+      - id: pne-copd
+        text: "C\xF3 b\u1EC7nh ph\u1ED5i t\u1EAFc ngh\u1EBDn m\u1EA1n t\xEDnh"
+        correctCategory: 3
+        essential: 1

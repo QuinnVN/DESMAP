@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 04 - Hen phe quan
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "Ph\u1EA1m Gia B\u1EA3o"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "T\u1EEB chi\u1EC1u nay t\xF4i kh\xF2 kh\xE8, n\u1EB7ng ng\u1EF1c
+      v\xE0 kh\xF3 th\u1EDF sau khi d\u1ECDn m\u1ED9t c\u0103n ph\xF2ng \u0111\u1EA7y
+      b\u1EE5i."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: asthma-time
+      text: "Kh\u1EDFi ph\xE1t chi\u1EC1u nay"
+      correctCategory: 0
+      essential: 1
+    - id: asthma-wheeze
+      text: "Kh\xF2 kh\xE8"
+      correctCategory: 2
+      essential: 1
+    - id: asthma-chest
+      text: "N\u1EB7ng ng\u1EF1c v\xE0 kh\xF3 th\u1EDF"
+      correctCategory: 2
+      essential: 1
+    - id: asthma-dust
+      text: "Kh\u1EDFi ph\xE1t sau khi ti\u1EBFp x\xFAc b\u1EE5i"
+      correctCategory: 1
+      essential: 1
+  phases:
+  - id: asthma-q1
+    question: "Kh\xF3 th\u1EDF xu\u1EA5t hi\u1EC7n li\xEAn t\u1EE5c hay t\u1EEBng
+      c\u01A1n?"
+    response:
+      transcript: "N\xF3 \u0111\u1EBFn th\xE0nh t\u1EEBng c\u01A1n, r\xF5 h\u01A1n
+        khi t\xF4i th\u1EDF ra v\xE0 n\xF3i c\xE2u d\xE0i."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: asthma-pattern
+        text: "Kh\xF3 th\u1EDF t\u1EEBng c\u01A1n, kh\xF3 th\u1EDF ra"
+        correctCategory: 2
+        essential: 1
+  - id: asthma-q2
+    question: "Anh c\xF3 s\u1ED1t ho\u1EB7c ho ra \u0111\u1EDDm kh\xF4ng?"
+    response:
+      transcript: "T\xF4i ho khan nh\u01B0ng kh\xF4ng s\u1ED1t v\xE0 kh\xF4ng c\xF3
+        \u0111\u1EDDm."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: asthma-dry
+        text: "Ho khan, kh\xF4ng s\u1ED1t, kh\xF4ng \u0111\u1EDDm"
+        correctCategory: 2
+        essential: 1
+  - id: asthma-q3
+    question: "Tr\u01B0\u1EDBc \u0111\xE2y anh t\u1EEBng b\u1ECB nh\u01B0 v\u1EADy
+      ch\u01B0a?"
+    response:
+      transcript: "T\xF4i \u0111\u01B0\u1EE3c ch\u1EA9n \u0111o\xE1n hen t\u1EEB
+        nh\u1ECF v\xE0 th\u1EC9nh tho\u1EA3ng l\xEAn c\u01A1n khi g\u1EB7p b\u1EE5i
+        ho\u1EB7c l\xF4ng m\xE8o."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: asthma-history
+        text: "Ti\u1EC1n s\u1EED hen t\u1EEB nh\u1ECF"
+        correctCategory: 3
+        essential: 1
+      - id: asthma-trigger
+        text: "B\u1EE5i v\xE0 l\xF4ng m\xE8o t\u1EEBng g\xE2y c\u01A1n"
+        correctCategory: 3
+        essential: 1
+  - id: asthma-q4
+    question: "Anh \u0111\xE3 d\xF9ng thu\u1ED1c c\u1EAFt c\u01A1n ch\u01B0a?"
+    response:
+      transcript: "T\xF4i qu\xEAn mang b\xECnh x\u1ECBt n\xEAn ch\u01B0a d\xF9ng
+        thu\u1ED1c h\xF4m nay."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: asthma-inhaler
+        text: "Ch\u01B0a d\xF9ng b\xECnh x\u1ECBt c\u1EAFt c\u01A1n h\xF4m nay"
+        correctCategory: 3
+        essential: 1

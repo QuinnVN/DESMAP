@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 12 - Trao nguoc da day thuc quan
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "Phan M\u1EF9 Duy\xEAn"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "G\u1EA7n m\u1ED9t th\xE1ng nay t\xF4i hay n\xF3ng r\xE1t sau x\u01B0\u01A1ng
+      \u1EE9c v\xE0 \u1EE3 chua, nh\u1EA5t l\xE0 sau b\u1EEFa t\u1ED1i."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: gerd-time
+      text: "Tri\u1EC7u ch\u1EE9ng g\u1EA7n m\u1ED9t th\xE1ng"
+      correctCategory: 0
+      essential: 1
+    - id: gerd-heartburn
+      text: "N\xF3ng r\xE1t sau x\u01B0\u01A1ng \u1EE9c"
+      correctCategory: 2
+      essential: 1
+    - id: gerd-regurg
+      text: "\u1EE2 chua sau \u0103n"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: gerd-q1
+    question: "Tri\u1EC7u ch\u1EE9ng thay \u0111\u1ED5i theo t\u01B0 th\u1EBF ho\u1EB7c
+      th\u1EE9c \u0103n th\u1EBF n\xE0o?"
+    response:
+      transcript: "N\u1EB1m xu\u1ED1ng ngay sau \u0103n th\xEC n\u1EB7ng h\u01A1n;
+        c\xE0 ph\xEA v\xE0 \u0111\u1ED3 cay c\u0169ng l\xE0m t\xF4i kh\xF3 ch\u1ECBu."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: gerd-trigger
+        text: "N\u1EB7ng h\u01A1n khi n\u1EB1m sau \u0103n, u\u1ED1ng c\xE0 ph\xEA
+          ho\u1EB7c \u0103n cay"
+        correctCategory: 0
+        essential: 1
+  - id: gerd-q2
+    question: "Ch\u1ECB c\xF3 kh\xF3 nu\u1ED1t, n\xF4n ra m\xE1u ho\u1EB7c s\u1EE5t
+      c\xE2n kh\xF4ng?"
+    response:
+      transcript: "T\xF4i kh\xF4ng kh\xF3 nu\u1ED1t, kh\xF4ng n\xF4n ra m\xE1u v\xE0
+        c\xE2n n\u1EB7ng kh\xF4ng \u0111\u1ED5i."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: gerd-redflags
+        text: "Kh\xF4ng kh\xF3 nu\u1ED1t, xu\u1EA5t huy\u1EBFt hay s\u1EE5t c\xE2n"
+        correctCategory: 2
+        essential: 1
+  - id: gerd-q3
+    question: "Ch\u1ECB c\xF3 b\u1EC7nh n\u1EC1n ho\u1EB7c \u0111ang d\xF9ng thu\u1ED1c
+      g\xEC?"
+    response:
+      transcript: "T\xF4i th\u1EEBa c\xE2n v\xE0 th\u1EC9nh tho\u1EA3ng t\u1EF1 mua
+        thu\u1ED1c kh\xE1ng acid khi b\u1ECB n\xF3ng r\xE1t."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: gerd-history
+        text: "Th\u1EEBa c\xE2n v\xE0 th\u1EC9nh tho\u1EA3ng d\xF9ng thu\u1ED1c kh\xE1ng
+          acid"
+        correctCategory: 3
+        essential: 1

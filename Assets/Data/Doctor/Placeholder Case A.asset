@@ -15,66 +15,64 @@ MonoBehaviour:
   patientName: Alex Morgan
   selectionWeight: 1
   initialDialogue:
-    transcript: I started feeling unwell yesterday evening after my usual long commute.
-      I have a dry cough and a mild fever. I also watched a movie last night.
+    transcript: Tôi bắt đầu thấy không khỏe từ tối qua sau chuyến đi làm dài như thường lệ.
+      Tôi bị ho khan và sốt nhẹ. Tối qua tôi cũng xem một bộ phim.
     audioClip: {fileID: 0}
     selectableCards:
     - id: a-time
-      text: Started yesterday evening
+      text: Khởi phát từ tối qua
       correctCategory: 0
       essential: 1
     - id: a-cough
-      text: Dry cough
+      text: Ho khan
       correctCategory: 2
       essential: 1
     - id: a-fever
-      text: Mild fever
+      text: Sốt nhẹ
       correctCategory: 2
       essential: 1
     - id: a-movie
-      text: Watched a movie last night
+      text: Xem phim tối qua
       correctCategory: 0
       essential: 0
   phases:
   - id: a-when
-    question: Exactly when did this begin?
+    question: Bệnh bắt đầu chính xác khi nào?
     response:
-      transcript: It began around seven in the evening, just after dinner.
+      transcript: Bệnh bắt đầu khoảng bảy giờ tối, ngay sau bữa tối.
       audioClip: {fileID: 0}
       selectableCards:
       - id: a-dinner
-        text: Had dinner before symptoms began
+        text: Ăn tối trước khi xuất hiện triệu chứng
         correctCategory: 0
         essential: 0
   - id: a-travel-q
-    question: Have you travelled recently?
+    question: Gần đây bạn có đi xa không?
     response:
-      transcript: I have not travelled recently, not even out of the city.
+      transcript: Gần đây tôi không đi xa, thậm chí không ra khỏi thành phố.
       audioClip: {fileID: 0}
       selectableCards:
       - id: a-travel
-        text: No recent travel
+        text: Gần đây không đi xa
         correctCategory: 1
         essential: 1
   - id: a-symptoms-q
-    question: Can you describe the symptoms in more detail?
+    question: Bạn có thể mô tả triệu chứng chi tiết hơn không?
     response:
-      transcript: The cough is dry and the fever has stayed mild. My favourite tea
-        has not helped.
+      transcript: Tôi ho khan và chỉ sốt nhẹ. Uống loại trà yêu thích cũng không đỡ.
       audioClip: {fileID: 0}
       selectableCards:
       - id: a-tea
-        text: Tried drinking tea
+        text: Đã thử uống trà
         correctCategory: 0
         essential: 0
   - id: a-history-q
-    question: Do you have any relevant medical history?
+    question: Bạn có tiền sử bệnh nào liên quan không?
     response:
-      transcript: I have a history of asthma, although it has been controlled for
-        years.
+      transcript: Tôi có tiền sử hen suyễn, nhưng bệnh đã được kiểm soát nhiều năm.
       audioClip: {fileID: 0}
       selectableCards:
       - id: a-history
-        text: History of asthma
+        text: Tiền sử hen suyễn
         correctCategory: 3
         essential: 1

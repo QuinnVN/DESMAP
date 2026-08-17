@@ -145,7 +145,7 @@ namespace NCKH.VR.Clinic.Editor
                 SetFloat(serializedPatient, "emergencyAudioMaxDistance", 15f);
                 serializedPatient.ApplyModifiedPropertiesWithoutUndo();
 
-                sicknessText.text = "Sickness: [Placeholder]";
+                sicknessText.text = "Bệnh: [Chưa xác định]";
                 EditorUtility.SetDirty(sicknessText);
                 PrefabUtility.SaveAsPrefabAsset(root, PatientPrefabPath);
             }
@@ -307,7 +307,7 @@ namespace NCKH.VR.Clinic.Editor
             if (existingTotalScore == null)
                 InsetWithinParent(totalScoreRect, 0.18f);
             totalScoreRect.SetAsLastSibling();
-            totalScoreText.text = "TOTAL SCORE\n0";
+            totalScoreText.text = "TỔNG ĐIỂM\n0";
             totalScoreText.alignment = TextAlignmentOptions.Center;
             totalScoreText.fontSize = 48f;
             totalScoreText.enableAutoSizing = true;
