@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NCKH.VR.Doctor;
+using NCKH.VR.NPC;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -61,6 +62,78 @@ namespace NCKH.VR.Doctor.Tests
                 SerializedObject serializedManager = new SerializedObject(manager);
                 Assert.That(serializedManager.FindProperty("notebookInteractable").objectReferenceValue,
                     Is.EqualTo(interactable));
+            }
+            finally
+            {
+                if (openedForTest)
+                    EditorSceneManager.CloseScene(scene, true);
+            }
+        }
+
+        [Test]
+        public void PatientUsesCasualNpcPrefabAndPreservesPresenterWiring()
+        {
+            Scene scene = SceneManager.GetSceneByPath(ScenePath);
+            bool openedForTest = !scene.IsValid() || !scene.isLoaded;
+            if (openedForTest)
+                scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
+
+            try
+            {
+                GameObject npc = FindRoot(scene, "NPC");
+                Assert.That(npc, Is.Not.Null);
+                Assert.That(npc.transform.Find("Capsule"), Is.Null,
+                    "The placeholder capsule should not remain in Game 2.");
+                Assert.That(npc.transform.Find("Canvas"), Is.Not.Null,
+                    "The existing patient dialogue canvas should be preserved.");
+
+                DoctorPatientPresenter presenter = npc.GetComponent<DoctorPatientPresenter>();
+                AudioSource voiceSource = npc.GetComponent<AudioSource>();
+                Assert.That(presenter, Is.Not.Null);
+                Assert.That(voiceSource, Is.Not.Null);
+
+                SerializedObject serializedPresenter = new SerializedObject(presenter);
+                GameObject modelRoot = serializedPresenter.FindProperty("modelRoot").objectReferenceValue
+                    as GameObject;
+                Assert.That(modelRoot, Is.Not.Null);
+                Assert.That(modelRoot.transform.parent, Is.EqualTo(npc.transform));
+                Assert.That(modelRoot.transform.localPosition, Is.EqualTo(Vector3.zero));
+                Assert.That(Quaternion.Angle(modelRoot.transform.localRotation,
+                    Quaternion.Euler(0f, 180f, 0f)), Is.LessThan(0.01f));
+                Assert.That(modelRoot.transform.localScale, Is.EqualTo(Vector3.one));
+                Assert.That(PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(modelRoot),
+                    Is.EqualTo("Assets/Prefabs/Casual NPC.prefab"));
+                Assert.That(modelRoot.GetComponent<NpcAppearanceRandomizer>(), Is.Not.Null);
+                SerializedObject serializedAppearance = new SerializedObject(
+                    modelRoot.GetComponent<NpcAppearanceRandomizer>());
+                Assert.That(serializedAppearance.FindProperty("externalHairSurfaceOffset").floatValue,
+                    Is.EqualTo(0.003f).Within(0.0001f));
+                SerializedProperty maleHairstyles = serializedAppearance.FindProperty(
+                    "maleHairstylePrefabs");
+                Assert.That(maleHairstyles.arraySize, Is.EqualTo(2));
+                Assert.That(maleHairstyles.GetArrayElementAtIndex(0).objectReferenceValue.name,
+                    Is.EqualTo("npc_haircut_d_01"));
+                Assert.That(maleHairstyles.GetArrayElementAtIndex(1).objectReferenceValue.name,
+                    Is.EqualTo("npc_haircut_e_01"));
+                NpcMotionPlayer motionPlayer = modelRoot.GetComponent<NpcMotionPlayer>();
+                Assert.That(motionPlayer, Is.Not.Null);
+                Assert.That(motionPlayer.Mode, Is.EqualTo(NpcMotionMode.StaticHumanoidPose));
+                Assert.That(motionPlayer.StaticPose, Is.Not.Null);
+                Assert.That(motionPlayer.StaticPose.IsComplete, Is.True);
+                Assert.That(motionPlayer.TrackHead, Is.True);
+                Assert.That(motionPlayer.LookTarget, Is.Not.Null);
+                Assert.That(motionPlayer.LookTarget.CompareTag("MainCamera"), Is.True);
+                Assert.That(serializedPresenter.FindProperty("voiceSource").objectReferenceValue,
+                    Is.EqualTo(voiceSource));
+
+                CapsuleCollider collider = modelRoot.GetComponent<CapsuleCollider>();
+                Assert.That(collider, Is.Not.Null);
+                Assert.That(collider.isTrigger, Is.False);
+                Assert.That(collider.center.x, Is.EqualTo(0f).Within(0.0001f));
+                Assert.That(collider.center.y, Is.EqualTo(0.62f).Within(0.0001f));
+                Assert.That(collider.center.z, Is.EqualTo(0f).Within(0.0001f));
+                Assert.That(collider.radius, Is.EqualTo(0.36f).Within(0.0001f));
+                Assert.That(collider.height, Is.EqualTo(1.2f).Within(0.0001f));
             }
             finally
             {

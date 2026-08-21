@@ -70,6 +70,9 @@ namespace NCKH.VR.Clinic
 
         public event Action<int> ScoreChanged;
         public event Action<int> RoundEnded;
+        public event Action RoundStarted;
+        public event Action<PatientActor, int> PatientSpawned;
+        public event Action<PatientActor, PatientResolution, int, int> PatientResolvedTelemetry;
 
         public int Score { get; private set; }
         public float RemainingRoundTime => clock.RemainingRoundTime;
@@ -193,6 +196,7 @@ namespace NCKH.VR.Clinic
             missingSicknessWarningRaised = false;
             missingEmergencySicknessWarningRaised = false;
             clock.Begin(initialPreparationDelay, roundDuration);
+            RoundStarted?.Invoke();
 
             if (clock.State == ClinicRoundState.Running)
                 BeginPatientArrivals();
@@ -319,6 +323,7 @@ namespace NCKH.VR.Clinic
                 playerHead,
                 patientFadeDuration,
                 debugMode);
+            PatientSpawned?.Invoke(patient, FindSlotIndex(patient));
         }
 
         private void WarnMissingSickness(bool emergencyRequired)
@@ -368,6 +373,8 @@ namespace NCKH.VR.Clinic
                 Score += delta;
                 ScoreChanged?.Invoke(Score);
             }
+
+            PatientResolvedTelemetry?.Invoke(patient, resolution, delta, Score);
 
             PatientBedSlot slot = bedSlots[slotIndex];
             slot.BeginCooldown(resolvedBedCooldown);

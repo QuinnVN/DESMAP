@@ -6,8 +6,14 @@
 - Render pipeline: Universal Render Pipeline `17.5.0`.
 - XR stack: XR Interaction Toolkit `3.5.1`, XR Plug-in Management `4.7.0`, and OpenXR `1.17.1`.
 - Input stack: Input System `1.19.0`. Locomotion and interaction are action-based; do not use the legacy Input Manager APIs.
-- The enabled build scene is `Assets/Scenes/Main Scene.unity`.
+- The first enabled build scene is `Assets/Scenes/Standby.unity`.
 - Treat the Unity versions recorded in `ProjectSettings/ProjectVersion.txt` and `Packages/manifest.json` as authoritative.
+
+## Language
+
+- All player-facing text must be written in Vietnamese, including UI, HUDs, instructions, dialogue, labels, status messages, and displayed errors.
+- Keep code symbols, API field names, telemetry event names, command names, and scene IDs in their established protocol form; translate only the text shown to players.
+- When adding Vietnamese TextMesh Pro content, use a font asset that supports the required glyphs and verify every diacritic in the Unity Editor and on the target headset.
 
 ## Repository map
 

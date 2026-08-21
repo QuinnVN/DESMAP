@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace NCKH.VR.Clinic
@@ -18,6 +20,16 @@ namespace NCKH.VR.Clinic
     {
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int ColorId = Shader.PropertyToID("_Color");
+        private static readonly int SurfaceId = Shader.PropertyToID("_Surface");
+        private static readonly int BlendId = Shader.PropertyToID("_Blend");
+        private static readonly int SrcBlendId = Shader.PropertyToID("_SrcBlend");
+        private static readonly int DstBlendId = Shader.PropertyToID("_DstBlend");
+        private static readonly int SrcBlendAlphaId = Shader.PropertyToID("_SrcBlendAlpha");
+        private static readonly int DstBlendAlphaId = Shader.PropertyToID("_DstBlendAlpha");
+        private static readonly int ZWriteId = Shader.PropertyToID("_ZWrite");
+        private static readonly int AlphaClipId = Shader.PropertyToID("_AlphaClip");
+        private static readonly Dictionary<Material, Material> TransparentMaterialCache =
+            new Dictionary<Material, Material>(96);
 
         [Header("Patient UI")]
         [SerializeField] private TMP_Text sicknessText;
@@ -40,7 +52,11 @@ namespace NCKH.VR.Clinic
         [SerializeField] private Canvas[] patientCanvases = Array.Empty<Canvas>();
         [SerializeField] private Collider[] patientColliders = Array.Empty<Collider>();
 
+        [Header("Humanoid Appearance")]
+        [SerializeField] private PatientAppearanceController appearanceController;
+
         [Header("Severity 4 Alert")]
+        [SerializeField] private bool enableEmergencyAlert = true;
         [SerializeField] private AudioClip dyingSfx;
         [SerializeField, Min(0.01f)] private float emergencyFlashInterval = 0.5f;
         [SerializeField] private Color emergencyFlashColor = Color.red;
@@ -48,7 +64,7 @@ namespace NCKH.VR.Clinic
         [SerializeField, Min(0f)] private float emergencyAudioMaxDistance = 15f;
 
         private MaterialPropertyBlock propertyBlock;
-        private Color[] rendererColors = Array.Empty<Color>();
+        private RendererVisualState[] rendererVisualStates = Array.Empty<RendererVisualState>();
         private AudioSource emergencyAudioSource;
         private Transform playerHead;
         private float fadeDuration;
@@ -57,6 +73,9 @@ namespace NCKH.VR.Clinic
         private float treatmentDuration;
         private float emergencyFlashCountdown;
         private bool emergencyFlashRed;
+        private bool emergencyAlertRunning;
+        private Renderer[] activeRenderers = Array.Empty<Renderer>();
+        private bool appearanceRenderersActive;
 
         public event Action<PatientActor, PatientResolution> Resolved;
         public event Action<PatientActor> BecameInactive;
@@ -65,9 +84,11 @@ namespace NCKH.VR.Clinic
         public string SicknessName { get; private set; } = string.Empty;
         public int Severity { get; private set; }
         public float RemainingTreatmentTime { get; private set; }
+        public bool EmergencyAlertEnabled => enableEmergencyAlert;
 
         private void Awake()
         {
+            activeRenderers = fadeRenderers;
             EnsureRuntimeCache();
             SetColliderState(false);
             ApplyVisuals();
@@ -97,6 +118,7 @@ namespace NCKH.VR.Clinic
                     visualAlpha = MoveAlpha(visualAlpha, 1f, deltaTime, fadeDuration);
                     if (visualAlpha >= 1f)
                     {
+                        SetAppearanceFadeMaterials(false);
                         State = PatientActorState.Active;
                         RemainingTreatmentTime = treatmentDuration;
                         SetColliderState(true);
@@ -147,6 +169,30 @@ namespace NCKH.VR.Clinic
             proximityAlpha = 0f;
             State = PatientActorState.FadingIn;
 
+            bool emergency = Severity == ClinicRoundRules.MaximumSeverity;
+            if (appearanceController != null)
+            {
+                if (!appearanceController.RandomizeAppearance(emergency))
+                {
+                    DeactivateImmediately();
+                    return;
+                }
+
+                IReadOnlyList<Renderer> appearanceRenderers = appearanceController.ActiveRenderers;
+                activeRenderers = new Renderer[appearanceRenderers.Count];
+                for (int i = 0; i < appearanceRenderers.Count; i++)
+                    activeRenderers[i] = appearanceRenderers[i];
+
+                appearanceRenderersActive = true;
+                CacheRendererColors();
+                SetAppearanceFadeMaterials(true);
+            }
+            else
+            {
+                activeRenderers = fadeRenderers;
+                appearanceRenderersActive = false;
+            }
+
             if (sicknessText != null)
             {
                 sicknessText.text = showSeverity
@@ -174,6 +220,7 @@ namespace NCKH.VR.Clinic
             StopEmergencyAlert();
             SetColliderState(false);
             SetButtonInteractable(false);
+            SetAppearanceFadeMaterials(true);
         }
 
         public void DeactivateImmediately()
@@ -186,6 +233,7 @@ namespace NCKH.VR.Clinic
             SetColliderState(false);
             SetButtonInteractable(false);
             ApplyVisuals();
+            ReleaseAppearance();
             enabled = false;
         }
 
@@ -204,6 +252,7 @@ namespace NCKH.VR.Clinic
             StopEmergencyAlert();
             SetColliderState(false);
             SetButtonInteractable(false);
+            SetAppearanceFadeMaterials(true);
             Resolved?.Invoke(this, resolution);
         }
 
@@ -217,6 +266,7 @@ namespace NCKH.VR.Clinic
             SetColliderState(false);
             SetButtonInteractable(false);
             ApplyVisuals();
+            ReleaseAppearance();
             enabled = false;
             BecameInactive?.Invoke(this);
         }
@@ -263,9 +313,10 @@ namespace NCKH.VR.Clinic
         private void StartEmergencyAlert()
         {
             StopEmergencyAlert();
-            if (Severity != ClinicRoundRules.MaximumSeverity)
+            if (!ShouldRunEmergencyAlert())
                 return;
 
+            emergencyAlertRunning = true;
             emergencyFlashRed = true;
             emergencyFlashCountdown = Mathf.Max(0.01f, emergencyFlashInterval);
 
@@ -279,6 +330,7 @@ namespace NCKH.VR.Clinic
 
         private void StopEmergencyAlert()
         {
+            emergencyAlertRunning = false;
             emergencyFlashRed = false;
             emergencyFlashCountdown = 0f;
 
@@ -288,10 +340,18 @@ namespace NCKH.VR.Clinic
 
         private void UpdateEmergencyFlash(float deltaTime)
         {
-            if (Severity != ClinicRoundRules.MaximumSeverity
-                || (State != PatientActorState.FadingIn && State != PatientActorState.Active))
+            if (!ShouldRunEmergencyAlert())
             {
-                emergencyFlashRed = false;
+                if (emergencyAlertRunning)
+                    StopEmergencyAlert();
+                else
+                    emergencyFlashRed = false;
+                return;
+            }
+
+            if (!emergencyAlertRunning)
+            {
+                StartEmergencyAlert();
                 return;
             }
 
@@ -304,29 +364,50 @@ namespace NCKH.VR.Clinic
             }
         }
 
+        private bool ShouldRunEmergencyAlert()
+        {
+            return enableEmergencyAlert
+                && Severity == ClinicRoundRules.MaximumSeverity
+                && (State == PatientActorState.FadingIn || State == PatientActorState.Active);
+        }
+
         private void ApplyVisuals()
         {
             EnsureRuntimeCache();
 
-            for (int i = 0; i < fadeRenderers.Length; i++)
+            for (int i = 0; i < activeRenderers.Length; i++)
             {
-                Renderer targetRenderer = fadeRenderers[i];
+                Renderer targetRenderer = activeRenderers[i];
                 if (targetRenderer == null)
                     continue;
 
-                targetRenderer.enabled = visualAlpha > 0f;
-                Color color = i < rendererColors.Length ? rendererColors[i] : Color.white;
-                if (emergencyFlashRed)
+                if (appearanceRenderersActive)
+                    targetRenderer.forceRenderingOff = visualAlpha <= 0f;
+                else
+                    targetRenderer.enabled = visualAlpha > 0f;
+                if (i >= rendererVisualStates.Length)
+                    continue;
+
+                RendererVisualState visualState = rendererVisualStates[i];
+                for (int materialIndex = 0; materialIndex < visualState.MaterialColors.Length; materialIndex++)
                 {
-                    float originalAlpha = color.a;
-                    color = emergencyFlashColor;
-                    color.a = originalAlpha;
+                    Color color = visualState.MaterialColors[materialIndex];
+                    if (emergencyFlashRed)
+                    {
+                        float originalAlpha = color.a;
+                        color = emergencyFlashColor;
+                        color.a = originalAlpha;
+                    }
+
+                    color.a *= visualAlpha;
+                    propertyBlock.Clear();
+                    targetRenderer.GetPropertyBlock(propertyBlock, materialIndex);
+                    if (visualState.HasBaseColor[materialIndex])
+                        propertyBlock.SetColor(BaseColorId, color);
+                    if (visualState.HasColor[materialIndex])
+                        propertyBlock.SetColor(ColorId, color);
+                    targetRenderer.SetPropertyBlock(propertyBlock, materialIndex);
                 }
-                color.a *= visualAlpha;
-                targetRenderer.GetPropertyBlock(propertyBlock);
-                propertyBlock.SetColor(BaseColorId, color);
-                propertyBlock.SetColor(ColorId, color);
-                targetRenderer.SetPropertyBlock(propertyBlock);
             }
 
             bool canvasesVisible = visualAlpha > 0f;
@@ -359,28 +440,101 @@ namespace NCKH.VR.Clinic
 
         private void CacheRendererColors()
         {
-            rendererColors = new Color[fadeRenderers.Length];
-            for (int i = 0; i < fadeRenderers.Length; i++)
+            rendererVisualStates = new RendererVisualState[activeRenderers.Length];
+            for (int i = 0; i < activeRenderers.Length; i++)
             {
-                Renderer targetRenderer = fadeRenderers[i];
-                Material material = targetRenderer != null ? targetRenderer.sharedMaterial : null;
-                if (material == null)
+                Renderer targetRenderer = activeRenderers[i];
+                Material[] materials = targetRenderer != null
+                    ? targetRenderer.sharedMaterials
+                    : Array.Empty<Material>();
+                RendererVisualState visualState = new RendererVisualState(materials.Length);
+                for (int materialIndex = 0; materialIndex < materials.Length; materialIndex++)
                 {
-                    rendererColors[i] = Color.white;
+                    Material material = materials[materialIndex];
+                    visualState.OriginalMaterials[materialIndex] = material;
+                    visualState.FadeMaterials[materialIndex] = GetTransparentFadeMaterial(material);
+                    bool hasBaseColor = material != null && material.HasProperty(BaseColorId);
+                    bool hasColor = material != null && material.HasProperty(ColorId);
+                    visualState.HasBaseColor[materialIndex] = hasBaseColor;
+                    visualState.HasColor[materialIndex] = hasColor;
+                    visualState.MaterialColors[materialIndex] = hasBaseColor
+                        ? material.GetColor(BaseColorId)
+                        : hasColor
+                            ? material.GetColor(ColorId)
+                            : Color.white;
                 }
-                else if (material.HasProperty(BaseColorId))
-                {
-                    rendererColors[i] = material.GetColor(BaseColorId);
-                }
-                else if (material.HasProperty(ColorId))
-                {
-                    rendererColors[i] = material.GetColor(ColorId);
-                }
-                else
-                {
-                    rendererColors[i] = Color.white;
-                }
+
+                rendererVisualStates[i] = visualState;
             }
+        }
+
+        private void SetAppearanceFadeMaterials(bool useFadeMaterials)
+        {
+            if (!appearanceRenderersActive)
+                return;
+
+            for (int i = 0; i < rendererVisualStates.Length; i++)
+            {
+                RendererVisualState visualState = rendererVisualStates[i];
+                Renderer targetRenderer = i < activeRenderers.Length ? activeRenderers[i] : null;
+                if (targetRenderer == null)
+                    continue;
+
+                targetRenderer.sharedMaterials = useFadeMaterials
+                    ? visualState.FadeMaterials
+                    : visualState.OriginalMaterials;
+            }
+        }
+
+        private void ReleaseAppearance()
+        {
+            if (appearanceController != null)
+                appearanceController.ClearAppearance();
+
+            activeRenderers = Array.Empty<Renderer>();
+            rendererVisualStates = Array.Empty<RendererVisualState>();
+            appearanceRenderersActive = false;
+        }
+
+        private static Material GetTransparentFadeMaterial(Material source)
+        {
+            if (source == null || !source.HasProperty(SurfaceId))
+                return source;
+            if (TransparentMaterialCache.TryGetValue(source, out Material cached) && cached != null)
+                return cached;
+
+            Material fadeMaterial = new Material(source)
+            {
+                name = source.name + " (Patient Fade)",
+                hideFlags = HideFlags.HideAndDontSave,
+                renderQueue = (int)RenderQueue.Transparent
+            };
+            fadeMaterial.SetOverrideTag("RenderType", "Transparent");
+            fadeMaterial.SetFloat(SurfaceId, 1f);
+            if (fadeMaterial.HasProperty(BlendId))
+                fadeMaterial.SetFloat(BlendId, 0f);
+            if (fadeMaterial.HasProperty(SrcBlendId))
+                fadeMaterial.SetFloat(SrcBlendId, (float)BlendMode.SrcAlpha);
+            if (fadeMaterial.HasProperty(DstBlendId))
+                fadeMaterial.SetFloat(DstBlendId, (float)BlendMode.OneMinusSrcAlpha);
+            if (fadeMaterial.HasProperty(SrcBlendAlphaId))
+                fadeMaterial.SetFloat(SrcBlendAlphaId, (float)BlendMode.One);
+            if (fadeMaterial.HasProperty(DstBlendAlphaId))
+                fadeMaterial.SetFloat(DstBlendAlphaId, (float)BlendMode.OneMinusSrcAlpha);
+            if (fadeMaterial.HasProperty(ZWriteId))
+                fadeMaterial.SetFloat(ZWriteId, 0f);
+            if (fadeMaterial.HasProperty(AlphaClipId))
+                fadeMaterial.SetFloat(AlphaClipId, 0f);
+            fadeMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            fadeMaterial.DisableKeyword("_ALPHATEST_ON");
+            TransparentMaterialCache[source] = fadeMaterial;
+            return fadeMaterial;
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetTransparentMaterialCache()
+        {
+            TransparentMaterialCache.Clear();
         }
 
         private void EnsureRuntimeCache()
@@ -388,8 +542,29 @@ namespace NCKH.VR.Clinic
             if (propertyBlock == null)
                 propertyBlock = new MaterialPropertyBlock();
 
-            if (rendererColors == null || rendererColors.Length != fadeRenderers.Length)
+            if (activeRenderers == null)
+                activeRenderers = fadeRenderers;
+
+            if (rendererVisualStates == null || rendererVisualStates.Length != activeRenderers.Length)
                 CacheRendererColors();
+        }
+
+        private sealed class RendererVisualState
+        {
+            public RendererVisualState(int materialCount)
+            {
+                MaterialColors = new Color[materialCount];
+                HasBaseColor = new bool[materialCount];
+                HasColor = new bool[materialCount];
+                OriginalMaterials = new Material[materialCount];
+                FadeMaterials = new Material[materialCount];
+            }
+
+            public Color[] MaterialColors { get; }
+            public bool[] HasBaseColor { get; }
+            public bool[] HasColor { get; }
+            public Material[] OriginalMaterials { get; }
+            public Material[] FadeMaterials { get; }
         }
 
         private void EnsureEmergencyAudioSource()

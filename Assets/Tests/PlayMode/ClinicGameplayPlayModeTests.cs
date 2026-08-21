@@ -475,6 +475,9 @@ namespace NCKH.VR.Clinic.Tests
             AudioClip clip = AudioClip.Create("Dying SFX Test", 4410, 1, 44100, false);
             SetField(patient, "dyingSfx", clip);
             SetField(patient, "emergencyFlashInterval", 0.05f);
+            Renderer renderer = ((Renderer[])GetField(patient, "fadeRenderers"))[0];
+            Material rendererMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            renderer.sharedMaterial = rendererMaterial;
 
             patient.Activate("Cardiac Arrest", ClinicRoundRules.MaximumSeverity, 5f, head, 0f, false);
             yield return null;
@@ -488,20 +491,25 @@ namespace NCKH.VR.Clinic.Tests
             Assert.That(source.minDistance, Is.EqualTo(1f));
             Assert.That(source.maxDistance, Is.EqualTo(15f));
 
-            Renderer renderer = ((Renderer[])GetField(patient, "fadeRenderers"))[0];
             MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
-            renderer.GetPropertyBlock(propertyBlock);
+            renderer.GetPropertyBlock(propertyBlock, 0);
             Assert.That(propertyBlock.GetColor("_BaseColor"), Is.EqualTo(Color.red));
 
             InvokeNonPublic(patient, "UpdateEmergencyFlash", 0.05f);
             InvokeNonPublic(patient, "ApplyVisuals");
-            renderer.GetPropertyBlock(propertyBlock);
+            renderer.GetPropertyBlock(propertyBlock, 0);
             Assert.That(propertyBlock.GetColor("_BaseColor"), Is.EqualTo(Color.white));
+
+            SetField(patient, "enableEmergencyAlert", false);
+            InvokeNonPublic(patient, "UpdateEmergencyFlash", 0f);
+            Assert.That(patient.EmergencyAlertEnabled, Is.False);
+            Assert.That(source.isPlaying, Is.False);
 
             patient.DeactivateImmediately();
             Assert.That(source.isPlaying, Is.False);
 
             Object.Destroy(clip);
+            Object.Destroy(rendererMaterial);
             Object.Destroy(head.gameObject);
             Object.Destroy(patient.gameObject);
         }

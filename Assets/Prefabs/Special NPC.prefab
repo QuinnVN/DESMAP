@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7036868018483589083
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7822987206036386504}
+  - component: {fileID: 2635029280866458069}
+  m_Layer: 0
+  m_Name: Special NPC
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7822987206036386504
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7036868018483589083}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8192959526854578266}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2635029280866458069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7036868018483589083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a5c86063ffe1644caa10e11c2bb18a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NCKH.Gameplay::NCKH.VR.NPC.NpcAppearanceRandomizer
+  appearanceRoot: {fileID: 8192959526854578266}
+  femaleModelPrefabs:
+  - {fileID: 325064481157530715, guid: 55485ac535c175349947274fa70cebf8, type: 3}
+  - {fileID: 3874598115065912227, guid: 1fe269fbb68b9424a89aa5233c3bac57, type: 3}
+  - {fileID: 8872920703529753144, guid: 3beca85ccf78ff046b69839f63a08db4, type: 3}
+  - {fileID: 5175287885032033881, guid: 8c3122039ff768544b38074b9a29b5ca, type: 3}
+  - {fileID: 3700327628920081571, guid: 166c67fe4c319d34d8e4879ba2aa067d, type: 3}
+  - {fileID: 7506581523683039060, guid: 2e19534a66fff9c428a3edb430159a49, type: 3}
+  - {fileID: 6853946164998454931, guid: f6226fa941b606f4282aa613df2b714a, type: 3}
+  - {fileID: 7066957129255783390, guid: fa491f798bd8d894cae47f6ebd2152a1, type: 3}
+  - {fileID: 9179483882046201519, guid: 603ccbf5b45db9247ba6933a7a22665d, type: 3}
+  - {fileID: 163437919091286819, guid: 8823c52aadceb6d4e83c600ec5918f2f, type: 3}
+  - {fileID: 5159981026371472998, guid: e516f4aef64b9cb4a8702186228d0038, type: 3}
+  - {fileID: 29696525701562454, guid: 8b539f4c1fa4bbd45a4b907adc90b53b, type: 3}
+  - {fileID: 6929252562043861089, guid: a11e5e15a0cb2cf42a4111594fec3d9e, type: 3}
+  - {fileID: 1073578148296737704, guid: 2ee9fadbda839b14390cefae7544a863, type: 3}
+  - {fileID: 5550633114641932903, guid: 9544cffd7117b5946a9a08b2a00f8897, type: 3}
+  - {fileID: 7276286699017876048, guid: f214d7051ec871a4fbc84f3830464cf0, type: 3}
+  - {fileID: 8391543214146812137, guid: 22bc52a5379b82d4da24a6d1c901c0ac, type: 3}
+  - {fileID: 3308345088553714224, guid: 530426d77fe8c9f4196bc3bb616104c1, type: 3}
+  - {fileID: 675059157534821338, guid: 91511321ba0e8274095c41a5e4bce5e7, type: 3}
+  - {fileID: 4016595186247289418, guid: d3a56ad9fe187b840a245a73402b9c38, type: 3}
+  - {fileID: 5190765707277951226, guid: 43c676bce64782046bdc0edc177061ee, type: 3}
+  - {fileID: 5903641392398478235, guid: f117394fac3d63142b5bfa9ced2fd93a, type: 3}
+  - {fileID: 4022510979780471373, guid: 75de84c32f10d9d439ff67980a183400, type: 3}
+  - {fileID: 8570224952586170430, guid: 301ad20ed33bad94aacbe232fd5f995d, type: 3}
+  maleModelPrefabs:
+  - {fileID: 9113276388034758843, guid: 97b666b56c5f6b946aedbacd7e5b3cc2, type: 3}
+  - {fileID: 4785619614251689888, guid: b75739660fae3424e82ef768ba8c086b, type: 3}
+  - {fileID: 8228168569649727526, guid: 7b966738a98150641a9db6e6e5ee1ced, type: 3}
+  - {fileID: 4562427536245082057, guid: 800e98c5ebf8508458625525451afa89, type: 3}
+  - {fileID: 2978669397222789458, guid: bcc7f2ff81b9fd9489d5761ebe6b8be1, type: 3}
+  - {fileID: 7434637450665023279, guid: 5e9fcd7619ce45c4e8bb2eb3fb002b83, type: 3}
+  - {fileID: 6623362320568463900, guid: 487b716051c9ba34789e227102021c1a, type: 3}
+  - {fileID: 6510770793296160989, guid: f3f6a26ce99bed3419e90f5a53731fca, type: 3}
+  - {fileID: 5262399889317322656, guid: d0331c4337e333f43a149d17c60e5a63, type: 3}
+  - {fileID: 5188830843432803469, guid: d9a0f3a692d4c3f4fbbcb1f232927ff7, type: 3}
+  - {fileID: 8713861979603102566, guid: 85c1bdd5e797bf74f9a82a2390bab628, type: 3}
+  - {fileID: 3679738156065547661, guid: 8bf33207fa7b67f4b99c0d550c225e94, type: 3}
+  - {fileID: 7947224729345238257, guid: 472844786d3052f4eb56814755697494, type: 3}
+  - {fileID: 2817061776289231723, guid: daa81465386295746906e4d6c82e12a8, type: 3}
+  - {fileID: 6696986762830324192, guid: 26ee9eff377d62145bbeb06d911f2122, type: 3}
+  - {fileID: 8762212401269063894, guid: b56e57cd21e1bf24389c7834e2c9cb8e, type: 3}
+  - {fileID: 2491940686088016227, guid: 733aedca53592c441b88af9bbe8abf2f, type: 3}
+  - {fileID: 3842411707920482829, guid: 07adb0e780fdd7b4a986fdec88e34615, type: 3}
+  - {fileID: 1125099778949252824, guid: 6d18266236b76bd44991bcfcabe1a91b, type: 3}
+  - {fileID: 7833224773693222506, guid: b4a19bb3455486045a8f851dcdc740cb, type: 3}
+  - {fileID: 8927966422000023579, guid: 9dc04915c0e1d93409e5377bd8d4c454, type: 3}
+  - {fileID: 5856976986155528465, guid: f8a2355186f794a44b5ac1bbcad3feb7, type: 3}
+  - {fileID: 6774774003453789480, guid: 45726b6d14d8b0648842e95e7866eabe, type: 3}
+  - {fileID: 1780356420095869438, guid: 86cd8f65907537e439d1c8f3882d5642, type: 3}
+  hairMode: 1
+  hairstylePrefabs: []
+  embeddedHairPrefix: Hairs
+  randomizeOnAwake: 1
+--- !u!1 &7502424562483816346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8192959526854578266}
+  m_Layer: 0
+  m_Name: Appearance Root
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8192959526854578266
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502424562483816346}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7822987206036386504}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

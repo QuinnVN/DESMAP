@@ -60,6 +60,11 @@ namespace NCKH.VR.Doctor
         private bool locomotionStateCaptured;
 
         public event Action<int> RoundEnded;
+        public event Action RoundStarted;
+        public event Action<DoctorCaseDefinition> CasePresented;
+        public event Action<string> QuestionAsked;
+        public event Action<string, DoctorInfoCategory?> CardPlacementChanged;
+        public event Action<DoctorCaseDefinition, int, int> CaseSubmitted;
 
         public DoctorGameState State { get; private set; } = DoctorGameState.Idle;
         public float RemainingRoundTime { get; private set; }
@@ -156,6 +161,7 @@ namespace NCKH.VR.Doctor
             ClearPatientNotes();
             patientPresenter?.SetVisible(false);
             SetNotebookInteractionEnabled(false);
+            RoundStarted?.Invoke();
 
             if (preparationRemaining > 0f)
             {
@@ -203,6 +209,7 @@ namespace NCKH.VR.Doctor
                 ? patientPresenter.PresentDialogue(currentCase.InitialDialogue, dialogueFallbackDuration)
                 : Mathf.Max(0.01f, dialogueFallbackDuration);
             State = DoctorGameState.Listening;
+            CasePresented?.Invoke(currentCase);
         }
 
         private void EnterArrangingState()
@@ -269,6 +276,7 @@ namespace NCKH.VR.Doctor
                 ? patientPresenter.PresentDialogue(phase.Response, dialogueFallbackDuration)
                 : Mathf.Max(0.01f, dialogueFallbackDuration);
             State = DoctorGameState.Listening;
+            QuestionAsked?.Invoke(questionId);
         }
 
         private void OnDoneRequested()
@@ -276,7 +284,10 @@ namespace NCKH.VR.Doctor
             if (State != DoctorGameState.Arranging || currentCase == null)
                 return;
 
-            Score += DoctorGameRules.CountCorrectNotes(revealedCards, placements) * Mathf.Max(0, pointsPerCorrectInfo);
+            int scoreDelta = DoctorGameRules.CountCorrectNotes(revealedCards, placements)
+                * Mathf.Max(0, pointsPerCorrectInfo);
+            Score += scoreDelta;
+            CaseSubmitted?.Invoke(currentCase, scoreDelta, Score);
             SetNotebookInteractionEnabled(false);
             notebookUI?.CloseNotebook();
             notebookUI?.HideQuestionHud();
@@ -293,6 +304,7 @@ namespace NCKH.VR.Doctor
                 return;
 
             placements[cardId] = category;
+            CardPlacementChanged?.Invoke(cardId, category);
             notebookUI?.RefreshNotebook(revealedCards, placements);
         }
 
