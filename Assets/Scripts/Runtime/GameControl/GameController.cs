@@ -12,6 +12,8 @@ namespace NCKH.VR.GameControl
     [DisallowMultipleComponent]
     public sealed class GameController : MonoBehaviour
     {
+        public const string BackendBaseUrlPlayerPrefsKey = "nckh.backendBaseUrl.v1";
+
         private const int MaximumConcurrentTelemetryRequests = 4;
         private const float HeartbeatIntervalSeconds = 15f;
 
@@ -65,6 +67,7 @@ namespace NCKH.VR.GameControl
             : RemoteGamePhase.Standby;
         public string SessionId => sessionId;
         public bool IsConfigured => string.IsNullOrEmpty(configurationError);
+        public string BackendBaseUrl => backendBaseUrl;
 
         private void Awake()
         {
@@ -77,7 +80,42 @@ namespace NCKH.VR.GameControl
             Instance = this;
             DontDestroyOnLoad(gameObject);
             sessionId = Guid.NewGuid().ToString("N");
+            LoadPersistedBackendBaseUrl();
             RebuildSceneCatalog();
+        }
+
+        public bool TrySetBackendBaseUrl(string value, out string error)
+        {
+            string normalized = value == null ? string.Empty : value.Trim();
+            if (!TryValidateBackendBaseUrl(normalized, out error))
+                return false;
+
+            backendBaseUrl = normalized;
+            PlayerPrefs.SetString(BackendBaseUrlPlayerPrefsKey, backendBaseUrl);
+            PlayerPrefs.Save();
+            RebuildSceneCatalog();
+            RestartBackendConnection();
+            error = string.Empty;
+            return true;
+        }
+
+        public static bool TryValidateBackendBaseUrl(string value, out string error)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                error = "Vui lòng nhập URL máy chủ.";
+                return false;
+            }
+
+            if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out Uri uri)
+                || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            {
+                error = "URL máy chủ phải là địa chỉ HTTP hoặc HTTPS tuyệt đối.";
+                return false;
+            }
+
+            error = string.Empty;
+            return true;
         }
 
         private void OnEnable()
@@ -177,6 +215,36 @@ namespace NCKH.VR.GameControl
             }
         }
 
+        private void LoadPersistedBackendBaseUrl()
+        {
+            if (PlayerPrefs.HasKey(BackendBaseUrlPlayerPrefsKey))
+                backendBaseUrl = PlayerPrefs.GetString(BackendBaseUrlPlayerPrefsKey, backendBaseUrl).Trim();
+        }
+
+        private void RestartBackendConnection()
+        {
+            if (controlLoop != null)
+                StopCoroutine(controlLoop);
+            controlLoop = null;
+
+            ReleaseControlSocket(true);
+            pendingCommands.Clear();
+            acknowledgementCache.Clear();
+            pendingAcknowledgement = null;
+            pendingAcknowledgementCommandId = string.Empty;
+            controlSocketError = string.Empty;
+            backendHealthy = false;
+            controlSocketOpen = false;
+            controlSocketClosed = false;
+            disconnectedSince = -1f;
+            nextHeartbeatTime = 0f;
+            consecutiveFailures = 0;
+            stoppedForDisconnect = false;
+
+            if (isActiveAndEnabled && Instance == this)
+                controlLoop = StartCoroutine(ControlLoop());
+        }
+
         private IEnumerator CheckBackendHealth()
         {
             SetStatus("Đang kiểm tra kết nối máy chủ...");
@@ -207,6 +275,7 @@ namespace NCKH.VR.GameControl
             controlSocketClosed = false;
 
             string url = GameControlApi.CombineWebSocketUrl(backendBaseUrl, controlWebSocketRoute);
+            Debug.Log($"Connecting to control WebSocket at {url}...", this);
             if (string.IsNullOrEmpty(url))
             {
                 HandleNetworkFailure("Không thể tạo URL WebSocket điều khiển.");
@@ -360,6 +429,7 @@ namespace NCKH.VR.GameControl
 
             RemoteCommandAckDto acknowledgement = new RemoteCommandAckDto
             {
+                commandId = command.commandId,
                 sequence = command.sequence,
                 status = status,
                 sceneId = currentSceneId,
@@ -642,11 +712,8 @@ namespace NCKH.VR.GameControl
             scenesById.Clear();
             configurationError = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(backendBaseUrl))
-                configurationError = "Chưa cấu hình URL máy chủ.";
-            else if (!Uri.TryCreate(backendBaseUrl, UriKind.Absolute, out Uri uri)
-                || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-                configurationError = "URL máy chủ phải là địa chỉ HTTP hoặc HTTPS tuyệt đối.";
+            if (!TryValidateBackendBaseUrl(backendBaseUrl, out string backendError))
+                configurationError = backendError;
 
             ValidateRoute(healthRoute, "kiểm tra sức khỏe");
             ValidateRoute(telemetryRoute, "telemetry");

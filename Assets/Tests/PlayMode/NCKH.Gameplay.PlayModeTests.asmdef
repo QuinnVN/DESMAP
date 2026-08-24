@@ -2,9 +2,13 @@
   "name": "NCKH.Gameplay.PlayModeTests",
   "rootNamespace": "NCKH.VR.Clinic.Tests",
   "references": [
+    "NCKH.GameControl",
     "NCKH.Gameplay",
+    "NCKH.Lawyer",
+    "Unity.InputSystem",
     "Unity.UGUI",
-    "Unity.TextMeshPro"
+    "Unity.TextMeshPro",
+    "Unity.XR.Interaction.Toolkit"
   ],
   "optionalUnityReferences": [
     "TestAssemblies"

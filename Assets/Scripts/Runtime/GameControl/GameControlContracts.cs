@@ -53,6 +53,7 @@ namespace NCKH.VR.GameControl
     [Serializable]
     public sealed class RemoteCommandAckDto
     {
+        public string commandId;
         public long sequence;
         public string status;
         public string sceneId;

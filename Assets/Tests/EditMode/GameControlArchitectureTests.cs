@@ -6,7 +6,10 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace NCKH.VR.GameControl.Tests
 {
@@ -44,6 +47,24 @@ namespace NCKH.VR.GameControl.Tests
             Assert.That(GameControlApi.SttWebSocketRoute, Is.EqualTo("/api/ws/stt"));
         }
 
+        [TestCase("http://127.0.0.1:8000")]
+        [TestCase("https://server.example.com/vr")]
+        public void BackendUrlValidationAcceptsAbsoluteHttpUrls(string value)
+        {
+            Assert.That(GameController.TryValidateBackendBaseUrl(value, out string error), Is.True);
+            Assert.That(error, Is.Empty);
+        }
+
+        [TestCase("")]
+        [TestCase("server.local:8000")]
+        [TestCase("ftp://server.local")]
+        [TestCase("not a url")]
+        public void BackendUrlValidationRejectsUnsupportedValues(string value)
+        {
+            Assert.That(GameController.TryValidateBackendBaseUrl(value, out string error), Is.False);
+            Assert.That(error, Is.Not.Empty);
+        }
+
         [Test]
         public void CommandDtoRoundTripsThroughJsonUtility()
         {
@@ -69,6 +90,7 @@ namespace NCKH.VR.GameControl.Tests
         {
             RemoteCommandAckDto acknowledgement = new RemoteCommandAckDto
             {
+                commandId = "command-1",
                 sequence = 7,
                 status = "applied",
                 sceneId = "clinic",
@@ -81,6 +103,7 @@ namespace NCKH.VR.GameControl.Tests
             RemoteCommandAckDto restored = JsonUtility.FromJson<RemoteCommandAckDto>(
                 JsonUtility.ToJson(acknowledgement));
 
+            Assert.That(restored.commandId, Is.EqualTo(acknowledgement.commandId));
             Assert.That(restored.sequence, Is.EqualTo(acknowledgement.sequence));
             Assert.That(restored.status, Is.EqualTo(acknowledgement.status));
             Assert.That(restored.sceneId, Is.EqualTo(acknowledgement.sceneId));
@@ -111,6 +134,9 @@ namespace NCKH.VR.GameControl.Tests
                 Assert.That(controller, Is.Not.Null);
                 StandbyStatusView statusView = FindComponent<StandbyStatusView>(scene);
                 Assert.That(statusView, Is.Not.Null);
+                BackendServerConfigurationView configurationView =
+                    FindComponent<BackendServerConfigurationView>(scene);
+                Assert.That(configurationView, Is.Not.Null);
 
                 Assert.That(FindRoot(scene, "Standby Environment"), Is.Null);
                 Assert.That(FindRoot(scene, "Directional Light"), Is.Null);
@@ -144,6 +170,21 @@ namespace NCKH.VR.GameControl.Tests
                 Assert.That(GetText(canvas.transform, "Connection Status"),
                     Is.EqualTo("Chưa cấu hình máy chủ"));
 
+                SerializedObject serializedConfiguration = new SerializedObject(configurationView);
+                GameObject panel = serializedConfiguration.FindProperty("panelRoot").objectReferenceValue as GameObject;
+                Assert.That(panel, Is.Not.Null);
+                Assert.That(panel.activeSelf, Is.False);
+                Assert.That(serializedConfiguration.FindProperty("urlInput").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedConfiguration.FindProperty("validationText").objectReferenceValue, Is.Not.Null);
+                Assert.That(serializedConfiguration.FindProperty("saveButton").objectReferenceValue, Is.Not.Null);
+                VrKeyboard keyboard = serializedConfiguration.FindProperty("keyboard").objectReferenceValue as VrKeyboard;
+                Assert.That(keyboard, Is.Not.Null);
+                Assert.That(VrKeyboard.ExpectedKeyCount, Is.EqualTo(59));
+                Assert.That(canvas.GetComponent<TrackedDeviceGraphicRaycaster>(), Is.Not.Null);
+                Assert.That(FindComponent<EventSystem>(scene), Is.Not.Null);
+                Assert.That(FindComponent<XRUIInputModule>(scene), Is.Not.Null);
+                Assert.That(FindComponent<XRInteractionManager>(scene), Is.Not.Null);
+
                 SerializedObject serializedView = new SerializedObject(statusView);
                 Assert.That(serializedView.FindProperty("statusText").objectReferenceValue, Is.Not.Null);
 
@@ -160,11 +201,11 @@ namespace NCKH.VR.GameControl.Tests
                 Assert.That(serialized.FindProperty("sttWebSocketRoute").stringValue,
                     Is.EqualTo(GameControlApi.SttWebSocketRoute));
                 SerializedProperty catalog = serialized.FindProperty("scenes");
-                Assert.That(catalog.arraySize, Is.EqualTo(3));
+                Assert.That(catalog.arraySize, Is.EqualTo(4));
                 string[] ids = Enumerable.Range(0, catalog.arraySize)
                     .Select(i => catalog.GetArrayElementAtIndex(i).FindPropertyRelative("id").stringValue)
                     .ToArray();
-                Assert.That(ids, Is.EquivalentTo(new[] { "standby", "clinic", "doctor" }));
+                Assert.That(ids, Is.EquivalentTo(new[] { "standby", "clinic", "doctor", "lawyer-office" }));
             });
         }
 
