@@ -1,42 +1,37 @@
-# sv
+# DESMAP
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+DESMAP is a SvelteKit frontend for AI × VR career orientation. The interface covers the landing experience, a 98-question career questionnaire, a local profile view, and a career library. It is currently frontend only: questionnaire answers and profile state are stored in the browser, AI evaluation is clearly labeled sample data, and VR experiences are informational recommendations without launch controls.
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+## Run locally
 
 ```sh
-# create a new project
-npx sv create my-app
+pnpm install
+pnpm dev
 ```
 
-To recreate this project with the same configuration:
+The development server defaults to `http://localhost:5173/`.
+
+Run the production checks with:
 
 ```sh
-# recreate this project
-pnpm dlx sv@0.17.0 create --template minimal --types ts --add ai-tools="ide:other" tailwindcss="plugins:typography" --install pnpm ./
+pnpm check
+pnpm build
+pnpm preview
 ```
 
-## Developing
+If the local pnpm wrapper asks to recreate `node_modules` in a non interactive shell, run `pnpm install` first, then invoke the installed binaries directly:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```powershell
+.\node_modules\.bin\svelte-check.cmd --tsconfig .\tsconfig.json
+.\node_modules\.bin\vite.cmd build
 ```
 
-## Building
+## Frontend integration points
 
-To create a production version of your app:
+- The questionnaire source of truth lives in `src/lib/questionnaire/`; its dimension counts total 98 questions across D, E, S, M, A, and P.
+- Browser persistence is handled by the questionnaire/profile modules under `src/lib/`. Replace that storage boundary with an authenticated API when accounts are available.
+- The evaluation route currently presents local/demo profile output. Connect the submission boundary to an AI evaluation endpoint there, keeping credentials server side.
+- The `/experiences` route is a frontend career library. Replace the local role data with a CMS or API response when the catalog is ready.
+- `/questionnaire` and `/evaluation` are the primary CTA destinations from the shared landing header and footer.
 
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+The visual references used for QA remain in the ignored `tmp/pdfs/` folder. Shipped raster artwork is kept under `static/desmap/`.

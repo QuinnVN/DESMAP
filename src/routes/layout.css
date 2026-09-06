@@ -1,2 +1,39 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+
+:root {
+	--bg: #030303;
+	--surface: #080b12;
+	--surface-blue: #060d1d;
+	--lime: #bcff63;
+	--blue: #2563eb;
+	--text: #f5f6f8;
+	--muted: #a7abb5;
+	--line: rgba(185, 191, 204, .24);
+	--line-strong: rgba(193, 201, 219, .5);
+	--sans: 'Manrope', 'Avenir Next', 'Segoe UI', sans-serif;
+	--mono: 'DM Mono', 'SFMono-Regular', Consolas, monospace;
+	font-family: var(--sans);
+	color: var(--text);
+	background: var(--bg);
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+}
+
+html { scroll-behavior: smooth; background: var(--bg); }
+body { min-width: 320px; margin: 0; background: var(--bg); color: var(--text); }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
+::selection { background: var(--lime); color: #030303; }
+
+.container { width: min(100% - 4rem, 90rem); margin-inline: auto; }
+.section-pad { padding-block: clamp(4.5rem, 9vw, 9rem); }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: .85rem; min-height: 3.15rem; padding: .75rem 1.35rem; border: 1px solid transparent; border-radius: .5rem; font-family: var(--mono); font-size: .7rem; font-weight: 500; letter-spacing: .04em; line-height: 1; text-decoration: none; text-transform: uppercase; transition: transform .25s ease, border-color .25s ease, background .25s ease, color .25s ease, box-shadow .25s ease; }
+.button:hover { transform: translateY(-2px); }
+.button-lime { background: var(--lime); color: #050505; box-shadow: 0 0 1.2rem rgba(188,255,99,.15); }
+.button-lime:hover { background: #d2ff96; box-shadow: 0 0 1.6rem rgba(188,255,99,.32); }
+.button-outline { border-color: var(--lime); border-radius: 100px; color: var(--lime); }
+.button-outline:hover { background: var(--lime); color: #050505; }
+
+@media (max-width: 760px) { .container { width: min(100% - 2rem, 90rem); } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
