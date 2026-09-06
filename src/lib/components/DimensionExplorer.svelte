@@ -26,7 +26,7 @@
 
 	function choose(id: string, moveFocus = false) {
 		activeId = id;
-		if (moveFocus) queueMicrotask(() => (document.querySelector(`[data-dimension-id="${id}"]`) as HTMLButtonElement | null)?.focus());
+		if (moveFocus) queueMicrotask(() => (document.querySelector(`[data-dimension-id="${id}"]`) as HTMLButtonElement | null)?.focus({ preventScroll: true }));
 	}
 	function onCardKeydown(event: KeyboardEvent, index: number) {
 		if (event.key === 'ArrowRight' || event.key === 'ArrowDown') { event.preventDefault(); choose(dimensions[(index + 1) % dimensions.length].id, true); }
@@ -53,7 +53,6 @@
 				<div><span class="meta-icon">⌁</span><b>VR</b><small>TEST</small></div>
 				<div><span class="meta-icon">⌂</span><b>∞</b><small>PROGRESS SAVED</small></div>
 			</div>
-			<a class="back-link" href="/#how-it-works"><span aria-hidden="true">←</span> Back to process</a>
 		</div>
 		<div class="dimension-panel">
 			<div class="dimension-grid" role="tablist" aria-label="DESMAP dimensions">
@@ -73,12 +72,12 @@
 	.explorer-grid { display: grid; grid-template-columns: minmax(18rem, .7fr) minmax(35rem, 1.3fr); align-items: center; gap: clamp(2rem, 6vw, 7.4rem); }
 	.explorer-copy { display: flex; min-height: 40rem; flex-direction: column; padding-block: 3rem; }
 	.eyebrow { color: var(--lime); font-family: var(--mono); font-size: .73rem; font-weight: 760; letter-spacing: .14em; margin: 0; text-transform: uppercase; }
-	.copy-stage { min-height: 20rem; padding-top: 3.3rem; }
+	.copy-stage { display: grid; min-height: 20rem; padding-top: 3.3rem; }
+	.copy-stage > div { grid-area: 1 / 1; }
 	.copy-stage h2 { margin: 0; max-width: 24rem; font-size: clamp(2rem, 4.8vw, 4.1rem); font-weight: 450; line-height: .98; letter-spacing: -.07em; text-transform: uppercase; }.copy-stage h2 span { color: var(--text); }.copy-stage h2 strong { display: block; color: var(--lime); font-weight: 450; }
 	.explorer-description { max-width: 29rem; margin: 2rem 0 0; color: var(--muted); font-size: 1.02rem; line-height: 1.58; }
 	.assessment-meta { display: grid; grid-template-columns: repeat(4,1fr); margin-top: auto; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }.assessment-meta > div { display: flex; min-width: 0; flex-direction: column; gap: .18rem; padding: 1rem .7rem; border-right: 1px solid var(--line); }.assessment-meta > div:last-child { border-right: 0; }.meta-icon { color: var(--blue); font-size: 1.3rem; line-height: 1; }.assessment-meta b { font-size: 1.15rem; font-weight: 580; letter-spacing: -.04em; }.assessment-meta small { color: var(--muted); font-family: var(--mono); font-size: .53rem; line-height: 1.2; letter-spacing: .06em; }
-	.back-link { align-self: flex-start; display: inline-flex; gap: .75rem; margin-top: 2rem; color: var(--text); font-size: .8rem; text-decoration: none; text-transform: uppercase; }.back-link span { color: var(--lime); font-size: 1.3rem; transition: transform .2s ease; }.back-link:hover span { transform: translateX(-.25rem); }
 	.dimension-panel { display: flex; flex-direction: column; align-items: center; }.dimension-grid { display: grid; grid-template-columns: repeat(3, minmax(8rem, 1fr)); gap: 1.3rem; width: 100%; }.dimension-card { display: flex; min-height: 13.3rem; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; border: 1px solid var(--blue); border-radius: .9rem; background: linear-gradient(145deg, rgba(7,18,40,.58), rgba(2,5,17,.72)); color: var(--text); cursor: pointer; transition: border-color .3s ease, box-shadow .3s ease, color .3s ease, transform .3s ease; }.dimension-card:hover, .dimension-card:focus-visible { transform: translateY(-.25rem); border-color: #72aaff; box-shadow: 0 0 1rem rgba(12,102,255,.4); outline: none; }.dimension-card.active { border-color: var(--lime); color: var(--lime); box-shadow: 0 0 1.3rem rgba(188,255,99,.35), inset 0 0 1.5rem rgba(188,255,99,.05); }.dimension-letter { font-size: clamp(4rem, 6vw, 6.9rem); font-weight: 350; line-height: .9; letter-spacing: -.1em; }.dimension-label { margin-top: 1.1rem; font-family: var(--mono); font-size: .83rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }.dimension-prompt { margin-top: .7rem; color: currentColor; font-size: .82rem; opacity: .9; }.privacy-note { margin: 1.5rem 0 0; color: var(--muted); font-family: var(--mono); font-size: .68rem; letter-spacing: .04em; line-height: 1.5; text-align: center; }
-	@media (max-width: 1000px) { .explorer-grid { grid-template-columns: 1fr; gap: 2rem; }.explorer-copy { min-height: auto; padding-bottom: 0; }.copy-stage { min-height: auto; }.assessment-meta { max-width: 38rem; margin-top: 3rem; }.back-link { margin-bottom: 0; }.dimension-panel { padding-bottom: 2rem; } }
+	@media (max-width: 1000px) { .explorer-grid { grid-template-columns: 1fr; gap: 2rem; }.explorer-copy { min-height: auto; padding-bottom: 0; }.copy-stage { min-height: 18rem; }.assessment-meta { max-width: 38rem; margin-top: 3rem; }.dimension-panel { padding-bottom: 2rem; } }
 	@media (max-width: 600px) { .dimension-grid { grid-template-columns: repeat(2,1fr); gap: .75rem; }.dimension-card { min-height: 10rem; border-radius: .65rem; }.dimension-letter { font-size: 4rem; }.dimension-label { margin-top: .7rem; font-size: .67rem; }.dimension-prompt { font-size: .68rem; }.assessment-meta > div { padding-inline: .45rem; }.assessment-meta b { font-size: .95rem; }.assessment-meta small { font-size: .45rem; }.desktop-only { display: none; } }
 </style>
