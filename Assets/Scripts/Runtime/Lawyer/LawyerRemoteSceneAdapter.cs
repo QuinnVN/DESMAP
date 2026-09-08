@@ -13,8 +13,6 @@ namespace NCKH.VR.Lawyer
         [SerializeField] private LawyerInterviewController interviewController;
 
         private LawyerGameSession session;
-        private string roundId = string.Empty;
-
         public event Action<string, GameplayTelemetryData> TelemetryRaised;
 
 #if UNITY_EDITOR
@@ -36,6 +34,8 @@ namespace NCKH.VR.Lawyer
                 if (session == null || session.Phase == LawyerSessionPhase.CaseBrief)
                     return RemoteGamePhase.Ready;
                 return session.Phase == LawyerSessionPhase.Stopped
+                    || session.Phase == LawyerSessionPhase.Completed
+                    || session.Phase == LawyerSessionPhase.Failed
                     ? RemoteGamePhase.Finished
                     : RemoteGamePhase.Running;
             }
@@ -49,6 +49,7 @@ namespace NCKH.VR.Lawyer
             {
                 boardController.BoardOpened += OnBoardOpened;
                 boardController.CourtroomRequested += OnCourtroomRequested;
+                boardController.DefenseRequested += OnDefenseRequested;
             }
             if (interviewController != null)
                 interviewController.InterviewCompleted += OnInterviewCompleted;
@@ -61,6 +62,7 @@ namespace NCKH.VR.Lawyer
             {
                 boardController.BoardOpened -= OnBoardOpened;
                 boardController.CourtroomRequested -= OnCourtroomRequested;
+                boardController.DefenseRequested -= OnDefenseRequested;
             }
             if (interviewController != null)
                 interviewController.InterviewCompleted -= OnInterviewCompleted;
@@ -76,7 +78,7 @@ namespace NCKH.VR.Lawyer
                 errorCode = "invalid_phase";
                 return false;
             }
-            roundId = Guid.NewGuid().ToString("N");
+            session.BeginRound();
             TelemetryRaised?.Invoke("lawyer.round_started", CurrentData());
             return true;
         }
@@ -86,9 +88,15 @@ namespace NCKH.VR.Lawyer
             errorCode = string.Empty;
             session = LawyerGameSession.Ensure(caseDefinition);
             session.ResetCase(caseDefinition);
-            roundId = Guid.NewGuid().ToString("N");
+            session.BeginRound();
             if (SceneManager.GetActiveScene().path != LawyerInterviewController.OfficeScenePath)
-                SceneManager.LoadSceneAsync(LawyerInterviewController.OfficeScenePath, LoadSceneMode.Single);
+            {
+                if (!SceneTransitionService.BeginLoad(LawyerInterviewController.OfficeScenePath))
+                {
+                    errorCode = "scene_loading";
+                    return false;
+                }
+            }
             TelemetryRaised?.Invoke("game.restarted", CurrentData());
             return true;
         }
@@ -114,6 +122,7 @@ namespace NCKH.VR.Lawyer
             session.MainQuestionAsked += OnMainQuestionAsked;
             session.FollowUpAsked += OnFollowUpAsked;
             session.LinkAdded += OnLinkAdded;
+            session.PhaseChanged += OnPhaseChanged;
         }
 
         private void Unsubscribe()
@@ -124,10 +133,12 @@ namespace NCKH.VR.Lawyer
             session.MainQuestionAsked -= OnMainQuestionAsked;
             session.FollowUpAsked -= OnFollowUpAsked;
             session.LinkAdded -= OnLinkAdded;
+            session.PhaseChanged -= OnPhaseChanged;
         }
 
         private void OnBoardOpened() => TelemetryRaised?.Invoke("lawyer.case_brief_opened", CurrentData());
         private void OnCourtroomRequested() => TelemetryRaised?.Invoke("lawyer.interview_started", CurrentData());
+        private void OnDefenseRequested() => TelemetryRaised?.Invoke("lawyer.defense_started", CurrentData());
         private void OnInterviewCompleted() => TelemetryRaised?.Invoke("lawyer.interview_finished", CurrentData());
 
         private void OnClueUnlocked(string clueId)
@@ -160,11 +171,19 @@ namespace NCKH.VR.Lawyer
             TelemetryRaised?.Invoke("lawyer.clue_linked", data);
         }
 
+        private void OnPhaseChanged(LawyerSessionPhase phase)
+        {
+            if (phase == LawyerSessionPhase.Failed)
+                TelemetryRaised?.Invoke("lawyer.evidence_failed", CurrentData());
+            else if (phase == LawyerSessionPhase.Resolved)
+                TelemetryRaised?.Invoke("lawyer.case_resolved", CurrentData());
+        }
+
         private GameplayTelemetryData CurrentData()
         {
             return new GameplayTelemetryData
             {
-                roundId = roundId,
+                roundId = session != null ? session.RoundId : string.Empty,
                 caseId = caseDefinition != null ? caseDefinition.CaseId : string.Empty,
                 category = session != null ? session.Phase.ToString() : string.Empty
             };

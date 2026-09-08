@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -13,6 +14,7 @@ namespace NCKH.VR.Lawyer
     {
         [SerializeField] private Transform pressVisual;
         [SerializeField] private Renderer targetRenderer;
+        [SerializeField] private TMP_Text label;
         [SerializeField] private Color normalColor = new Color(0.10f, 0.22f, 0.20f, 1f);
         [SerializeField] private Color hoverColor = new Color(0.18f, 0.55f, 0.48f, 1f);
         [SerializeField] private Color disabledColor = new Color(0.18f, 0.18f, 0.18f, 1f);
@@ -35,10 +37,11 @@ namespace NCKH.VR.Lawyer
         public bool Interactable => interactableState;
 
 #if UNITY_EDITOR
-        public void ConfigureInEditor(Transform visual, Renderer renderer)
+        public void ConfigureInEditor(Transform visual, Renderer renderer, TMP_Text configuredLabel)
         {
             pressVisual = visual;
             targetRenderer = renderer;
+            label = configuredLabel;
         }
 #endif
 
@@ -82,6 +85,12 @@ namespace NCKH.VR.Lawyer
                 interactable.enabled = value;
             hovered = false;
             ApplyColor();
+        }
+
+        public void SetLabel(string value)
+        {
+            if (label != null)
+                label.text = value ?? string.Empty;
         }
 
         private void OnActivated(ActivateEventArgs _)

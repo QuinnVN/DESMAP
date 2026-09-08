@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -32,6 +33,11 @@ namespace NCKH.VR.Lawyer.Editor
         private const string ControlsPath = "Assets/Input/Lawyer/Lawyer Controls.inputactions";
         private const string LawyerBoardLayerName = "LawyerBoard";
         private const string InteractionLayersPath = "Assets/XRI/Settings/Resources/InteractionLayerSettings.asset";
+        private const string FocusDimMaterialPath = MaterialFolder + "/Lawyer Focus Dim.mat";
+        private const string FocusMaskMaterialPath = MaterialFolder + "/Lawyer Focus Board Mask.mat";
+        private const string MobileRendererPath = "Assets/Settings/Mobile_Renderer.asset";
+        private const string PcRendererPath = "Assets/Settings/PC_Renderer.asset";
+        private const uint LawyerForegroundRenderingLayerMask = 1u << 31;
 
         [MenuItem("NCKH VR/Lawyer/Build Phases 1-2")]
         public static void BuildPhasesOneAndTwo()
@@ -51,12 +57,21 @@ namespace NCKH.VR.Lawyer.Editor
             Material pinMaterial = CreateMaterial(
                 MaterialFolder + "/Lawyer String Pin.mat", new Color(0.72f, 0.04f, 0.03f));
             Material stringMaterial = CreateMaterial(
-                MaterialFolder + "/Lawyer String.mat", new Color(0.72f, 0.04f, 0.03f));
+                MaterialFolder + "/Lawyer String.mat", new Color(0.72f, 0.04f, 0.03f),
+                "Universal Render Pipeline/Unlit");
+            Material focusDimMaterial = CreateShaderMaterial(
+                FocusDimMaterialPath, "Hidden/NCKH VR/Lawyer/Focus Dim");
+            Material focusMaskMaterial = CreateShaderMaterial(
+                FocusMaskMaterialPath, "NCKH VR/Lawyer/Focus Board Mask");
+            EnsureFocusDimRendererFeature(
+                MobileRendererPath, focusDimMaterial, boardUnityLayer);
+            EnsureFocusDimRendererFeature(
+                PcRendererPath, focusDimMaterial, boardUnityLayer);
             LawyerBoardClue cluePrefab = CreateCluePrefab(
                 cardMaterial, pinMaterial, boardUnityLayer, boardInteractionLayer);
 
             ConfigureOffice(
-                caseDefinition, controls, cluePrefab, stringMaterial,
+                caseDefinition, controls, cluePrefab, stringMaterial, focusMaskMaterial,
                 boardUnityLayer, boardInteractionLayer);
             ConfigureCourtroom(caseDefinition, controls);
             ConfigureBuildSettings();
@@ -84,16 +99,391 @@ namespace NCKH.VR.Lawyer.Editor
             Material pinMaterial = CreateMaterial(
                 MaterialFolder + "/Lawyer String Pin.mat", new Color(0.72f, 0.04f, 0.03f));
             Material stringMaterial = CreateMaterial(
-                MaterialFolder + "/Lawyer String.mat", new Color(0.72f, 0.04f, 0.03f));
+                MaterialFolder + "/Lawyer String.mat", new Color(0.72f, 0.04f, 0.03f),
+                "Universal Render Pipeline/Unlit");
+            Material focusDimMaterial = CreateShaderMaterial(
+                FocusDimMaterialPath, "Hidden/NCKH VR/Lawyer/Focus Dim");
+            Material focusMaskMaterial = CreateShaderMaterial(
+                FocusMaskMaterialPath, "NCKH VR/Lawyer/Focus Board Mask");
+            EnsureFocusDimRendererFeature(
+                MobileRendererPath, focusDimMaterial, boardUnityLayer);
+            EnsureFocusDimRendererFeature(
+                PcRendererPath, focusDimMaterial, boardUnityLayer);
             LawyerBoardClue cluePrefab = CreateCluePrefab(
                 cardMaterial, pinMaterial, boardUnityLayer, boardInteractionLayer);
 
             ConfigureOffice(
-                caseDefinition, controls, cluePrefab, stringMaterial,
+                caseDefinition, controls, cluePrefab, stringMaterial, focusMaskMaterial,
                 boardUnityLayer, boardInteractionLayer);
+            ConfigureBuildSettings();
             AssetDatabase.SaveAssets();
             EditorSceneManager.OpenScene(OfficeScenePath, OpenSceneMode.Single);
             Debug.Log("Đã sửa tương tác bảng manh mối trong cảnh Office.");
+        }
+
+        [MenuItem("NCKH VR/Lawyer/Apply Defense Recording Stage (Targeted)")]
+        public static void ApplyDefenseRecordingStageTargeted()
+        {
+            LawyerCaseDefinition caseDefinition =
+                AssetDatabase.LoadAssetAtPath<LawyerCaseDefinition>(CasePath);
+            InputActionAsset controls = AssetDatabase.LoadAssetAtPath<InputActionAsset>(ControlsPath);
+            if (caseDefinition == null || controls == null)
+                throw new InvalidOperationException(
+                    "Thiếu dữ liệu vụ án hoặc Input Action của trò chơi luật sư.");
+
+            SceneSetup[] originalSetup = EditorSceneManager.GetSceneManagerSetup();
+            try
+            {
+                ApplyOfficeDefenseStageTargeted();
+                ApplyCourtroomDefenseStageTargeted(caseDefinition, controls);
+            }
+            finally
+            {
+                EditorSceneManager.RestoreSceneManagerSetup(originalSetup);
+            }
+            AssetDatabase.SaveAssets();
+            Debug.Log("Đã thêm giai đoạn ghi âm bào chữa mà không tái tạo cảnh.");
+        }
+
+        [MenuItem("NCKH VR/Lawyer/Migrate Reasoning Board (Targeted)")]
+        public static void MigrateReasoningBoardTargeted()
+        {
+            LawyerCaseDefinition caseDefinition =
+                AssetDatabase.LoadAssetAtPath<LawyerCaseDefinition>(CasePath);
+            if (caseDefinition == null)
+                throw new InvalidOperationException("Thiếu hồ sơ vụ án luật sư.");
+            EnsureExplicitReasoningCards(caseDefinition);
+            EnsureFullBriefClueText(caseDefinition);
+
+            Scene scene = EditorSceneManager.OpenScene(OfficeScenePath, OpenSceneMode.Single);
+            LawyerBoardController controller = FindComponentInScene<LawyerBoardController>(scene);
+            if (controller == null)
+                throw new InvalidOperationException("Cảnh Office thiếu bảng luật sư.");
+            GameObject board = controller.gameObject;
+            Transform content = board.transform.Find("Lawyer Board Content");
+            Transform surface = content != null ? content.Find("Board Surface") : null;
+            Transform clueContainer = surface != null ? surface.Find("Clue Container") : null;
+            Transform template = clueContainer != null ? clueContainer.Find("Clue Card Template") : null;
+            if (content == null || surface == null || clueContainer == null || template == null)
+                throw new InvalidOperationException("Cảnh Office thiếu cấu trúc bảng chứng cứ.");
+
+            int boardLayer = board.layer;
+            RemoveGeneratedChild(content, "Physical Objective Sheet");
+            RemoveGeneratedChild(content, "Physical Objective Sheet Text");
+            RemoveGeneratedChild(content, "Physical Timeline Sheet");
+            RemoveGeneratedChild(content, "Physical Timeline Sheet Text");
+            RemoveGeneratedChild(content, "Physical Witness Sheet");
+            RemoveGeneratedChild(content, "Physical Witness Sheet Text");
+            RemoveGeneratedChild(content, "Physical Details Sheet");
+            RemoveGeneratedChild(content, "Physical Details Sheet Text");
+            RemoveGeneratedChild(content, "Physical Status Plate");
+            RemoveGeneratedChild(content, "Physical Status Plate Text");
+            RemoveGeneratedChild(content, "Board Defense Brief");
+            RemoveGeneratedChild(content, "Board Defense Brief Text");
+            RemoveGeneratedChild(content, "Board Toast Canvas");
+
+            GameObject evidenceSurface = FindInScene(scene, "Physical Evidence Surface");
+            if (evidenceSurface != null && evidenceSurface.transform.IsChildOf(content))
+            {
+                evidenceSurface.transform.localPosition = new Vector3(0f, 0.025f, 0.003f);
+                evidenceSurface.transform.localScale = new Vector3(1.14f, 0.62f, 0.018f);
+            }
+
+            Material reasoningMaterial = CreateMaterial(
+                MaterialFolder + "/Lawyer Reasoning Card.mat",
+                new Color(0.88f, 0.12f, 0.36f));
+            LawyerBoardClue cardTemplate = template.GetComponent<LawyerBoardClue>();
+            ConfigureCardText(cardTemplate, reasoningMaterial);
+            GameObject prefabRoot = PrefabUtility.LoadPrefabContents(CluePrefabPath);
+            try
+            {
+                ConfigureCardText(prefabRoot.GetComponent<LawyerBoardClue>(), reasoningMaterial);
+                PrefabUtility.SaveAsPrefabAsset(prefabRoot, CluePrefabPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(prefabRoot);
+            }
+
+            Camera boardCamera = FindComponentInScene<Camera>(scene);
+            Transform cameraFinale = boardCamera != null
+                ? boardCamera.transform.Find("Lawyer Finale Canvas")
+                : null;
+            if (cameraFinale != null)
+                RemoveGeneratedChild(cameraFinale, "Board Toast Canvas");
+            Transform toastParent = content;
+            CanvasGroup toastGroup = EnsureBoardToastCanvas(toastParent, boardLayer);
+            TMP_Text toastText = toastGroup.transform.Find("Toast Panel/Toast Text")
+                ?.GetComponent<TMP_Text>();
+            if (toastText == null)
+                throw new InvalidOperationException("Không thể tạo bảng thông báo tạm thời.");
+            toastGroup.alpha = 1f;
+            toastGroup.gameObject.SetActive(false);
+            TMP_Text defenseInstruction = cameraFinale
+                .Find("Evidence Result Overlay/Defense Instruction")?.GetComponent<TMP_Text>();
+            if (defenseInstruction != null)
+                defenseInstruction.text =
+                    "Hãy dùng các mối liên hệ giữa những manh mối đã tìm được và sự thật "
+                    + "để trình bày lời bào chữa cho bị cáo.";
+
+            SerializedObject boardObject = new SerializedObject(controller);
+            Assign(boardObject, "caseDefinition", caseDefinition);
+            Assign(boardObject, "reasoningCardMaterial", reasoningMaterial);
+            Assign(boardObject, "statusLabel", toastText);
+            Assign(boardObject, "boardDefenseBriefLabel", null);
+            Assign(boardObject, "boardDefenseBriefPanel", null);
+            Assign(boardObject, "toastGroup", toastGroup);
+            Assign(boardObject, "objectiveLabel", null);
+            Assign(boardObject, "timelineLabel", null);
+            Assign(boardObject, "witnessesLabel", null);
+            Assign(boardObject, "detailsLabel", null);
+            boardObject.FindProperty("truthDisplayDuration").floatValue = 5f;
+            boardObject.FindProperty("toastDuration").floatValue = 1.5f;
+            boardObject.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(controller);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("Đã di chuyển thông tin lên thẻ chứng cứ và thêm thẻ suy luận vật lý.");
+        }
+
+        private static void EnsureExplicitReasoningCards(LawyerCaseDefinition asset)
+        {
+            LawyerCaseResolution resolution = asset.Resolution;
+            if (resolution == null || (resolution.ReasoningCards != null
+                && resolution.ReasoningCards.Count > 0))
+                return;
+            LawyerReasoningCardDefinition[] cards = new[]
+            {
+                new LawyerReasoningCardDefinition(
+                    "reasoning-time", "Suy luận về mốc thời gian",
+                    "Lời khai rời hiện trường trước 20:00 mâu thuẫn với hình ảnh camera sau 20:10.",
+                    new[] { new LawyerRequiredClueLink("testimony-time", "contradiction-camera") }),
+                new LawyerReasoningCardDefinition(
+                    "reasoning-phone", "Suy luận về cuộc gọi",
+                    "Lời khai điện thoại hết pin mâu thuẫn với nhật ký cuộc gọi lúc 20:12.",
+                    new[] { new LawyerRequiredClueLink("testimony-phone", "contradiction-call") })
+            };
+            asset.ConfigureInEditor(
+                asset.CaseId, asset.CaseTitle, asset.CaseSummary, asset.InvestigationObjective,
+                asset.Timeline, asset.Witnesses, asset.CaseDetails, asset.Clues,
+                asset.StartingClueIds, asset.DefendantName, asset.Questions,
+                new LawyerCaseResolution(
+                    resolution.RequiredLinks, resolution.TruthConclusion,
+                    resolution.InsufficientEvidenceMessage, cards));
+            EditorUtility.SetDirty(asset);
+        }
+
+        private static void EnsureFullBriefClueText(LawyerCaseDefinition asset)
+        {
+            List<LawyerClueDefinition> clues = new List<LawyerClueDefinition>();
+            for (int index = 0; index < asset.Clues.Count; index++)
+            {
+                LawyerClueDefinition clue = asset.Clues[index];
+                if (clue == null)
+                    continue;
+                string description = clue.Description;
+                if (clue.Id == "brief-time")
+                    description = "TÓM TẮT VỤ ÁN\n" + asset.CaseSummary
+                        + "\n\nMỤC TIÊU\n" + asset.InvestigationObjective;
+                else if (clue.Id == "brief-witness")
+                    description = "NHÂN CHỨNG\n" + JoinBullets(asset.Witnesses);
+                else if (clue.Id == "brief-detail")
+                    description = "CHI TIẾT VỤ ÁN\n" + JoinBullets(asset.CaseDetails);
+                else if (clue.Id == "brief-objective")
+                    description = "DÒNG THỜI GIAN\n" + JoinBullets(asset.Timeline);
+                clues.Add(new LawyerClueDefinition(clue.Id, clue.Title, description, clue.Category));
+            }
+            asset.ConfigureInEditor(
+                asset.CaseId, asset.CaseTitle, asset.CaseSummary, asset.InvestigationObjective,
+                asset.Timeline, asset.Witnesses, asset.CaseDetails, clues,
+                asset.StartingClueIds, asset.DefendantName, asset.Questions, asset.Resolution);
+            EditorUtility.SetDirty(asset);
+        }
+
+        private static string JoinBullets(IReadOnlyList<string> items)
+        {
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            for (int index = 0; index < items.Count; index++)
+                builder.Append("• ").AppendLine(items[index]);
+            return builder.ToString().TrimEnd();
+        }
+
+        private static void ConfigureCardText(
+            LawyerBoardClue cardTemplate, Material reasoningMaterial)
+        {
+            if (cardTemplate == null)
+                return;
+            TMP_Text[] labels = cardTemplate.GetComponentsInChildren<TMP_Text>(true);
+            for (int index = 0; index < labels.Length; index++)
+            {
+                TMP_Text label = labels[index];
+                label.enableAutoSizing = label.name == "Title";
+                label.fontSizeMin = 18f;
+                label.fontSizeMax = 72f;
+                if (label.name == "Body")
+                {
+                    label.fontSize = 14f;
+                    label.fontSizeMin = 14f;
+                    label.fontSizeMax = 14f;
+                }
+                if (label.name == "Title")
+                    label.rectTransform.sizeDelta = new Vector2(24f, 4f);
+                else if (label.name == "Body")
+                    label.rectTransform.sizeDelta = new Vector2(24f, 9f);
+                EditorUtility.SetDirty(label);
+            }
+            SerializedObject cardObject = new SerializedObject(cardTemplate);
+            Assign(cardObject, "cardRenderer",
+                cardTemplate.transform.Find("Card Visual")?.GetComponent<Renderer>());
+            Assign(cardObject, "cardVisual", cardTemplate.transform.Find("Card Visual"));
+            Assign(cardObject, "cardCollider", cardTemplate.GetComponent<BoxCollider>());
+            cardObject.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(cardTemplate);
+        }
+
+        private static CanvasGroup EnsureBoardToastCanvas(Transform parent, int layer)
+        {
+            Transform existing = parent.Find("Board Toast Canvas");
+            if (existing != null)
+                UnityEngine.Object.DestroyImmediate(existing.gameObject);
+            GameObject root = new GameObject("Board Toast Canvas", typeof(RectTransform));
+            root.transform.SetParent(parent, false);
+            RectTransform rootRect = (RectTransform)root.transform;
+            rootRect.localPosition = new Vector3(0f, -0.19f, 0.18f);
+            rootRect.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            rootRect.localScale = Vector3.one * 0.001f;
+            rootRect.sizeDelta = new Vector2(920f, 120f);
+            SetLayerRecursively(root, layer);
+            Canvas canvas = root.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = 200;
+            CanvasGroup group = root.AddComponent<CanvasGroup>();
+            GameObject panel = CreatePanel(root.transform, "Toast Panel");
+            Image image = CreateImage(panel.transform, "Background", new Color(0.04f, 0.12f, 0.11f, 0.94f));
+            Stretch((RectTransform)image.transform);
+            TMP_Text text = CreateUiText(
+                panel.transform, "Toast Text", Vector2.zero, new Vector2(860f, 92f),
+                28f, TextAlignmentOptions.Center);
+            text.color = Color.white;
+            return group;
+        }
+
+        private static void ApplyOfficeDefenseStageTargeted()
+        {
+            Scene scene = EditorSceneManager.OpenScene(OfficeScenePath, OpenSceneMode.Single);
+            LawyerBoardController controller = FindComponentInScene<LawyerBoardController>(scene);
+            Camera camera = FindComponentInScene<Camera>(scene);
+            if (controller == null || camera == null)
+                throw new InvalidOperationException("Cảnh Office thiếu bảng luật sư hoặc camera.");
+
+            Transform finaleTransform = camera.transform.Find("Lawyer Finale Canvas");
+            Transform resultPanelTransform = finaleTransform != null
+                ? finaleTransform.Find("Evidence Result Overlay")
+                : null;
+            if (finaleTransform == null || resultPanelTransform == null)
+                throw new InvalidOperationException("Cảnh Office thiếu giao diện kết quả manh mối.");
+
+            GetOrAdd<TrackedDeviceGraphicRaycaster>(finaleTransform.gameObject);
+            TMP_Text resultTitle = resultPanelTransform.Find("Result Title")
+                ?.GetComponent<TMP_Text>();
+            TMP_Text resultBody = resultPanelTransform.Find("Result Body")
+                ?.GetComponent<TMP_Text>();
+            if (resultTitle == null || resultBody == null)
+                throw new InvalidOperationException("Giao diện kết quả thiếu tiêu đề hoặc nội dung sự thật.");
+
+            ConfigureUiText(resultTitle, new Vector2(0f, 235f),
+                new Vector2(920f, 100f), 58f, TextAlignmentOptions.Center);
+            ConfigureUiText(resultBody, new Vector2(0f, 75f),
+                new Vector2(870f, 190f), 34f, TextAlignmentOptions.Center);
+            TMP_Text instruction = EnsureUiText(
+                resultPanelTransform, "Defense Instruction", new Vector2(0f, -125f),
+                new Vector2(870f, 150f), 31f, TextAlignmentOptions.Center);
+            instruction.text =
+                "Hãy dùng các mối liên hệ giữa những manh mối đã tìm được và sự thật "
+                + "để trình bày lời bào chữa cho bị cáo.";
+            instruction.rectTransform.localScale = Vector3.one * 0.75f;
+            Button startButton = EnsureButton(
+                resultPanelTransform, "Start Defense Button", "Bắt đầu bào chữa",
+                new Vector2(0f, -235f), new Vector2(340f, 70f));
+            startButton.gameObject.SetActive(false);
+            SetLayerRecursively(finaleTransform.gameObject, finaleTransform.gameObject.layer);
+            ApplyOverlayMaterials(resultPanelTransform);
+
+            SerializedObject boardObject = new SerializedObject(controller);
+            Assign(boardObject, "defenseInstructionLabel", instruction);
+            Assign(boardObject, "startDefenseButton", startButton);
+            boardObject.FindProperty("truthDisplayDuration").floatValue = 5f;
+            boardObject.FindProperty("truthFinalPosition").vector2Value = new Vector2(0f, 115f);
+            boardObject.FindProperty("instructionFinalPosition").vector2Value = Vector2.zero;
+            boardObject.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(controller);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+
+        private static void ApplyCourtroomDefenseStageTargeted(
+            LawyerCaseDefinition caseDefinition, InputActionAsset controls)
+        {
+            Scene scene = EditorSceneManager.OpenScene(CourtroomScenePath, OpenSceneMode.Single);
+            LawyerInterviewController interview = FindComponentInScene<LawyerInterviewController>(scene);
+            Camera camera = FindComponentInScene<Camera>(scene);
+            if (interview == null || camera == null)
+                throw new InvalidOperationException("Cảnh phòng xử án thiếu phần xét hỏi hoặc camera.");
+
+            Transform interviewCanvasTransform = camera.transform.Find("Lawyer Interview Canvas");
+            if (interviewCanvasTransform == null)
+                throw new InvalidOperationException("Cảnh phòng xử án thiếu giao diện xét hỏi.");
+
+            Canvas defenseCanvas = EnsureWorldCanvas(
+                camera.transform, "Lawyer Defense Canvas", new Vector2(1000f, 700f),
+                0.001f, 210);
+            defenseCanvas.transform.localPosition = new Vector3(0f, 0f, 1.2f);
+            defenseCanvas.transform.localRotation = Quaternion.identity;
+            Image background = EnsureImage(
+                defenseCanvas.transform, "Defense Background",
+                new Color(0.025f, 0.045f, 0.04f, 0.94f));
+            Stretch(background.rectTransform);
+            TMP_Text title = EnsureUiText(
+                defenseCanvas.transform, "Defense Title", new Vector2(0f, 250f),
+                new Vector2(900f, 80f), 50f, TextAlignmentOptions.Center);
+            title.fontStyle = FontStyles.Bold;
+            TMP_Text countdown = EnsureUiText(
+                defenseCanvas.transform, "Defense Countdown", new Vector2(0f, 70f),
+                new Vector2(500f, 190f), 130f, TextAlignmentOptions.Center);
+            TMP_Text instruction = EnsureUiText(
+                defenseCanvas.transform, "Defense Instruction", new Vector2(0f, -95f),
+                new Vector2(860f, 110f), 32f, TextAlignmentOptions.Center);
+            TMP_Text truth = EnsureUiText(
+                defenseCanvas.transform, "Defense Truth", new Vector2(0f, 150f),
+                new Vector2(860f, 120f), 28f, TextAlignmentOptions.Center);
+            truth.gameObject.SetActive(false);
+            TMP_Text status = EnsureUiText(
+                defenseCanvas.transform, "Defense Status", new Vector2(0f, -235f),
+                new Vector2(860f, 70f), 26f, TextAlignmentOptions.Center);
+            ApplyOverlayMaterials(defenseCanvas.transform);
+
+            LawyerDefenseController defenseController =
+                GetOrAdd<LawyerDefenseController>(interview.gameObject);
+            defenseController.ConfigureInEditor(
+                caseDefinition, controls, interview, interviewCanvasTransform.gameObject,
+                defenseCanvas.gameObject);
+            SerializedObject defenseObject = new SerializedObject(defenseController);
+            Assign(defenseObject, "titleLabel", title);
+            Assign(defenseObject, "countdownLabel", countdown);
+            Assign(defenseObject, "instructionLabel", instruction);
+            Assign(defenseObject, "statusLabel", status);
+            Assign(defenseObject, "truthLabel", truth);
+            defenseObject.FindProperty("preparationDuration").floatValue = 5f;
+            defenseObject.FindProperty("recordingDuration").floatValue = 30f;
+            defenseObject.FindProperty("uploadAttempts").intValue = 5;
+            defenseObject.ApplyModifiedPropertiesWithoutUndo();
+            defenseCanvas.gameObject.SetActive(false);
+            EditorUtility.SetDirty(defenseController);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
         }
 
         private static LawyerCaseDefinition CreatePlaceholderCase()
@@ -169,7 +559,28 @@ namespace NCKH.VR.Lawyer.Editor
                 clues,
                 new[] { "brief-time", "brief-witness", "brief-detail", "brief-objective" },
                 "BỊ CÁO MẪU",
-                questions);
+                questions,
+                new LawyerCaseResolution(
+                    new[]
+                    {
+                        new LawyerRequiredClueLink("testimony-time", "contradiction-camera"),
+                        new LawyerRequiredClueLink("testimony-phone", "contradiction-call")
+                    },
+                    "Vì không có chứng cứ đáng tin cậy xác nhận bị cáo có mặt tại hiện trường vào thời điểm xảy ra sự việc, nên chưa đủ căn cứ quy trách nhiệm cho bị cáo.",
+                    "Bạn chưa thu thập đủ manh mối để xác định sự thật. Hãy thử lại và lựa chọn câu hỏi liên quan đến thời gian và điện thoại.",
+                    new[]
+                    {
+                        new LawyerReasoningCardDefinition(
+                            "reasoning-time",
+                            "Suy luận về mốc thời gian",
+                            "Lời khai rời hiện trường trước 20:00 mâu thuẫn với hình ảnh camera sau 20:10.",
+                            new[] { new LawyerRequiredClueLink("testimony-time", "contradiction-camera") }),
+                        new LawyerReasoningCardDefinition(
+                            "reasoning-phone",
+                            "Suy luận về cuộc gọi",
+                            "Lời khai điện thoại hết pin mâu thuẫn với nhật ký cuộc gọi lúc 20:12.",
+                            new[] { new LawyerRequiredClueLink("testimony-phone", "contradiction-call") })
+                    }));
             EditorUtility.SetDirty(asset);
             return asset;
         }
@@ -208,9 +619,16 @@ namespace NCKH.VR.Lawyer.Editor
             UnityEngine.Object.DestroyImmediate(visual.GetComponent<Collider>());
             visual.GetComponent<MeshRenderer>().sharedMaterial = cardMaterial;
 
-            TMP_Text title = CreateWorldText(root.transform, "Title", new Vector3(0f, 0.035f, 0.011f), new Vector2(26f, 4f), 12f, TextAlignmentOptions.Center);
+            TMP_Text title = CreateWorldText(root.transform, "Title", new Vector3(0f, 0.035f, 0.011f), new Vector2(24f, 4f), 12f, TextAlignmentOptions.Center);
             title.fontStyle = FontStyles.Bold;
-            TMP_Text bodyLabel = CreateWorldText(root.transform, "Body", new Vector3(0f, -0.02f, 0.011f), new Vector2(25f, 7f), 8f, TextAlignmentOptions.TopLeft);
+            title.enableAutoSizing = true;
+            title.fontSizeMin = 18f;
+            title.fontSizeMax = 72f;
+            TMP_Text bodyLabel = CreateWorldText(root.transform, "Body", new Vector3(0f, -0.018f, 0.011f), new Vector2(24f, 9f), 8f, TextAlignmentOptions.TopLeft);
+            bodyLabel.enableAutoSizing = false;
+            bodyLabel.fontSize = 14f;
+            bodyLabel.fontSizeMin = 14f;
+            bodyLabel.fontSizeMax = 14f;
 
             GameObject pin = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             pin.name = "String Pin";
@@ -229,6 +647,8 @@ namespace NCKH.VR.Lawyer.Editor
             SerializedObject serialized = new SerializedObject(clue);
             serialized.FindProperty("titleLabel").objectReferenceValue = title;
             serialized.FindProperty("bodyLabel").objectReferenceValue = bodyLabel;
+            serialized.FindProperty("cardRenderer").objectReferenceValue = visual.GetComponent<Renderer>();
+            serialized.FindProperty("cardVisual").objectReferenceValue = visual.transform;
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             PrefabUtility.SaveAsPrefabAsset(root, CluePrefabPath);
@@ -241,6 +661,7 @@ namespace NCKH.VR.Lawyer.Editor
             InputActionAsset controls,
             LawyerBoardClue cluePrefab,
             Material stringMaterial,
+            Material focusMaskMaterial,
             int boardUnityLayer,
             int boardInteractionLayer)
         {
@@ -266,10 +687,14 @@ namespace NCKH.VR.Lawyer.Editor
                     boardVisual.transform.SetParent(null, true);
                 UnityEngine.Object.DestroyImmediate(previousWrapper);
             }
+            clueTemplateScale = Vector3.one * 0.82f;
 
             Vector3 boardPosition = boardVisual.transform.position;
             Vector3 visualWorldScale = boardVisual.transform.lossyScale;
             Camera playerCamera = player.GetComponentInChildren<Camera>(true);
+            if (playerCamera == null)
+                throw new InvalidOperationException("Cảnh Office không có camera của người chơi.");
+            RemoveGeneratedChild(playerCamera.transform, "Lawyer Finale Canvas");
             Vector3 boardToPlayer = playerCamera != null
                 ? Vector3.ProjectOnPlane(playerCamera.transform.position - boardPosition, Vector3.up)
                 : Vector3.back;
@@ -292,8 +717,8 @@ namespace NCKH.VR.Lawyer.Editor
             SetLayerRecursively(boardVisual, boardUnityLayer);
             RemoveGeneratedChild(board.transform, "Lawyer Board Content");
             BoxCollider boardCollider = board.AddComponent<BoxCollider>();
-            boardCollider.center = Vector3.zero;
-            boardCollider.size = new Vector3(1.2f, 0.72f, 0.08f);
+            boardCollider.center = new Vector3(0f, 0.025f, 0f);
+            boardCollider.size = new Vector3(1.2f, 0.67f, 0.08f);
             XRSimpleInteractable boardInteractable = board.AddComponent<XRSimpleInteractable>();
             SetInteractionLayerMask(boardInteractable, 1 << boardInteractionLayer);
             SerializedObject boardInteractableObject = new SerializedObject(boardInteractable);
@@ -306,15 +731,16 @@ namespace NCKH.VR.Lawyer.Editor
             GameObject content = new GameObject("Lawyer Board Content");
             content.layer = boardUnityLayer;
             content.transform.SetParent(board.transform, false);
-            GameObject backdrop = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            backdrop.name = "Physical Focus Backdrop";
-            backdrop.transform.SetParent(content.transform, false);
-            backdrop.layer = LayerMask.NameToLayer("Ignore Raycast");
-            backdrop.transform.localPosition = new Vector3(0f, 0f, -0.10f);
-            backdrop.transform.localScale = new Vector3(1.58f, 1.08f, 0.025f);
-            UnityEngine.Object.DestroyImmediate(backdrop.GetComponent<Collider>());
-            backdrop.GetComponent<MeshRenderer>().sharedMaterial = CreateMaterial(
-                MaterialFolder + "/Lawyer Board Backdrop.mat", new Color(0.025f, 0.03f, 0.035f));
+            GameObject focusMask = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            focusMask.name = "Board Focus Stencil Mask";
+            focusMask.transform.SetParent(content.transform, false);
+            focusMask.layer = LayerMask.NameToLayer("Ignore Raycast");
+            focusMask.transform.localPosition = new Vector3(0f, 0f, 0.13f);
+            focusMask.transform.localScale = new Vector3(1.28f, 0.80f, 1f);
+            UnityEngine.Object.DestroyImmediate(focusMask.GetComponent<Collider>());
+            MeshRenderer focusMaskRenderer = focusMask.GetComponent<MeshRenderer>();
+            focusMaskRenderer.sharedMaterial = focusMaskMaterial;
+            focusMaskRenderer.enabled = false;
 
             Transform surface = new GameObject("Board Surface").transform;
             surface.gameObject.layer = boardUnityLayer;
@@ -350,43 +776,91 @@ namespace NCKH.VR.Lawyer.Editor
             TMP_Text title = CreatePhysicalSheet(
                 content.transform, "Physical Title Plate", new Vector3(0f, 0.34f, 0.052f),
                 new Vector2(1.04f, 0.075f), plateMaterial, boardUnityLayer,
-                new Vector2(98f, 5.5f), 24f, TextAlignmentOptions.Center, Color.white);
+                new Vector2(98f, 5.5f), 32f, TextAlignmentOptions.Center, Color.white);
             TMP_Text objective = CreatePhysicalSheet(
                 content.transform, "Physical Objective Sheet", new Vector3(-0.30f, 0.22f, 0.052f),
                 new Vector2(0.50f, 0.15f), paperMaterial, boardUnityLayer,
-                new Vector2(46f, 13f), 12f, TextAlignmentOptions.TopLeft, new Color(0.035f, 0.03f, 0.02f));
+                new Vector2(28.4016f, 13f), 12f, TextAlignmentOptions.TopLeft, new Color(0.035f, 0.03f, 0.02f));
             TMP_Text timeline = CreatePhysicalSheet(
                 content.transform, "Physical Timeline Sheet", new Vector3(-0.30f, 0.025f, 0.052f),
                 new Vector2(0.50f, 0.21f), paperMaterial, boardUnityLayer,
-                new Vector2(46f, 19f), 10f, TextAlignmentOptions.TopLeft, new Color(0.035f, 0.03f, 0.02f));
+                new Vector2(28.4016f, 19f), 10f, TextAlignmentOptions.TopLeft, new Color(0.035f, 0.03f, 0.02f));
             TMP_Text witnesses = CreatePhysicalSheet(
                 content.transform, "Physical Witness Sheet", new Vector3(-0.30f, -0.145f, 0.052f),
                 new Vector2(0.50f, 0.105f), paperMaterial, boardUnityLayer,
-                new Vector2(46f, 8.5f), 9.5f, TextAlignmentOptions.TopLeft, new Color(0.035f, 0.03f, 0.02f));
+                new Vector2(28.4016f, 8.5f), 9.5f, TextAlignmentOptions.TopLeft, new Color(0.035f, 0.03f, 0.02f));
             TMP_Text details = CreatePhysicalSheet(
                 content.transform, "Physical Details Sheet", new Vector3(-0.30f, -0.255f, 0.052f),
                 new Vector2(0.50f, 0.095f), paperMaterial, boardUnityLayer,
-                new Vector2(46f, 7.5f), 9.5f, TextAlignmentOptions.TopLeft, new Color(0.035f, 0.03f, 0.02f));
+                new Vector2(28.4016f, 7.5f), 9.5f, TextAlignmentOptions.TopLeft, new Color(0.035f, 0.03f, 0.02f));
+            ConfigurePhysicalTextLayout(objective, new Vector2(-0.388f, 0.22f), true);
+            ConfigurePhysicalTextLayout(timeline, new Vector2(-0.388f, 0.025f), true);
+            ConfigurePhysicalTextLayout(witnesses, new Vector2(-0.388f, -0.145f), true);
+            ConfigurePhysicalTextLayout(details, new Vector2(-0.388f, -0.255f), true);
 
             GameObject evidenceSurface = CreatePhysicalPanel(
-                content.transform, "Physical Evidence Surface", new Vector3(0.29f, 0.035f, 0.044f),
-                new Vector3(0.54f, 0.53f, 0.018f), corkMaterial, boardUnityLayer);
+                content.transform, "Physical Evidence Surface", new Vector3(0.1466f, 0.0325f, 0.003f),
+                new Vector3(0.82655907f, 0.535035f, 0.018f), corkMaterial, boardUnityLayer);
             CreateWorldText(
-                content.transform, "Evidence Heading", new Vector3(0.29f, 0.26f, 0.058f),
-                new Vector2(48f, 4f), 18f, TextAlignmentOptions.Center).text = "MANH MỐI";
+                content.transform, "Evidence Heading", new Vector3(0.127f, 0.26f, 0.058f),
+                new Vector2(48f, 4f), 28f, TextAlignmentOptions.Center).text = "MANH MỐI";
 
             TMP_Text status = CreatePhysicalSheet(
                 content.transform, "Physical Status Plate", new Vector3(0.29f, -0.265f, 0.052f),
                 new Vector2(0.54f, 0.06f), plateMaterial, boardUnityLayer,
-                new Vector2(50f, 4.5f), 11f, TextAlignmentOptions.Center, Color.white);
+                new Vector2(66.6422f, 4.5f), 11f, TextAlignmentOptions.Center, Color.white);
+            ConfigurePhysicalTextLayout(status, new Vector2(0.20679f, -0.265f), false);
             LawyerPhysicalButton continueButton = CreatePhysicalButton(
                 content.transform, "Physical Continue Button", "Đến phòng xử án",
-                new Vector3(0.16f, -0.355f, 0.066f), new Vector2(0.31f, 0.065f),
+                new Vector3(0.24f, -0.355f, 0.022f), new Vector2(0.31f, 0.065f),
                 buttonMaterial, boardUnityLayer, boardInteractionLayer);
             LawyerPhysicalButton undo = CreatePhysicalButton(
                 content.transform, "Physical Undo Button", "Hoàn tác",
-                new Vector3(0.40f, -0.355f, 0.066f), new Vector2(0.15f, 0.065f),
+                new Vector3(0.48f, -0.355f, 0.022f), new Vector2(0.15f, 0.065f),
                 buttonMaterial, boardUnityLayer, boardInteractionLayer);
+
+            Canvas finaleCanvas = CreateBoardOverlayCanvas(
+                playerCamera.transform, "Lawyer Finale Canvas", new Vector2(1080f, 640f),
+                0.001f, 50);
+            finaleCanvas.transform.localPosition = new Vector3(0f, 0f, 1.2f);
+            finaleCanvas.transform.localRotation = Quaternion.identity;
+
+            GameObject introPanel = CreatePanel(finaleCanvas.transform, "Evidence Intro Overlay");
+            CanvasGroup introGroup = introPanel.AddComponent<CanvasGroup>();
+            Image introBackground = CreateImage(
+                introPanel.transform, "Background", new Color(0.025f, 0.045f, 0.04f, 0.92f));
+            Stretch((RectTransform)introBackground.transform);
+            TMP_Text introTitle = CreateUiText(
+                introPanel.transform, "Intro Title", Vector2.zero, new Vector2(920f, 220f),
+                54f, TextAlignmentOptions.Center);
+            introTitle.fontStyle = FontStyles.Bold;
+            introTitle.text = "Liên kết các cặp manh mối có quan hệ trực tiếp";
+            introPanel.SetActive(false);
+
+            GameObject resultPanel = CreatePanel(finaleCanvas.transform, "Evidence Result Overlay");
+            Image resultBackground = CreateImage(
+                resultPanel.transform, "Background", new Color(0.025f, 0.045f, 0.04f, 0.96f));
+            Stretch((RectTransform)resultBackground.transform);
+            TMP_Text resultTitle = CreateUiText(
+                resultPanel.transform, "Result Title", new Vector2(0f, 235f),
+                new Vector2(920f, 100f), 58f, TextAlignmentOptions.Center);
+            resultTitle.fontStyle = FontStyles.Bold;
+            TMP_Text resultBody = CreateUiText(
+                resultPanel.transform, "Result Body", new Vector2(0f, 75f),
+                new Vector2(870f, 190f), 34f, TextAlignmentOptions.Center);
+            TMP_Text defenseInstruction = CreateUiText(
+                resultPanel.transform, "Defense Instruction", new Vector2(0f, -125f),
+                new Vector2(870f, 150f), 31f, TextAlignmentOptions.Center);
+            defenseInstruction.text =
+                "Hãy dùng các mối liên hệ giữa những manh mối đã tìm được và sự thật "
+                + "để trình bày lời bào chữa cho bị cáo.";
+            defenseInstruction.rectTransform.localScale = Vector3.one * 0.75f;
+            Button startDefenseButton = CreateButton(
+                resultPanel.transform, "Start Defense Button", "Bắt đầu bào chữa",
+                new Vector2(0f, -235f), new Vector2(340f, 70f));
+            startDefenseButton.gameObject.SetActive(false);
+            resultPanel.SetActive(false);
+            SetLayerRecursively(finaleCanvas.gameObject, boardUnityLayer);
 
             Light[] officeLights = FindComponentsInScene<Light>(scene);
             GameObject spotlightObject = new GameObject("Board Focus Spotlight");
@@ -403,11 +877,12 @@ namespace NCKH.VR.Lawyer.Editor
             spotlight.cullingMask = 1 << boardUnityLayer;
             spotlight.enabled = false;
             LawyerBoardFocusLighting focusLighting = board.AddComponent<LawyerBoardFocusLighting>();
-            focusLighting.ConfigureInEditor(officeLights, spotlight);
+            focusLighting.ConfigureInEditor(officeLights, spotlight, focusMaskRenderer);
             EditorUtility.SetDirty(focusLighting);
 
             XRRayInteractor rightRay = ConfigureOfficeRay(
                 player, boardUnityLayer, boardInteractionLayer);
+            ConfigureForegroundRenderers(player);
             XRBaseInteractor[] modalInteractors = player.GetComponentsInChildren<XRBaseInteractor>(true);
 
             SerializedObject boardObject = new SerializedObject(controller);
@@ -417,8 +892,9 @@ namespace NCKH.VR.Lawyer.Editor
             Assign(boardObject, "clueContainer", clueContainer);
             Assign(boardObject, "clueTemplate", clueTemplate);
             Assign(boardObject, "linkSystem", linkSystem);
-            Assign(boardObject, "focusBackdrop", backdrop);
             Assign(boardObject, "focusLighting", focusLighting);
+            Assign(boardObject, "evidenceSurfaceRenderer",
+                evidenceSurface.GetComponent<Renderer>());
             Assign(boardObject, "titleLabel", title);
             Assign(boardObject, "objectiveLabel", objective);
             Assign(boardObject, "timelineLabel", timeline);
@@ -427,10 +903,36 @@ namespace NCKH.VR.Lawyer.Editor
             Assign(boardObject, "statusLabel", status);
             Assign(boardObject, "continueButton", continueButton);
             Assign(boardObject, "undoLinkButton", undo);
+            Assign(boardObject, "resultPanel", resultPanel);
+            Assign(boardObject, "resultTitleLabel", resultTitle);
+            Assign(boardObject, "resultBodyLabel", resultBody);
+            Assign(boardObject, "defenseInstructionLabel", defenseInstruction);
+            Assign(boardObject, "startDefenseButton", startDefenseButton);
+            boardObject.FindProperty("truthDisplayDuration").floatValue = 15f;
+            boardObject.FindProperty("truthFinalPosition").vector2Value = new Vector2(0f, 115f);
+            boardObject.FindProperty("instructionFinalPosition").vector2Value = Vector2.zero;
+            Assign(boardObject, "introTitleGroup", introGroup);
+            Assign(boardObject, "introTitleLabel", introTitle);
+            boardObject.FindProperty("introDisplayDuration").floatValue = 2f;
+            boardObject.FindProperty("introFadeDuration").floatValue = 0.75f;
             Assign(boardObject, "rightRayInteractor", rightRay);
             AssignArray(boardObject, "modalInteractors", modalInteractors);
-            boardObject.FindProperty("expandedDistance").floatValue = 0.85f;
-            boardObject.FindProperty("expandedVerticalOffset").floatValue = -0.12f;
+            List<Transform> obstacleRoots = new List<Transform>();
+            GameObject propsRoot = FindInScene(scene, "Props");
+            GameObject npcsRoot = FindInScene(scene, "NPCs");
+            if (propsRoot != null)
+                obstacleRoots.Add(propsRoot.transform);
+            if (npcsRoot != null)
+                obstacleRoots.Add(npcsRoot.transform);
+            AssignArray(boardObject, "focusObstacleRoots", obstacleRoots.ToArray());
+            boardObject.FindProperty("expandedDistance").floatValue = 0.70f;
+            boardObject.FindProperty("expandedVerticalOffset").floatValue = 0.04f;
+            boardObject.FindProperty("focusClearance").floatValue = 0.03f;
+            boardObject.FindProperty("maximumFocusLift").floatValue = 0.30f;
+            boardObject.FindProperty("maximumFocusPull").floatValue = 0.15f;
+            boardObject.FindProperty("focusSearchStep").floatValue = 0.05f;
+            boardObject.FindProperty("raisedArcLift").floatValue = 0.25f;
+            boardObject.FindProperty("pathSamples").intValue = 12;
             boardObject.FindProperty("boardInteractionMask")
                 .FindPropertyRelative("m_Bits").intValue = 1 << boardInteractionLayer;
             boardObject.FindProperty("boardPhysicsMask").intValue = 1 << boardUnityLayer;
@@ -620,6 +1122,17 @@ namespace NCKH.VR.Lawyer.Editor
             return label;
         }
 
+        private static void ConfigurePhysicalTextLayout(
+            TMP_Text label, Vector2 anchoredPosition, bool autoSize)
+        {
+            label.rectTransform.anchoredPosition = anchoredPosition;
+            label.enableAutoSizing = autoSize;
+            if (!autoSize)
+                return;
+            label.fontSizeMin = 18f;
+            label.fontSizeMax = 72f;
+        }
+
         private static LawyerPhysicalButton CreatePhysicalButton(
             Transform parent,
             string name,
@@ -660,7 +1173,7 @@ namespace NCKH.VR.Lawyer.Editor
             label.color = Color.white;
 
             LawyerPhysicalButton button = root.AddComponent<LawyerPhysicalButton>();
-            button.ConfigureInEditor(pressVisual.transform, renderer);
+            button.ConfigureInEditor(pressVisual.transform, renderer, label);
             EditorUtility.SetDirty(button);
             return button;
         }
@@ -732,6 +1245,31 @@ namespace NCKH.VR.Lawyer.Editor
             TMP_Text toast = CreateUiText(toastPanel.transform, "Toast Text", Vector2.zero, new Vector2(690f, 56f), 25f, TextAlignmentOptions.Center);
             ApplyOverlayMaterials(canvas.transform);
 
+            Canvas defenseCanvas = CreateWorldCanvas(
+                playerCamera.transform, "Lawyer Defense Canvas", new Vector2(1000f, 700f),
+                0.001f, 210);
+            defenseCanvas.transform.localPosition = new Vector3(0f, 0f, 1.2f);
+            defenseCanvas.transform.localRotation = Quaternion.identity;
+            Image defenseBackground = CreateImage(
+                defenseCanvas.transform, "Defense Background",
+                new Color(0.025f, 0.045f, 0.04f, 0.94f));
+            Stretch(defenseBackground.rectTransform);
+            TMP_Text defenseTitle = CreateUiText(
+                defenseCanvas.transform, "Defense Title", new Vector2(0f, 250f),
+                new Vector2(900f, 80f), 50f, TextAlignmentOptions.Center);
+            defenseTitle.fontStyle = FontStyles.Bold;
+            TMP_Text defenseCountdown = CreateUiText(
+                defenseCanvas.transform, "Defense Countdown", new Vector2(0f, 70f),
+                new Vector2(500f, 190f), 130f, TextAlignmentOptions.Center);
+            TMP_Text defenseInstruction = CreateUiText(
+                defenseCanvas.transform, "Defense Instruction", new Vector2(0f, -95f),
+                new Vector2(860f, 110f), 32f, TextAlignmentOptions.Center);
+            TMP_Text defenseStatus = CreateUiText(
+                defenseCanvas.transform, "Defense Status", new Vector2(0f, -235f),
+                new Vector2(860f, 70f), 26f, TextAlignmentOptions.Center);
+            ApplyOverlayMaterials(defenseCanvas.transform);
+            defenseCanvas.gameObject.SetActive(false);
+
             mainPanel.SetActive(true);
             responsePanel.SetActive(false);
             followPanel.SetActive(false);
@@ -753,9 +1291,28 @@ namespace NCKH.VR.Lawyer.Editor
             AssignArray(interviewObject, "mainQuestionButtons", mainButtons);
             AssignArray(interviewObject, "followUpButtons", followButtons);
             Assign(interviewObject, "responseContinueButton", continueButton);
+            interviewObject.FindProperty("navigationDeadzone").floatValue = 0.65f;
+            interviewObject.FindProperty("navigationRepeatDelay").floatValue = 0.6f;
+            interviewObject.FindProperty("navigationRepeatRate").floatValue = 0.35f;
             interviewObject.ApplyModifiedPropertiesWithoutUndo();
             controller.ConfigureAssetReferencesInEditor(caseDefinition, controls);
             EditorUtility.SetDirty(controller);
+
+            LawyerDefenseController defenseController =
+                interviewRoot.AddComponent<LawyerDefenseController>();
+            defenseController.ConfigureInEditor(
+                caseDefinition, controls, controller, canvas.gameObject,
+                defenseCanvas.gameObject);
+            SerializedObject defenseObject = new SerializedObject(defenseController);
+            Assign(defenseObject, "titleLabel", defenseTitle);
+            Assign(defenseObject, "countdownLabel", defenseCountdown);
+            Assign(defenseObject, "instructionLabel", defenseInstruction);
+            Assign(defenseObject, "statusLabel", defenseStatus);
+            defenseObject.FindProperty("preparationDuration").floatValue = 5f;
+            defenseObject.FindProperty("recordingDuration").floatValue = 30f;
+            defenseObject.FindProperty("uploadAttempts").intValue = 5;
+            defenseObject.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(defenseController);
 
             LawyerRemoteSceneAdapter adapter = interviewRoot.AddComponent<LawyerRemoteSceneAdapter>();
             adapter.ConfigureInEditor(caseDefinition, null, controller);
@@ -890,6 +1447,44 @@ namespace NCKH.VR.Lawyer.Editor
             return canvas;
         }
 
+        private static Canvas EnsureWorldCanvas(
+            Transform parent, string name, Vector2 size, float scale, int sortingOrder)
+        {
+            Transform existing = parent.Find(name);
+            if (existing == null)
+                return CreateWorldCanvas(parent, name, size, scale, sortingOrder);
+
+            Canvas canvas = GetOrAdd<Canvas>(existing.gameObject);
+            GetOrAdd<CanvasScaler>(existing.gameObject);
+            GetOrAdd<TrackedDeviceGraphicRaycaster>(existing.gameObject);
+            RectTransform rect = existing as RectTransform;
+            if (rect == null)
+                throw new InvalidOperationException($"{name} không dùng RectTransform.");
+            rect.sizeDelta = size;
+            rect.localScale = Vector3.one * scale;
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = sortingOrder;
+            return canvas;
+        }
+
+        private static Canvas CreateBoardOverlayCanvas(
+            Transform parent, string name, Vector2 size, float scale, int sortingOrder)
+        {
+            GameObject root = new GameObject(
+                name, typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler),
+                typeof(TrackedDeviceGraphicRaycaster));
+            root.transform.SetParent(parent, false);
+            RectTransform rect = (RectTransform)root.transform;
+            rect.sizeDelta = size;
+            rect.localScale = Vector3.one * scale;
+            Canvas canvas = root.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = sortingOrder;
+            return canvas;
+        }
+
         private static GameObject CreatePanel(Transform parent, string name)
         {
             GameObject panel = new GameObject(name, typeof(RectTransform));
@@ -903,6 +1498,18 @@ namespace NCKH.VR.Lawyer.Editor
             GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             imageObject.transform.SetParent(parent, false);
             Image image = imageObject.GetComponent<Image>();
+            image.color = color;
+            return image;
+        }
+
+        private static Image EnsureImage(Transform parent, string name, Color color)
+        {
+            Transform existing = parent.Find(name);
+            if (existing == null)
+                return CreateImage(parent, name, color);
+            Image image = existing.GetComponent<Image>();
+            if (image == null)
+                image = existing.gameObject.AddComponent<Image>();
             image.color = color;
             return image;
         }
@@ -921,6 +1528,31 @@ namespace NCKH.VR.Lawyer.Editor
             text.alignment = alignment;
             text.textWrappingMode = TextWrappingModes.Normal;
             return text;
+        }
+
+        private static TMP_Text EnsureUiText(
+            Transform parent, string name, Vector2 position, Vector2 size,
+            float fontSize, TextAlignmentOptions alignment)
+        {
+            Transform existing = parent.Find(name);
+            TMP_Text text = existing != null ? existing.GetComponent<TMP_Text>() : null;
+            if (text == null)
+                return CreateUiText(parent, name, position, size, fontSize, alignment);
+            ConfigureUiText(text, position, size, fontSize, alignment);
+            return text;
+        }
+
+        private static void ConfigureUiText(
+            TMP_Text text, Vector2 position, Vector2 size,
+            float fontSize, TextAlignmentOptions alignment)
+        {
+            RectTransform rect = text.rectTransform;
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+            text.fontSize = fontSize;
+            text.color = Color.white;
+            text.alignment = alignment;
+            text.textWrappingMode = TextWrappingModes.Normal;
         }
 
         private static TMP_Text CreateWorldText(
@@ -958,6 +1590,28 @@ namespace NCKH.VR.Lawyer.Editor
             return button;
         }
 
+        private static Button EnsureButton(
+            Transform parent, string name, string label, Vector2 position, Vector2 size)
+        {
+            Transform existing = parent.Find(name);
+            Button button = existing != null ? existing.GetComponent<Button>() : null;
+            if (button == null)
+                return CreateButton(parent, name, label, position, size);
+
+            RectTransform rect = button.GetComponent<RectTransform>();
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+            TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
+            if (text != null)
+            {
+                text.text = label;
+                ConfigureUiText(
+                    text, Vector2.zero, size - new Vector2(20f, 10f),
+                    24f, TextAlignmentOptions.Center);
+            }
+            return button;
+        }
+
         private static void Stretch(RectTransform rect)
         {
             rect.anchorMin = Vector2.zero;
@@ -966,14 +1620,26 @@ namespace NCKH.VR.Lawyer.Editor
             rect.offsetMax = Vector2.zero;
         }
 
-        private static Material CreateMaterial(string path, Color color)
+        private static Material CreateMaterial(
+            string path,
+            Color color,
+            string shaderName = "Universal Render Pipeline/Lit")
         {
+            Shader shader = Shader.Find(shaderName);
+            if (shader == null && shaderName == "Universal Render Pipeline/Lit")
+                shader = Shader.Find("Standard");
+            if (shader == null)
+                throw new InvalidOperationException($"Không tìm thấy shader: {shaderName}");
+
             Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (material == null)
             {
-                Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
                 material = new Material(shader);
                 AssetDatabase.CreateAsset(material, path);
+            }
+            else if (material.shader != shader)
+            {
+                material.shader = shader;
             }
             material.color = color;
             if (material.HasProperty("_Smoothness"))
@@ -984,6 +1650,59 @@ namespace NCKH.VR.Lawyer.Editor
                 material.SetFloat("_SpecularHighlights", 0f);
             EditorUtility.SetDirty(material);
             return material;
+        }
+
+        private static Material CreateShaderMaterial(string path, string shaderName)
+        {
+            Shader shader = Shader.Find(shaderName);
+            if (shader == null)
+                throw new InvalidOperationException($"Không tìm thấy shader: {shaderName}");
+            Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material == null)
+            {
+                material = new Material(shader);
+                AssetDatabase.CreateAsset(material, path);
+            }
+            else if (material.shader != shader)
+            {
+                material.shader = shader;
+            }
+            EditorUtility.SetDirty(material);
+            return material;
+        }
+
+        private static void EnsureFocusDimRendererFeature(
+            string rendererPath, Material dimMaterial, int boardUnityLayer)
+        {
+            UniversalRendererData rendererData =
+                AssetDatabase.LoadAssetAtPath<UniversalRendererData>(rendererPath);
+            if (rendererData == null)
+                throw new InvalidOperationException($"Không tìm thấy URP Renderer Data: {rendererPath}");
+            LawyerFocusDimRendererFeature feature = rendererData.rendererFeatures
+                .OfType<LawyerFocusDimRendererFeature>().FirstOrDefault();
+            if (feature == null)
+            {
+                feature = ScriptableObject.CreateInstance<LawyerFocusDimRendererFeature>();
+                feature.name = "Lawyer Focus Dim";
+                AssetDatabase.AddObjectToAsset(feature, rendererData);
+                rendererData.rendererFeatures.Add(feature);
+            }
+            feature.ConfigureInEditor(
+                dimMaterial, 1 << boardUnityLayer,
+                LawyerForegroundRenderingLayerMask);
+            EditorUtility.SetDirty(feature);
+            EditorUtility.SetDirty(rendererData);
+        }
+
+        private static void ConfigureForegroundRenderers(GameObject player)
+        {
+            Renderer[] renderers = player.GetComponentsInChildren<Renderer>(true);
+            for (int index = 0; index < renderers.Length; index++)
+            {
+                Renderer renderer = renderers[index];
+                renderer.renderingLayerMask |= LawyerForegroundRenderingLayerMask;
+                EditorUtility.SetDirty(renderer);
+            }
         }
 
         private static void ApplyOverlayMaterials(Transform root)

@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NCKH.VR.GameControl;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace NCKH.VR.Lawyer
@@ -20,6 +20,7 @@ namespace NCKH.VR.Lawyer
             MainResponse,
             FollowUps,
             FollowUpResponse,
+            InsufficientEvidence,
             Loading
         }
 
@@ -50,19 +51,24 @@ namespace NCKH.VR.Lawyer
 
         [Header("Navigation")]
         [SerializeField, Range(0.1f, 0.95f)] private float navigationDeadzone = 0.65f;
-        [SerializeField, Min(0.1f)] private float navigationRepeatDelay = 0.3f;
+        [SerializeField, Min(0.1f)] private float navigationRepeatDelay = 0.6f;
+        [SerializeField, Min(0.05f)] private float navigationRepeatRate = 0.35f;
         [SerializeField, Min(0.2f)] private float toastDuration = 2f;
 
         private LawyerGameSession session;
         private InputAction navigateAction;
         private InputAction confirmAction;
+        private InputAction closeBoardAction;
         private LawyerInterviewQuestion activeMainQuestion;
         private InterviewView view;
         private Vector2 navigationValue;
         private float nextNavigationTime;
+        private bool navigationLatched;
         private int selectedMainIndex;
         private int selectedFollowUpIndex;
         private Coroutine toastRoutine;
+        private bool interviewTransitionRequested;
+        private bool interviewCompletionBlocked;
 
         public event Action<string> QuestionPresented;
         public event Action<string, string> FollowUpPresented;
@@ -89,6 +95,7 @@ namespace NCKH.VR.Lawyer
             }
             navigateAction = controls != null ? controls.FindAction("NavigateQuestions", false) : null;
             confirmAction = controls != null ? controls.FindAction("Confirm", false) : null;
+            closeBoardAction = controls != null ? controls.FindAction("CloseBoard", false) : null;
             if (defendantNameLabel != null && caseDefinition != null)
                 defendantNameLabel.text = caseDefinition.DefendantName;
             ConfigureButtons();
@@ -107,6 +114,11 @@ namespace NCKH.VR.Lawyer
             {
                 confirmAction.performed += OnConfirmPerformed;
                 confirmAction.Enable();
+            }
+            if (closeBoardAction != null)
+            {
+                closeBoardAction.performed += OnCloseBoardPerformed;
+                closeBoardAction.Enable();
             }
             if (responseContinueButton != null)
                 responseContinueButton.onClick.AddListener(AdvanceResponse);
@@ -129,6 +141,11 @@ namespace NCKH.VR.Lawyer
                 confirmAction.performed -= OnConfirmPerformed;
                 confirmAction.Disable();
             }
+            if (closeBoardAction != null)
+            {
+                closeBoardAction.performed -= OnCloseBoardPerformed;
+                closeBoardAction.Disable();
+            }
             if (responseContinueButton != null)
                 responseContinueButton.onClick.RemoveListener(AdvanceResponse);
             StopVoice();
@@ -137,10 +154,19 @@ namespace NCKH.VR.Lawyer
         private void Update()
         {
             if ((view != InterviewView.MainQuestions && view != InterviewView.FollowUps)
-                || Mathf.Abs(navigationValue.y) < navigationDeadzone || Time.unscaledTime < nextNavigationTime)
+                || Mathf.Abs(navigationValue.y) < navigationDeadzone)
+            {
+                navigationLatched = false;
                 return;
+            }
+
+            if (navigationLatched && Time.unscaledTime < nextNavigationTime)
+                return;
+
             CycleSelection(navigationValue.y < 0f ? 1 : -1);
-            nextNavigationTime = Time.unscaledTime + navigationRepeatDelay;
+            nextNavigationTime = Time.unscaledTime
+                + (navigationLatched ? navigationRepeatRate : navigationRepeatDelay);
+            navigationLatched = true;
         }
 
         private void ConfigureButtons()
@@ -159,7 +185,7 @@ namespace NCKH.VR.Lawyer
 
         private void ShowMainQuestions()
         {
-            if (session != null && session.CanCompleteInterview)
+            if (session != null && session.CanCompleteInterview && !interviewCompletionBlocked)
             {
                 CompleteInterview();
                 return;
@@ -181,13 +207,19 @@ namespace NCKH.VR.Lawyer
                 if (!exists)
                     continue;
                 bool asked = session.HasAskedMain(questions[index].Id);
-                button.interactable = !asked && session.MainQuestionsRemaining > 0;
-                SetButtonText(button, asked ? $"Đã hỏi: {questions[index].Prompt}" : questions[index].Prompt);
+                bool hasFollowUps = asked && session.HasUnaskedFollowUps(questions[index].Id);
+                button.interactable = !asked || hasFollowUps;
+                SetButtonText(button, asked
+                    ? (hasFollowUps
+                        ? $"Hỏi thêm: {questions[index].Prompt}"
+                        : $"Đã hỏi: {questions[index].Prompt}")
+                    : questions[index].Prompt);
             }
             selectedMainIndex = FindNextAvailableMain(selectedMainIndex, 1);
             UpdateSelectionColors();
             if (questionCounterLabel != null)
-                questionCounterLabel.text = $"Còn {session.MainQuestionsRemaining}/2 lượt hỏi  |  Cần trái: chọn  |  A: hỏi";
+                questionCounterLabel.text =
+                    $"Còn {session.QuestionsRemaining} câu hỏi | Cần trái: chọn | A: hỏi | B: về văn phòng";
         }
 
         private void AskMain(int index)
@@ -196,6 +228,17 @@ namespace NCKH.VR.Lawyer
                 || index < 0 || index >= caseDefinition.Questions.Count)
                 return;
             LawyerInterviewQuestion question = caseDefinition.Questions[index];
+            if (question == null)
+                return;
+            if (session.HasAskedMain(question.Id))
+            {
+                if (session.HasUnaskedFollowUps(question.Id))
+                {
+                    activeMainQuestion = question;
+                    ShowFollowUps();
+                }
+                return;
+            }
             if (!session.TryAskMain(question.Id, out LawyerInterviewQuestion accepted))
                 return;
             activeMainQuestion = accepted;
@@ -203,8 +246,8 @@ namespace NCKH.VR.Lawyer
             view = InterviewView.MainResponse;
             QuestionPresented?.Invoke(accepted.Id);
             ShowResponse(accepted.Response, accepted.IsKeyQuestion
-                ? "A hoặc Tiếp tục: chọn một câu hỏi tiếp theo"
-                : "A hoặc Tiếp tục: quay lại danh sách câu hỏi");
+                ? "A/Tiếp tục: chọn câu hỏi tiếp theo | B: về văn phòng"
+                : "A/Tiếp tục: về danh sách | B: về văn phòng");
         }
 
         private void ShowFollowUps()
@@ -216,15 +259,20 @@ namespace NCKH.VR.Lawyer
             for (int index = 0; index < followUpButtons.Length; index++)
             {
                 Button button = followUpButtons[index];
-                bool exists = activeMainQuestion != null && index < activeMainQuestion.FollowUps.Count;
+                bool exists = activeMainQuestion != null && index < activeMainQuestion.FollowUps.Count
+                    && activeMainQuestion.FollowUps[index] != null;
                 if (button == null)
                     continue;
                 button.gameObject.SetActive(exists);
-                button.interactable = exists;
+                bool asked = exists && session.HasAskedFollowUp(
+                    activeMainQuestion.Id, activeMainQuestion.FollowUps[index].Id);
+                button.interactable = exists && !asked;
                 if (exists)
-                    SetButtonText(button, activeMainQuestion.FollowUps[index].Prompt);
+                    SetButtonText(button, asked
+                        ? $"Đã hỏi: {activeMainQuestion.FollowUps[index].Prompt}"
+                        : activeMainQuestion.FollowUps[index].Prompt);
             }
-            selectedFollowUpIndex = 0;
+            selectedFollowUpIndex = FindNextAvailableFollowUp(0, 1);
             UpdateSelectionColors();
         }
 
@@ -234,17 +282,24 @@ namespace NCKH.VR.Lawyer
                 || index < 0 || index >= activeMainQuestion.FollowUps.Count)
                 return;
             LawyerFollowUpQuestion requested = activeMainQuestion.FollowUps[index];
+            if (requested == null || session.HasAskedFollowUp(activeMainQuestion.Id, requested.Id))
+                return;
             if (!session.TryAskFollowUp(activeMainQuestion.Id, requested.Id, out LawyerFollowUpQuestion accepted))
                 return;
             selectedFollowUpIndex = index;
             view = InterviewView.FollowUpResponse;
             FollowUpPresented?.Invoke(activeMainQuestion.Id, accepted.Id);
-            ShowResponse(accepted.Response, "A hoặc Tiếp tục: trở lại danh sách câu hỏi");
+            ShowResponse(accepted.Response, "A/Tiếp tục: về danh sách | B: về văn phòng");
         }
 
         public void AdvanceResponse()
         {
             StopVoice();
+            if (view == InterviewView.InsufficientEvidence)
+            {
+                ContinueAfterInsufficientEvidence();
+                return;
+            }
             if (view == InterviewView.MainResponse)
             {
                 if (activeMainQuestion != null && activeMainQuestion.IsKeyQuestion)
@@ -268,6 +323,9 @@ namespace NCKH.VR.Lawyer
                 responseLabel.text = testimony != null ? testimony.Transcript : string.Empty;
             if (responseHintLabel != null)
                 responseHintLabel.text = hint;
+            SetButtonText(responseContinueButton, "Tiếp tục");
+            if (responseContinueButton != null)
+                responseContinueButton.interactable = true;
             StopVoice();
             if (defendantVoice != null && testimony != null && testimony.AudioClip != null)
             {
@@ -278,8 +336,75 @@ namespace NCKH.VR.Lawyer
 
         private void CompleteInterview()
         {
-            if (view == InterviewView.Loading || !session.TryCompleteInterview())
+            if (interviewTransitionRequested || view == InterviewView.Loading
+                || interviewCompletionBlocked || session == null)
                 return;
+            if (!session.EvaluateEvidenceAvailability())
+            {
+                interviewCompletionBlocked = true;
+                ShowInsufficientEvidence();
+                return;
+            }
+            if (!session.TryCompleteInterview())
+                return;
+            interviewTransitionRequested = true;
+            view = InterviewView.Loading;
+            InterviewCompleted?.Invoke();
+            StartCoroutine(LoadOffice());
+        }
+
+        private void ShowInsufficientEvidence()
+        {
+            view = InterviewView.InsufficientEvidence;
+            StopVoice();
+            if (toastRoutine != null)
+            {
+                StopCoroutine(toastRoutine);
+                toastRoutine = null;
+            }
+            SetActive(mainQuestionPanel, false);
+            SetActive(responsePanel, true);
+            SetActive(followUpPanel, false);
+            SetActive(toastPanel, false);
+            string message = caseDefinition != null
+                ? caseDefinition.Resolution?.InsufficientEvidenceMessage ?? string.Empty
+                : string.Empty;
+            if (responseLabel != null)
+                responseLabel.text = $"<size=42><b>CHƯA ĐỦ CHỨNG CỨ</b></size>\n\n{message}";
+            bool canContinue = session != null && session.QuestionsRemaining > 0;
+            if (responseHintLabel != null)
+                responseHintLabel.text = canContinue
+                    ? "A/Tiếp tục: hỏi tiếp"
+                    : "Không còn câu hỏi; hãy bổ sung chứng cứ khác.";
+            SetButtonText(responseContinueButton, canContinue ? "Tiếp tục hỏi" : "Đã hết câu hỏi");
+            if (responseContinueButton != null)
+                responseContinueButton.interactable = canContinue;
+        }
+
+        private void ContinueAfterInsufficientEvidence()
+        {
+            if (view != InterviewView.InsufficientEvidence || session == null)
+                return;
+            if (session.Phase != LawyerSessionPhase.DefendantInterview
+                || session.QuestionsRemaining == 0)
+                return;
+            view = InterviewView.MainQuestions;
+            ShowMainQuestions();
+        }
+
+        private void LeaveInterview()
+        {
+            if (interviewTransitionRequested || view == InterviewView.Loading || session == null)
+                return;
+            if (!session.EvaluateEvidenceAvailability())
+            {
+                ShowInsufficientEvidence();
+                return;
+            }
+
+            if (!session.TryCompleteInterview() && !session.TryProceedToEvidenceBoard())
+                return;
+            interviewTransitionRequested = true;
             view = InterviewView.Loading;
             InterviewCompleted?.Invoke();
             StartCoroutine(LoadOffice());
@@ -287,11 +412,7 @@ namespace NCKH.VR.Lawyer
 
         private IEnumerator LoadOffice()
         {
-            AsyncOperation operation = SceneManager.LoadSceneAsync(OfficeScenePath, LoadSceneMode.Single);
-            if (operation == null)
-                yield break;
-            while (!operation.isDone)
-                yield return null;
+            yield return SceneTransitionService.LoadScene(OfficeScenePath);
         }
 
         private void OnClueUnlocked(string clueId)
@@ -316,10 +437,13 @@ namespace NCKH.VR.Lawyer
         private void OnNavigatePerformed(InputAction.CallbackContext context)
         {
             navigationValue = context.ReadValue<Vector2>();
-            nextNavigationTime = 0f;
         }
 
-        private void OnNavigateCanceled(InputAction.CallbackContext _) => navigationValue = Vector2.zero;
+        private void OnNavigateCanceled(InputAction.CallbackContext _)
+        {
+            navigationValue = Vector2.zero;
+            navigationLatched = false;
+        }
 
         private void OnConfirmPerformed(InputAction.CallbackContext _)
         {
@@ -329,6 +453,15 @@ namespace NCKH.VR.Lawyer
                 AskFollowUp(selectedFollowUpIndex);
             else if (view == InterviewView.MainResponse || view == InterviewView.FollowUpResponse)
                 AdvanceResponse();
+            else if (view == InterviewView.InsufficientEvidence)
+                ContinueAfterInsufficientEvidence();
+        }
+
+        private void OnCloseBoardPerformed(InputAction.CallbackContext _)
+        {
+            if (view == InterviewView.MainQuestions || view == InterviewView.MainResponse
+                || view == InterviewView.FollowUps || view == InterviewView.FollowUpResponse)
+                LeaveInterview();
         }
 
         private void CycleSelection(int direction)
@@ -336,7 +469,8 @@ namespace NCKH.VR.Lawyer
             if (view == InterviewView.MainQuestions)
                 selectedMainIndex = FindNextAvailableMain(selectedMainIndex + direction, direction);
             else if (view == InterviewView.FollowUps && activeMainQuestion != null)
-                selectedFollowUpIndex = Wrap(selectedFollowUpIndex + direction, activeMainQuestion.FollowUps.Count);
+                selectedFollowUpIndex = FindNextAvailableFollowUp(
+                    selectedFollowUpIndex + direction, direction);
             UpdateSelectionColors();
         }
 
@@ -349,7 +483,25 @@ namespace NCKH.VR.Lawyer
             for (int attempts = 0; attempts < count; attempts++)
             {
                 LawyerInterviewQuestion question = caseDefinition.Questions[candidate];
-                if (question != null && !session.HasAskedMain(question.Id))
+                if (question != null && (!session.HasAskedMain(question.Id)
+                    || session.HasUnaskedFollowUps(question.Id)))
+                    return candidate;
+                candidate = Wrap(candidate + Math.Sign(direction == 0 ? 1 : direction), count);
+            }
+            return -1;
+        }
+
+        private int FindNextAvailableFollowUp(int start, int direction)
+        {
+            int count = activeMainQuestion != null ? activeMainQuestion.FollowUps.Count : 0;
+            if (count == 0)
+                return -1;
+            int candidate = Wrap(start, count);
+            for (int attempts = 0; attempts < count; attempts++)
+            {
+                LawyerFollowUpQuestion followUp = activeMainQuestion.FollowUps[candidate];
+                if (followUp != null && !session.HasAskedFollowUp(
+                    activeMainQuestion.Id, followUp.Id))
                     return candidate;
                 candidate = Wrap(candidate + Math.Sign(direction == 0 ? 1 : direction), count);
             }

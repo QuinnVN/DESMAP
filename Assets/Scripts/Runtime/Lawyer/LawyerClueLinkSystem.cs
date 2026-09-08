@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
@@ -14,11 +15,17 @@ namespace NCKH.VR.Lawyer
 
         private readonly List<LawyerCluePin> pins = new List<LawyerCluePin>();
         private readonly List<CommittedString> committedStrings = new List<CommittedString>();
+        private readonly List<CommittedString> terminalStrings = new List<CommittedString>();
         private LawyerGameSession session;
         private LawyerCluePin activeSource;
         private XRRayInteractor activeRay;
         private Vector3 activeEndPoint;
         private LineRenderer transientString;
+
+        public event Action<LawyerLinkAttemptResult> LinkAttempted;
+
+        /// <summary>Number of automatic evidence-to-reasoning links currently drawn.</summary>
+        public int TerminalLinkCount => terminalStrings.Count;
 
         private sealed class CommittedString
         {
@@ -42,13 +49,9 @@ namespace NCKH.VR.Lawyer
             }
 
             for (int index = 0; index < committedStrings.Count; index++)
-            {
-                CommittedString item = committedStrings[index];
-                if (item.First == null || item.Second == null || item.Renderer == null)
-                    continue;
-                item.Renderer.SetPosition(0, item.First.AnchorPosition);
-                item.Renderer.SetPosition(1, item.Second.AnchorPosition);
-            }
+                UpdateString(committedStrings[index]);
+            for (int index = 0; index < terminalStrings.Count; index++)
+                UpdateString(terminalStrings[index]);
         }
 
         public void Configure(LawyerGameSession configuredSession)
@@ -72,13 +75,14 @@ namespace NCKH.VR.Lawyer
 
         public void BeginLink(LawyerCluePin source, XRRayInteractor ray)
         {
-            if (source == null || source.Clue == null || ray == null)
+            if (source == null || source.Clue == null || ray == null || session == null
+                || session.Phase != LawyerSessionPhase.EvidenceBoard)
                 return;
             activeSource = source;
             activeRay = ray;
             UpdateActiveEndPoint();
             if (transientString == null)
-                transientString = CreateStringRenderer("Dây liên kết đang kéo");
+                transientString = CreateStringRenderer("Dây liên kết đang kéo", false);
             transientString.gameObject.SetActive(true);
         }
 
@@ -88,10 +92,15 @@ namespace NCKH.VR.Lawyer
                 return;
 
             LawyerCluePin target = FindNearestTarget(source, releasePosition);
-            if (target != null && session != null
-                && session.TryAddLink(source.Clue.ClueId, target.Clue.ClueId))
+            if (target != null && session != null)
             {
-                AddCommittedString(new LawyerClueLink(source.Clue.ClueId, target.Clue.ClueId), source, target);
+                LawyerClueLink link = new LawyerClueLink(source.Clue.ClueId, target.Clue.ClueId);
+                LawyerLinkAttemptResult result = session.TryAddEvidenceLink(
+                    source.Clue.ClueId, target.Clue.ClueId);
+                if (result == LawyerLinkAttemptResult.Added
+                    || result == LawyerLinkAttemptResult.Solved)
+                    AddCommittedString(link, source, target);
+                LinkAttempted?.Invoke(result);
             }
 
             activeSource = null;
@@ -126,6 +135,7 @@ namespace NCKH.VR.Lawyer
         public void RestoreCommittedLinks()
         {
             ClearCommittedStrings();
+            ClearTerminalLinks();
             if (session == null)
                 return;
             for (int index = 0; index < session.ClueLinks.Count; index++)
@@ -136,6 +146,37 @@ namespace NCKH.VR.Lawyer
                 if (first != null && second != null)
                     AddCommittedString(link, first, second);
             }
+        }
+
+        /// <summary>
+        /// Draws a terminal link that belongs to a revealed reasoning card. These links are
+        /// deliberately kept out of the undoable evidence-link collection so that moving a
+        /// card or undoing the last evidence link cannot break the revealed reasoning chain.
+        /// </summary>
+        public void AddTerminalLink(LawyerClueLink link, LawyerCluePin first, LawyerCluePin second)
+        {
+            if (first == null || second == null)
+                return;
+            for (int index = 0; index < terminalStrings.Count; index++)
+            {
+                if (terminalStrings[index].Link.Equals(link))
+                    return;
+            }
+            terminalStrings.Add(new CommittedString
+            {
+                Link = link,
+                First = first,
+                Second = second,
+                Renderer = CreateStringRenderer($"Dây suy luận {link.FirstId} - {link.SecondId}", true)
+            });
+        }
+
+        public void ClearTerminalLinks()
+        {
+            for (int index = 0; index < terminalStrings.Count; index++)
+                if (terminalStrings[index].Renderer != null)
+                    Destroy(terminalStrings[index].Renderer.gameObject);
+            terminalStrings.Clear();
         }
 
         private LawyerCluePin FindNearestTarget(LawyerCluePin source, Vector3 position)
@@ -181,11 +222,11 @@ namespace NCKH.VR.Lawyer
                 Link = link,
                 First = first,
                 Second = second,
-                Renderer = CreateStringRenderer($"Dây {link.FirstId} - {link.SecondId}")
+                    Renderer = CreateStringRenderer($"Dây {link.FirstId} - {link.SecondId}", false)
             });
         }
 
-        private LineRenderer CreateStringRenderer(string objectName)
+        private LineRenderer CreateStringRenderer(string objectName, bool terminal)
         {
             GameObject lineObject = new GameObject(objectName);
             lineObject.layer = gameObject.layer;
@@ -195,8 +236,11 @@ namespace NCKH.VR.Lawyer
             line.useWorldSpace = true;
             line.startWidth = stringWidth;
             line.endWidth = stringWidth;
-            line.startColor = stringColor;
-            line.endColor = stringColor;
+            Color color = terminal
+                ? new Color(0.95f, 0.18f, 0.58f, 1f)
+                : stringColor;
+            line.startColor = color;
+            line.endColor = color;
             line.sharedMaterial = stringMaterial;
             line.numCapVertices = 4;
             return line;
@@ -208,6 +252,14 @@ namespace NCKH.VR.Lawyer
                 if (committedStrings[index].Renderer != null)
                     Destroy(committedStrings[index].Renderer.gameObject);
             committedStrings.Clear();
+        }
+
+        private static void UpdateString(CommittedString item)
+        {
+            if (item == null || item.First == null || item.Second == null || item.Renderer == null)
+                return;
+            item.Renderer.SetPosition(0, item.First.AnchorPosition);
+            item.Renderer.SetPosition(1, item.Second.AnchorPosition);
         }
     }
 }

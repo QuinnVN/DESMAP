@@ -125,7 +125,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -0.02}
-  m_SizeDelta: {x: 25, y: 7}
+  m_SizeDelta: {x: 24, y: 9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &8538344640736966124
 MeshRenderer:
@@ -223,12 +223,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 8
-  m_fontSizeBase: 8
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMin: 14
+  m_fontSizeMax: 14
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -535,6 +535,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: NCKH.Lawyer::NCKH.VR.Lawyer.LawyerBoardClue
   titleLabel: {fileID: 5211185685852340292}
   bodyLabel: {fileID: 8919048948146893037}
+  cardRenderer: {fileID: 1401318791498778949}
+  cardVisual: {fileID: 6987661035500247828}
+  cardCollider: {fileID: 6268126381191125840}
+  diamondCollider: {fileID: 0}
   snapDuration: 0.1
 --- !u!1 &7147419447327474263
 GameObject:
@@ -571,7 +575,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0.035}
-  m_SizeDelta: {x: 26, y: 4}
+  m_SizeDelta: {x: 24, y: 4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &6792960364024376848
 MeshRenderer:
@@ -672,7 +676,7 @@ MonoBehaviour:
   m_fontSize: 12
   m_fontSizeBase: 12
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1

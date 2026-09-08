@@ -7,12 +7,14 @@
             "actions": [
                 { "name": "NavigateQuestions", "type": "Value", "id": "2315f8ac-ef0a-4ac3-92df-996fd3f5bd11", "expectedControlType": "Vector2", "processors": "", "interactions": "", "initialStateCheck": true },
                 { "name": "Confirm", "type": "Button", "id": "2b73741b-bf66-4143-8a35-8907c474edcc", "expectedControlType": "Button", "processors": "", "interactions": "Press", "initialStateCheck": false },
-                { "name": "CloseBoard", "type": "Button", "id": "230d9ba7-7efd-4880-a5b4-4c4daf648494", "expectedControlType": "Button", "processors": "", "interactions": "Press", "initialStateCheck": false }
+                { "name": "CloseBoard", "type": "Button", "id": "230d9ba7-7efd-4880-a5b4-4c4daf648494", "expectedControlType": "Button", "processors": "", "interactions": "Press", "initialStateCheck": false },
+                { "name": "StopDefense", "type": "Button", "id": "9e0cecb6-9282-4dbd-b9d9-674661038c8a", "expectedControlType": "Button", "processors": "", "interactions": "Press", "initialStateCheck": false }
             ],
             "bindings": [
                 { "name": "", "id": "ad6ba09d-42d5-4445-b22d-3211d43e37cf", "path": "<XRController>{LeftHand}/primary2DAxis", "interactions": "", "processors": "", "groups": "", "action": "NavigateQuestions", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b86bf6c6-0d69-4f4f-a88f-6511a87824dd", "path": "<XRController>{RightHand}/primaryButton", "interactions": "", "processors": "", "groups": "", "action": "Confirm", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "51089219-b5b1-460d-ae0e-9b2ec5a0ae42", "path": "<XRController>{RightHand}/secondaryButton", "interactions": "", "processors": "", "groups": "", "action": "CloseBoard", "isComposite": false, "isPartOfComposite": false }
+                { "name": "", "id": "51089219-b5b1-460d-ae0e-9b2ec5a0ae42", "path": "<XRController>{RightHand}/secondaryButton", "interactions": "", "processors": "", "groups": "", "action": "CloseBoard", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "4aa17769-6fbd-4e42-aafd-0f1c66d00ad1", "path": "<XRController>{RightHand}/primaryButton", "interactions": "", "processors": "", "groups": "", "action": "StopDefense", "isComposite": false, "isPartOfComposite": false }
             ]
         }
     ],

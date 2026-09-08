@@ -491,12 +491,7 @@ namespace NCKH.VR.GameControl
 
             SetStatus("Đang tải cảnh...");
             PublishTelemetry("scene.load_started", null);
-            AsyncOperation load = SceneManager.LoadSceneAsync(entry.ScenePath, LoadSceneMode.Single);
-            if (load == null)
-                yield break;
-
-            while (!load.isDone)
-                yield return null;
+            yield return SceneTransitionService.LoadScene(entry.ScenePath);
 
             BindLoadedScene(SceneManager.GetActiveScene());
             PublishTelemetry("scene.ready", null);
@@ -565,10 +560,95 @@ namespace NCKH.VR.GameControl
             StartCoroutine(SendTelemetry(eventType, payload));
         }
 
+        public void PublishTelemetryReliable(
+            string eventType,
+            GameplayTelemetryData payload,
+            int maximumAttempts,
+            Action<TelemetryDeliveryResult> completed)
+        {
+            if (string.IsNullOrWhiteSpace(eventType))
+            {
+                completed?.Invoke(new TelemetryDeliveryResult(
+                    false, 0, "Loại telemetry không hợp lệ."));
+                return;
+            }
+
+            StartCoroutine(SendTelemetryReliable(
+                eventType, payload, Mathf.Max(1, maximumAttempts), completed));
+        }
+
         private IEnumerator SendTelemetry(string eventType, GameplayTelemetryData payload)
         {
             telemetryRequestsInFlight++;
-            TelemetryEventDto telemetry = new TelemetryEventDto
+            TelemetryEventDto telemetry = CreateTelemetryEvent(eventType, payload);
+            using UnityWebRequest request = CreateJsonPost(
+                GameControlApi.CombineUrl(backendBaseUrl, telemetryRoute),
+                JsonUtility.ToJson(telemetry));
+            yield return request.SendWebRequest();
+
+            telemetryRequestsInFlight--;
+            warnedTelemetrySaturation = false;
+        }
+
+        private IEnumerator SendTelemetryReliable(
+            string eventType,
+            GameplayTelemetryData payload,
+            int maximumAttempts,
+            Action<TelemetryDeliveryResult> completed)
+        {
+            TelemetryEventDto telemetry = CreateTelemetryEvent(eventType, payload);
+            string json = JsonUtility.ToJson(telemetry);
+            TelemetryDeliveryResult lastResult = new TelemetryDeliveryResult(
+                false, 0, "Không thể gửi telemetry.");
+
+            for (int attempt = 0; attempt < maximumAttempts; attempt++)
+            {
+                while (telemetryRequestsInFlight >= MaximumConcurrentTelemetryRequests)
+                    yield return null;
+
+                if (!IsConfigured)
+                {
+                    lastResult = new TelemetryDeliveryResult(
+                        false, 0, configurationError ?? "Máy chủ chưa được cấu hình.");
+                }
+                else
+                {
+                    telemetryRequestsInFlight++;
+                    using UnityWebRequest request = CreateJsonPost(
+                        GameControlApi.CombineUrl(backendBaseUrl, telemetryRoute), json);
+                    yield return request.SendWebRequest();
+                    telemetryRequestsInFlight--;
+                    warnedTelemetrySaturation = false;
+
+                    bool success = request.result == UnityWebRequest.Result.Success;
+                    string error = success
+                        ? string.Empty
+                        : string.IsNullOrWhiteSpace(request.error)
+                            ? $"Máy chủ trả về mã {request.responseCode}."
+                            : request.error;
+                    lastResult = new TelemetryDeliveryResult(
+                        success, request.responseCode, error);
+                    if (success)
+                    {
+                        completed?.Invoke(lastResult);
+                        yield break;
+                    }
+                }
+
+                if (attempt + 1 < maximumAttempts)
+                    yield return new WaitForSecondsRealtime(ReliableRetryDelay(attempt));
+            }
+
+            completed?.Invoke(lastResult);
+        }
+
+        public static float ReliableRetryDelay(int completedRetryIndex)
+            => Mathf.Pow(2f, Mathf.Clamp(completedRetryIndex, 0, 3));
+
+        private TelemetryEventDto CreateTelemetryEvent(
+            string eventType, GameplayTelemetryData payload)
+        {
+            return new TelemetryEventDto
             {
                 eventId = Guid.NewGuid().ToString("N"),
                 sessionId = sessionId,
@@ -578,13 +658,6 @@ namespace NCKH.VR.GameControl
                 eventType = eventType,
                 payload = payload
             };
-            using UnityWebRequest request = CreateJsonPost(
-                GameControlApi.CombineUrl(backendBaseUrl, telemetryRoute),
-                JsonUtility.ToJson(telemetry));
-            yield return request.SendWebRequest();
-
-            telemetryRequestsInFlight--;
-            warnedTelemetrySaturation = false;
         }
 
         private UnityWebRequest CreateJsonPost(string url, string json)

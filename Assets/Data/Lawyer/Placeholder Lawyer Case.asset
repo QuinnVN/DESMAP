@@ -36,23 +36,33 @@ MonoBehaviour:
   clues:
   - id: brief-time
     title: "M\u1ED1c th\u1EDDi gian m\u1EABu"
-    description: "[N\u1ED8I DUNG M\u1EAAU] S\u1EF1 vi\u1EC7c \u0111\u01B0\u1EE3c
-      ghi nh\u1EADn l\xFAc 20:15."
+    description: "T\xD3M T\u1EAET V\u1EE4 \xC1N\n[N\u1ED8I DUNG M\u1EAAU] M\u1ED9t
+      s\u1EF1 vi\u1EC7c gi\u1EA3 \u0111\u1ECBnh \u0111ang \u0111\u01B0\u1EE3c \u0111i\u1EC1u
+      tra. To\xE0n b\u1ED9 t\xEAn, \u0111\u1ECBa \u0111i\u1EC3m v\xE0 t\xECnh ti\u1EBFt
+      s\u1EBD \u0111\u01B0\u1EE3c thay th\u1EBF b\u1EB1ng n\u1ED9i dung ch\xEDnh
+      th\u1EE9c.\n\nM\u1EE4C TI\xCAU\nX\xE1c minh hai m\xE2u thu\u1EABn quan tr\u1ECDng
+      trong l\u1EDDi khai c\u1EE7a b\u1ECB c\xE1o v\xE0 thu th\u1EADp manh m\u1ED1i
+      cho b\u1EA3ng ch\u1EE9ng c\u1EE9."
     category: 0
   - id: brief-witness
     title: "Nh\xE2n ch\u1EE9ng m\u1EABu"
-    description: "[N\u1ED8I DUNG M\u1EAAU] Nh\xE2n ch\u1EE9ng A c\xF3 m\u1EB7t g\u1EA7n
-      hi\u1EC7n tr\u01B0\u1EDDng."
+    description: "NH\xC2N CH\u1EE8NG\n\u2022 Nh\xE2n ch\u1EE9ng A \u2014 c\xF3 m\u1EB7t
+      g\u1EA7n hi\u1EC7n tr\u01B0\u1EDDng.\r\n\u2022 Nh\xE2n ch\u1EE9ng B \u2014
+      cung c\u1EA5p th\xF4ng tin nhi\u1EC5u c\u1EA7n ki\u1EC3m ch\u1EE9ng."
     category: 1
   - id: brief-detail
     title: "Chi ti\u1EBFt hi\u1EC7n tr\u01B0\u1EDDng"
-    description: "[N\u1ED8I DUNG M\u1EAAU] M\u1ED9t v\u1EADt ch\u1EE9ng ch\u01B0a
-      x\xE1c \u0111\u1ECBnh \u0111\u01B0\u1EE3c t\xECm th\u1EA5y."
+    description: "CHI TI\u1EBET V\u1EE4 \xC1N\n\u2022 V\u1EADt ch\u1EE9ng m\u1EABu
+      ch\u01B0a x\xE1c \u0111\u1ECBnh ngu\u1ED3n g\u1ED1c.\r\n\u2022 Nh\u1EADt k\xFD
+      li\xEAn l\u1EA1c c\xF3 m\u1ED9t m\u1ED1c th\u1EDDi gian c\u1EA7n \u0111\u1ED1i
+      chi\u1EBFu."
     category: 2
   - id: brief-objective
     title: "M\u1EE5c ti\xEAu \u0111i\u1EC1u tra"
-    description: "[N\u1ED8I DUNG M\u1EAAU] X\xE1c minh l\u1EDDi khai v\xE0 m\u1ED1c
-      th\u1EDDi gian c\u1EE7a b\u1ECB c\xE1o."
+    description: "D\xD2NG TH\u1EDCI GIAN\n\u2022 20:00 \u2014 B\u1ECB c\xE1o khai
+      \u0111\xE3 r\u1EDDi khu v\u1EF1c.\r\n\u2022 20:10 \u2014 Camera m\u1EABu ghi
+      nh\u1EADn chuy\u1EC3n \u0111\u1ED9ng.\r\n\u2022 20:15 \u2014 Nh\xE2n ch\u1EE9ng
+      A b\xE1o c\xE1o s\u1EF1 vi\u1EC7c."
     category: 3
   - id: testimony-time
     title: "L\u1EDDi khai v\u1EC1 th\u1EDDi gian"
@@ -202,3 +212,32 @@ MonoBehaviour:
       audioClip: {fileID: 0}
       revealedClueIds: []
     followUps: []
+  resolution:
+    requiredLinks:
+    - firstClueId: testimony-time
+      secondClueId: contradiction-camera
+    - firstClueId: testimony-phone
+      secondClueId: contradiction-call
+    truthConclusion: "V\xEC kh\xF4ng c\xF3 ch\u1EE9ng c\u1EE9 \u0111\xE1ng tin c\u1EADy
+      x\xE1c nh\u1EADn b\u1ECB c\xE1o c\xF3 m\u1EB7t t\u1EA1i hi\u1EC7n tr\u01B0\u1EDDng
+      v\xE0o th\u1EDDi \u0111i\u1EC3m x\u1EA3y ra s\u1EF1 vi\u1EC7c, n\xEAn ch\u01B0a
+      \u0111\u1EE7 c\u0103n c\u1EE9 quy tr\xE1ch nhi\u1EC7m cho b\u1ECB c\xE1o."
+    insufficientEvidenceMessage: "B\u1EA1n ch\u01B0a thu th\u1EADp \u0111\u1EE7 manh
+      m\u1ED1i \u0111\u1EC3 x\xE1c \u0111\u1ECBnh s\u1EF1 th\u1EADt. H\xE3y th\u1EED
+      l\u1EA1i v\xE0 l\u1EF1a ch\u1ECDn c\xE2u h\u1ECFi li\xEAn quan \u0111\u1EBFn
+      th\u1EDDi gian v\xE0 \u0111i\u1EC7n tho\u1EA1i."
+    reasoningCards:
+    - id: reasoning-time
+      title: "Suy lu\u1EADn v\u1EC1 m\u1ED1c th\u1EDDi gian"
+      description: "L\u1EDDi khai r\u1EDDi hi\u1EC7n tr\u01B0\u1EDDng tr\u01B0\u1EDBc
+        20:00 m\xE2u thu\u1EABn v\u1EDBi h\xECnh \u1EA3nh camera sau 20:10."
+      requiredLinks:
+      - firstClueId: testimony-time
+        secondClueId: contradiction-camera
+    - id: reasoning-phone
+      title: "Suy lu\u1EADn v\u1EC1 cu\u1ED9c g\u1ECDi"
+      description: "L\u1EDDi khai \u0111i\u1EC7n tho\u1EA1i h\u1EBFt pin m\xE2u thu\u1EABn
+        v\u1EDBi nh\u1EADt k\xFD cu\u1ED9c g\u1ECDi l\xFAc 20:12."
+      requiredLinks:
+      - firstClueId: testimony-phone
+        secondClueId: contradiction-call

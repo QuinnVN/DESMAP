@@ -26,6 +26,10 @@ namespace NCKH.VR.Lawyer
         [SerializeField] private string defendantName = "Bị cáo mẫu";
         [SerializeField] private List<LawyerInterviewQuestion> questions = new List<LawyerInterviewQuestion>();
 
+        [Header("Evidence Resolution")]
+        [SerializeField] private LawyerCaseResolution resolution = new LawyerCaseResolution(
+            null, string.Empty, string.Empty);
+
         public string CaseId => caseId;
         public string CaseTitle => caseTitle;
         public string CaseSummary => caseSummary;
@@ -37,6 +41,7 @@ namespace NCKH.VR.Lawyer
         public IReadOnlyList<string> StartingClueIds => startingClueIds;
         public string DefendantName => defendantName;
         public IReadOnlyList<LawyerInterviewQuestion> Questions => questions;
+        public LawyerCaseResolution Resolution => resolution;
 
         public LawyerClueDefinition GetClue(string clueId)
         {
@@ -123,6 +128,70 @@ namespace NCKH.VR.Lawyer
             for (int index = 0; index < startingClueIds.Count; index++)
                 if (!clueIds.Contains(startingClueIds[index]))
                     errors.Add($"Manh mối ban đầu '{startingClueIds[index]}' không tồn tại.");
+
+            ValidateResolution(clueIds, errors);
+        }
+
+        private void ValidateResolution(HashSet<string> clueIds, List<string> errors)
+        {
+            if (resolution == null)
+            {
+                errors.Add("Hồ sơ luật sư chưa có kết luận vụ án.");
+                return;
+            }
+            if (resolution.RequiredLinks.Count == 0)
+                errors.Add("Kết luận vụ án phải có ít nhất một liên kết bắt buộc.");
+            if (string.IsNullOrWhiteSpace(resolution.TruthConclusion))
+                errors.Add("Kết luận vụ án không được để trống.");
+            if (string.IsNullOrWhiteSpace(resolution.InsufficientEvidenceMessage))
+                errors.Add("Thông báo thiếu chứng cứ không được để trống.");
+
+            HashSet<LawyerClueLink> links = new HashSet<LawyerClueLink>();
+            for (int index = 0; index < resolution.RequiredLinks.Count; index++)
+            {
+                LawyerRequiredClueLink required = resolution.RequiredLinks[index];
+                if (required == null || !required.Link.IsValid)
+                {
+                    errors.Add($"Liên kết bắt buộc ở vị trí {index} không hợp lệ.");
+                    continue;
+                }
+                LawyerClueLink link = required.Link;
+                if (!clueIds.Contains(link.FirstId) || !clueIds.Contains(link.SecondId))
+                    errors.Add($"Liên kết bắt buộc '{link.FirstId} - {link.SecondId}' tham chiếu manh mối không tồn tại.");
+                if (!links.Add(link))
+                    errors.Add($"Liên kết bắt buộc '{link.FirstId} - {link.SecondId}' bị trùng.");
+            }
+
+            IReadOnlyList<LawyerReasoningCardDefinition> reasoningCards =
+                resolution.ReasoningCards;
+            if (reasoningCards != null)
+            {
+                HashSet<string> reasoningIds = new HashSet<string>(StringComparer.Ordinal);
+                for (int index = 0; index < reasoningCards.Count; index++)
+                {
+                    LawyerReasoningCardDefinition card = reasoningCards[index];
+                    if (card == null || string.IsNullOrWhiteSpace(card.Id)
+                        || !reasoningIds.Add(card.Id))
+                    {
+                        errors.Add($"Thẻ suy luận ở vị trí {index} có mã trống hoặc trùng.");
+                        continue;
+                    }
+                    if (card.RequiredLinks == null || card.RequiredLinks.Count == 0)
+                    {
+                        errors.Add($"Thẻ suy luận '{card.Id}' phải tham chiếu ít nhất một liên kết.");
+                        continue;
+                    }
+                    for (int linkIndex = 0; linkIndex < card.RequiredLinks.Count; linkIndex++)
+                    {
+                        LawyerRequiredClueLink required = card.RequiredLinks[linkIndex];
+                        if (required == null || !required.Link.IsValid
+                            || !links.Contains(required.Link))
+                        {
+                            errors.Add($"Thẻ suy luận '{card.Id}' tham chiếu liên kết không hợp lệ.");
+                        }
+                    }
+                }
+            }
         }
 
         private static void ValidateTestimony(
@@ -150,7 +219,8 @@ namespace NCKH.VR.Lawyer
             IEnumerable<LawyerClueDefinition> configuredClues,
             IEnumerable<string> configuredStartingClues,
             string configuredDefendantName,
-            IEnumerable<LawyerInterviewQuestion> configuredQuestions)
+            IEnumerable<LawyerInterviewQuestion> configuredQuestions,
+            LawyerCaseResolution configuredResolution)
         {
             caseId = configuredCaseId ?? string.Empty;
             caseTitle = title ?? string.Empty;
@@ -163,6 +233,7 @@ namespace NCKH.VR.Lawyer
             startingClueIds = configuredStartingClues != null ? new List<string>(configuredStartingClues) : new List<string>();
             defendantName = configuredDefendantName ?? string.Empty;
             questions = configuredQuestions != null ? new List<LawyerInterviewQuestion>(configuredQuestions) : new List<LawyerInterviewQuestion>();
+            resolution = configuredResolution ?? new LawyerCaseResolution(null, string.Empty, string.Empty);
         }
 #endif
     }

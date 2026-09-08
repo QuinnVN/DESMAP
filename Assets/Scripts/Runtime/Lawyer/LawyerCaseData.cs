@@ -38,6 +38,125 @@ namespace NCKH.VR.Lawyer
     }
 
     [Serializable]
+    public sealed class LawyerRequiredClueLink
+    {
+        [SerializeField] private string firstClueId = string.Empty;
+        [SerializeField] private string secondClueId = string.Empty;
+
+        public string FirstClueId => firstClueId;
+        public string SecondClueId => secondClueId;
+        public LawyerClueLink Link => new LawyerClueLink(firstClueId, secondClueId);
+
+        public LawyerRequiredClueLink(string firstClueId, string secondClueId)
+        {
+            this.firstClueId = firstClueId ?? string.Empty;
+            this.secondClueId = secondClueId ?? string.Empty;
+        }
+    }
+
+    [Serializable]
+    public sealed class LawyerReasoningCardDefinition
+    {
+        [SerializeField] private string id = string.Empty;
+        [SerializeField] private string title = string.Empty;
+        [SerializeField, TextArea(2, 6)] private string description = string.Empty;
+        [SerializeField] private List<LawyerRequiredClueLink> requiredLinks =
+            new List<LawyerRequiredClueLink>();
+
+        public string Id => id;
+        public string Title => title;
+        public string Description => description;
+        public IReadOnlyList<LawyerRequiredClueLink> RequiredLinks => requiredLinks;
+
+        public LawyerReasoningCardDefinition(
+            string id,
+            string title,
+            string description,
+            IEnumerable<LawyerRequiredClueLink> links)
+        {
+            this.id = id ?? string.Empty;
+            this.title = title ?? string.Empty;
+            this.description = description ?? string.Empty;
+            requiredLinks = links != null
+                ? new List<LawyerRequiredClueLink>(links)
+                : new List<LawyerRequiredClueLink>();
+        }
+    }
+
+    [Serializable]
+    public sealed class LawyerCaseResolution
+    {
+        [SerializeField] private List<LawyerRequiredClueLink> requiredLinks =
+            new List<LawyerRequiredClueLink>();
+        [SerializeField, TextArea(3, 8)] private string truthConclusion = string.Empty;
+        [SerializeField, TextArea(3, 8)] private string insufficientEvidenceMessage = string.Empty;
+        [SerializeField] private List<LawyerReasoningCardDefinition> reasoningCards =
+            new List<LawyerReasoningCardDefinition>();
+
+        public IReadOnlyList<LawyerRequiredClueLink> RequiredLinks => requiredLinks;
+        public string TruthConclusion => truthConclusion;
+        public string InsufficientEvidenceMessage => insufficientEvidenceMessage;
+        public IReadOnlyList<LawyerReasoningCardDefinition> ReasoningCards => reasoningCards;
+
+        public LawyerCaseResolution(
+            IEnumerable<LawyerRequiredClueLink> links,
+            string conclusion,
+            string insufficientMessage)
+        {
+            requiredLinks = links != null
+                ? new List<LawyerRequiredClueLink>(links)
+                : new List<LawyerRequiredClueLink>();
+            truthConclusion = conclusion ?? string.Empty;
+            insufficientEvidenceMessage = insufficientMessage ?? string.Empty;
+            reasoningCards = new List<LawyerReasoningCardDefinition>();
+        }
+
+        public LawyerCaseResolution(
+            IEnumerable<LawyerRequiredClueLink> links,
+            string conclusion,
+            string insufficientMessage,
+            IEnumerable<LawyerReasoningCardDefinition> cards)
+            : this(links, conclusion, insufficientMessage)
+        {
+            reasoningCards = cards != null
+                ? new List<LawyerReasoningCardDefinition>(cards)
+                : new List<LawyerReasoningCardDefinition>();
+        }
+
+        public bool Contains(LawyerClueLink link)
+        {
+            for (int index = 0; index < requiredLinks.Count; index++)
+            {
+                LawyerRequiredClueLink required = requiredLinks[index];
+                if (required != null && required.Link.Equals(link))
+                    return true;
+            }
+            return false;
+        }
+
+        public IReadOnlyList<LawyerReasoningCardDefinition> GetReasoningCardsOrFallback()
+        {
+            if (reasoningCards != null && reasoningCards.Count > 0)
+                return reasoningCards;
+
+            List<LawyerReasoningCardDefinition> fallback =
+                new List<LawyerReasoningCardDefinition>();
+            for (int index = 0; index < requiredLinks.Count; index++)
+            {
+                LawyerRequiredClueLink link = requiredLinks[index];
+                if (link == null || !link.Link.IsValid)
+                    continue;
+                fallback.Add(new LawyerReasoningCardDefinition(
+                    $"reasoning-{index + 1}",
+                    "Suy luận từ chứng cứ",
+                    "Mối liên hệ này tạo thành một luận điểm có thể trình bày trước tòa.",
+                    new[] { new LawyerRequiredClueLink(link.FirstClueId, link.SecondClueId) }));
+            }
+            return fallback;
+        }
+    }
+
+    [Serializable]
     public sealed class LawyerTestimony
     {
         [SerializeField, TextArea(4, 12)] private string transcript = string.Empty;

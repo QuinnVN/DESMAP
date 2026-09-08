@@ -84,6 +84,34 @@ namespace NCKH.VR.GameControl
         public int scoreDelta;
         public int scoreTotal;
         public float remainingTime;
+        public AudioTelemetryData audio;
+    }
+
+    [Serializable]
+    public sealed class AudioTelemetryData
+    {
+        public string fileName;
+        public string mimeType;
+        public string encoding;
+        public int sampleRateHz;
+        public int channels;
+        public float durationSeconds;
+        public bool endedEarly;
+        public string dataBase64;
+    }
+
+    public readonly struct TelemetryDeliveryResult
+    {
+        public bool Success { get; }
+        public long ResponseCode { get; }
+        public string ErrorMessage { get; }
+
+        public TelemetryDeliveryResult(bool success, long responseCode, string errorMessage)
+        {
+            Success = success;
+            ResponseCode = responseCode;
+            ErrorMessage = errorMessage ?? string.Empty;
+        }
     }
 
     [Serializable]
