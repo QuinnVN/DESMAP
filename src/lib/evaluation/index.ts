@@ -40,7 +40,7 @@ export type EvaluationModel = {
 	observations: Array<{ self: string; observed: string }>;
 };
 
-export type ExperienceCategory = 'Healthcare' | 'Law' | 'Education' | 'Business' | 'Engineering';
+export type ExperienceCategory = 'Y tế' | 'Luật' | 'Giáo dục' | 'Kinh doanh' | 'Kỹ thuật';
 
 export type CareerExperience = {
 	slug: string;
@@ -59,94 +59,94 @@ export type CareerExperience = {
 export const experiences: CareerExperience[] = [
 	{
 		slug: 'doctor',
-		title: 'Doctor',
-		category: 'Healthcare',
+		title: 'Bác sĩ',
+		category: 'Y tế',
 		image: doctorImage,
 		status: 'recommended',
-		duration: '10 minutes',
+		duration: '10 phút',
 		missionCount: 2,
-		description: 'Triage patients and identify critical information under pressure.',
-		observedFactors: ['Decision speed', 'Prioritization', 'Pressure response'],
-		missions: ['Triage three patients as new information arrives', 'Communicate a treatment priority to your team'],
-		whyItFits: 'Your sample DESMAP profile shows a strong pull toward meaning, interpersonal expertise and high responsibility.'
+		description: 'Phân loại bệnh nhân và xác định thông tin quan trọng trong áp lực.',
+		observedFactors: ['Tốc độ quyết định', 'Ưu tiên', 'Phản ứng với áp lực'],
+		missions: ['Phân loại ba bệnh nhân khi có thông tin mới', 'Trao đổi ưu tiên điều trị với nhóm của bạn'],
+		whyItFits: 'Hồ sơ DESMAP mẫu cho thấy bạn có xu hướng mạnh về ý nghĩa, chuyên môn giao tiếp và trách nhiệm cao.'
 	},
 	{
 		slug: 'lawyer',
-		title: 'Lawyer',
-		category: 'Law',
+		title: 'Luật sư',
+		category: 'Luật',
 		image: lawyerImage,
 		status: 'ready',
-		duration: '12 minutes',
+		duration: '12 phút',
 		missionCount: 2,
-		description: 'Analyse cases and make sound recommendations under deadlines.',
-		observedFactors: ['Evidence synthesis', 'Decision confidence', 'Communication under stress'],
-		missions: ['Separate relevant evidence from a noisy case file', 'Make a recommendation with a clear rationale'],
-		whyItFits: 'A useful comparison career for people who enjoy structured reasoning and high-stakes communication.'
+		description: 'Phân tích vụ việc và đưa ra khuyến nghị hợp lý trong thời hạn gấp.',
+		observedFactors: ['Tổng hợp bằng chứng', 'Tự tin quyết định', 'Giao tiếp khi căng thẳng'],
+		missions: ['Tách bằng chứng liên quan khỏi hồ sơ vụ việc phức tạp', 'Đưa ra khuyến nghị với lập luận rõ ràng'],
+		whyItFits: 'Một nghề đối chiếu hữu ích cho người yêu thích tư duy có cấu trúc và giao tiếp trong tình huống quan trọng.'
 	},
 	{
 		slug: 'teacher',
-		title: 'Teacher',
-		category: 'Education',
+		title: 'Giáo viên',
+		category: 'Giáo dục',
 		image: teacherImage,
 		status: 'ready',
-		duration: '10 minutes',
+		duration: '10 phút',
 		missionCount: 2,
-		description: 'Engage students and adapt your teaching in real time.',
-		observedFactors: ['Empathy', 'Adaptability', 'Group coordination'],
-		missions: ['Respond to different learning needs in one session', 'Reframe a concept when attention drops'],
-		whyItFits: 'A people-centred scenario that tests how your interpersonal strengths translate into live facilitation.'
+		description: 'Thu hút học sinh và điều chỉnh cách dạy trong thời gian thực.',
+		observedFactors: ['Thấu cảm', 'Khả năng thích ứng', 'Điều phối nhóm'],
+		missions: ['Đáp ứng các nhu cầu học tập khác nhau trong một buổi học', 'Diễn giải lại khái niệm khi sự chú ý giảm'],
+		whyItFits: 'Một tình huống lấy con người làm trung tâm để kiểm tra cách điểm mạnh giao tiếp của bạn chuyển hóa thành hoạt động hướng dẫn trực tiếp.'
 	},
 	{
 		slug: 'sales-representative',
-		title: 'Sales representative',
-		category: 'Business',
+		title: 'Nhân viên kinh doanh',
+		category: 'Kinh doanh',
 		image: salesImage,
 		status: 'ready',
-		duration: '8 minutes',
+		duration: '8 phút',
 		missionCount: 2,
-		description: 'Build rapport and close deals in realistic scenarios.',
-		observedFactors: ['Rapport building', 'Listening', 'Resilience'],
-		missions: ['Discover a client need through conversation', 'Respond to a concern without losing momentum'],
-		whyItFits: 'A fast social scenario that reveals how your communication style performs with competing priorities.'
+		description: 'Xây dựng kết nối và chốt giao dịch trong các tình huống thực tế.',
+		observedFactors: ['Xây dựng kết nối', 'Lắng nghe', 'Kiên cường'],
+		missions: ['Khám phá nhu cầu khách hàng qua hội thoại', 'Phản hồi băn khoăn mà không mất đà'],
+		whyItFits: 'Một tình huống xã hội nhanh cho thấy phong cách giao tiếp của bạn hoạt động thế nào khi có nhiều ưu tiên cạnh tranh.'
 	},
 	{
 		slug: 'automotive-engineer',
-		title: 'Automotive engineer',
-		category: 'Engineering',
+		title: 'Kỹ sư ô tô',
+		category: 'Kỹ thuật',
 		image: engineeringImage,
 		status: 'locked',
-		duration: 'Coming soon',
+		duration: 'Sắp ra mắt',
 		missionCount: 2,
-		description: 'Diagnose and solve engineering challenges in a virtual lab.',
-		observedFactors: ['Systems thinking', 'Precision', 'Adaptability'],
-		missions: ['Trace a fault through an unfamiliar system', 'Choose a safe test sequence'],
-		whyItFits: 'A future module for comparing analytical focus and practical problem solving in a technical environment.'
+		description: 'Chẩn đoán và giải quyết thử thách kỹ thuật trong phòng thí nghiệm ảo.',
+		observedFactors: ['Tư duy hệ thống', 'Chính xác', 'Khả năng thích ứng'],
+		missions: ['Lần theo lỗi trong một hệ thống xa lạ', 'Chọn trình tự kiểm tra an toàn'],
+		whyItFits: 'Một mô-đun tương lai để so sánh khả năng tập trung phân tích và giải quyết vấn đề thực tế trong môi trường kỹ thuật.'
 	}
 ];
 
 const sampleStageScores: Record<StageId, number> = { D: 58, E: 76, S: 67, M: 70, A: 62, P: 48 };
 
 const interestToCareer: Record<string, { label: string; slug: string }> = {
-	'technology-engineering': { label: 'Automotive engineer', slug: 'automotive-engineer' },
-	'science-research': { label: 'Doctor', slug: 'doctor' },
-	'design-creative': { label: 'Teacher', slug: 'teacher' },
-	'business-entrepreneurship': { label: 'Sales representative', slug: 'sales-representative' },
-	'people-education': { label: 'Teacher', slug: 'teacher' },
-	'health-wellbeing': { label: 'Doctor', slug: 'doctor' },
-	'law-public-service': { label: 'Lawyer', slug: 'lawyer' },
-	'media-communication': { label: 'Sales representative', slug: 'sales-representative' },
-	'environment-sustainability': { label: 'Automotive engineer', slug: 'automotive-engineer' },
-	'operations-trades': { label: 'Automotive engineer', slug: 'automotive-engineer' },
-	exploring: { label: 'Doctor', slug: 'doctor' }
+	'technology-engineering': { label: 'Kỹ sư ô tô', slug: 'automotive-engineer' },
+	'science-research': { label: 'Bác sĩ', slug: 'doctor' },
+	'design-creative': { label: 'Giáo viên', slug: 'teacher' },
+	'business-entrepreneurship': { label: 'Nhân viên kinh doanh', slug: 'sales-representative' },
+	'people-education': { label: 'Giáo viên', slug: 'teacher' },
+	'health-wellbeing': { label: 'Bác sĩ', slug: 'doctor' },
+	'law-public-service': { label: 'Luật sư', slug: 'lawyer' },
+	'media-communication': { label: 'Nhân viên kinh doanh', slug: 'sales-representative' },
+	'environment-sustainability': { label: 'Kỹ sư ô tô', slug: 'automotive-engineer' },
+	'operations-trades': { label: 'Kỹ sư ô tô', slug: 'automotive-engineer' },
+	exploring: { label: 'Bác sĩ', slug: 'doctor' }
 };
 
 const stageCopy: Record<StageId, { label: string; detail: string }> = {
-	D: { label: 'Desire', detail: 'Meaning & contribution' },
-	E: { label: 'Expertise', detail: 'Interpersonal' },
-	S: { label: 'Social role', detail: 'Coordinator' },
-	M: { label: 'Mind', detail: 'Analytical' },
-	A: { label: 'Adaptability', detail: 'Flexible' },
-	P: { label: 'Pressure', detail: 'Moderate' }
+	D: { label: 'Mong muốn', detail: 'Ý nghĩa & đóng góp' },
+	E: { label: 'Chuyên môn', detail: 'Giao tiếp' },
+	S: { label: 'Vai trò xã hội', detail: 'Điều phối' },
+	M: { label: 'Tư duy', detail: 'Phân tích' },
+	A: { label: 'Khả năng thích ứng', detail: 'Linh hoạt' },
+	P: { label: 'Áp lực', detail: 'Trung bình' }
 };
 
 function scoreFor(scores: QuestionnaireScores | undefined, stage: StageId): number {
@@ -157,7 +157,7 @@ export function createEvaluationModel(payload?: QuestionnaireSubmission | null):
 	const stageScores = {} as Record<StageId, number>;
 	for (const stage of Object.keys(stageCopy) as StageId[]) stageScores[stage] = scoreFor(payload?.scores, stage);
 	const target = payload?.careerInterests.map((id) => interestToCareer[id]).find(Boolean) ?? interestToCareer.exploring;
-	const comparisonLabels = [target.label, 'Doctor', 'Lawyer', 'Teacher', 'Sales representative', 'Automotive engineer'].filter((label, index, labels) => labels.indexOf(label) === index).slice(0, 3);
+	const comparisonLabels = [target.label, 'Bác sĩ', 'Luật sư', 'Giáo viên', 'Nhân viên kinh doanh', 'Kỹ sư ô tô'].filter((label, index, labels) => labels.indexOf(label) === index).slice(0, 3);
 
 	const profileRows = (Object.keys(stageCopy) as StageId[]).map((code) => ({
 		code,
@@ -175,16 +175,16 @@ export function createEvaluationModel(payload?: QuestionnaireSubmission | null):
 		stageScores,
 		careerMatches: comparisonLabels.map((label, index) => ({
 			label,
-			percent: index === 0 ? 87 : label === 'Lawyer' ? 81 : 78,
+			percent: index === 0 ? 87 : label === 'Luật sư' ? 81 : 78,
 			accent: index === 0 ? 'lime' as const : 'blue' as const
 		})),
-		strengths: ['Strong information analysis', 'Clear prioritization', 'Sustained focus'],
-		gaps: ['Decision speed under pressure', 'Managing concurrent requests', 'Responding to unexpected change'],
-		roadmap: ['Timed triage practice', 'High-pressure communication role-play', 'Review progress in 4 weeks'],
+		strengths: ['Phân tích thông tin tốt', 'Ưu tiên rõ ràng', 'Duy trì tập trung'],
+		gaps: ['Tốc độ quyết định khi chịu áp lực', 'Quản lý các yêu cầu đồng thời', 'Phản ứng với thay đổi bất ngờ'],
+		roadmap: ['Luyện tập phân loại có giới hạn thời gian', 'Đóng vai giao tiếp áp lực cao', 'Xem lại tiến độ sau 4 tuần'],
 		observations: [
-			{ self: 'I handle pressure well', observed: 'Decision speed decreased when tasks overlapped' },
-			{ self: 'I communicate confidently', observed: 'Identified the most important information accurately' },
-			{ self: 'I prefer working independently', observed: 'Tended to coordinate and organize priorities' }
+			{ self: 'Tôi xử lý áp lực tốt', observed: 'Tốc độ quyết định giảm khi nhiệm vụ chồng chéo' },
+			{ self: 'Tôi giao tiếp tự tin', observed: 'Xác định chính xác thông tin quan trọng nhất' },
+			{ self: 'Tôi thích làm việc độc lập', observed: 'Có xu hướng điều phối và sắp xếp ưu tiên' }
 		]
 	};
 }
@@ -194,8 +194,8 @@ export function answeredCount(draft: QuestionnaireDraft | null): number {
 }
 
 export function formatDate(value?: string): string {
-	if (!value) return 'Preview mode';
+	if (!value) return 'Chế độ xem trước';
 	const date = new Date(value);
-	if (Number.isNaN(date.getTime())) return 'Completed recently';
-	return new Intl.DateTimeFormat('en', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
+	if (Number.isNaN(date.getTime())) return 'Vừa hoàn tất';
+	return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
 }

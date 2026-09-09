@@ -7,27 +7,27 @@
 </script>
 
 <svelte:head>
-	<title>DESMAP — Experience your next career</title>
-	<meta name="description" content="DESMAP helps you understand your strengths, explore real careers, and choose your future with confidence." />
-	<meta property="og:title" content="DESMAP — Experience your next career" />
-	<meta property="og:description" content="AI × VR career orientation for a future that feels like yours." />
+	<title>DESMAP — Trải nghiệm nghề nghiệp tiếp theo của bạn</title>
+	<meta name="description" content="DESMAP giúp bạn hiểu điểm mạnh, khám phá nghề nghiệp thực tế và tự tin lựa chọn tương lai." />
+	<meta property="og:title" content="DESMAP — Trải nghiệm nghề nghiệp tiếp theo của bạn" />
+	<meta property="og:description" content="Định hướng nghề nghiệp bằng AI × VR cho một tương lai mang dấu ấn của bạn." />
 </svelte:head>
 
 <Header />
 
 <main>
-	<section class="hero" aria-labelledby="hero-heading">
-		<div class="hero-ambient" aria-hidden="true"></div>
-		<div class="container hero-grid">
-			<div class="hero-copy">
-				<p class="eyebrow hero-eyebrow">AI × VR CAREER ORIENTATION</p>
-				<h1 id="hero-heading">Don’t just<br />choose a career.<br /><span>Experience</span> it.</h1>
-				<p class="hero-description">DESMAP helps you understand your strengths, explore real careers, choose your future with confidence.</p>
-				<div class="hero-actions"><a class="button button-lime" href="/questionnaire">Build my profile <span aria-hidden="true">↗</span></a><a class="process-link" href="#how-it-works">Explore the process <span aria-hidden="true">→</span></a></div>
+	<section class="relative overflow-hidden border-b border-line" aria-labelledby="hero-heading">
+		<div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_47%,rgb(5_82_255_/.16),transparent_25%),radial-gradient(circle_at_83%_50%,rgb(159_64_255_/.11),transparent_24%)]" aria-hidden="true"></div>
+		<div class="relative mx-auto flex w-[min(100%_-_2rem,90rem)] flex-col items-stretch gap-4 pt-[4.2rem] min-[761px]:grid min-[761px]:min-h-[45rem] min-[761px]:w-[min(100%_-_4rem,90rem)] min-[761px]:grid-cols-[minmax(19rem,.92fr)_minmax(30rem,1.08fr)] min-[761px]:items-center min-[761px]:pt-[4.5rem] min-[761px]:pb-4 max-[1000px]:min-h-[40rem] max-[1000px]:grid-cols-[minmax(18rem,.8fr)_minmax(23rem,1.2fr)]">
+			<div class="relative z-2 min-[761px]:pt-8">
+				<p class="mb-[1.7rem] font-mono text-xs font-[740] tracking-[.13em] text-lime uppercase min-[761px]:mb-[2.4rem]">ĐỊNH HƯỚNG NGHỀ NGHIỆP AI × VR</p>
+				<h1 class="m-0 max-w-96 text-[clamp(3rem,14vw,5.6rem)] leading-[.87] font-[390] tracking-[-.085em] text-text uppercase min-[761px]:max-w-[44rem] min-[761px]:text-[clamp(3rem,6.35vw,6.7rem)] max-[1000px]:text-[clamp(3.1rem,6.8vw,5.4rem)]" id="hero-heading">Đừng chỉ<br />chọn.<br /><span class="text-lime">Hãy trải nghiệm</span></h1>
+				<p class="mt-8 mb-0 max-w-[33rem] text-[.96rem] leading-[1.45] text-muted min-[761px]:text-[1.06rem]">DESMAP giúp bạn hiểu điểm mạnh, khám phá nghề nghiệp thực tế và tự tin lựa chọn tương lai.</p>
+				<div class="mt-[2.4rem] flex flex-col items-start gap-[1.3rem] min-[471px]:flex-row min-[471px]:flex-wrap min-[471px]:items-center min-[471px]:gap-6"><a class="inline-flex min-h-[3.15rem] items-center justify-center gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]" href="/questionnaire">Tạo hồ sơ của tôi <span aria-hidden="true">↗</span></a><a class="group inline-flex items-center gap-[.7rem] border-b border-text pb-2 font-mono text-[.72rem] tracking-[.05em] text-text uppercase no-underline transition-[color,border-color] duration-250 hover:border-lime hover:text-lime" href="#how-it-works">Khám phá quy trình <span class="text-base text-lime transition-transform duration-250 group-hover:translate-x-1" aria-hidden="true">→</span></a></div>
 			</div>
-			<div class="hero-art"><img class="hero-raster" src="/desmap/landing-01.png" alt="Blue virtual reality headset opening into a neon career portal" /></div>
+			<div class="relative grid min-h-72 min-w-0 place-items-center -mt-4 min-[471px]:min-h-[22rem] min-[761px]:mt-0 min-[761px]:min-h-[35rem]"><img class="absolute z-1 aspect-[800/533] w-[130%] max-w-none object-contain object-center drop-shadow-[0_0_1.8rem_rgb(17_95_255_/.24)] min-[761px]:w-[124%] max-[1000px]:w-[140%]" src="/desmap/landing-01.png" alt="Kính thực tế ảo màu xanh mở ra cánh cổng nghề nghiệp neon" /></div>
 		</div>
-		<div class="container promise-strip" aria-label="DESMAP benefits"><span><b>◎</b> AI-powered<br />assessment</span><span><b>⌁</b> immersive VR<br />simulations</span><span><b>◈</b> personalized<br />career insights</span><span><b>◇</b> future-ready<br />decisions</span></div>
+		<div class="relative z-3 mx-auto grid w-[min(100%_-_2rem,90rem)] grid-cols-2 border-t border-line min-[761px]:w-[min(100%_-_4rem,90rem)] min-[761px]:grid-cols-4 [&>span]:flex [&>span]:min-h-[4.7rem] [&>span]:items-center [&>span]:gap-3 [&>span]:border-r [&>span]:border-line [&>span]:px-[.55rem] [&>span]:py-[.8rem] [&>span]:font-mono [&>span]:text-[.53rem] [&>span]:leading-[1.25] [&>span]:tracking-[.06em] [&>span]:text-muted [&>span]:uppercase min-[471px]:[&>span]:px-4 min-[471px]:[&>span]:text-[.64rem] min-[761px]:[&>span]:min-h-[5.2rem] [&>span:first-child]:border-l [&>span:nth-child(2)]:border-r-0 min-[761px]:[&>span:nth-child(2)]:border-r [&>span:nth-child(3)]:border-t min-[761px]:[&>span:nth-child(3)]:border-t-0 [&>span:nth-child(4)]:border-t min-[761px]:[&>span:nth-child(4)]:border-t-0 [&_b]:font-sans [&_b]:text-[1.35rem] [&_b]:font-light [&_b]:text-lime min-[471px]:[&_b]:text-[1.8rem]" aria-label="Lợi ích DESMAP"><span><b>◎</b> đánh giá<br />bằng AI</span><span><b>⌁</b> mô phỏng VR<br />sống động</span><span><b>◈</b> góc nhìn nghề nghiệp<br />cá nhân hóa</span><span><b>◇</b> quyết định sẵn sàng<br />cho tương lai</span></div>
 	</section>
 
 	<ProcessSteps />
@@ -36,10 +36,3 @@
 </main>
 
 <Footer />
-
-<style>
-	.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }.hero-ambient { position: absolute; inset: 0; background: radial-gradient(circle at 72% 47%, rgba(5,82,255,.16), transparent 25%), radial-gradient(circle at 83% 50%, rgba(159,64,255,.11), transparent 24%); pointer-events: none; }.hero-grid { position: relative; display: grid; min-height: 45rem; grid-template-columns: minmax(19rem, .92fr) minmax(30rem, 1.08fr); align-items: center; gap: 1rem; padding-block: 4.5rem 1rem; }.hero-copy { position: relative; z-index: 2; padding-top: 2rem; }.eyebrow { color: var(--lime); font-family: var(--mono); font-size: .75rem; font-weight: 740; letter-spacing: .13em; text-transform: uppercase; }.hero-eyebrow { margin: 0 0 2.4rem; }.hero h1 { max-width: 44rem; margin: 0; color: var(--text); font-size: clamp(3rem, 6.35vw, 6.7rem); font-weight: 390; letter-spacing: -.085em; line-height: .87; text-transform: uppercase; }.hero h1 span { color: var(--lime); }.hero-description { max-width: 33rem; margin: 2rem 0 0; color: var(--muted); font-size: 1.06rem; line-height: 1.45; }.hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin-top: 2.4rem; }.process-link { display: inline-flex; align-items: center; gap: .7rem; padding-bottom: .5rem; border-bottom: 1px solid var(--text); color: var(--text); font-family: var(--mono); font-size: .72rem; letter-spacing: .05em; text-decoration: none; text-transform: uppercase; transition: color .25s ease, border-color .25s ease; }.process-link span { color: var(--lime); font-size: 1rem; transition: transform .25s ease; }.process-link:hover { border-color: var(--lime); color: var(--lime); }.process-link:hover span { transform: translateX(.25rem); }.hero-art { position: relative; display: grid; min-width: 0; place-items: center; min-height: 35rem; }.hero-raster { position: absolute; z-index: 1; width: 124%; max-width: none; aspect-ratio: 800 / 533; object-fit: contain; object-position: center; filter: drop-shadow(0 0 1.8rem rgba(17,95,255,.24)); }.promise-strip { position: relative; z-index: 3; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }.promise-strip span { display: flex; align-items: center; gap: .75rem; min-height: 5.2rem; padding: .8rem 1rem; border-right: 1px solid var(--line); color: var(--muted); font-family: var(--mono); font-size: .64rem; letter-spacing: .06em; line-height: 1.25; text-transform: uppercase; }.promise-strip span:first-child { border-left: 1px solid var(--line); }.promise-strip b { color: var(--lime); font-family: var(--sans); font-size: 1.8rem; font-weight: 300; }
-	@media (max-width: 1000px) { .hero-grid { min-height: 40rem; grid-template-columns: minmax(18rem, .8fr) minmax(23rem, 1.2fr); }.hero-raster { width: 140%; }.hero h1 { font-size: clamp(3.1rem, 6.8vw, 5.4rem); } }
-	@media (max-width: 760px) { .hero-grid { display: flex; min-height: auto; flex-direction: column; align-items: stretch; padding-block: 4.2rem 0; }.hero-copy { padding-top: 0; }.hero-eyebrow { margin-bottom: 1.7rem; }.hero h1 { max-width: 24rem; font-size: clamp(3rem, 14vw, 5.6rem); }.hero-description { font-size: .96rem; }.hero-art { min-height: 22rem; margin-top: -1rem; }.hero-raster { width: 130%; }.promise-strip { grid-template-columns: repeat(2, 1fr); }.promise-strip span { min-height: 4.7rem; }.promise-strip span:nth-child(2) { border-right: 0; }.promise-strip span:nth-child(3), .promise-strip span:nth-child(4) { border-top: 1px solid var(--line); } }
-	@media (max-width: 470px) { .hero-actions { align-items: flex-start; flex-direction: column; gap: 1.3rem; }.hero-art { min-height: 18rem; }.promise-strip span { padding-inline: .55rem; font-size: .53rem; }.promise-strip b { font-size: 1.35rem; } }
-</style>

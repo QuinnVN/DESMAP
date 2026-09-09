@@ -3,6 +3,7 @@
 - **Language**: TypeScript
 - **Package Manager**: pnpm
 - **Add-ons**: ai-tools, tailwindcss
+- **Website language**: All user-facing website text must be written in Vietnamese.
 
 ---
 

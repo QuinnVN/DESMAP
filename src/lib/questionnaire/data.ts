@@ -37,60 +37,60 @@ export type CareerInterest = {
 };
 
 export const careerInterestOptions: CareerInterest[] = [
-	{ id: 'technology-engineering', label: 'Technology & engineering', description: 'Building systems, products and technical solutions.' },
-	{ id: 'science-research', label: 'Science & research', description: 'Investigating questions, evidence and how the world works.' },
-	{ id: 'design-creative', label: 'Design & creative', description: 'Shaping ideas, experiences, visuals and original work.' },
-	{ id: 'business-entrepreneurship', label: 'Business & entrepreneurship', description: 'Growing organisations, products and new ventures.' },
-	{ id: 'people-education', label: 'People & education', description: 'Teaching, mentoring and helping people develop.' },
-	{ id: 'health-wellbeing', label: 'Health & wellbeing', description: 'Supporting health, care and quality of life.' },
-	{ id: 'law-public-service', label: 'Law & public service', description: 'Working with policy, justice and the public good.' },
-	{ id: 'media-communication', label: 'Media & communication', description: 'Connecting people through language, stories and information.' },
-	{ id: 'environment-sustainability', label: 'Environment & sustainability', description: 'Protecting places, resources and long-term futures.' },
-	{ id: 'operations-trades', label: 'Operations & skilled trades', description: 'Delivering practical work, services and reliable systems.' },
-	{ id: 'exploring', label: 'I am still exploring', description: 'Keep the field open while I learn more about myself.' }
+	{ id: 'technology-engineering', label: 'Công nghệ & kỹ thuật', description: 'Xây dựng hệ thống, sản phẩm và giải pháp kỹ thuật.' },
+	{ id: 'science-research', label: 'Khoa học & nghiên cứu', description: 'Khám phá câu hỏi, bằng chứng và cách thế giới vận hành.' },
+	{ id: 'design-creative', label: 'Thiết kế & sáng tạo', description: 'Định hình ý tưởng, trải nghiệm, hình ảnh và tác phẩm nguyên bản.' },
+	{ id: 'business-entrepreneurship', label: 'Kinh doanh & khởi nghiệp', description: 'Phát triển tổ chức, sản phẩm và dự án mới.' },
+	{ id: 'people-education', label: 'Con người & giáo dục', description: 'Giảng dạy, cố vấn và giúp mọi người phát triển.' },
+	{ id: 'health-wellbeing', label: 'Sức khỏe & hạnh phúc', description: 'Hỗ trợ sức khỏe, chăm sóc và chất lượng cuộc sống.' },
+	{ id: 'law-public-service', label: 'Luật & dịch vụ công', description: 'Làm việc với chính sách, công lý và lợi ích cộng đồng.' },
+	{ id: 'media-communication', label: 'Truyền thông & giao tiếp', description: 'Kết nối mọi người qua ngôn ngữ, câu chuyện và thông tin.' },
+	{ id: 'environment-sustainability', label: 'Môi trường & bền vững', description: 'Bảo vệ không gian, tài nguyên và tương lai dài hạn.' },
+	{ id: 'operations-trades', label: 'Vận hành & nghề kỹ thuật', description: 'Thực hiện công việc thực tế, dịch vụ và hệ thống đáng tin cậy.' },
+	{ id: 'exploring', label: 'Tôi vẫn đang khám phá', description: 'Giữ lựa chọn rộng mở khi tôi hiểu thêm về bản thân.' }
 ];
 
 const stageMeta: Record<StageId, Omit<QuestionnaireStage, 'questions'>> = {
 	D: {
 		id: 'D',
-		shortLabel: 'DESIRE',
-		label: 'Desire & career orientation',
-		subtitle: 'What you want your work to bring you',
+		shortLabel: 'MONG MUỐN',
+		label: 'Mong muốn & định hướng nghề nghiệp',
+		subtitle: 'Điều bạn mong công việc mang lại',
 		dimensionIds: ['D1', 'D2', 'D3', 'D4', 'D5', 'D6']
 	},
 	E: {
 		id: 'E',
-		shortLabel: 'EXPERTISE',
-		label: 'Expertise',
-		subtitle: 'The strengths you want to put to work',
+		shortLabel: 'CHUYÊN MÔN',
+		label: 'Chuyên môn',
+		subtitle: 'Những điểm mạnh bạn muốn phát huy',
 		dimensionIds: ['E1', 'E2', 'E3']
 	},
 	S: {
 		id: 'S',
-		shortLabel: 'SOCIAL ROLE',
-		label: 'Social role',
-		subtitle: 'How you tend to contribute with others',
+		shortLabel: 'VAI TRÒ XÃ HỘI',
+		label: 'Vai trò xã hội',
+		subtitle: 'Cách bạn thường đóng góp cùng người khác',
 		dimensionIds: ['S1', 'S2', 'S3']
 	},
 	M: {
 		id: 'M',
-		shortLabel: 'MIND',
-		label: 'Mind',
-		subtitle: 'How you process information and decisions',
+		shortLabel: 'TƯ DUY',
+		label: 'Tư duy',
+		subtitle: 'Cách bạn xử lý thông tin và quyết định',
 		dimensionIds: ['M1', 'M2', 'M3']
 	},
 	A: {
 		id: 'A',
-		shortLabel: 'ADAPTABILITY',
-		label: 'Adaptability',
-		subtitle: 'How you move through change',
+		shortLabel: 'THÍCH ỨNG',
+		label: 'Khả năng thích ứng',
+		subtitle: 'Cách bạn đón nhận thay đổi',
 		dimensionIds: ['A1', 'A2', 'A3', 'A4']
 	},
 	P: {
 		id: 'P',
-		shortLabel: 'PRESSURE',
-		label: 'Pressure response',
-		subtitle: 'How you respond when work gets demanding',
+		shortLabel: 'ÁP LỰC',
+		label: 'Phản ứng với áp lực',
+		subtitle: 'Cách bạn phản ứng khi công việc trở nên căng thẳng',
 		dimensionIds: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6']
 	}
 };

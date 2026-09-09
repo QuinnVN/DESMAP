@@ -4,66 +4,40 @@
 
 	let menuOpen = $state(false);
 	const links = [
-		{ label: 'About us', href: '/#about' },
-		{ label: 'How it works', href: '/#how-it-works' },
-		{ label: 'Career library', href: '/experiences' },
-		{ label: 'My profile', href: '/evaluation' }
+		{ label: 'Về chúng tôi', href: '/#about' },
+		{ label: 'Cách hoạt động', href: '/#how-it-works' },
+		{ label: 'Thư viện nghề nghiệp', href: '/experiences' },
+		{ label: 'Hồ sơ của tôi', href: '/evaluation' }
 	];
 
 	function closeMenu() { menuOpen = false; }
 </script>
 
-<header class="site-header">
-	<div class="container header-inner">
+<header class="relative z-30 border-b border-line bg-[rgb(3_3_3_/.91)] backdrop-blur-[18px]">
+	<div class="mx-auto flex min-h-[5.15rem] w-[min(100%_-_2rem,90rem)] items-center gap-8 min-[761px]:min-h-26 min-[761px]:w-[min(100%_-_4rem,90rem)]">
 		<BrandMark />
-		<nav class="desktop-nav" aria-label="Main navigation">
+		<nav class="mx-auto hidden items-center justify-center gap-[clamp(1.3rem,3vw,4.1rem)] min-[761px]:flex max-[960px]:gap-[1.1rem]" aria-label="Điều hướng chính">
 			{#each links as link (link.href)}
-				<a href={link.href}>{link.label}</a>
+				<a class="group relative whitespace-nowrap text-[.81rem] font-[540] tracking-[.035em] text-text uppercase no-underline opacity-[.84] transition-[color,opacity] duration-250 after:absolute after:bottom-[-.45rem] after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-lime after:transition-transform after:duration-250 hover:text-lime hover:opacity-100 hover:after:scale-x-100 focus-visible:text-lime focus-visible:opacity-100 focus-visible:after:scale-x-100 max-[960px]:text-[.7rem]" href={link.href}>{link.label}</a>
 			{/each}
 		</nav>
-		<a class="button button-outline header-cta" href="/questionnaire">Start now <span aria-hidden="true">↗</span></a>
+		<a class="hidden min-h-[3.15rem] min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 py-[.85rem] font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase no-underline transition hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] min-[761px]:inline-flex max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem]" href="/questionnaire">Bắt đầu ngay <span class="text-[1.1em]" aria-hidden="true">↗</span></a>
 		<Dialog.Root bind:open={menuOpen}>
-			<Dialog.Trigger class="menu-trigger" aria-label="Open menu" aria-expanded={menuOpen}>
-				<span></span><span></span>
+			<Dialog.Trigger class="ml-auto block h-[2.9rem] w-[2.9rem] cursor-pointer rounded-full border border-line-strong bg-transparent text-text min-[761px]:hidden" aria-label="Mở menu" aria-expanded={menuOpen}>
+				<span class="mx-auto my-[.28rem] block h-px w-4 bg-current"></span><span class="mx-auto my-[.28rem] block h-px w-4 bg-current"></span>
 			</Dialog.Trigger>
 			<Dialog.Portal>
-				<Dialog.Overlay class="dialog-overlay" />
-				<Dialog.Content class="mobile-menu" aria-label="Mobile navigation">
-					<div class="mobile-menu-top"><BrandMark compact /><Dialog.Close class="dialog-close" aria-label="Close menu">×</Dialog.Close></div>
-					<nav aria-label="Mobile navigation links">
+				<Dialog.Overlay class="fixed inset-0 z-50 animate-overlay-in bg-black/76" />
+				<Dialog.Content class="fixed inset-[.8rem] z-51 flex animate-menu-in flex-col rounded-[1.2rem] border border-line-strong bg-[#071020] p-5 shadow-[0_1.5rem_5rem_rgb(0_0_0_/.55)]" aria-label="Điều hướng trên thiết bị di động">
+					<div class="flex items-center justify-between"><BrandMark compact /><Dialog.Close class="h-[2.4rem] w-[2.4rem] cursor-pointer rounded-full border border-line-strong bg-transparent text-2xl text-text" aria-label="Đóng menu">×</Dialog.Close></div>
+					<nav class="mt-16 mb-auto grid" aria-label="Các liên kết điều hướng trên thiết bị di động">
 						{#each links as link, index (link.href)}
-							<a href={link.href} onclick={closeMenu}><span>0{index + 1}</span>{link.label}</a>
+							<a class="flex items-baseline gap-4 border-b border-line py-[1.2rem] text-[clamp(1.65rem,7vw,2.8rem)] font-[520] tracking-[-.055em] text-text uppercase no-underline" href={link.href} onclick={closeMenu}><span class="font-mono text-[.72rem] tracking-normal text-lime">0{index + 1}</span>{link.label}</a>
 						{/each}
 					</nav>
-					<a class="button button-lime mobile-menu-cta" href="/questionnaire" onclick={closeMenu}>Start now <span aria-hidden="true">↗</span></a>
+					<a class="mt-8 inline-flex min-h-[3.15rem] w-full items-center justify-between gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]" href="/questionnaire" onclick={closeMenu}>Bắt đầu ngay <span class="text-[1.1em]" aria-hidden="true">↗</span></a>
 				</Dialog.Content>
 			</Dialog.Portal>
 		</Dialog.Root>
 	</div>
 </header>
-
-<style>
-	.site-header { position: relative; z-index: 30; border-bottom: 1px solid var(--line); background: rgba(3, 3, 3, .91); backdrop-filter: blur(18px); }
-	.header-inner { display: flex; align-items: center; min-height: 6.5rem; gap: 2rem; }
-	.desktop-nav { display: flex; align-items: center; justify-content: center; gap: clamp(1.3rem, 3vw, 4.1rem); margin: 0 auto; }
-	.desktop-nav a { position: relative; color: var(--text); text-decoration: none; font-size: .81rem; font-weight: 540; letter-spacing: .035em; text-transform: uppercase; white-space: nowrap; opacity: .84; transition: color .25s ease, opacity .25s ease; }
-	.desktop-nav a::after { content: ''; position: absolute; left: 0; bottom: -.45rem; width: 100%; height: 1px; background: var(--lime); transform: scaleX(0); transform-origin: left; transition: transform .25s ease; }
-	.desktop-nav a:hover, .desktop-nav a:focus-visible { color: var(--lime); opacity: 1; }
-	.desktop-nav a:hover::after, .desktop-nav a:focus-visible::after { transform: scaleX(1); }
-	.header-cta { padding: .85rem 1.6rem; min-width: 10rem; }
-	.header-cta span, .mobile-menu-cta span { font-size: 1.1em; }
-	:global(.menu-trigger) { display: none; margin-left: auto; width: 2.9rem; height: 2.9rem; border: 1px solid var(--line-strong); border-radius: 50%; background: transparent; color: var(--text); cursor: pointer; }
-	:global(.menu-trigger span) { display: block; width: 1rem; height: 1px; margin: .28rem auto; background: currentColor; }
-	:global(.dialog-overlay) { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.76); animation: overlay-in .2s ease-out; }
-	:global(.mobile-menu) { position: fixed; z-index: 51; inset: .8rem; display: flex; flex-direction: column; padding: 1.25rem; border: 1px solid var(--line-strong); border-radius: 1.2rem; background: #071020; box-shadow: 0 1.5rem 5rem rgba(0,0,0,.55); animation: menu-in .3s cubic-bezier(.16,1,.3,1); }
-	:global(.mobile-menu-top) { display: flex; align-items: center; justify-content: space-between; }
-	:global(.dialog-close) { width: 2.4rem; height: 2.4rem; border: 1px solid var(--line-strong); border-radius: 50%; background: transparent; color: var(--text); font-size: 1.5rem; cursor: pointer; }
-	:global(.mobile-menu nav) { display: grid; margin: 4rem 0 auto; }
-	:global(.mobile-menu nav a) { display: flex; align-items: baseline; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--line); color: var(--text); font-size: clamp(1.65rem, 7vw, 2.8rem); font-weight: 520; letter-spacing: -.055em; text-decoration: none; text-transform: uppercase; }
-	:global(.mobile-menu nav a span) { color: var(--lime); font-family: var(--mono); font-size: .72rem; letter-spacing: 0; }
-	.mobile-menu-cta { width: 100%; justify-content: space-between; margin-top: 2rem; }
-	@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
-	@keyframes menu-in { from { opacity: 0; transform: translateY(-1.5rem); } to { opacity: 1; transform: translateY(0); } }
-	@media (max-width: 960px) { .desktop-nav { gap: 1.1rem; } .desktop-nav a { font-size: .7rem; } .header-cta { min-width: auto; padding-inline: 1.1rem; font-size: .71rem; } }
-	@media (max-width: 760px) { .header-inner { min-height: 5.15rem; } .desktop-nav, .header-cta { display: none; } :global(.menu-trigger) { display: block; } }
-</style>

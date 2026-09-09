@@ -3,8 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>DESMAP · Questionnaire</title>
-	<meta name="description" content="Explore your DESMAP career orientation profile." />
+	<title>DESMAP · Bảng câu hỏi</title>
+	<meta name="description" content="Khám phá hồ sơ định hướng nghề nghiệp DESMAP của bạn." />
 </svelte:head>
 
 <Questionnaire />
