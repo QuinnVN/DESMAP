@@ -1,4 +1,4 @@
-import source from "../../../DESMAP-QUESTION.md?raw";
+import questionnaireData from "./questions.json";
 
 /** The six sections in the order used by the DESMAP assessment. */
 export type StageId = "D" | "E" | "S" | "M" | "A" | "P";
@@ -28,6 +28,11 @@ export type QuestionnaireStage = {
 	subtitle: string;
 	dimensionIds: string[];
 	questions: DesmapQuestion[];
+};
+
+export type QuestionnairePresentationOrder = {
+	questionIds: string[];
+	optionLettersByQuestion: Record<string, OptionLetter[]>;
 };
 
 export type CareerInterest = {
@@ -100,195 +105,107 @@ const stageMeta: Record<StageId, Omit<QuestionnaireStage, "questions">> = {
 	D: {
 		id: "D",
 		shortLabel: "MONG MUỐN",
-		label: "Mong muốn & định hướng nghề nghiệp",
+		label: "Desire - Mong muốn",
 		subtitle: "Điều bạn mong công việc mang lại",
 		dimensionIds: ["D1", "D2", "D3", "D4", "D5", "D6"],
 	},
 	E: {
 		id: "E",
 		shortLabel: "CHUYÊN MÔN",
-		label: "Chuyên môn",
+		label: "Expertise -Chuyên môn",
 		subtitle: "Những điểm mạnh bạn muốn phát huy",
 		dimensionIds: ["E1", "E2", "E3", "E4", "E5", "E6"],
 	},
 	S: {
 		id: "S",
 		shortLabel: "VAI TRÒ XÃ HỘI",
-		label: "Vai trò xã hội",
+		label: "Social Role - Vai trò xã hội",
 		subtitle: "Cách bạn thường đóng góp cùng người khác",
 		dimensionIds: ["S1", "S2", "S3"],
 	},
 	M: {
 		id: "M",
 		shortLabel: "TƯ DUY",
-		label: "Tư duy",
+		label: "Mindset - Tư duy",
 		subtitle: "Cách bạn xử lý thông tin và quyết định",
 		dimensionIds: ["M1", "M2", "M3"],
 	},
 	A: {
 		id: "A",
 		shortLabel: "THÍCH ỨNG",
-		label: "Khả năng thích ứng",
+		label: "Adaptability - Khả năng thích ứng",
 		subtitle: "Cách bạn đón nhận thay đổi",
 		dimensionIds: ["A1", "A2", "A3", "A4"],
 	},
 	P: {
 		id: "P",
 		shortLabel: "ÁP LỰC",
-		label: "Phản ứng với áp lực",
+		label: "Pressure - Phản ứng với áp lực",
 		subtitle: "Cách bạn phản ứng khi công việc trở nên căng thẳng",
 		dimensionIds: ["P1", "P2", "P3", "P4", "P5", "P6"],
 	},
 };
 
 const stageIds: StageId[] = ["D", "E", "S", "M", "A", "P"];
-const optionPattern =
-	/^\s*(?:\*\*)?([ABC])\.(?:\*\*)?\s*(.*?)\s*→\s*(?:`([^`]+)`|(.+?))\s*$/u;
-const questionHeadingPattern =
-	/^\s*#{1,6}\s+\*\*([A-Z]\d+\.\d+)(?:\s+—[^*]*)?\*\*\s*$/u;
-const inlineQuestionPattern = /^\s*\*\*([A-Z]\d+\.\d+)\*\*\s+(.+?)\s*$/u;
-const bareQuestionPattern = /^\s*\*\*([A-Z]\d+\.\d+)\*\*\s*$/u;
-
-function cleanMarkdown(value: string): string {
-	return value
-		.replace(/\*\*/g, "")
-		.replace(/\\([.*_#-])/g, "$1")
-		.replace(/\s+/g, " ")
-		.trim();
-}
-
-function startQuestion(
-	id: string,
-	inlinePrompt = "",
-): { id: string; prompt: string; options: QuestionOption[] } {
-	return { id, prompt: cleanMarkdown(inlinePrompt), options: [] };
-}
-
-function parseScoreToken(
-	token: string,
-): { scoreKey: string; score: number } | undefined {
-	const match = token
-		.trim()
-		.replace(/\\\+/g, "+")
-		.match(/^(.+?)\s*\+\s*([012])$/u);
-	if (!match) return undefined;
-	return { scoreKey: cleanMarkdown(match[1]), score: Number(match[2]) };
-}
-
-/**
- * Parse the canonical DESMAP-QUESTION.md source into renderable question data.
- * Keeping this parser beside the source means the UI cannot silently drift from
- * the documented questions when wording or option order changes.
- */
-export function parseQuestionSource(markdown: string): DesmapQuestion[] {
-	const parsed: Array<{
-		id: string;
-		prompt: string;
-		options: QuestionOption[];
-	}> = [];
-	let current:
-		| { id: string; prompt: string; options: QuestionOption[] }
-		| undefined;
-
-	const flush = () => {
-		if (current) parsed.push(current);
-		current = undefined;
-	};
-
-	for (const rawLine of markdown.split(/\r?\n/u)) {
-		const heading = rawLine.match(questionHeadingPattern);
-		const inline = rawLine.match(inlineQuestionPattern);
-		const bare = rawLine.match(bareQuestionPattern);
-		if (heading || inline || bare) {
-			flush();
-			current = startQuestion(
-				heading?.[1] ?? inline?.[1] ?? bare?.[1] ?? "",
-				inline?.[2] ?? "",
-			);
-			continue;
-		}
-		// A few explanatory examples sit between sections in the source. A
-		// top-level heading closes the active question before those examples.
-		if (current && /^\s*#\s/u.test(rawLine)) {
-			flush();
-		}
-
-		const option = rawLine.match(optionPattern);
-		if (current && option) {
-			const scoring = parseScoreToken(option[3] ?? option[4]);
-			if (scoring) {
-				current.options.push({
-					letter: option[1] as OptionLetter,
-					text: cleanMarkdown(option[2]),
-					score: scoring.score,
-					scoreKey: scoring.scoreKey,
-				});
-			}
-			continue;
-		}
-
-		if (
-			current &&
-			!current.prompt &&
-			rawLine.trim() &&
-			!rawLine.trim().startsWith("#")
-		) {
-			current.prompt = cleanMarkdown(rawLine);
-		}
-	}
-	flush();
-
-	return parsed.map((question) => {
-		const stage = question.id.slice(0, 1) as StageId;
-		const dimension =
-			question.options[0]?.scoreKey ?? question.id.split(".")[0];
-		return {
-			...question,
-			stage,
-			dimension,
-			dimensionGroup: question.id.split(".")[0],
-		};
-	});
-}
-
-const parsedQuestions = parseQuestionSource(source);
-const expectedCounts: Record<StageId, number> = {
-	D: 18,
-	E: 18,
-	S: 20,
-	M: 15,
-	A: 12,
-	P: 18,
-};
-
-for (const stage of stageIds) {
-	const count = parsedQuestions.filter(
-		(question) => question.stage === stage,
-	).length;
-	if (count !== expectedCounts[stage]) {
-		throw new Error(
-			`DESMAP source is incomplete for ${stage}: expected ${expectedCounts[stage]}, received ${count}`,
-		);
-	}
-}
-
-if (
-	parsedQuestions.some(
-		(question) => question.options.length !== 3 || !question.prompt,
-	)
-) {
-	throw new Error(
-		"Every DESMAP question must have a prompt and exactly three scored options.",
-	);
-}
-
-export const desmapQuestions: DesmapQuestion[] = parsedQuestions;
+export const desmapQuestions = questionnaireData as DesmapQuestion[];
 export const totalQuestionCount = desmapQuestions.length;
 
 export const questionnaireStages: QuestionnaireStage[] = stageIds.map((id) => ({
 	...stageMeta[id],
 	questions: desmapQuestions.filter((question) => question.stage === id),
 }));
+
+function shuffled<T>(values: readonly T[], random: () => number): T[] {
+	const result = [...values];
+	for (let index = result.length - 1; index > 0; index -= 1) {
+		const swapIndex = Math.floor(random() * (index + 1));
+		[result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+	}
+	return result;
+}
+
+/** Create one display order for a questionnaire attempt. */
+export function createQuestionnairePresentationOrder(
+	random: () => number = Math.random,
+): QuestionnairePresentationOrder {
+	return {
+		questionIds: stageIds.flatMap((stageId) =>
+			shuffled(
+				desmapQuestions
+					.filter((question) => question.stage === stageId)
+					.map((question) => question.id),
+				random,
+			),
+		),
+		optionLettersByQuestion: Object.fromEntries(
+			desmapQuestions.map((question) => [
+				question.id,
+				shuffled(
+					question.options.map((option) => option.letter),
+					random,
+				),
+			]),
+		),
+	};
+}
+
+export function questionsInPresentationOrder(
+	order: QuestionnairePresentationOrder,
+): DesmapQuestion[] {
+	return order.questionIds.map((id) => getQuestionById(id) as DesmapQuestion);
+}
+
+export function optionsInPresentationOrder(
+	question: DesmapQuestion,
+	order: QuestionnairePresentationOrder,
+): QuestionOption[] {
+	return order.optionLettersByQuestion[question.id].map(
+		(letter) =>
+			question.options.find(
+				(option) => option.letter === letter,
+			) as QuestionOption,
+	);
+}
 
 export function getQuestionById(id: string): DesmapQuestion | undefined {
 	return desmapQuestions.find((question) => question.id === id);
@@ -432,6 +349,7 @@ export type QuestionnaireDraft = {
 	updatedAt: string;
 	careerInterests: string[];
 	answers: QuestionnaireAnswers;
+	presentationOrder: QuestionnairePresentationOrder;
 };
 
 export function buildCompletionPayload(input: {
@@ -469,8 +387,41 @@ function isOptionLetter(value: unknown): value is OptionLetter {
 	return value === "A" || value === "B" || value === "C";
 }
 
-function isDraft(value: unknown): value is QuestionnaireDraft {
+function isPresentationOrder(
+	value: unknown,
+): value is QuestionnairePresentationOrder {
 	if (!value || typeof value !== "object") return false;
+	const order = value as Partial<QuestionnairePresentationOrder>;
+	if (!Array.isArray(order.questionIds)) return false;
+	if (
+		order.questionIds.length !== totalQuestionCount ||
+		new Set(order.questionIds).size !== totalQuestionCount ||
+		order.questionIds.some((id, index) => {
+			const question = typeof id === "string" ? getQuestionById(id) : undefined;
+			return !question || question.stage !== desmapQuestions[index]?.stage;
+		})
+	)
+		return false;
+	if (
+		!order.optionLettersByQuestion ||
+		typeof order.optionLettersByQuestion !== "object"
+	)
+		return false;
+	return desmapQuestions.every((question) => {
+		const letters = order.optionLettersByQuestion?.[question.id];
+		return (
+			Array.isArray(letters) &&
+			letters.length === question.options.length &&
+			new Set(letters).size === question.options.length &&
+			letters.every((letter) =>
+				question.options.some((option) => option.letter === letter),
+			)
+		);
+	});
+}
+
+function parseDraft(value: unknown): QuestionnaireDraft | null {
+	if (!value || typeof value !== "object") return null;
 	const draft = value as Partial<QuestionnaireDraft>;
 	if (
 		draft.version !== 1 ||
@@ -478,19 +429,19 @@ function isDraft(value: unknown): value is QuestionnaireDraft {
 		!Array.isArray(draft.careerInterests) ||
 		typeof draft.answers !== "object"
 	)
-		return false;
+		return null;
 	if (
 		!draft.answers ||
 		typeof draft.startedAt !== "string" ||
 		typeof draft.updatedAt !== "string"
 	)
-		return false;
+		return null;
 	if (
 		draft.step !== "career" &&
 		draft.step !== "questions" &&
 		draft.step !== "review"
 	)
-		return false;
+		return null;
 	const currentIndex = draft.currentIndex;
 	if (
 		typeof currentIndex !== "number" ||
@@ -498,10 +449,20 @@ function isDraft(value: unknown): value is QuestionnaireDraft {
 		currentIndex < 0 ||
 		currentIndex >= totalQuestionCount
 	)
-		return false;
-	return Object.entries(draft.answers).every(
-		([id, answer]) => Boolean(getQuestionById(id)) && isOptionLetter(answer),
-	);
+		return null;
+	if (
+		!Object.entries(draft.answers).every(
+			([id, answer]) => Boolean(getQuestionById(id)) && isOptionLetter(answer),
+		)
+	)
+		return null;
+
+	return {
+		...(draft as Omit<QuestionnaireDraft, "presentationOrder">),
+		presentationOrder: isPresentationOrder(draft.presentationOrder)
+			? draft.presentationOrder
+			: createQuestionnairePresentationOrder(),
+	};
 }
 
 /** Browser-only, failure-tolerant draft persistence. Safe to call during SSR. */
@@ -511,7 +472,7 @@ export function readSavedQuestionnaire(): QuestionnaireDraft | null {
 		const raw = window.localStorage.getItem(QUESTIONNAIRE_STORAGE_KEY);
 		if (!raw) return null;
 		const parsed: unknown = JSON.parse(raw);
-		return isDraft(parsed) ? parsed : null;
+		return parseDraft(parsed);
 	} catch {
 		return null;
 	}

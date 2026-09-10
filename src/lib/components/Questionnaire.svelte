@@ -1,23 +1,26 @@
 <script lang="ts">
 import { onMount, tick } from "svelte";
 import { goto } from "$app/navigation";
-import {
-	buildCompletionPayload,
-	careerInterestOptions,
-	clearSavedQuestionnaire,
-	desmapQuestions,
-	getStageById,
-	questionnaireStages,
-	readSavedQuestionnaire,
-	totalQuestionCount,
-	writeCompletionPayload,
-	writeSavedQuestionnaire,
-} from "$lib/questionnaire";
 import type {
 	OptionLetter,
 	QuestionnaireAnswers,
 	QuestionnaireDraft,
+	QuestionnairePresentationOrder,
 	StageId,
+} from "$lib/questionnaire";
+import {
+	buildCompletionPayload,
+	careerInterestOptions,
+	clearSavedQuestionnaire,
+	createQuestionnairePresentationOrder,
+	getStageById,
+	optionsInPresentationOrder,
+	questionnaireStages,
+	questionsInPresentationOrder,
+	readSavedQuestionnaire,
+	totalQuestionCount,
+	writeCompletionPayload,
+	writeSavedQuestionnaire,
 } from "$lib/questionnaire";
 
 type Mode = "career" | "questions" | "review";
@@ -30,8 +33,17 @@ let answers = $state<QuestionnaireAnswers>({});
 let startedAt = $state("");
 let statusMessage = $state("");
 let errorMessage = $state("");
+let presentationOrder = $state<QuestionnairePresentationOrder | null>(null);
 
-let currentQuestion = $derived.by(() => desmapQuestions[currentIndex] ?? null);
+let orderedQuestions = $derived(
+	presentationOrder ? questionsInPresentationOrder(presentationOrder) : [],
+);
+let currentQuestion = $derived.by(() => orderedQuestions[currentIndex] ?? null);
+let currentOptions = $derived(
+	currentQuestion && presentationOrder
+		? optionsInPresentationOrder(currentQuestion, presentationOrder)
+		: [],
+);
 let currentStage = $derived.by(() =>
 	currentQuestion ? getStageById(currentQuestion.stage) : null,
 );
@@ -44,16 +56,20 @@ let progress = $derived(
 			: Math.round(((currentIndex + 1) / totalQuestionCount) * 100),
 );
 let unansweredQuestions = $derived(
-	desmapQuestions.filter((question) => !answers[question.id]),
+	orderedQuestions.filter((question) => !answers[question.id]),
 );
+const optionLabels: OptionLetter[] = ["A", "B", "C"];
 
 onMount(() => {
 	const saved = readSavedQuestionnaire();
+	presentationOrder =
+		saved?.presentationOrder ?? createQuestionnairePresentationOrder();
 	startedAt = saved?.startedAt ?? new Date().toISOString();
 	if (saved) {
+		writeSavedQuestionnaire(saved);
 		selectedCareerInterests = [...saved.careerInterests];
 		answers = { ...saved.answers };
-		const firstUnanswered = desmapQuestions.findIndex(
+		const firstUnanswered = orderedQuestions.findIndex(
 			(question) => !saved.answers[question.id],
 		);
 		const complete = firstUnanswered === -1;
@@ -68,7 +84,7 @@ onMount(() => {
 });
 
 function persistDraft(nextMode: Mode = mode, nextIndex = currentIndex) {
-	if (!hydrated || !startedAt) return;
+	if (!hydrated || !startedAt || !presentationOrder) return;
 	const draft: QuestionnaireDraft = {
 		version: 1,
 		completed: false,
@@ -78,6 +94,7 @@ function persistDraft(nextMode: Mode = mode, nextIndex = currentIndex) {
 		updatedAt: new Date().toISOString(),
 		careerInterests: [...selectedCareerInterests],
 		answers: { ...answers },
+		presentationOrder,
 	};
 	if (writeSavedQuestionnaire(draft))
 		statusMessage = "Đã lưu tiến trình trên thiết bị này";
@@ -153,7 +170,7 @@ async function previousQuestion() {
 
 async function jumpToStage(stageId: StageId) {
 	const stage = getStageById(stageId);
-	const first = desmapQuestions.findIndex(
+	const first = orderedQuestions.findIndex(
 		(question) => question.stage === stage.id,
 	);
 	if (first < 0 || !canVisitStage(stage.id)) return;
@@ -176,7 +193,7 @@ function stageProgress(stage: (typeof questionnaireStages)[number]): {
 }
 
 function stageStartIndex(stageId: StageId): number {
-	return desmapQuestions.findIndex((question) => question.stage === stageId);
+	return orderedQuestions.findIndex((question) => question.stage === stageId);
 }
 
 /** A stage is reachable only after every earlier question has an explicit answer. */
@@ -185,7 +202,7 @@ function canVisitStage(stageId: StageId): boolean {
 	const first = stageStartIndex(stageId);
 	return (
 		first >= 0 &&
-		desmapQuestions
+		orderedQuestions
 			.slice(0, first)
 			.every((question) => Boolean(answers[question.id]))
 	);
@@ -193,7 +210,7 @@ function canVisitStage(stageId: StageId): boolean {
 
 function submitAssessment() {
 	if (unansweredQuestions.length > 0) {
-		const firstUnanswered = desmapQuestions.findIndex(
+		const firstUnanswered = orderedQuestions.findIndex(
 			(question) => !answers[question.id],
 		);
 		if (firstUnanswered >= 0) {
@@ -347,7 +364,7 @@ function submitAssessment() {
 								Các phương án trả lời cho câu hỏi {currentQuestion.id}
 							</legend>
 							<div class="option-grid">
-								{#each currentQuestion.options as option (option.letter)}
+								{#each currentOptions as option, optionIndex (option.letter)}
 									{@const optionId = `${currentQuestion.id}-${option.letter}`}
 									<label
 										class="option-card"
@@ -363,7 +380,7 @@ function submitAssessment() {
 											onchange={() => selectOption(currentQuestion.id, option.letter)}
 										>
 										<span class="option-letter" aria-hidden="true"
-											>{option.letter}</span
+											>{optionLabels[optionIndex]}</span
 										>
 										<span class="option-text">{option.text}</span>
 										<span class="option-dot" aria-hidden="true"></span>

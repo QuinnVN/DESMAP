@@ -1,7 +1,9 @@
 <script lang="ts">
 import { Dialog } from "bits-ui";
+import { goto } from "$app/navigation";
 import BrandMark from "./BrandMark.svelte";
 
+let { showBack = false } = $props<{ showBack?: boolean }>();
 let menuOpen = $state(false);
 const links = [
 	{ label: "Về chúng tôi", href: "/#about" },
@@ -13,10 +15,19 @@ const links = [
 function closeMenu() {
 	menuOpen = false;
 }
+
+function returnToPreviousPage() {
+	if (window.history.length > 1) {
+		window.history.back();
+		return;
+	}
+
+	goto("/");
+}
 </script>
 
 <header
-	class="relative z-30 border-b border-line bg-[rgb(3_3_3_/.91)] backdrop-blur-[18px]"
+	class="sticky top-0 z-30 border-b border-line bg-[rgb(3_3_3_/.91)] backdrop-blur-[18px]"
 >
 	<div
 		class="mx-auto flex min-h-[5.15rem] w-[min(100%_-_2rem,90rem)] items-center gap-8 min-[761px]:min-h-26 min-[761px]:w-[min(100%_-_4rem,90rem)]"
@@ -34,11 +45,21 @@ function closeMenu() {
 				>
 			{/each}
 		</nav>
-		<a
-			class="hidden min-h-[3.15rem] min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 py-[.85rem] font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase no-underline transition hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] min-[761px]:inline-flex max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem]"
-			href="/questionnaire"
-			>Bắt đầu ngay <span class="text-[1.1em]" aria-hidden="true">↗</span></a
-		>
+		{#if showBack}
+			<button
+				class="hidden min-h-[3.15rem] min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 py-[.85rem] font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase transition hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] min-[761px]:inline-flex max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem]"
+				type="button"
+				onclick={returnToPreviousPage}
+			>
+				<span class="text-[1.1em]" aria-hidden="true">←</span> Quay lại
+			</button>
+		{:else}
+			<a
+				class="hidden min-h-[3.15rem] min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 py-[.85rem] font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase no-underline transition hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] min-[761px]:inline-flex max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem]"
+				href="/questionnaire"
+				>Bắt đầu ngay <span class="text-[1.1em]" aria-hidden="true">↗</span></a
+			>
+		{/if}
 		<Dialog.Root bind:open={menuOpen}>
 			<Dialog.Trigger
 				class="ml-auto block h-[2.9rem] w-[2.9rem] cursor-pointer rounded-full border border-line-strong bg-transparent text-text min-[761px]:hidden"
@@ -79,13 +100,26 @@ function closeMenu() {
 							>
 						{/each}
 					</nav>
-					<a
-						class="mt-8 inline-flex min-h-[3.15rem] w-full items-center justify-between gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]"
-						href="/questionnaire"
-						onclick={closeMenu}
-						>Bắt đầu ngay
-						<span class="text-[1.1em]" aria-hidden="true">↗</span></a
-					>
+					{#if showBack}
+						<button
+							class="mt-8 inline-flex min-h-[3.15rem] w-full items-center justify-between gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]"
+							type="button"
+							onclick={() => {
+								closeMenu();
+								returnToPreviousPage();
+							}}
+						>
+							Quay lại <span class="text-[1.1em]" aria-hidden="true">←</span>
+						</button>
+					{:else}
+						<a
+							class="mt-8 inline-flex min-h-[3.15rem] w-full items-center justify-between gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]"
+							href="/questionnaire"
+							onclick={closeMenu}
+							>Bắt đầu ngay
+							<span class="text-[1.1em]" aria-hidden="true">↗</span></a
+						>
+					{/if}
 				</Dialog.Content>
 			</Dialog.Portal>
 		</Dialog.Root>

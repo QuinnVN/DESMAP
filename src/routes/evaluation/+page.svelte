@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount } from "svelte";
+import Header from "$lib/components/Header.svelte";
 import {
 	answeredCount,
 	createEvaluationModel,
@@ -121,13 +122,10 @@ function profileTabLabel() {
 	>
 </svelte:head>
 
+<Header showBack />
+
 <main class="evaluation-page">
 	<div class="page-shell">
-		<div class="eyebrow-row">
-			<p class="eyebrow">02 / ĐÁNH GIÁ DESMAP</p>
-			<span class="step-pill">XEM LẠI HỒ SƠ</span>
-		</div>
-
 		<section class="page-intro">
 			<div>
 				<p class="kicker">
