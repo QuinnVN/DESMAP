@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcfe4cd3881e31f4c99008eeb2691e5e, type: 3}
+  m_Name: Placeholder Sales Mission
+  m_EditorClassIdentifier: NCKH.Sales::NCKH.VR.Sales.SalesMissionData
+  customerName: Minh
+  dialogue:
+  - text: "Ch\xE0o b\u1EA1n! M\xECnh mu\u1ED1n t\xECm m\u1ED9t \u0111\xF4i gi\xE0y
+      \u0111\u1EC3 ch\u1EA1y b\u1ED9 nh\u1EB9 kho\u1EA3ng 3 \u0111\u1EBFn 5 c\xE2y
+      s\u1ED1 m\u1ED7i s\xE1ng. M\xECnh m\u1EDBi t\u1EADp n\xEAn th\xEDch \u0111\xF4i
+      n\xE0o \xEAm ch\xE2n, nh\u1EB9 v\xE0 tho\xE1ng m\u1ED9t ch\xFAt."
+    audioClip: {fileID: 0}
+  - text: "M\xECnh th\u01B0\u1EDDng ch\u1EA1y tr\xEAn \u0111\u01B0\u1EDDng nh\u1EF1a,
+      th\u1EC9nh tho\u1EA3ng \u0111i b\u1ED9 n\u1EEFa. Ng\xE2n s\xE1ch c\u1EE7a m\xECnh
+      kho\u1EA3ng m\u1ED9t tri\u1EC7u r\u01B0\u1EE1i tr\u1EDF xu\u1ED1ng. B\u1EA1n
+      ch\u1ECDn gi\xFAp m\xECnh m\u1ED9t \u0111\xF4i ph\xF9 h\u1EE3p nh\xE9!"
+    audioClip: {fileID: 0}
+  shoes:
+  - label: 1A
+    prefab: {fileID: 7413023432100978566, guid: 6418848b8bc613744b9abd6d940a6fe2, type: 3}
+    properties: "Ch\u1EA1y b\u1ED9 \u0111\u01B0\u1EDDng nh\u1EF1a\n\u0110\u1EC7m
+      \xEAm \xB7 Nh\u1EB9 \xB7 Tho\xE1ng\nGi\xE1: 1.290.000 \u0111"
+    feedback: "Ph\xF9 h\u1EE3p: 1A c\xF3 \u0111\u1EC7m \xEAm, nh\u1EB9 v\xE0 tho\xE1ng
+      cho ch\u1EA1y b\u1ED9 \u0111\u01B0\u1EDDng nh\u1EF1a; gi\xE1 n\u1EB1m trong
+      ng\xE2n s\xE1ch c\u1EE7a Minh."
+    bestFit: 1
+    rotationSpeed: 17
+  - label: 3B
+    prefab: {fileID: 5465161648690233961, guid: 43a4de92c15695649970dec1fdaba62f, type: 3}
+    properties: "B\xF3ng r\u1ED5 trong nh\xE0\n\xD4m c\u1ED5 ch\xE2n \xB7 \u0110\u1EBF
+      ch\u1EAFc\nGi\xE1: 1.450.000 \u0111"
+    feedback: "3B n\u1EB1m trong ng\xE2n s\xE1ch nh\u01B0ng thi\u1EBFt k\u1EBF cho
+      b\xF3ng r\u1ED5. \u0110\xF4i n\xE0y ch\u01B0a \u0111\xE1p \u1EE9ng t\u1ED1t
+      nhu c\u1EA7u ch\u1EA1y b\u1ED9 nh\u1EB9 v\xE0 tho\xE1ng c\u1EE7a Minh."
+    bestFit: 0
+    rotationSpeed: 23
+  - label: 8A
+    prefab: {fileID: 7715311782695219769, guid: e7909a3642fc8114aa601f2da9d725df, type: 3}
+    properties: "Ch\u1EA1y \u0111\u1ECBa h\xECnh\n\u0110\u1EBF b\xE1m s\xE2u \xB7
+      Ch\u1ED1ng n\u01B0\u1EDBc\nGi\xE1: 1.890.000 \u0111"
+    feedback: "8A ph\xF9 h\u1EE3p \u0111\u1ECBa h\xECnh g\u1ED3 gh\u1EC1 nh\u01B0ng
+      v\u01B0\u1EE3t ng\xE2n s\xE1ch. Kh\u1EA3 n\u0103ng ch\u1ED1ng n\u01B0\u1EDBc
+      c\u0169ng kh\xF4ng ph\u1EA3i \u01B0u ti\xEAn Minh \u0111\xE3 n\xEAu."
+    bestFit: 0
+    rotationSpeed: 29
