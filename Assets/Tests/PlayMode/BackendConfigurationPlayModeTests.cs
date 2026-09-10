@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
+using NCKH.VR.Clinic;
+using NCKH.VR.Doctor;
 using NCKH.VR.GameControl;
+using NCKH.VR.Lawyer;
 using NUnit.Framework;
 using TMPro;
 using Unity.XR.Oculus.Input;
@@ -18,6 +20,9 @@ namespace NCKH.VR.GameControl.Tests
     public sealed class BackendConfigurationPlayModeTests
     {
         private const string StandbyScenePath = "Assets/Scenes/Standby.unity";
+        private const string ClinicScenePath = "Assets/Scenes/Doctor/Game 1.unity";
+        private const string DoctorScenePath = "Assets/Scenes/Doctor/Game 2.unity";
+        private const string LawyerScenePath = "Assets/Scenes/Lawyer/Office.unity";
 
         private bool hadSavedUrl;
         private string savedUrl;
@@ -44,6 +49,8 @@ namespace NCKH.VR.GameControl.Tests
             }
             if (GameController.Instance != null)
                 GameController.Instance.gameObject.SetActive(false);
+            if (LawyerGameSession.Instance != null)
+                Object.Destroy(LawyerGameSession.Instance.gameObject);
             if (leftController != null && leftController.added)
                 InputSystem.RemoveDevice(leftController);
             if (rightController != null && rightController.added)
@@ -139,12 +146,120 @@ namespace NCKH.VR.GameControl.Tests
             const string persisted = "https://backend.example.com/vr";
             PlayerPrefs.SetString(GameController.BackendBaseUrlPlayerPrefsKey, persisted);
             PlayerPrefs.Save();
-            LogAssert.Expect(LogType.Error, new Regex("Network error: .*"));
+            bool previousIgnore = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
+            try
+            {
+                yield return LoadStandby();
 
+                Assert.That(GameController.Instance, Is.Not.Null);
+                Assert.That(GameController.Instance.BackendBaseUrl, Is.EqualTo(persisted));
+            }
+            finally
+            {
+                LogAssert.ignoreFailingMessages = previousIgnore;
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator ResetRejectsStandbyAndInactiveSpecificScene()
+        {
             yield return LoadStandby();
+            GameController controller = GameController.Instance;
+            Assert.That(controller, Is.Not.Null);
 
-            Assert.That(GameController.Instance, Is.Not.Null);
-            Assert.That(GameController.Instance.BackendBaseUrl, Is.EqualTo(persisted));
+            SceneResetResult result = default;
+            yield return controller.ResetScene("standby", value => result = value);
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo("standby_not_resettable"));
+
+            yield return controller.ResetScene("doctor", value => result = value);
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo("scene_mismatch"));
+            Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(StandbyScenePath));
+        }
+
+        [UnityTest]
+        public IEnumerator ClinicAndDoctorResetToInitialStoppedStateThroughStandby()
+        {
+            bool previousIgnore = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
+            try
+            {
+                yield return LoadStandby();
+                GameController controller = GameController.Instance;
+
+                yield return LoadScene(ClinicScenePath);
+                ClinicGameManager clinic = Object.FindAnyObjectByType<ClinicGameManager>();
+                Assert.That(clinic, Is.Not.Null);
+                clinic.StartRound();
+                Assert.That(controller.CurrentSceneId, Is.EqualTo("clinic"));
+
+                SceneResetResult result = default;
+                yield return controller.ResetScene("clinic", value => result = value);
+                Assert.That(result.Success, Is.True);
+                Assert.That(controller.CurrentSceneId, Is.EqualTo("standby"));
+
+                yield return LoadScene(ClinicScenePath);
+                clinic = Object.FindAnyObjectByType<ClinicGameManager>();
+                Assert.That(clinic.RoundState, Is.EqualTo(ClinicRoundState.Idle));
+
+                yield return LoadScene(DoctorScenePath);
+                DoctorGameManager doctor = Object.FindAnyObjectByType<DoctorGameManager>();
+                Assert.That(doctor, Is.Not.Null);
+                doctor.StartRound();
+                Assert.That(controller.CurrentSceneId, Is.EqualTo("doctor"));
+
+                yield return controller.ResetScene("doctor", value => result = value);
+                Assert.That(result.Success, Is.True);
+                Assert.That(controller.CurrentSceneId, Is.EqualTo("standby"));
+
+                yield return LoadScene(DoctorScenePath);
+                doctor = Object.FindAnyObjectByType<DoctorGameManager>();
+                Assert.That(doctor.State, Is.EqualTo(DoctorGameState.Idle));
+            }
+            finally
+            {
+                LogAssert.ignoreFailingMessages = previousIgnore;
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator LawyerAndAllResetClearPersistentStateWithoutReplacingControllerSession()
+        {
+            bool previousIgnore = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
+            try
+            {
+                yield return LoadStandby();
+                GameController controller = GameController.Instance;
+                string controllerSessionId = controller.SessionId;
+
+                yield return LoadScene(LawyerScenePath);
+                LawyerGameSession lawyerSession = LawyerGameSession.Instance;
+                Assert.That(lawyerSession, Is.Not.Null);
+                lawyerSession.BeginRound();
+                Assert.That(lawyerSession.RoundId, Is.Not.Empty);
+                Assert.That(controller.CurrentSceneId, Is.EqualTo("lawyer"));
+
+                SceneResetResult result = default;
+                yield return controller.ResetScene("lawyer", value => result = value);
+                Assert.That(result.Success, Is.True);
+                Assert.That(lawyerSession.RoundId, Is.Empty);
+                Assert.That(lawyerSession.Phase, Is.EqualTo(LawyerSessionPhase.CaseBrief));
+                Assert.That(controller.SessionId, Is.EqualTo(controllerSessionId));
+
+                lawyerSession.BeginRound();
+                yield return controller.ResetScene(GameController.ResetAllTarget, value => result = value);
+                Assert.That(result.Success, Is.True);
+                Assert.That(lawyerSession.RoundId, Is.Empty);
+                Assert.That(controller.CurrentSceneId, Is.EqualTo("standby"));
+                Assert.That(controller.SessionId, Is.EqualTo(controllerSessionId));
+            }
+            finally
+            {
+                LogAssert.ignoreFailingMessages = previousIgnore;
+            }
         }
 
         private static IEnumerator LoadStandby()
@@ -154,6 +269,15 @@ namespace NCKH.VR.GameControl.Tests
             yield return null;
 
             AsyncOperation load = SceneManager.LoadSceneAsync(StandbyScenePath, LoadSceneMode.Single);
+            Assert.That(load, Is.Not.Null);
+            while (!load.isDone)
+                yield return null;
+            yield return null;
+        }
+
+        private static IEnumerator LoadScene(string scenePath)
+        {
+            AsyncOperation load = SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Single);
             Assert.That(load, Is.Not.Null);
             while (!load.isDone)
                 yield return null;

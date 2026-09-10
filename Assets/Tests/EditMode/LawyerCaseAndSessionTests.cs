@@ -8,7 +8,7 @@ namespace NCKH.VR.Lawyer.Tests
 {
     public sealed class LawyerCaseAndSessionTests
     {
-        private const string CasePath = "Assets/Data/Lawyer/Placeholder Lawyer Case.asset";
+        private const string CasePath = "Assets/Data/Lawyer/Club Room Fire Case.asset";
         private LawyerCaseDefinition caseDefinition;
         private LawyerGameSession session;
 
@@ -29,28 +29,30 @@ namespace NCKH.VR.Lawyer.Tests
         }
 
         [Test]
-        public void PlaceholderCaseMatchesRequiredQuestionShape()
+        public void ClubRoomFireCaseMatchesRequiredQuestionShape()
         {
             List<string> errors = new List<string>();
             caseDefinition.GetValidationErrors(errors);
             Assert.That(errors, Is.Empty, string.Join("\n", errors));
             Assert.That(caseDefinition.Questions, Has.Count.EqualTo(5));
+            Assert.That(caseDefinition.MainQuestionLimit, Is.EqualTo(2));
 
             int keyCount = 0;
             for (int index = 0; index < caseDefinition.Questions.Count; index++)
             {
                 LawyerInterviewQuestion question = caseDefinition.Questions[index];
-                if (!question.IsKeyQuestion)
-                    continue;
-                keyCount++;
+                if (question.IsKeyQuestion)
+                    keyCount++;
                 Assert.That(question.FollowUps, Has.Count.EqualTo(3));
             }
             Assert.That(keyCount, Is.EqualTo(2));
+            Assert.That(caseDefinition.Clues, Has.Count.EqualTo(18));
+            Assert.That(caseDefinition.StartingClueIds, Has.Count.EqualTo(8));
             Assert.That(caseDefinition.Resolution, Is.Not.Null);
-            Assert.That(caseDefinition.Resolution.RequiredLinks, Has.Count.EqualTo(2));
-            Assert.That(caseDefinition.Resolution.ReasoningCards, Has.Count.EqualTo(2));
+            Assert.That(caseDefinition.Resolution.RequiredLinks, Has.Count.EqualTo(3));
+            Assert.That(caseDefinition.Resolution.ReasoningCards, Has.Count.EqualTo(3));
             Assert.That(caseDefinition.Resolution.TruthConclusion,
-                Does.Contain("chưa đủ căn cứ quy trách nhiệm"));
+                Does.Contain("chưa đủ để kết luận Minh"));
         }
 
         [Test]
@@ -58,35 +60,37 @@ namespace NCKH.VR.Lawyer.Tests
         {
             CompleteSuccessfulInterview();
             Assert.That(session.TryAddEvidenceLink(
-                    "testimony-time", "contradiction-camera"),
+                    "clue-01", "clue-09"),
                 Is.EqualTo(LawyerLinkAttemptResult.Added));
             Assert.That(session.UnlockedReasoningCardIds, Has.Count.EqualTo(1));
             Assert.That(session.AllReasoningCardsUnlocked, Is.False);
             Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.EvidenceBoard));
 
             Assert.That(session.TryAddEvidenceLink(
-                    "testimony-phone", "contradiction-call"),
+                    "clue-11", "clue-15"),
+                Is.EqualTo(LawyerLinkAttemptResult.Added));
+            Assert.That(session.TryAddEvidenceLink(
+                    "clue-04", "clue-10"),
                 Is.EqualTo(LawyerLinkAttemptResult.Solved));
-            Assert.That(session.UnlockedReasoningCardIds, Has.Count.EqualTo(2));
+            Assert.That(session.UnlockedReasoningCardIds, Has.Count.EqualTo(3));
             Assert.That(session.AllReasoningCardsUnlocked, Is.True);
             Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.Resolved));
         }
 
         [Test]
-        public void InterviewRequiresBoardAndAllowsEveryMainQuestion()
+        public void InterviewRequiresBoardAndAllowsOnlyTwoMainQuestions()
         {
             Assert.That(session.TryBeginInterview(), Is.False);
             session.MarkBoardOpened();
             Assert.That(session.TryBeginInterview(), Is.True);
 
-            Assert.That(session.TryAskMain("main-hobby", out _), Is.True);
-            Assert.That(session.TryAskMain("main-hobby", out _), Is.False);
-            Assert.That(session.TryAskMain("main-food", out _), Is.True);
-            Assert.That(session.MainQuestionsRemaining, Is.EqualTo(3));
-            Assert.That(session.TryAskMain("main-weather", out _), Is.True);
-            Assert.That(session.TryAskMain("main-time", out _), Is.True);
-            Assert.That(session.TryAskMain("main-phone", out _), Is.True);
+            Assert.That(session.TryAskMain("main-return", out _), Is.True);
+            Assert.That(session.TryAskMain("main-return", out _), Is.False);
+            Assert.That(session.TryAskMain("main-lan-observation", out _), Is.True);
             Assert.That(session.MainQuestionsRemaining, Is.Zero);
+            Assert.That(session.TryAskMain("main-full-timeline", out _), Is.False);
+            Assert.That(session.TryAskMain("main-outlet", out _), Is.False);
+            Assert.That(session.TryAskMain("main-other-person", out _), Is.False);
             Assert.That(session.FollowUpQuestionsRemaining, Is.EqualTo(6));
             Assert.That(session.CanCompleteInterview, Is.False);
         }
@@ -96,15 +100,15 @@ namespace NCKH.VR.Lawyer.Tests
         {
             session.MarkBoardOpened();
             session.TryBeginInterview();
-            Assert.That(session.TryAskMain("main-time", out LawyerInterviewQuestion question), Is.True);
+            Assert.That(session.TryAskMain("main-outlet", out LawyerInterviewQuestion question), Is.True);
             Assert.That(question.IsKeyQuestion, Is.True);
-            Assert.That(session.PendingKeyQuestionId, Is.EqualTo("main-time"));
-            Assert.That(session.TryAskMain("main-phone", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-route", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-camera", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-receipt", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-camera", out _), Is.False);
-            Assert.That(session.PendingKeyQuestionId, Is.EqualTo("main-phone"));
+            Assert.That(session.PendingKeyQuestionId, Is.EqualTo("main-outlet"));
+            Assert.That(session.TryAskMain("main-other-person", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-charger", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-other-device", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-warning", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-charger", out _), Is.False);
+            Assert.That(session.PendingKeyQuestionId, Is.EqualTo("main-other-person"));
         }
 
         [Test]
@@ -112,22 +116,24 @@ namespace NCKH.VR.Lawyer.Tests
         {
             CompleteSuccessfulInterview();
             Assert.That(session.EvaluateEvidenceAvailability(), Is.True);
-            Assert.That(session.TryAddEvidenceLink("testimony-time", "testimony-phone"),
+            Assert.That(session.TryAddEvidenceLink("clue-01", "clue-03"),
                 Is.EqualTo(LawyerLinkAttemptResult.Incorrect));
             Assert.That(session.ClueLinks, Is.Empty);
 
             Assert.That(session.TryAddEvidenceLink(
-                    "contradiction-camera", "testimony-time"),
+                    "clue-09", "clue-01"),
                 Is.EqualTo(LawyerLinkAttemptResult.Added));
             Assert.That(session.TryAddEvidenceLink(
-                    "testimony-time", "contradiction-camera"),
+                    "clue-01", "clue-09"),
                 Is.EqualTo(LawyerLinkAttemptResult.Duplicate));
             Assert.That(session.TryAddEvidenceLink(
-                    "testimony-phone", "contradiction-call"),
+                    "clue-11", "clue-15"),
+                Is.EqualTo(LawyerLinkAttemptResult.Added));
+            Assert.That(session.TryAddEvidenceLink("clue-04", "clue-10"),
                 Is.EqualTo(LawyerLinkAttemptResult.Solved));
             Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.Resolved));
-            Assert.That(session.ClueLinks, Has.Count.EqualTo(2));
-            Assert.That(session.TryAddEvidenceLink("testimony-time", "contradiction-camera"),
+            Assert.That(session.ClueLinks, Has.Count.EqualTo(3));
+            Assert.That(session.TryAddEvidenceLink("clue-01", "clue-09"),
                 Is.EqualTo(LawyerLinkAttemptResult.Invalid));
             Assert.That(session.TryUndoLastLink(out _), Is.False);
 
@@ -142,10 +148,12 @@ namespace NCKH.VR.Lawyer.Tests
             Assert.That(session.TryBeginDefense(), Is.False);
             CompleteSuccessfulInterview();
             Assert.That(session.TryAddEvidenceLink(
-                "testimony-time", "contradiction-camera"),
+                "clue-01", "clue-09"),
                 Is.EqualTo(LawyerLinkAttemptResult.Added));
             Assert.That(session.TryAddEvidenceLink(
-                "testimony-phone", "contradiction-call"),
+                "clue-11", "clue-15"),
+                Is.EqualTo(LawyerLinkAttemptResult.Added));
+            Assert.That(session.TryAddEvidenceLink("clue-04", "clue-10"),
                 Is.EqualTo(LawyerLinkAttemptResult.Solved));
 
             string roundId = session.RoundId;
@@ -167,8 +175,9 @@ namespace NCKH.VR.Lawyer.Tests
         public void InterruptedRecordingCanReturnToPreparation()
         {
             CompleteSuccessfulInterview();
-            session.TryAddEvidenceLink("testimony-time", "contradiction-camera");
-            session.TryAddEvidenceLink("testimony-phone", "contradiction-call");
+            session.TryAddEvidenceLink("clue-01", "clue-09");
+            session.TryAddEvidenceLink("clue-11", "clue-15");
+            session.TryAddEvidenceLink("clue-04", "clue-10");
             session.TryBeginDefense();
             session.TryBeginDefenseRecording();
 
@@ -182,14 +191,12 @@ namespace NCKH.VR.Lawyer.Tests
         {
             session.MarkBoardOpened();
             Assert.That(session.TryBeginInterview(), Is.True);
-            Assert.That(session.TryAskMain("main-time", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-camera", out _), Is.True);
-            Assert.That(session.TryAskMain("main-hobby", out _), Is.True);
+            Assert.That(session.TryAskMain("main-outlet", out _), Is.True);
             Assert.That(session.TryCompleteInterview(), Is.False);
             Assert.That(session.EvaluateEvidenceAvailability(), Is.False);
             Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.DefendantInterview));
             Assert.That(session.TryProceedToEvidenceBoard(), Is.False);
-            Assert.That(session.TryAddEvidenceLink("testimony-time", "contradiction-camera"),
+            Assert.That(session.TryAddEvidenceLink("clue-01", "clue-03"),
                 Is.EqualTo(LawyerLinkAttemptResult.Invalid));
         }
 
@@ -198,12 +205,14 @@ namespace NCKH.VR.Lawyer.Tests
         {
             session.MarkBoardOpened();
             Assert.That(session.TryBeginInterview(), Is.True);
-            Assert.That(session.TryAskMain("main-time", out _), Is.True);
-            Assert.That(session.TryAskMain("main-phone", out _), Is.True);
+            Assert.That(session.TryAskMain("main-outlet", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-charger", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-warning", out _), Is.True);
+            Assert.That(session.TryAskMain("main-other-person", out _), Is.True);
             Assert.That(session.EvaluateEvidenceAvailability(), Is.True);
             Assert.That(session.TryProceedToEvidenceBoard(), Is.True);
             Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.EvidenceBoard));
-            Assert.That(session.TryAskMain("main-hobby", out _), Is.False);
+            Assert.That(session.TryAskMain("main-return", out _), Is.False);
         }
 
         [Test]
@@ -227,10 +236,10 @@ namespace NCKH.VR.Lawyer.Tests
                     new LawyerCaseResolution(
                         new[]
                         {
-                            new LawyerRequiredClueLink("testimony-time", "contradiction-camera"),
-                            new LawyerRequiredClueLink("contradiction-camera", "testimony-time"),
-                            new LawyerRequiredClueLink("brief-time", "brief-time"),
-                            new LawyerRequiredClueLink("brief-time", "missing")
+                            new LawyerRequiredClueLink("clue-01", "clue-06"),
+                            new LawyerRequiredClueLink("clue-06", "clue-01"),
+                            new LawyerRequiredClueLink("clue-01", "clue-01"),
+                            new LawyerRequiredClueLink("clue-01", "missing")
                         },
                         "Kết luận mẫu.",
                         "Thông báo thiếu chứng cứ mẫu."));
@@ -250,17 +259,21 @@ namespace NCKH.VR.Lawyer.Tests
         {
             session.MarkBoardOpened();
             Assert.That(session.TryBeginInterview(), Is.True);
-            Assert.That(session.TryAskMain("main-time", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-route", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-camera", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-receipt", out _), Is.True);
-            Assert.That(session.TryAskMain("main-phone", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-phone", "phone-call", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-phone", "phone-owner", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-phone", "phone-location", out _), Is.True);
-            Assert.That(session.TryAskMain("main-hobby", out _), Is.True);
-            Assert.That(session.TryAskMain("main-food", out _), Is.True);
-            Assert.That(session.TryAskMain("main-weather", out _), Is.True);
+            int asked = 0;
+            for (int questionIndex = 0; questionIndex < caseDefinition.Questions.Count; questionIndex++)
+            {
+                LawyerInterviewQuestion question = caseDefinition.Questions[questionIndex];
+                if (!question.IsKeyQuestion)
+                    continue;
+                Assert.That(session.TryAskMain(question.Id, out _), Is.True);
+                asked++;
+                for (int followUpIndex = 0; followUpIndex < question.FollowUps.Count; followUpIndex++)
+                {
+                    Assert.That(session.TryAskFollowUp(
+                        question.Id, question.FollowUps[followUpIndex].Id, out _), Is.True);
+                }
+            }
+            Assert.That(asked, Is.EqualTo(caseDefinition.MainQuestionLimit));
             Assert.That(session.TryCompleteInterview(), Is.True);
             Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.EvidenceBoard));
         }

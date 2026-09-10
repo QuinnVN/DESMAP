@@ -29,7 +29,7 @@ namespace NCKH.VR.Lawyer.Tests
         public void ResizedCardsKeepFixedBodyTextInsidePhysicalBounds()
         {
             var definition = AssetDatabase.LoadAssetAtPath<LawyerCaseDefinition>(
-                "Assets/Data/Lawyer/Placeholder Lawyer Case.asset");
+                "Assets/Data/Lawyer/Club Room Fire Case.asset");
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Prefabs/Lawyer/Lawyer Clue Card.prefab");
             var surface = new GameObject("Card layout verification");

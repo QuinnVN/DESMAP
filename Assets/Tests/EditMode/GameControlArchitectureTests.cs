@@ -2,6 +2,7 @@ using System.Linq;
 using NCKH.VR.Clinic;
 using NCKH.VR.Doctor;
 using NCKH.VR.GameControl;
+using NCKH.VR.Lawyer;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -18,6 +19,8 @@ namespace NCKH.VR.GameControl.Tests
         private const string StandbyScenePath = "Assets/Scenes/Standby.unity";
         private const string ClinicScenePath = "Assets/Scenes/Doctor/Game 1.unity";
         private const string DoctorScenePath = "Assets/Scenes/Doctor/Game 2.unity";
+        private const string LawyerOfficeScenePath = "Assets/Scenes/Lawyer/Office.unity";
+        private const string LawyerCourtroomScenePath = "Assets/Scenes/Lawyer/Courtroom_Interior URP.unity";
 
         [Test]
         public void CombineUrlNormalizesOneSeparator()
@@ -42,9 +45,9 @@ namespace NCKH.VR.GameControl.Tests
         {
             Assert.That(GameControlApi.HealthRoute, Is.EqualTo("/api/health"));
             Assert.That(GameControlApi.TelemetryRoute, Is.EqualTo("/api/telemetry"));
-            Assert.That(GameControlApi.ControlWebSocketRoute, Is.EqualTo("/api/ws/ctrl"));
-            Assert.That(GameControlApi.TtsWebSocketRoute, Is.EqualTo("/api/ws/tts"));
-            Assert.That(GameControlApi.SttWebSocketRoute, Is.EqualTo("/api/ws/stt"));
+            Assert.That(GameControlApi.ControlWebSocketRoute, Is.EqualTo("/ws/ctrl"));
+            Assert.That(GameControlApi.TtsWebSocketRoute, Is.EqualTo("/ws/tts"));
+            Assert.That(GameControlApi.SttWebSocketRoute, Is.EqualTo("/ws/stt"));
         }
 
         [TestCase("http://127.0.0.1:8000")]
@@ -83,6 +86,25 @@ namespace NCKH.VR.GameControl.Tests
             Assert.That(restored.sequence, Is.EqualTo(command.sequence));
             Assert.That(restored.type, Is.EqualTo(command.type));
             Assert.That(restored.sceneId, Is.EqualTo(command.sceneId));
+        }
+
+        [Test]
+        public void ResetCommandDtoRoundTripsAllTarget()
+        {
+            RemoteCommandDto command = new RemoteCommandDto
+            {
+                commandId = "reset-1",
+                sequence = 8,
+                type = GameControlApi.ResetSceneCommand,
+                sceneId = GameController.ResetAllTarget,
+                issuedAtUtc = "2026-09-10T00:00:00Z"
+            };
+
+            RemoteCommandDto restored = JsonUtility.FromJson<RemoteCommandDto>(JsonUtility.ToJson(command));
+
+            Assert.That(GameControlApi.ResetSceneCommand, Is.EqualTo("reset_scene"));
+            Assert.That(restored.type, Is.EqualTo(GameControlApi.ResetSceneCommand));
+            Assert.That(restored.sceneId, Is.EqualTo(GameController.ResetAllTarget));
         }
 
         [Test]
@@ -205,7 +227,7 @@ namespace NCKH.VR.GameControl.Tests
                 string[] ids = Enumerable.Range(0, catalog.arraySize)
                     .Select(i => catalog.GetArrayElementAtIndex(i).FindPropertyRelative("id").stringValue)
                     .ToArray();
-                Assert.That(ids, Is.EquivalentTo(new[] { "standby", "clinic", "doctor", "lawyer-office" }));
+                Assert.That(ids, Is.EquivalentTo(new[] { "standby", "clinic", "doctor", "lawyer" }));
             });
         }
 
@@ -216,7 +238,9 @@ namespace NCKH.VR.GameControl.Tests
             {
                 ClinicGameManager manager = FindComponent<ClinicGameManager>(scene);
                 Assert.That(manager, Is.Not.Null);
-                Assert.That(manager.GetComponent<ClinicRemoteSceneAdapter>(), Is.Not.Null);
+                ClinicRemoteSceneAdapter adapter = manager.GetComponent<ClinicRemoteSceneAdapter>();
+                Assert.That(adapter, Is.Not.Null);
+                Assert.That(adapter.SceneId, Is.EqualTo("clinic"));
                 Assert.That(new SerializedObject(manager).FindProperty("startAutomatically").boolValue, Is.False);
             });
 
@@ -224,9 +248,67 @@ namespace NCKH.VR.GameControl.Tests
             {
                 DoctorGameManager manager = FindComponent<DoctorGameManager>(scene);
                 Assert.That(manager, Is.Not.Null);
-                Assert.That(manager.GetComponent<DoctorRemoteSceneAdapter>(), Is.Not.Null);
+                DoctorRemoteSceneAdapter adapter = manager.GetComponent<DoctorRemoteSceneAdapter>();
+                Assert.That(adapter, Is.Not.Null);
+                Assert.That(adapter.SceneId, Is.EqualTo("doctor"));
                 Assert.That(new SerializedObject(manager).FindProperty("startAutomatically").boolValue, Is.False);
             });
+
+            WithScene(LawyerOfficeScenePath, scene =>
+            {
+                LawyerRemoteSceneAdapter adapter = FindComponent<LawyerRemoteSceneAdapter>(scene);
+                Assert.That(adapter, Is.Not.Null);
+                Assert.That(adapter.SceneId, Is.EqualTo("lawyer"));
+            });
+
+            WithScene(LawyerCourtroomScenePath, scene =>
+            {
+                LawyerRemoteSceneAdapter adapter = FindComponent<LawyerRemoteSceneAdapter>(scene);
+                Assert.That(adapter, Is.Not.Null);
+                Assert.That(adapter.SceneId, Is.EqualTo("lawyer"));
+            });
+        }
+
+        [Test]
+        public void ResetRegistrySkipsStandbyAndTargetsRequestedGameplayState()
+        {
+            ResetHandler standby = new ResetHandler("standby");
+            ResetHandler lawyer = new ResetHandler("lawyer");
+            SceneResetRegistry.Register(standby);
+            SceneResetRegistry.Register(lawyer);
+            try
+            {
+                Assert.That(SceneResetRegistry.TryReset("doctor", out string error), Is.True);
+                Assert.That(error, Is.Empty);
+                Assert.That(lawyer.ResetCount, Is.Zero);
+
+                Assert.That(SceneResetRegistry.TryReset("lawyer", out error), Is.True);
+                Assert.That(lawyer.ResetCount, Is.EqualTo(1));
+
+                Assert.That(SceneResetRegistry.TryReset(GameController.ResetAllTarget, out error), Is.True);
+                Assert.That(lawyer.ResetCount, Is.EqualTo(2));
+                Assert.That(standby.ResetCount, Is.Zero);
+            }
+            finally
+            {
+                SceneResetRegistry.Unregister(standby);
+                SceneResetRegistry.Unregister(lawyer);
+            }
+        }
+
+        private sealed class ResetHandler : ISceneResetHandler
+        {
+            public string SceneId { get; }
+            public int ResetCount { get; private set; }
+
+            public ResetHandler(string sceneId) => SceneId = sceneId;
+
+            public bool TryResetToInitialState(out string errorCode)
+            {
+                ResetCount++;
+                errorCode = string.Empty;
+                return true;
+            }
         }
 
         private static void WithScene(string path, System.Action<Scene> assertion)

@@ -52,9 +52,9 @@ Select **Game Controller** in the Standby scene and configure these serialized f
 | Backend Base URL | empty | Absolute `http://` or `https://` URL of the control server |
 | Health Route | `/api/health` | HTTP health-check route |
 | Telemetry Route | `/api/telemetry` | HTTP telemetry route |
-| Control WebSocket Route | `/api/ws/ctrl` | Bidirectional command and acknowledgement route |
-| TTS WebSocket Route | `/api/ws/tts` | Reserved for future text-to-speech support |
-| STT WebSocket Route | `/api/ws/stt` | Reserved for future speech-to-text support |
+| Control WebSocket Route | `/ws/ctrl` | Bidirectional command and acknowledgement route |
+| TTS WebSocket Route | `/ws/tts` | Reserved for future text-to-speech support |
+| STT WebSocket Route | `/ws/stt` | Reserved for future speech-to-text support |
 | Request Timeout | 10 seconds | Timeout for HTTP requests and the WebSocket handshake |
 | Disconnect Grace | 10 seconds | Continuous outage before an active round is stopped |
 | Maximum Reconnect Delay | 10 seconds | Cap for exponential reconnect backoff |
@@ -118,8 +118,8 @@ Return any `2xx` response when the backend is ready to accept the control WebSoc
 ### Open the control WebSocket
 
 ```text
-ws://{baseAuthority}/api/ws/ctrl
-wss://{baseAuthority}/api/ws/ctrl
+ws://{baseAuthority}/ws/ctrl
+wss://{baseAuthority}/ws/ctrl
 ```
 
 The client appends no query parameters. Send each command as one UTF-8 text message containing the raw command JSON:
@@ -140,12 +140,13 @@ The client appends no query parameters. Send each command as one UTF-8 text mess
 | `start_scene` | Starts an idle manager in the matching active scene. |
 | `restart_scene` | Stops if necessary, resets, and starts the matching active manager without reloading the scene. |
 | `stop_scene` | Stops the matching active round and leaves its result UI visible. |
+| `reset_scene` | Loads Standby in Single mode, resets the active target (or every gameplay scene for `sceneId: "all"`), and remains in Standby. |
 
-Every command must include a known `sceneId`. Start, restart, and stop commands are rejected if their target is not the active scene or the scene has no gameplay adapter.
+Every command must include a known `sceneId`. Start, restart, stop, and specific reset commands are rejected if their target is not the active logical scene. `reset_scene` additionally accepts `all`, but rejects `standby`. Standby is never reset. Gameplay state owned by the loaded scene resets through Single-mode unloading; persistent gameplay state uses the reset registry. A successful reset acknowledgement is delayed until Standby is active and reports `sceneId: "standby"` and `phase: "standby"`.
 
 ### Acknowledge a command
 
-Unity sends one UTF-8 text message back over the same `/api/ws/ctrl` socket after applying the command:
+Unity sends one UTF-8 text message back over the same `/ws/ctrl` socket after applying the command:
 
 ```json
 {
@@ -244,11 +245,11 @@ The Android player permits cleartext HTTP and WebSocket traffic to support trust
 
 1. Configure the Standby `GameController` with the backend URL.
 2. Start the backend and confirm `/api/health` returns `2xx`.
-3. Confirm `/api/ws/ctrl` accepts a WebSocket connection without query parameters.
+3. Confirm `/ws/ctrl` accepts a WebSocket connection without query parameters.
 4. Send `load_scene` for `clinic` or `doctor` and wait for an `applied`/`ready` acknowledgement on the socket.
 5. Send `start_scene` for the same scene ID.
 6. Confirm lifecycle and gameplay telemetry arrives at `/api/telemetry`.
-7. Send `stop_scene`, `restart_scene`, or `load_scene` for `standby`.
+7. Send `stop_scene`, `restart_scene`, `reset_scene`, or `load_scene` for `standby`; confirm reset remains in Standby and does not start another round.
 
 ## Headset verification
 

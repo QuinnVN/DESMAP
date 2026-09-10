@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NCKH.VR.GameControl
@@ -33,11 +34,80 @@ namespace NCKH.VR.GameControl
 
     public interface IGameSceneAdapter
     {
+        string SceneId { get; }
         RemoteGamePhase Phase { get; }
         event Action<string, GameplayTelemetryData> TelemetryRaised;
         bool TryStart(out string errorCode);
         bool TryRestart(out string errorCode);
         bool TryStop(out string errorCode);
+    }
+
+    public interface ISceneResetHandler
+    {
+        string SceneId { get; }
+        bool TryResetToInitialState(out string errorCode);
+    }
+
+    public static class SceneResetRegistry
+    {
+        private const string StandbySceneId = "standby";
+        private static readonly HashSet<ISceneResetHandler> Handlers =
+            new HashSet<ISceneResetHandler>();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Handlers.Clear();
+
+        public static void Register(ISceneResetHandler handler)
+        {
+            if (handler != null)
+                Handlers.Add(handler);
+        }
+
+        public static void Unregister(ISceneResetHandler handler)
+        {
+            if (handler != null)
+                Handlers.Remove(handler);
+        }
+
+        public static bool TryReset(string targetSceneId, out string errorCode)
+        {
+            errorCode = string.Empty;
+            string normalizedTarget = targetSceneId?.Trim() ?? string.Empty;
+            bool resetAll = string.Equals(normalizedTarget, GameController.ResetAllTarget,
+                StringComparison.OrdinalIgnoreCase);
+
+            foreach (ISceneResetHandler handler in Handlers)
+            {
+                if (handler == null || string.IsNullOrWhiteSpace(handler.SceneId)
+                    || string.Equals(handler.SceneId, StandbySceneId, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (!resetAll
+                    && !string.Equals(handler.SceneId, normalizedTarget, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (handler.TryResetToInitialState(out errorCode))
+                    continue;
+
+                if (string.IsNullOrWhiteSpace(errorCode))
+                    errorCode = "reset_failed";
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public readonly struct SceneResetResult
+    {
+        public bool Success { get; }
+        public string ErrorCode { get; }
+        public string ErrorMessage { get; }
+
+        public SceneResetResult(bool success, string errorCode, string errorMessage)
+        {
+            Success = success;
+            ErrorCode = errorCode ?? string.Empty;
+            ErrorMessage = errorMessage ?? string.Empty;
+        }
     }
 
     [Serializable]
@@ -133,11 +203,12 @@ namespace NCKH.VR.GameControl
         public const string StartSceneCommand = "start_scene";
         public const string RestartSceneCommand = "restart_scene";
         public const string StopSceneCommand = "stop_scene";
+        public const string ResetSceneCommand = "reset_scene";
         public const string HealthRoute = "/api/health";
         public const string TelemetryRoute = "/api/telemetry";
-        public const string ControlWebSocketRoute = "/api/ws/ctrl";
-        public const string TtsWebSocketRoute = "/api/ws/tts";
-        public const string SttWebSocketRoute = "/api/ws/stt";
+        public const string ControlWebSocketRoute = "/ws/ctrl";
+        public const string TtsWebSocketRoute = "/ws/tts";
+        public const string SttWebSocketRoute = "/ws/stt";
 
         public static string CombineUrl(string baseUrl, string relativePath)
         {

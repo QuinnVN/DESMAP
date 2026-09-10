@@ -500,23 +500,25 @@ namespace NCKH.VR.Lawyer.Tests
                 Assert.That(pins.Length, Is.GreaterThanOrEqualTo(8));
                 Assert.That(controller.Session.ClueLinks, Is.Empty);
 
-                LawyerCluePin time = FindPin(pins, "testimony-time");
-                LawyerCluePin camera = FindPin(pins, "contradiction-camera");
-                LawyerCluePin phone = FindPin(pins, "testimony-phone");
-                LawyerCluePin call = FindPin(pins, "contradiction-call");
+                LawyerCluePin exit = FindPin(pins, "clue-01");
+                LawyerCluePin charger = FindPin(pins, "clue-09");
+                LawyerCluePin clearHallway = FindPin(pins, "clue-11");
+                LawyerCluePin nam = FindPin(pins, "clue-15");
+                LawyerCluePin origin = FindPin(pins, "clue-04");
+                LawyerCluePin matchingCharger = FindPin(pins, "clue-10");
 
                 testRayObject = new GameObject("Test Pinch Ray");
                 XRRayInteractor testRay = testRayObject.AddComponent<XRRayInteractor>();
                 LawyerLinkAttemptResult lastAttempt = LawyerLinkAttemptResult.Invalid;
                 linkSystem.LinkAttempted += result => lastAttempt = result;
 
-                linkSystem.BeginLink(time, testRay);
-                linkSystem.CompleteLink(time, phone.AnchorPosition);
+                linkSystem.BeginLink(exit, testRay);
+                linkSystem.CompleteLink(exit, clearHallway.AnchorPosition);
                 Assert.That(lastAttempt, Is.EqualTo(LawyerLinkAttemptResult.Incorrect));
                 Assert.That(controller.Session.ClueLinks, Is.Empty);
 
-                linkSystem.BeginLink(time, testRay);
-                linkSystem.CompleteLink(time, camera.AnchorPosition);
+                linkSystem.BeginLink(exit, testRay);
+                linkSystem.CompleteLink(exit, charger.AnchorPosition);
                 Assert.That(lastAttempt, Is.EqualTo(LawyerLinkAttemptResult.Added));
                 Assert.That(controller.Session.ClueLinks, Has.Count.EqualTo(1));
                 for (int frame = 0; frame < 5; frame++)
@@ -527,22 +529,24 @@ namespace NCKH.VR.Lawyer.Tests
                 Assert.That(controller.Session.ClueLinks, Is.Empty);
                 Assert.That(linkSystem.TerminalLinkCount, Is.EqualTo(1));
 
-                linkSystem.BeginLink(camera, testRay);
-                linkSystem.CompleteLink(camera, time.AnchorPosition);
-                linkSystem.BeginLink(phone, testRay);
-                linkSystem.CompleteLink(phone, call.AnchorPosition);
+                linkSystem.BeginLink(charger, testRay);
+                linkSystem.CompleteLink(charger, exit.AnchorPosition);
+                linkSystem.BeginLink(clearHallway, testRay);
+                linkSystem.CompleteLink(clearHallway, nam.AnchorPosition);
+                linkSystem.BeginLink(origin, testRay);
+                linkSystem.CompleteLink(origin, matchingCharger.AnchorPosition);
                 Assert.That(controller.Session.Phase, Is.EqualTo(LawyerSessionPhase.Resolved));
-                Assert.That(controller.Session.ClueLinks, Has.Count.EqualTo(2));
+                Assert.That(controller.Session.ClueLinks, Has.Count.EqualTo(3));
                 SetPrivateField(controller, "truthDisplayDuration", 5f);
                 LawyerBoardClue[] finalCards = System.Array.Empty<LawyerBoardClue>();
                 for (int frame = 0; frame < 60; frame++)
                 {
                     finalCards = controller.GetComponentsInChildren<LawyerBoardClue>(false);
-                    if (finalCards.Length == 2)
+                    if (finalCards.Length == 3)
                         break;
                     yield return null;
                 }
-                Assert.That(finalCards, Has.Length.EqualTo(2));
+                Assert.That(finalCards, Has.Length.EqualTo(3));
                 for (int index = 0; index < finalCards.Length; index++)
                 {
                     Assert.That(finalCards[index].IsReasoningCard, Is.True,
@@ -622,9 +626,9 @@ namespace NCKH.VR.Lawyer.Tests
                 session.ResetCase(session.CaseDefinition);
                 session.MarkBoardOpened();
                 Assert.That(session.TryBeginInterview(), Is.True);
-                Assert.That(session.TryAskMain("main-time", out _), Is.True);
-                Assert.That(session.TryAskFollowUp("main-time", "time-camera", out _), Is.True);
-                Assert.That(session.TryAskMain("main-hobby", out _), Is.True);
+                Assert.That(session.TryAskMain("main-outlet", out _), Is.True);
+                Assert.That(session.TryAskFollowUp("main-outlet", "outlet-other-device", out _), Is.True);
+                Assert.That(session.TryAskMain("main-return", out _), Is.True);
 
                 rightController = InputSystem.AddDevice<XRSimulatedController>();
                 InputSystem.SetDeviceUsage(rightController, CommonUsages.RightHand);
@@ -658,12 +662,12 @@ namespace NCKH.VR.Lawyer.Tests
                 Assert.That(LawyerGameSession.Instance.Phase,
                     Is.EqualTo(LawyerSessionPhase.DefendantInterview));
                 Assert.That(LawyerGameSession.Instance.MainQuestionsAsked, Is.EqualTo(2));
-                Assert.That(LawyerGameSession.Instance.MainQuestionsRemaining, Is.EqualTo(3));
+                Assert.That(LawyerGameSession.Instance.MainQuestionsRemaining, Is.Zero);
                 Assert.That(LawyerGameSession.Instance.PendingKeyQuestionId,
-                    Is.EqualTo("main-time"));
+                    Is.EqualTo("main-outlet"));
                 Assert.That(LawyerGameSession.Instance.ClueLinks, Is.Empty);
                 Assert.That(LawyerGameSession.Instance.UnlockedClueIds,
-                    Does.Contain("testimony-time"));
+                    Does.Contain("clue-09"));
             }
             finally
             {
@@ -688,8 +692,7 @@ namespace NCKH.VR.Lawyer.Tests
                 session.ResetCase(session.CaseDefinition);
                 session.MarkBoardOpened();
                 Assert.That(session.TryBeginInterview(), Is.True);
-                Assert.That(session.TryAskMain("main-time", out _), Is.True);
-                Assert.That(session.TryAskMain("main-phone", out _), Is.True);
+                AskSuccessfulInterviewQuestions(session);
 
                 rightController = InputSystem.AddDevice<XRSimulatedController>();
                 InputSystem.SetDeviceUsage(rightController, CommonUsages.RightHand);
@@ -786,17 +789,7 @@ namespace NCKH.VR.Lawyer.Tests
             session.ResetCase(session.CaseDefinition);
             session.MarkBoardOpened();
             Assert.That(session.TryBeginInterview(), Is.True);
-            Assert.That(session.TryAskMain("main-time", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-route", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-camera", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-receipt", out _), Is.True);
-            Assert.That(session.TryAskMain("main-phone", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-phone", "phone-call", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-phone", "phone-owner", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-phone", "phone-location", out _), Is.True);
-            Assert.That(session.TryAskMain("main-hobby", out _), Is.True);
-            Assert.That(session.TryAskMain("main-food", out _), Is.True);
-            Assert.That(session.TryAskMain("main-weather", out _), Is.True);
+            AskSuccessfulInterviewQuestions(session);
             interview.SendMessage("CompleteInterview");
 
             float timeout = Time.realtimeSinceStartup + 60f;
@@ -814,18 +807,20 @@ namespace NCKH.VR.Lawyer.Tests
         {
             session.MarkBoardOpened();
             Assert.That(session.TryBeginInterview(), Is.True);
-            Assert.That(session.TryAskMain("main-time", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-route", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-camera", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-time", "time-receipt", out _), Is.True);
-            Assert.That(session.TryAskMain("main-phone", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-phone", "phone-call", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-phone", "phone-owner", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-phone", "phone-location", out _), Is.True);
-            Assert.That(session.TryAskMain("main-hobby", out _), Is.True);
-            Assert.That(session.TryAskMain("main-food", out _), Is.True);
-            Assert.That(session.TryAskMain("main-weather", out _), Is.True);
+            AskSuccessfulInterviewQuestions(session);
             Assert.That(session.TryCompleteInterview(), Is.True);
+        }
+
+        private static void AskSuccessfulInterviewQuestions(LawyerGameSession session)
+        {
+            Assert.That(session.TryAskMain("main-outlet", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-charger", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-other-device", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-warning", out _), Is.True);
+            Assert.That(session.TryAskMain("main-other-person", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-other-person", "other-person-action", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-other-person", "other-person-purpose", out _), Is.True);
+            Assert.That(session.TryAskFollowUp("main-other-person", "other-person-blame", out _), Is.True);
         }
 
         private static LawyerCluePin FindPin(LawyerCluePin[] pins, string clueId)

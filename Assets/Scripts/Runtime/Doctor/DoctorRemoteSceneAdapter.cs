@@ -12,6 +12,8 @@ namespace NCKH.VR.Doctor
 
         public event Action<string, GameplayTelemetryData> TelemetryRaised;
 
+        public string SceneId => "doctor";
+
         public RemoteGamePhase Phase
         {
             get

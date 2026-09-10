@@ -8,12 +8,14 @@ namespace NCKH.VR.Lawyer
     public sealed class LawyerCaseDefinition : ScriptableObject
     {
         [Header("Identity")]
-        [SerializeField] private string caseId = "lawyer-placeholder";
-        [SerializeField] private string caseTitle = "[NỘI DUNG MẪU] Hồ sơ vụ án";
+        [SerializeField, Tooltip("Ví dụ: club-room-fire")] private string caseId = string.Empty;
+        [SerializeField, Tooltip("Ví dụ: VỤ CHÁY PHÒNG CLB")] private string caseTitle = string.Empty;
 
         [Header("Case Brief")]
-        [SerializeField, TextArea(3, 8)] private string caseSummary = string.Empty;
-        [SerializeField, TextArea(2, 6)] private string investigationObjective = string.Empty;
+        [SerializeField, TextArea(3, 8), Tooltip("Ví dụ: Tóm tắt sự việc, nghi vấn và lời phủ nhận của thân chủ.")]
+        private string caseSummary = string.Empty;
+        [SerializeField, TextArea(2, 6), Tooltip("Ví dụ: Thu thập và đối chiếu chứng cứ để bảo vệ thân chủ.")]
+        private string investigationObjective = string.Empty;
         [SerializeField] private List<string> timeline = new List<string>();
         [SerializeField] private List<string> witnesses = new List<string>();
         [SerializeField] private List<string> caseDetails = new List<string>();
@@ -23,7 +25,8 @@ namespace NCKH.VR.Lawyer
         [SerializeField] private List<string> startingClueIds = new List<string>();
 
         [Header("Defendant Interview")]
-        [SerializeField] private string defendantName = "Bị cáo mẫu";
+        [SerializeField, Tooltip("Ví dụ: MINH")] private string defendantName = string.Empty;
+        [SerializeField, Min(1)] private int mainQuestionLimit = 2;
         [SerializeField] private List<LawyerInterviewQuestion> questions = new List<LawyerInterviewQuestion>();
 
         [Header("Evidence Resolution")]
@@ -40,6 +43,7 @@ namespace NCKH.VR.Lawyer
         public IReadOnlyList<LawyerClueDefinition> Clues => clues;
         public IReadOnlyList<string> StartingClueIds => startingClueIds;
         public string DefendantName => defendantName;
+        public int MainQuestionLimit => mainQuestionLimit;
         public IReadOnlyList<LawyerInterviewQuestion> Questions => questions;
         public LawyerCaseResolution Resolution => resolution;
 
@@ -75,6 +79,8 @@ namespace NCKH.VR.Lawyer
 
             if (questions.Count != 5)
                 errors.Add("Hồ sơ luật sư phải có đúng 5 câu hỏi chính.");
+            if (mainQuestionLimit < 1 || mainQuestionLimit > questions.Count)
+                errors.Add("Giới hạn câu hỏi chính phải nằm trong số câu hỏi của hồ sơ.");
 
             int keyCount = 0;
             HashSet<string> clueIds = new HashSet<string>(StringComparer.Ordinal);
@@ -96,16 +102,10 @@ namespace NCKH.VR.Lawyer
                     continue;
                 }
 
+                if (question.FollowUps.Count != 3)
+                    errors.Add($"Câu hỏi chính '{question.Id}' phải có đúng 3 câu hỏi tiếp theo.");
                 if (question.IsKeyQuestion)
-                {
                     keyCount++;
-                    if (question.FollowUps.Count != 3)
-                        errors.Add($"Câu hỏi chính '{question.Id}' phải có đúng 3 câu hỏi tiếp theo.");
-                }
-                else if (question.FollowUps.Count != 0)
-                {
-                    errors.Add($"Câu hỏi nhiễu '{question.Id}' không được có câu hỏi tiếp theo.");
-                }
 
                 ValidateTestimony(question.Response, clueIds, question.Id, errors);
                 HashSet<string> followUpIds = new HashSet<string>(StringComparer.Ordinal);
@@ -122,8 +122,8 @@ namespace NCKH.VR.Lawyer
                 }
             }
 
-            if (keyCount != 2)
-                errors.Add("Hồ sơ luật sư phải có đúng 2 câu hỏi chính xác.");
+            if (keyCount != mainQuestionLimit)
+                errors.Add("Số câu hỏi trọng tâm phải bằng giới hạn câu hỏi chính.");
 
             for (int index = 0; index < startingClueIds.Count; index++)
                 if (!clueIds.Contains(startingClueIds[index]))

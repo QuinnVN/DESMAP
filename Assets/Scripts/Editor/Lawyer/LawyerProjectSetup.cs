@@ -28,7 +28,7 @@ namespace NCKH.VR.Lawyer.Editor
         private const string DataFolder = "Assets/Data/Lawyer";
         private const string PrefabFolder = "Assets/Prefabs/Lawyer";
         private const string MaterialFolder = "Assets/Materials/Lawyer";
-        private const string CasePath = DataFolder + "/Placeholder Lawyer Case.asset";
+        private const string CasePath = DataFolder + "/Club Room Fire Case.asset";
         private const string CluePrefabPath = PrefabFolder + "/Lawyer Clue Card.prefab";
         private const string ControlsPath = "Assets/Input/Lawyer/Lawyer Controls.inputactions";
         private const string LawyerBoardLayerName = "LawyerBoard";
@@ -39,6 +39,16 @@ namespace NCKH.VR.Lawyer.Editor
         private const string PcRendererPath = "Assets/Settings/PC_Renderer.asset";
         private const uint LawyerForegroundRenderingLayerMask = 1u << 31;
 
+        [MenuItem("NCKH VR/Lawyer/Refresh Case Data")]
+        public static void RefreshCaseData()
+        {
+            EnsureFolder(DataFolder);
+            CreateLawyerCase();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("Đã cập nhật dữ liệu vụ cháy phòng CLB.");
+        }
+
         [MenuItem("NCKH VR/Lawyer/Build Phases 1-2")]
         public static void BuildPhasesOneAndTwo()
         {
@@ -47,7 +57,7 @@ namespace NCKH.VR.Lawyer.Editor
             EnsureFolder(MaterialFolder);
             int boardUnityLayer = EnsureUnityLayer(LawyerBoardLayerName);
             int boardInteractionLayer = EnsureInteractionLayer(LawyerBoardLayerName);
-            LawyerCaseDefinition caseDefinition = CreatePlaceholderCase();
+            LawyerCaseDefinition caseDefinition = CreateLawyerCase();
             InputActionAsset controls = AssetDatabase.LoadAssetAtPath<InputActionAsset>(ControlsPath);
             if (controls == null)
                 throw new InvalidOperationException($"Không tìm thấy Input Action Asset: {ControlsPath}");
@@ -257,13 +267,17 @@ namespace NCKH.VR.Lawyer.Editor
             LawyerReasoningCardDefinition[] cards = new[]
             {
                 new LawyerReasoningCardDefinition(
-                    "reasoning-time", "Suy luận về mốc thời gian",
-                    "Lời khai rời hiện trường trước 20:00 mâu thuẫn với hình ảnh camera sau 20:10.",
-                    new[] { new LawyerRequiredClueLink("testimony-time", "contradiction-camera") }),
+                    "reasoning-time-gap", "Mang bộ sạc rời phòng",
+                    "Camera ghi nhận Minh rời phòng lúc 16:05 cùng laptop và bộ sạc.",
+                    new[] { new LawyerRequiredClueLink("clue-01", "clue-09") }),
                 new LawyerReasoningCardDefinition(
-                    "reasoning-phone", "Suy luận về cuộc gọi",
-                    "Lời khai điện thoại hết pin mâu thuẫn với nhật ký cuộc gọi lúc 20:12.",
-                    new[] { new LawyerRequiredClueLink("testimony-phone", "contradiction-call") })
+                    "reasoning-conflicting-testimony", "Người khác tiếp cận hiện trường",
+                    "Lúc 16:07 chưa có dấu hiệu cháy rõ ràng; sau đó Nam vào phòng từ 16:08 đến 16:15.",
+                    new[] { new LawyerRequiredClueLink("clue-11", "clue-15") }),
+                new LawyerReasoningCardDefinition(
+                    "reasoning-unknown-cause", "Chưa xác định nguyên nhân",
+                    "Báo cáo chưa xác định thiết bị gây cháy, trong khi camera cho thấy Minh mang bộ sạc rời đi.",
+                    new[] { new LawyerRequiredClueLink("clue-04", "clue-10") })
             };
             asset.ConfigureInEditor(
                 asset.CaseId, asset.CaseTitle, asset.CaseSummary, asset.InvestigationObjective,
@@ -477,7 +491,7 @@ namespace NCKH.VR.Lawyer.Editor
             Assign(defenseObject, "statusLabel", status);
             Assign(defenseObject, "truthLabel", truth);
             defenseObject.FindProperty("preparationDuration").floatValue = 5f;
-            defenseObject.FindProperty("recordingDuration").floatValue = 30f;
+            defenseObject.FindProperty("recordingDuration").floatValue = 60f;
             defenseObject.FindProperty("uploadAttempts").intValue = 5;
             defenseObject.ApplyModifiedPropertiesWithoutUndo();
             defenseCanvas.gameObject.SetActive(false);
@@ -486,7 +500,7 @@ namespace NCKH.VR.Lawyer.Editor
             EditorSceneManager.SaveScene(scene);
         }
 
-        private static LawyerCaseDefinition CreatePlaceholderCase()
+        private static LawyerCaseDefinition CreateLawyerCase()
         {
             LawyerCaseDefinition asset = AssetDatabase.LoadAssetAtPath<LawyerCaseDefinition>(CasePath);
             if (asset == null)
@@ -495,95 +509,119 @@ namespace NCKH.VR.Lawyer.Editor
                 AssetDatabase.CreateAsset(asset, CasePath);
             }
 
-            List<LawyerClueDefinition> clues = new List<LawyerClueDefinition>
-            {
-                new LawyerClueDefinition("brief-time", "Mốc thời gian mẫu", "[NỘI DUNG MẪU] Sự việc được ghi nhận lúc 20:15.", LawyerClueCategory.Timeline),
-                new LawyerClueDefinition("brief-witness", "Nhân chứng mẫu", "[NỘI DUNG MẪU] Nhân chứng A có mặt gần hiện trường.", LawyerClueCategory.Witness),
-                new LawyerClueDefinition("brief-detail", "Chi tiết hiện trường", "[NỘI DUNG MẪU] Một vật chứng chưa xác định được tìm thấy.", LawyerClueCategory.CaseDetail),
-                new LawyerClueDefinition("brief-objective", "Mục tiêu điều tra", "[NỘI DUNG MẪU] Xác minh lời khai và mốc thời gian của bị cáo.", LawyerClueCategory.Objective),
-                new LawyerClueDefinition("testimony-time", "Lời khai về thời gian", "Bị cáo nói đã rời địa điểm trước 20:00.", LawyerClueCategory.Testimony),
-                new LawyerClueDefinition("contradiction-camera", "Mâu thuẫn camera", "Camera mẫu ghi nhận một người tương tự bị cáo sau 20:10.", LawyerClueCategory.Contradiction),
-                new LawyerClueDefinition("testimony-phone", "Lời khai về điện thoại", "Bị cáo nói điện thoại đã hết pin trong buổi tối.", LawyerClueCategory.Testimony),
-                new LawyerClueDefinition("contradiction-call", "Mâu thuẫn cuộc gọi", "Nhật ký mẫu ghi nhận một cuộc gọi lúc 20:12.", LawyerClueCategory.Contradiction),
-                new LawyerClueDefinition("follow-route", "Tuyến đường mẫu", "Lời khai về tuyến đường có một đoạn chưa được giải thích.", LawyerClueCategory.Testimony),
-                new LawyerClueDefinition("follow-receipt", "Biên lai mẫu", "Thời gian trên biên lai không khớp hoàn toàn với lời khai.", LawyerClueCategory.Contradiction)
-            };
-
-            LawyerInterviewQuestion keyTime = new LawyerInterviewQuestion(
-                "main-time",
-                "Ông/bà đã ở đâu trong khoảng 20:00 đến 20:20?",
-                true,
-                new LawyerTestimony(
-                    "[NỘI DUNG MẪU] Tôi đã rời khu vực trước 20:00. Sau đó tôi ghé mua nước, nhưng không nhớ tên cửa hàng. Tôi chắc mình không quay lại.",
-                    null,
-                    new[] { "testimony-time", "contradiction-camera" }),
-                new[]
-                {
-                    new LawyerFollowUpQuestion("time-route", "Ông/bà đã đi theo tuyến đường nào?", new LawyerTestimony("[NỘI DUNG MẪU] Tôi đi qua đường phía đông rồi đổi hướng vì tắc đường.", null, new[] { "follow-route" })),
-                    new LawyerFollowUpQuestion("time-camera", "Vì sao camera vẫn ghi nhận hình ảnh sau 20:10?", new LawyerTestimony("[NỘI DUNG MẪU] Người trong camera có thể chỉ mặc quần áo giống tôi.", null, new[] { "contradiction-camera" })),
-                    new LawyerFollowUpQuestion("time-receipt", "Ông/bà còn giữ biên lai mua hàng không?", new LawyerTestimony("[NỘI DUNG MẪU] Tôi có một biên lai, nhưng giờ in trên đó có thể bị sai.", null, new[] { "follow-receipt" }))
-                });
-
-            LawyerInterviewQuestion keyPhone = new LawyerInterviewQuestion(
-                "main-phone",
-                "Điện thoại của ông/bà hoạt động thế nào trong tối hôm đó?",
-                true,
-                new LawyerTestimony(
-                    "[NỘI DUNG MẪU] Điện thoại của tôi hết pin từ sớm nên tôi không gọi cho ai. Tôi để máy trong túi suốt buổi tối.",
-                    null,
-                    new[] { "testimony-phone", "contradiction-call" }),
-                new[]
-                {
-                    new LawyerFollowUpQuestion("phone-call", "Ông/bà giải thích thế nào về cuộc gọi lúc 20:12?", new LawyerTestimony("[NỘI DUNG MẪU] Có thể cuộc gọi được thực hiện trước khi máy tắt hẳn.", null, new[] { "contradiction-call" })),
-                    new LawyerFollowUpQuestion("phone-owner", "Có ai khác sử dụng điện thoại của ông/bà không?", new LawyerTestimony("[NỘI DUNG MẪU] Tôi không đưa điện thoại cho ai, nhưng có để nó trên bàn vài phút.", null, new[] { "testimony-phone" })),
-                    new LawyerFollowUpQuestion("phone-location", "Điện thoại ở đâu khi ông/bà mua nước?", new LawyerTestimony("[NỘI DUNG MẪU] Tôi nghĩ nó ở trong túi áo, nhưng tôi không kiểm tra.", null, new[] { "follow-route" }))
-                });
-
             List<LawyerInterviewQuestion> questions = new List<LawyerInterviewQuestion>
             {
-                keyTime,
-                new LawyerInterviewQuestion("main-hobby", "Ông/bà thường làm gì vào cuối tuần?", false, new LawyerTestimony("[NỘI DUNG MẪU] Tôi thường xem phim và dọn nhà. Điều này không liên quan đến tối hôm đó.", null, null), null),
-                keyPhone,
-                new LawyerInterviewQuestion("main-food", "Món ăn yêu thích của ông/bà là gì?", false, new LawyerTestimony("[NỘI DUNG MẪU] Tôi thích món ăn gia đình. Tôi không nhớ mình đã ăn gì tối hôm đó.", null, null), null),
-                new LawyerInterviewQuestion("main-weather", "Ông/bà cảm thấy thời tiết hôm đó thế nào?", false, new LawyerTestimony("[NỘI DUNG MẪU] Trời hơi nóng và có gió. Tôi không chú ý thêm chi tiết nào.", null, null), null)
+                Question("outlet", true, "Bạn đã làm gì với ổ điện trước khi rời phòng?",
+                    "Em sạc laptop vài phút. Trước khi đi, em rút sạc rồi bỏ cả laptop và bộ sạc vào balo.", "clue-09",
+                    FollowUp("outlet-charger", "Bạn có chắc đó là bộ sạc đã cắm vào ổ điện không?", "Có, em chỉ mang theo một bộ sạc.", "clue-10"),
+                    FollowUp("outlet-other-device", "Ngoài laptop, bạn có cắm thiết bị nào khác không?", "Không."),
+                    FollowUp("outlet-warning", "Khi bạn rời đi, có dấu hiệu bất thường nào không?", "Không. Em không thấy khói hay ngửi thấy mùi khét.", "clue-11")),
+                Question("return", false, "Sau khi rời phòng lúc 16:05, bạn đi đâu?",
+                    "Em xuống sân. Khoảng vài phút sau em quay lại vì nhớ ra mình để quên balo.", "clue-12",
+                    FollowUp("return-omission", "Tại sao ban đầu bạn không nói mình quay lại?", "Vì em không vào trong nên em nghĩ nó không liên quan."),
+                    FollowUp("return-entry", "Bạn có vào phòng lần thứ hai không?", "Không.", "clue-13"),
+                    FollowUp("return-warning", "Bạn có nhận thấy điều gì bất thường khi quay lại không?", "Em nhớ có mùi hơi khét.", "clue-14")),
+                Question("other-person", true, "Sau khi bạn rời đi, bạn có biết ai khác vào phòng không?",
+                    "Em không chắc. Nhưng lúc xuống cầu thang em có thấy Nam đi về phía phòng CLB.", "clue-15",
+                    FollowUp("other-person-action", "Bạn có thấy Nam làm gì trong phòng không?", "Không."),
+                    FollowUp("other-person-purpose", "Bạn có biết Nam vào đó để làm gì không?", "Không.", "clue-16"),
+                    FollowUp("other-person-blame", "Bạn có nghĩ Nam gây ra vụ cháy không?", "Em không biết.")),
+                Question("lan-observation", false, "Bạn nghĩ tại sao Lan nói bạn để thiết bị cắm lại?",
+                    "Em không biết. Có thể Lan nhìn nhầm vì từ chỗ Lan đứng không nhìn rõ ổ điện.", "clue-17",
+                    FollowUp("lan-direct-view", "Lan có nhìn trực tiếp vào ổ điện không?", "Em không biết."),
+                    FollowUp("lan-laptop-view", "Lan có thể nhìn thấy laptop của bạn không?", "Có thể thấy bàn, nhưng em không nghĩ nhìn rõ ổ cắm."),
+                    FollowUp("lan-conflict", "Bạn và Lan có mâu thuẫn gì không?", "Không.")),
+                Question("full-timeline", false, "Hãy kể lại toàn bộ những gì bạn làm từ 16:00 đến 16:20.",
+                    "16:00 em vào phòng. Em sạc laptop một lúc. Khoảng 16:05 em rút sạc rồi rời đi. Sau đó em xuống sân. Khoảng 16:12 em quay lại lấy balo nhưng không vào phòng.", "clue-18",
+                    FollowUp("timeline-belongings", "Bạn mang gì theo lúc 16:05?", "Laptop và bộ sạc."),
+                    FollowUp("timeline-bag", "Tại sao bạn không lấy balo khi quay lại?", "Em thấy cửa đóng nên nghĩ sẽ quay lại sau."),
+                    FollowUp("timeline-omission", "Tại sao lời khai đầu tiên không nhắc việc quay lại?", "Em quên nói vì em không vào phòng."))
+            };
+
+            List<LawyerClueDefinition> clues = new List<LawyerClueDefinition>
+            {
+                Clue(1, "Camera hành lang", "16:00: Minh vào phòng CLB. 16:05: Minh rời khỏi phòng. Camera không ghi lại được bên trong phòng.", LawyerClueCategory.Timeline),
+                Clue(2, "Camera trong phòng", "16:03: Minh được ghi nhận đang sử dụng ổ điện gần bàn làm việc, cũng là khu vực sau đó được xác định là nơi đám cháy bắt đầu.", LawyerClueCategory.Timeline),
+                Clue(3, "Lời khai của Lan", "Trước khi Minh rời đi, tôi thấy một thiết bị vẫn còn được cắm ở ổ điện.", LawyerClueCategory.Witness),
+                Clue(4, "Báo cáo hiện trường ban đầu", "Đám cháy có khả năng bắt đầu từ khu vực ổ cắm điện gần bàn làm việc, nhưng chưa xác định chính xác thiết bị nào gây ra sự cố.", LawyerClueCategory.CaseDetail),
+                Clue(5, "Lời khai của Minh", "Em có sạc laptop ở đó, nhưng em đã rút sạc trước khi rời đi.", LawyerClueCategory.Testimony),
+                Clue(6, "Thời điểm báo cháy", "16:20: Hệ thống báo cháy của trường được kích hoạt. Minh đã rời phòng 15 phút trước đó.", LawyerClueCategory.Timeline),
+                Clue(7, "Vi phạm trước đây", "Hai tuần trước, Minh từng bị giáo viên nhắc nhở vì tự ý sử dụng thiết bị điện trong phòng CLB. Chi tiết này không chứng minh Minh gây ra vụ cháy lần này.", LawyerClueCategory.Noise),
+                Clue(8, "Nội quy phòng CLB", "Học sinh phải rút thiết bị điện cá nhân trước khi rời khỏi phòng.", LawyerClueCategory.CaseDetail),
+                Clue(9, "Camera cửa phòng", "16:05: Minh rời phòng với laptop và bộ sạc trên tay.", LawyerClueCategory.Timeline),
+                Clue(10, "Camera góc khác", "Hình ảnh cho thấy dây sạc Minh cầm khi rời đi giống thiết bị được Minh sử dụng lúc 16:03.", LawyerClueCategory.Contradiction),
+                Clue(11, "Nhân chứng hành lang", "Một học sinh đi ngang qua phòng lúc 16:07 và không phát hiện khói hoặc mùi khét.", LawyerClueCategory.Witness),
+                Clue(12, "Camera hành lang lúc 16:12", "16:12: Minh xuất hiện trở lại trước phòng CLB.", LawyerClueCategory.Timeline),
+                Clue(13, "Camera cửa lúc 16:12", "Minh đứng ngoài cửa khoảng 20 giây rồi rời đi. Không ghi nhận Minh bước vào phòng.", LawyerClueCategory.Contradiction),
+                Clue(14, "Lời khai học sinh khác", "Một học sinh khác cũng báo ngửi thấy mùi khét khoảng 16:13.", LawyerClueCategory.Witness),
+                Clue(15, "Camera ghi nhận Nam", "16:08: Nam vào phòng CLB. 16:15: Nam rời phòng. Có một người khác ở trong phòng sau khi Minh rời đi và trước khi đám cháy được phát hiện.", LawyerClueCategory.Timeline),
+                Clue(16, "Lời khai của Nam", "Nam khai: “Tôi chỉ vào lấy balo rồi đi ngay.” Tuy nhiên, camera cho thấy Nam ở trong phòng khoảng 7 phút.", LawyerClueCategory.Contradiction),
+                Clue(17, "Vị trí của Lan", "Camera xác nhận Lan đứng ngoài cửa, cách bàn làm việc một khoảng và bị một chiếc tủ che một phần tầm nhìn.", LawyerClueCategory.Witness),
+                Clue(18, "Timeline camera hoàn chỉnh", "16:00 Minh vào phòng; 16:05 Minh rời phòng; 16:08 một người khác vào; 16:12 Minh quay lại hành lang nhưng không vào phòng; 16:15 người kia rời phòng; 16:20 báo cháy kích hoạt.", LawyerClueCategory.Timeline)
             };
 
             asset.ConfigureInEditor(
-                "lawyer-placeholder",
-                "[NỘI DUNG MẪU] HỒ SƠ VỤ ÁN",
-                "[NỘI DUNG MẪU] Một sự việc giả định đang được điều tra. Toàn bộ tên, địa điểm và tình tiết sẽ được thay thế bằng nội dung chính thức.",
-                "Xác minh hai mâu thuẫn quan trọng trong lời khai của bị cáo và thu thập manh mối cho bảng chứng cứ.",
-                new[] { "20:00 — Bị cáo khai đã rời khu vực.", "20:10 — Camera mẫu ghi nhận chuyển động.", "20:15 — Nhân chứng A báo cáo sự việc." },
-                new[] { "Nhân chứng A — có mặt gần hiện trường.", "Nhân chứng B — cung cấp thông tin nhiễu cần kiểm chứng." },
-                new[] { "Vật chứng mẫu chưa xác định nguồn gốc.", "Nhật ký liên lạc có một mốc thời gian cần đối chiếu." },
+                "club-room-fire",
+                "VỤ CHÁY PHÒNG CLB",
+                "Khoảng 16:20, một vụ cháy xảy ra tại phòng CLB của trường. Đám cháy bắt đầu gần ổ cắm điện bên bàn làm việc. Lan nói đã thấy Minh rời đi khi một thiết bị vẫn còn cắm điện; Minh khẳng định mình đã rút bộ sạc.",
+                "Thu thập thông tin, kiểm tra lời khai và mâu thuẫn, chọn chứng cứ có giá trị, rồi xây dựng lập luận bảo vệ Minh.",
+                new[] { "16:00 — Minh vào phòng CLB.", "16:03 — Minh sử dụng ổ điện gần bàn làm việc.", "16:05 — Minh rời phòng.", "16:08–16:15 — Nam ở trong phòng CLB.", "16:12 — Minh quay lại hành lang nhưng không vào phòng.", "16:20 — Hệ thống báo cháy kích hoạt." },
+                new[] { "Lan — khai thấy thiết bị vẫn còn cắm điện.", "Minh — khẳng định đã rút bộ sạc trước khi rời đi.", "Nam — vào phòng sau Minh và khai chỉ vào lấy balo.", "Hai học sinh hành lang — cung cấp thông tin về khói và mùi khét." },
+                new[] { "Điểm khởi phát nằm gần ổ cắm điện bên bàn làm việc.", "Chưa xác định thiết bị cụ thể gây ra sự cố.", "Nội quy yêu cầu rút thiết bị điện cá nhân trước khi rời phòng." },
                 clues,
-                new[] { "brief-time", "brief-witness", "brief-detail", "brief-objective" },
-                "BỊ CÁO MẪU",
+                new[] { "clue-01", "clue-02", "clue-03", "clue-04", "clue-05", "clue-06", "clue-07", "clue-08" },
+                "MINH",
                 questions,
                 new LawyerCaseResolution(
                     new[]
                     {
-                        new LawyerRequiredClueLink("testimony-time", "contradiction-camera"),
-                        new LawyerRequiredClueLink("testimony-phone", "contradiction-call")
+                        new LawyerRequiredClueLink("clue-01", "clue-09"),
+                        new LawyerRequiredClueLink("clue-11", "clue-15"),
+                        new LawyerRequiredClueLink("clue-04", "clue-10")
                     },
-                    "Vì không có chứng cứ đáng tin cậy xác nhận bị cáo có mặt tại hiện trường vào thời điểm xảy ra sự việc, nên chưa đủ căn cứ quy trách nhiệm cho bị cáo.",
-                    "Bạn chưa thu thập đủ manh mối để xác định sự thật. Hãy thử lại và lựa chọn câu hỏi liên quan đến thời gian và điện thoại.",
+                    "Camera cho thấy Minh đã rời phòng 15 phút trước khi báo cháy kích hoạt; lời khai của Lan và Minh mâu thuẫn trực tiếp; báo cáo hiện trường chưa xác định bộ sạc của Minh là nguyên nhân. Vì vậy, chứng cứ hiện tại chưa đủ để kết luận Minh gây ra vụ cháy.",
+                    "Bạn chưa có đủ chứng cứ để xây dựng lập luận bảo vệ Minh. Hãy kiểm tra các mốc thời gian, độ tin cậy của lời khai và nguyên nhân chưa được xác định.",
                     new[]
                     {
                         new LawyerReasoningCardDefinition(
-                            "reasoning-time",
-                            "Suy luận về mốc thời gian",
-                            "Lời khai rời hiện trường trước 20:00 mâu thuẫn với hình ảnh camera sau 20:10.",
-                            new[] { new LawyerRequiredClueLink("testimony-time", "contradiction-camera") }),
+                            "reasoning-time-gap",
+                            "Mang bộ sạc rời phòng",
+                            "Camera ghi nhận Minh rời phòng lúc 16:05 cùng laptop và bộ sạc.",
+                            new[] { new LawyerRequiredClueLink("clue-01", "clue-09") }),
                         new LawyerReasoningCardDefinition(
-                            "reasoning-phone",
-                            "Suy luận về cuộc gọi",
-                            "Lời khai điện thoại hết pin mâu thuẫn với nhật ký cuộc gọi lúc 20:12.",
-                            new[] { new LawyerRequiredClueLink("testimony-phone", "contradiction-call") })
+                            "reasoning-conflicting-testimony",
+                            "Người khác tiếp cận hiện trường",
+                            "Lúc 16:07 chưa có dấu hiệu cháy rõ ràng; sau đó Nam vào phòng từ 16:08 đến 16:15.",
+                            new[] { new LawyerRequiredClueLink("clue-11", "clue-15") }),
+                        new LawyerReasoningCardDefinition(
+                            "reasoning-unknown-cause",
+                            "Chưa xác định nguyên nhân",
+                            "Báo cáo chưa xác định thiết bị gây cháy, trong khi camera cho thấy Minh mang bộ sạc rời đi.",
+                            new[] { new LawyerRequiredClueLink("clue-04", "clue-10") })
                     }));
             EditorUtility.SetDirty(asset);
             return asset;
         }
+
+        private static LawyerClueDefinition Clue(
+            int number, string title, string description, LawyerClueCategory category)
+            => new LawyerClueDefinition($"clue-{number:00}", title, description, category);
+
+        private static LawyerInterviewQuestion Question(
+            string id, bool keyQuestion, string prompt, string response, string revealedClueId,
+            params LawyerFollowUpQuestion[] followUps)
+            => new LawyerInterviewQuestion(
+                $"main-{id}", prompt, keyQuestion,
+                new LawyerTestimony(response, null,
+                    string.IsNullOrEmpty(revealedClueId) ? null : new[] { revealedClueId }),
+                followUps);
+
+        private static LawyerFollowUpQuestion FollowUp(
+            string id, string prompt, string response, string revealedClueId = null)
+            => new LawyerFollowUpQuestion(
+                id, prompt,
+                new LawyerTestimony(response, null,
+                    string.IsNullOrEmpty(revealedClueId) ? null : new[] { revealedClueId }));
 
         private static LawyerBoardClue CreateCluePrefab(
             Material cardMaterial,
@@ -1309,7 +1347,7 @@ namespace NCKH.VR.Lawyer.Editor
             Assign(defenseObject, "instructionLabel", defenseInstruction);
             Assign(defenseObject, "statusLabel", defenseStatus);
             defenseObject.FindProperty("preparationDuration").floatValue = 5f;
-            defenseObject.FindProperty("recordingDuration").floatValue = 30f;
+            defenseObject.FindProperty("recordingDuration").floatValue = 60f;
             defenseObject.FindProperty("uploadAttempts").intValue = 5;
             defenseObject.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(defenseController);

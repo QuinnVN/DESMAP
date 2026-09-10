@@ -15,6 +15,8 @@ namespace NCKH.VR.Lawyer
         private LawyerGameSession session;
         public event Action<string, GameplayTelemetryData> TelemetryRaised;
 
+        public string SceneId => "lawyer";
+
 #if UNITY_EDITOR
         public void ConfigureInEditor(
             LawyerCaseDefinition definition,

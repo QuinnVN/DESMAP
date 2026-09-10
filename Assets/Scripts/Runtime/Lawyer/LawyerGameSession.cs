@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NCKH.VR.GameControl;
 using UnityEngine;
 
 namespace NCKH.VR.Lawyer
@@ -29,7 +30,7 @@ namespace NCKH.VR.Lawyer
     }
 
     [DisallowMultipleComponent]
-    public sealed class LawyerGameSession : MonoBehaviour
+    public sealed class LawyerGameSession : MonoBehaviour, ISceneResetHandler
     {
         private readonly HashSet<string> unlockedClues = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> askedMainQuestions = new HashSet<string>(StringComparer.Ordinal);
@@ -41,6 +42,7 @@ namespace NCKH.VR.Lawyer
         private readonly HashSet<string> unlockedReasoningCards = new HashSet<string>(StringComparer.Ordinal);
 
         public static LawyerGameSession Instance { get; private set; }
+        public string SceneId => "lawyer";
 
         public event Action<LawyerSessionPhase> PhaseChanged;
         public event Action<string> ClueUnlocked;
@@ -60,7 +62,7 @@ namespace NCKH.VR.Lawyer
             get
             {
                 int total = CaseDefinition != null && CaseDefinition.Questions != null
-                    ? CaseDefinition.Questions.Count
+                    ? Mathf.Min(CaseDefinition.MainQuestionLimit, CaseDefinition.Questions.Count)
                     : 0;
                 return Mathf.Max(0, total - askedMainQuestions.Count);
             }
@@ -140,9 +142,14 @@ namespace NCKH.VR.Lawyer
 
         private void OnDestroy()
         {
+            SceneResetRegistry.Unregister(this);
             if (Instance == this)
                 Instance = null;
         }
+
+        private void OnEnable() => SceneResetRegistry.Register(this);
+
+        private void OnDisable() => SceneResetRegistry.Unregister(this);
 
         public static LawyerGameSession Ensure(LawyerCaseDefinition caseDefinition)
         {
@@ -176,6 +183,13 @@ namespace NCKH.VR.Lawyer
                 return;
             for (int index = 0; index < initialClues.Count; index++)
                 UnlockClue(initialClues[index]);
+        }
+
+        public bool TryResetToInitialState(out string errorCode)
+        {
+            ResetCase(CaseDefinition);
+            errorCode = string.Empty;
+            return true;
         }
 
         public void MarkBoardOpened() => BoardOpened = true;
@@ -220,6 +234,7 @@ namespace NCKH.VR.Lawyer
         {
             question = CaseDefinition != null ? CaseDefinition.GetQuestion(questionId) : null;
             if (Phase != LawyerSessionPhase.DefendantInterview || question == null
+                || MainQuestionsRemaining <= 0
                 || !askedMainQuestions.Add(questionId))
                 return false;
 

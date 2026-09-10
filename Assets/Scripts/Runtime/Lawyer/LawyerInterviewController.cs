@@ -208,7 +208,7 @@ namespace NCKH.VR.Lawyer
                     continue;
                 bool asked = session.HasAskedMain(questions[index].Id);
                 bool hasFollowUps = asked && session.HasUnaskedFollowUps(questions[index].Id);
-                button.interactable = !asked || hasFollowUps;
+                button.interactable = hasFollowUps || (!asked && session.MainQuestionsRemaining > 0);
                 SetButtonText(button, asked
                     ? (hasFollowUps
                         ? $"Hỏi thêm: {questions[index].Prompt}"
@@ -245,7 +245,7 @@ namespace NCKH.VR.Lawyer
             selectedMainIndex = index;
             view = InterviewView.MainResponse;
             QuestionPresented?.Invoke(accepted.Id);
-            ShowResponse(accepted.Response, accepted.IsKeyQuestion
+            ShowResponse(accepted.Response, accepted.FollowUps.Count > 0
                 ? "A/Tiếp tục: chọn câu hỏi tiếp theo | B: về văn phòng"
                 : "A/Tiếp tục: về danh sách | B: về văn phòng");
         }
@@ -302,7 +302,7 @@ namespace NCKH.VR.Lawyer
             }
             if (view == InterviewView.MainResponse)
             {
-                if (activeMainQuestion != null && activeMainQuestion.IsKeyQuestion)
+                if (activeMainQuestion != null && activeMainQuestion.FollowUps.Count > 0)
                     ShowFollowUps();
                 else
                     ShowMainQuestions();

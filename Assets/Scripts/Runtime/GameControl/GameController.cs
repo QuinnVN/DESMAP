@@ -13,9 +13,11 @@ namespace NCKH.VR.GameControl
     public sealed class GameController : MonoBehaviour
     {
         public const string BackendBaseUrlPlayerPrefsKey = "nckh.backendBaseUrl.v1";
+        public const string ResetAllTarget = "all";
 
         private const int MaximumConcurrentTelemetryRequests = 4;
         private const float HeartbeatIntervalSeconds = 15f;
+        private const string StandbySceneId = "standby";
 
         [Header("Backend")]
         [SerializeField] private string backendBaseUrl = string.Empty;
@@ -384,7 +386,19 @@ namespace NCKH.VR.GameControl
             string errorCode = string.Empty;
             string errorMessage = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(command.sceneId)
+            string commandType = command.type?.Trim();
+            if (string.Equals(commandType, GameControlApi.ResetSceneCommand, StringComparison.Ordinal))
+            {
+                SceneResetResult resetResult = default;
+                yield return ResetScene(command.sceneId, result => resetResult = result);
+                if (!resetResult.Success)
+                {
+                    status = "rejected";
+                    errorCode = resetResult.ErrorCode;
+                    errorMessage = resetResult.ErrorMessage;
+                }
+            }
+            else if (string.IsNullOrWhiteSpace(command.sceneId)
                 || !scenesById.TryGetValue(command.sceneId.Trim(), out RemoteSceneCatalogEntry targetScene))
             {
                 status = "rejected";
@@ -393,7 +407,7 @@ namespace NCKH.VR.GameControl
             }
             else
             {
-                switch (command.type?.Trim())
+                switch (commandType)
                 {
                     case GameControlApi.LoadSceneCommand:
                         yield return LoadCatalogScene(targetScene);
@@ -450,6 +464,63 @@ namespace NCKH.VR.GameControl
             });
 
             SetPendingAcknowledgement(command.commandId, acknowledgement);
+        }
+
+        public IEnumerator ResetScene(string targetSceneId, Action<SceneResetResult> completed)
+        {
+            string normalizedTarget = targetSceneId?.Trim() ?? string.Empty;
+            bool resetAll = string.Equals(normalizedTarget, ResetAllTarget,
+                StringComparison.OrdinalIgnoreCase);
+
+            if (string.IsNullOrEmpty(normalizedTarget)
+                || (!resetAll && !scenesById.ContainsKey(normalizedTarget)))
+            {
+                completed?.Invoke(new SceneResetResult(false, "unknown_scene",
+                    $"Unknown scene ID '{targetSceneId}'."));
+                yield break;
+            }
+
+            if (string.Equals(normalizedTarget, StandbySceneId, StringComparison.OrdinalIgnoreCase))
+            {
+                completed?.Invoke(new SceneResetResult(false, "standby_not_resettable",
+                    "The standby scene cannot be reset."));
+                yield break;
+            }
+
+            if (!resetAll
+                && !string.Equals(currentSceneId, normalizedTarget, StringComparison.OrdinalIgnoreCase))
+            {
+                completed?.Invoke(new SceneResetResult(false, "scene_mismatch",
+                    $"Reset targets '{normalizedTarget}' while '{currentSceneId}' is active."));
+                yield break;
+            }
+
+            if (!scenesById.TryGetValue(StandbySceneId, out RemoteSceneCatalogEntry standbyScene))
+            {
+                completed?.Invoke(new SceneResetResult(false, "standby_unavailable",
+                    "The standby scene is missing from the scene catalog."));
+                yield break;
+            }
+
+            if (!string.Equals(currentSceneId, StandbySceneId, StringComparison.OrdinalIgnoreCase))
+                yield return LoadCatalogScene(standbyScene);
+
+            if (!string.Equals(currentSceneId, StandbySceneId, StringComparison.OrdinalIgnoreCase))
+            {
+                completed?.Invoke(new SceneResetResult(false, "scene_load_failed",
+                    "The standby scene did not become active."));
+                yield break;
+            }
+
+            if (!SceneResetRegistry.TryReset(normalizedTarget, out string resetError))
+            {
+                completed?.Invoke(new SceneResetResult(false,
+                    string.IsNullOrWhiteSpace(resetError) ? "reset_failed" : resetError,
+                    $"Persistent state reset failed for '{normalizedTarget}'."));
+                yield break;
+            }
+
+            completed?.Invoke(new SceneResetResult(true, string.Empty, string.Empty));
         }
 
         private delegate bool AdapterOperation(out string errorCode);
@@ -764,7 +835,12 @@ namespace NCKH.VR.GameControl
             }
 
             if (activeAdapter != null)
+            {
+                if (!string.IsNullOrWhiteSpace(activeAdapter.SceneId)
+                    && scenesById.TryGetValue(activeAdapter.SceneId.Trim(), out RemoteSceneCatalogEntry logicalScene))
+                    currentSceneId = logicalScene.Id;
                 activeAdapter.TelemetryRaised += OnGameplayTelemetry;
+            }
             SetStatus("Sẵn sàng");
         }
 
