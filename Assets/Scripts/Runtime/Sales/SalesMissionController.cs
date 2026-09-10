@@ -33,7 +33,6 @@ namespace NCKH.VR.Sales
         public int DialogueIndex { get; private set; }
         private bool[] previousLocomotion;
         private bool locomotionLocked;
-        private bool previousOcclusion;
         private SalesActionTarget hovered;
         private Coroutine transition;
         private float nextActionTime;
@@ -54,7 +53,6 @@ namespace NCKH.VR.Sales
                 enabled = false;
                 return;
             }
-            previousOcclusion = playerCamera.useOcclusionCulling;
             previousLocomotion = new bool[locomotion.Length];
             initialized = true;
             ResetMission();
@@ -166,7 +164,6 @@ namespace NCKH.VR.Sales
             displayRoot.gameObject.SetActive(true);
             choicesRoot.SetActive(true);
             resultRoot.SetActive(false);
-            playerCamera.useOcclusionCulling = false;
             focus.SetOverlayActive(true);
             Stage = SalesMissionStage.Choosing;
             transition = null;
@@ -194,7 +191,6 @@ namespace NCKH.VR.Sales
             focus.SetFocused(false);
             displayRoot.gameObject.SetActive(false);
             dialogueRoot.gameObject.SetActive(false);
-            playerCamera.useOcclusionCulling = previousOcclusion;
             SetLocomotionLocked(false);
             SelectedIndex = -1;
             nextActionTime = 0f;
@@ -225,7 +221,6 @@ namespace NCKH.VR.Sales
             if (focus != null) focus.enabled = false;
             if (displayRoot != null) displayRoot.gameObject.SetActive(false);
             if (dialogueRoot != null) dialogueRoot.gameObject.SetActive(false);
-            if (playerCamera != null) playerCamera.useOcclusionCulling = previousOcclusion;
             SetLocomotionLocked(false);
             if (hovered != null) hovered.SetDesktopHover(false);
         }

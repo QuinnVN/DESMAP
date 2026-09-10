@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 namespace NCKH.VR.Sales.Editor
 {
@@ -34,6 +35,7 @@ namespace NCKH.VR.Sales.Editor
             if (player == null) throw new InvalidOperationException("The open scene needs its VR Player.");
             Camera camera = player.GetComponentInChildren<Camera>(true);
             if (camera == null) throw new InvalidOperationException("VR Player camera missing.");
+            EnsureBothControllerRays(player);
             // Preserve the rig and all bindings; disable the imported animated demo camera only.
             foreach (var root in scene.GetRootGameObjects())
                 if (root != player && root.GetComponent<Camera>() != null) root.SetActive(false);
@@ -149,6 +151,68 @@ namespace NCKH.VR.Sales.Editor
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             Debug.Log("Sales Part 1 setup complete.");
+        }
+
+        [MenuItem("NCKH/Sales/Repair Both Controller Rays In Open Sale Scene")]
+        public static void RepairBothControllerRays()
+        {
+            var scene = EditorSceneManager.GetActiveScene();
+            if (!scene.path.StartsWith("Assets/Scenes/Sale/", StringComparison.Ordinal))
+                throw new InvalidOperationException("Open the Sale scene before repairing controller rays.");
+            var player = Find("VR Player");
+            if (player == null) throw new InvalidOperationException("The open scene needs its VR Player.");
+            EnsureBothControllerRays(player);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            Debug.Log("Sales controller rays verified for both hands.");
+        }
+
+        private static void EnsureBothControllerRays(GameObject player)
+        {
+            var rays = player.GetComponentsInChildren<XRRayInteractor>(true);
+            var leftHand = player.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "Left hand");
+            var rightHand = player.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "Right hand");
+            var leftDirect = leftHand != null ? leftHand.GetComponentInChildren<XRDirectInteractor>(true) : null;
+            var rightDirect = rightHand != null ? rightHand.GetComponentInChildren<XRDirectInteractor>(true) : null;
+            var leftGroup = leftHand != null ? leftHand.GetComponent<XRInteractionGroup>() : null;
+            var rightRay = rightHand != null ? rightHand.GetComponentInChildren<XRRayInteractor>(true) : null;
+            if (rightRay == null || leftHand == null || leftDirect == null || rightDirect == null || leftGroup == null)
+                throw new InvalidOperationException("The VR Player needs its existing right ray and both direct interactors.");
+
+            var leftRay = leftHand.GetComponentInChildren<XRRayInteractor>(true);
+            if (leftRay == null)
+            {
+                var leftRayObject = UnityEngine.Object.Instantiate(rightRay.gameObject, leftHand, false);
+                leftRayObject.name = "Left Ray Interactor";
+                leftRay = leftRayObject.GetComponent<XRRayInteractor>();
+                EditorUtility.SetDirty(leftRayObject);
+            }
+            ConfigureRayInput(rightRay, rightDirect, 2);
+            ConfigureRayInput(leftRay, leftDirect, 1);
+
+            var group = new SerializedObject(leftGroup);
+            var members = group.FindProperty("m_StartingGroupMembers");
+            bool registered = Enumerable.Range(0, members.arraySize)
+                .Any(i => members.GetArrayElementAtIndex(i).objectReferenceValue == leftRay);
+            if (!registered)
+            {
+                members.InsertArrayElementAtIndex(members.arraySize);
+                members.GetArrayElementAtIndex(members.arraySize - 1).objectReferenceValue = leftRay;
+                group.ApplyModifiedPropertiesWithoutUndo();
+            }
+            EditorUtility.SetDirty(leftGroup);
+        }
+
+        private static void ConfigureRayInput(XRRayInteractor ray, XRDirectInteractor sourceInteractor, int handedness)
+        {
+            var target = new SerializedObject(ray);
+            var source = new SerializedObject(sourceInteractor);
+            target.CopyFromSerializedProperty(source.FindProperty("m_SelectInput"));
+            target.CopyFromSerializedProperty(source.FindProperty("m_ActivateInput"));
+            target.FindProperty("m_Handedness").enumValueIndex = handedness;
+            target.FindProperty("m_AllowHoveredActivate").boolValue = true;
+            target.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(ray);
         }
 
         private static SalesMissionData CreateData()

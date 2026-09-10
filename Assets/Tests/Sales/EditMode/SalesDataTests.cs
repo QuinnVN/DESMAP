@@ -28,7 +28,16 @@ namespace NCKH.VR.Sales.Tests
                 Assert.That(mission.choicesRoot.GetComponentsInChildren<SalesActionTarget>(true).Count(t => t.action >= 0), Is.EqualTo(3));
                 var rays = mission.playerCamera.transform.root.GetComponentsInChildren<XRRayInteractor>(true);
                 Assert.That(rays.Length, Is.GreaterThanOrEqualTo(2));
-                foreach (var ray in rays) Assert.That(ray.allowHoveredActivate, Is.True, ray.name);
+                foreach (var ray in rays)
+                {
+                    Assert.That(ray.allowHoveredActivate, Is.True, ray.name);
+                    var activate = ray.activateInput.inputActionReferencePerformed;
+                    Assert.That(activate, Is.Not.Null, ray.name + " has no Activate action.");
+                    string expectedMap = ray.handedness == InteractorHandedness.Left
+                        ? "XRI Left Interaction" : "XRI Right Interaction";
+                    Assert.That(activate.action.actionMap.name, Is.EqualTo(expectedMap), ray.name);
+                    Assert.That(activate.action.name, Is.EqualTo("Activate"), ray.name);
+                }
                 var texts = mission.GetComponentsInChildren<TMPro.TMP_Text>(true);
                 foreach (var text in texts)
                     Assert.That(text.font.HasCharacters(text.text, out uint[] missing, true, false), Is.True,
