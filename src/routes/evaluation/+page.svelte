@@ -9,6 +9,7 @@
 	import {
 		readCompletionPayload,
 		readSavedQuestionnaire,
+		totalQuestionCount,
 		type QuestionnaireDraft,
 		type QuestionnaireSubmission,
 		type StageId
@@ -133,7 +134,7 @@
 				<span class="resume-index">01</span>
 				<div>
 					<p class="kicker">{draft ? 'Tiếp tục bảng câu hỏi' : 'Bắt đầu tự đánh giá'}</p>
-					<h2>{draft ? `Đã lưu ${answeredCount(draft)} trên 98 câu hỏi` : 'Câu trả lời của bạn tạo nên bản đồ đầu tiên.'}</h2>
+					<h2>{draft ? `Đã lưu ${answeredCount(draft)} trên ${totalQuestionCount} câu hỏi` : 'Câu trả lời của bạn tạo nên bản đồ đầu tiên.'}</h2>
 					<p>{draft ? 'Các câu trả lời mới nhất chỉ được lưu trong trình duyệt này.' : 'Hãy cho DESMAP biết điều quan trọng với bạn trước khi chúng tôi so sánh hồ sơ với các tình huống nghề nghiệp.'}</p>
 				</div>
 			</div>

@@ -63,7 +63,7 @@ const stageMeta: Record<StageId, Omit<QuestionnaireStage, 'questions'>> = {
 		shortLabel: 'CHUYÊN MÔN',
 		label: 'Chuyên môn',
 		subtitle: 'Những điểm mạnh bạn muốn phát huy',
-		dimensionIds: ['E1', 'E2', 'E3']
+		dimensionIds: ['E1', 'E2', 'E3', 'E4', 'E5', 'E6']
 	},
 	S: {
 		id: 'S',
@@ -96,9 +96,10 @@ const stageMeta: Record<StageId, Omit<QuestionnaireStage, 'questions'>> = {
 };
 
 const stageIds: StageId[] = ['D', 'E', 'S', 'M', 'A', 'P'];
-const optionPattern = /^\s*(?:\*\*)?([ABC])\.(?:\*\*)?\s*(.*?)\s*→\s*`([^`]+)`/u;
-const questionHeadingPattern = /^\s*###\s+\*\*([A-Z]\d+\.\d+)(?:\s+—[^*]*)?\*\*\s*$/u;
+const optionPattern = /^\s*(?:\*\*)?([ABC])\.(?:\*\*)?\s*(.*?)\s*→\s*(?:`([^`]+)`|(.+?))\s*$/u;
+const questionHeadingPattern = /^\s*#{1,6}\s+\*\*([A-Z]\d+\.\d+)(?:\s+—[^*]*)?\*\*\s*$/u;
 const inlineQuestionPattern = /^\s*\*\*([A-Z]\d+\.\d+)\*\*\s+(.+?)\s*$/u;
+const bareQuestionPattern = /^\s*\*\*([A-Z]\d+\.\d+)\*\*\s*$/u;
 
 function cleanMarkdown(value: string): string {
 	return value
@@ -113,7 +114,7 @@ function startQuestion(id: string, inlinePrompt = ''): { id: string; prompt: str
 }
 
 function parseScoreToken(token: string): { scoreKey: string; score: number } | undefined {
-	const match = token.trim().match(/^(.+?)\s*\+\s*([012])$/u);
+	const match = token.trim().replace(/\\\+/g, '+').match(/^(.+?)\s*\+\s*([012])$/u);
 	if (!match) return undefined;
 	return { scoreKey: cleanMarkdown(match[1]), score: Number(match[2]) };
 }
@@ -135,9 +136,10 @@ export function parseQuestionSource(markdown: string): DesmapQuestion[] {
 	for (const rawLine of markdown.split(/\r?\n/u)) {
 		const heading = rawLine.match(questionHeadingPattern);
 		const inline = rawLine.match(inlineQuestionPattern);
-		if (heading || inline) {
+		const bare = rawLine.match(bareQuestionPattern);
+		if (heading || inline || bare) {
 			flush();
-			current = startQuestion(heading?.[1] ?? inline?.[1] ?? '', inline?.[2] ?? '');
+			current = startQuestion(heading?.[1] ?? inline?.[1] ?? bare?.[1] ?? '', inline?.[2] ?? '');
 			continue;
 		}
 		// A few explanatory examples sit between sections in the source. A
@@ -148,7 +150,7 @@ export function parseQuestionSource(markdown: string): DesmapQuestion[] {
 
 		const option = rawLine.match(optionPattern);
 		if (current && option) {
-			const scoring = parseScoreToken(option[3]);
+			const scoring = parseScoreToken(option[3] ?? option[4]);
 			if (scoring) {
 				current.options.push({
 					letter: option[1] as OptionLetter,
@@ -174,7 +176,7 @@ export function parseQuestionSource(markdown: string): DesmapQuestion[] {
 }
 
 const parsedQuestions = parseQuestionSource(source);
-const expectedCounts: Record<StageId, number> = { D: 18, E: 15, S: 20, M: 15, A: 12, P: 18 };
+const expectedCounts: Record<StageId, number> = { D: 18, E: 18, S: 20, M: 15, A: 12, P: 18 };
 
 for (const stage of stageIds) {
 	const count = parsedQuestions.filter((question) => question.stage === stage).length;

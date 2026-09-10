@@ -10,7 +10,7 @@ D trả lời câu hỏi (giá trị nghề nghiệp)
 
 D **không đo năng lực** và **không đo ngành người chơi yêu thích**. Phần ngành yêu thích sẽ được xác định ở bước **Career Interest** trước DESMAP.
 
-Theo lý thuyết 16 nhu cầu cơ bản của Steven Reiss hoặc các khía cạnh khao khát nghề nghiệp, động lực mong muốn cốt lõi của con người trong công việc thường bao gồm các nhóm chính 
+Theo hệ thống **O\*NET** (Mạng lưới thông tin nghề nghiệp do Bộ Lao động Hoa Kỳ phát triển), các giá trị nghề nghiệp (**Work Values**, hay còn gọi là *Work Importance Locator*) được chia thành 6 nhóm chính 
 
 ## **1\. Cấu trúc D**
 
@@ -18,12 +18,12 @@ D gồm **6 sub-dimensions**, mỗi nhóm **3 câu**, tổng cộng **18 câu**.
 
 | Mã | Dimension | Nội dung |
 | ----- | ----- | ----- |
-| **D1** | Financial & Security | Thu nhập, phúc lợi, sự ổn định |
-| **D2** | Growth & Achievement | Học hỏi, phát triển, thành tựu, thử thách |
-| **D3** | Autonomy | Tự chủ, tự quyết định cách làm việc |
-| **D4** | Meaning & Contribution | Ý nghĩa, đóng góp, tạo giá trị |
-| **D5** | Recognition & Status | Công nhận, địa vị, tiếng nói, ảnh hưởng |
-| **D6** | Lifestyle & Balance | Cân bằng công việc – cuộc sống |
+| **D1** | Achievement  | Thu nhập, phúc lợi, sự ổn định |
+| **D2** | Support  | Học hỏi, phát triển, thành tựu, thử thách |
+| **D3** | Independence  | Tự chủ, tự quyết định cách làm việc |
+| **D4** | Relationships  | Ý nghĩa, đóng góp, tạo giá trị |
+| **D5** | Recognition | Công nhận, địa vị, tiếng nói, ảnh hưởng |
+| **D6** | Working Conditions  | Cân bằng công việc – cuộc sống |
 
 # **2\. Logic chấm điểm**
 
@@ -53,165 +53,165 @@ Quy đổi:
 
 `option → dimension → score`
 
-# **3\. Bộ 18 câu**
+**Bộ 18 câu hỏi**
 
-## **D1 \- Financial & Security**
+**D1 — Achievement: Thành tựu**
 
-### **D1.1**
+**D1.1**
 
-Nếu hai công việc tương đương về nội dung và cơ hội phát triển, bạn chọn:
+Khi lựa chọn công việc, việc được sử dụng những điểm mạnh của bản thân quan trọng với bạn đến mức nào?
 
-**A.** Thu nhập cao hơn nhưng có nhiều biến động. → `D1 +2`  
-**B.** Thu nhập và mức ổn định ở mức cân bằng. → `D1 +1`  
-**C.** Thu nhập thấp hơn nhưng công việc rất ổn định. → `D1 +0`
+A. Rất quan trọng. → `D1 +2`  
+ B. Khá quan trọng. → `D1 +1`  
+ C. Ít hoặc không quan trọng. → `D1 +0`
 
-### **D1.2**
+**D1.2**
 
-Điều nào khiến bạn yên tâm nhất khi nhận một công việc?
+Việc nhìn thấy kết quả cụ thể từ nỗ lực của mình trong công việc quan trọng với bạn đến mức nào?
 
-**A.** Thu nhập cao và có khả năng tăng nhanh. → `D1 +2`  
-**B.** Lương ổn định và có phúc lợi cơ bản. → `D1 +1`  
-**C.** Môi trường thú vị dù thu nhập chưa cao. → `D1 +0`
+A. Rất quan trọng. → `D1 +2`  
+ B. Khá quan trọng. → `D1 +1`  
+ C. Ít hoặc không quan trọng. → `D1 +0`
 
-### **D1.3**
+**D1.3**
 
-Bạn được chọn giữa:
+Việc công việc mang lại cảm giác đạt được thành tựu sau khi hoàn thành nhiệm vụ quan trọng với bạn đến mức nào?
 
-**A.** Công việc có thu nhập rất cao nhưng khả năng mất việc cao. → `D1 +2`  
-**B.** Công việc có thu nhập khá và tương đối ổn định. → `D1 +1`  
-**C.** Công việc thu nhập thấp hơn nhưng có rất ít rủi ro. → `D1 +0`
+A. Rất quan trọng. → `D1 +2`  
+ B. Khá quan trọng. → `D1 +1`  
+ C. Ít hoặc không quan trọng. → `D1 +0`
 
-## **D2 \- Growth & Achievement**
+**D2 — Support: Sự hỗ trợ từ tổ chức**
 
-### **D2.1**
+**D2.1**
 
-Bạn thích công việc nào hơn?
+Khi lựa chọn nơi làm việc, việc tổ chức có chính sách bảo vệ quyền lợi của người lao động quan trọng với bạn đến mức nào?
 
-**A.** Luôn có mục tiêu mới để chinh phục. → `D2 +2`  
-**B.** Có cơ hội phát triển nhưng với tốc độ vừa phải. → `D2 +1`  
-**C.** Công việc ổn định, không yêu cầu phải liên tục tiến bộ. → `D2 +0`
+A. Rất quan trọng. → `D2 +2`  
+ B. Khá quan trọng. → `D2 +1`  
+ C. Ít hoặc không quan trọng. → `D2 +0`
 
-### **D2.2**
+**D2.2**
 
-Nếu được giao một nhiệm vụ vượt quá khả năng hiện tại:
+Việc người quản lý quan tâm đến những khó khăn bạn gặp trong công việc quan trọng với bạn đến mức nào?
 
-**A.** Tôi thấy đây là cơ hội để thử giới hạn. → `D2 +2`  
-**B.** Tôi sẽ cân nhắc rồi quyết định. → `D2 +1`  
-**C.** Tôi thích nhiệm vụ nằm trong vùng năng lực hiện tại hơn. → `D2 +0`
+A. Rất quan trọng. → `D2 +2`  
+ B. Khá quan trọng. → `D2 +1`  
+ C. Ít hoặc không quan trọng. → `D2 +0`
 
-### **D2.3**
+**D2.3**
 
-Điều nào hấp dẫn bạn nhất?
+Việc người quản lý có chuyên môn để hướng dẫn bạn khi cần quan trọng với bạn đến mức nào?
 
-**A.** Được thăng tiến nhanh nhờ thành tích. → `D2 +2`  
-**B.** Có cơ hội học hỏi và phát triển ổn định. → `D2 +1`  
-**C.** Có công việc ổn định mà không phải cạnh tranh quá nhiều. → `D2 +0`
+A. Rất quan trọng. → `D2 +2`  
+ B. Khá quan trọng. → `D2 +1`  
+ C. Ít hoặc không quan trọng. → `D2 +0`
 
-## **D3 \- Autonomy**
+**D3 — Independence: Tự chủ**
 
-### **D3.1**
+**D3.1**
 
-Bạn thích kiểu quản lý nào?
+Việc được tự quyết định cách thực hiện công việc trong phạm vi được giao quan trọng với bạn đến mức nào?
 
-**A.** Giao mục tiêu, còn cách thực hiện để tôi tự quyết định. → `D3 +2`  
-**B.** Có mục tiêu rõ và một số hướng dẫn. → `D3 +1`  
-**C.** Được hướng dẫn cụ thể từng bước. → `D3 +0`
+A. Rất quan trọng. → `D3 +2`  
+ B. Khá quan trọng. → `D3 +1`  
+ C. Ít hoặc không quan trọng. → `D3 +0`
 
-### **D3.2**
+**D3.2**
 
-Khi làm một dự án, điều nào quan trọng nhất với bạn?
+Việc có cơ hội thử những ý tưởng riêng trong công việc quan trọng với bạn đến mức nào?
 
-**A.** Tôi được tự quyết định cách làm. → `D3 +2`  
-**B.** Tôi được tự quyết một phần nhưng vẫn có định hướng. → `D3 +1`  
-**C.** Tôi muốn có quy trình rõ ràng để làm theo. → `D3 +0`
+A. Rất quan trọng. → `D3 +2`  
+ B. Khá quan trọng. → `D3 +1`  
+ C. Ít hoặc không quan trọng. → `D3 +0`
 
-### **D3.3**
+**D3.3**
 
-Nếu công ty cho phép bạn chọn thời gian làm việc miễn hoàn thành mục tiêu:
+Việc được tin tưởng giao quyền chủ động xử lý phần việc mình phụ trách quan trọng với bạn đến mức nào?
 
-**A.** Tôi rất thích cách làm này. → `D3 +2`  
-**B.** Tôi thấy khá phù hợp. → `D3 +1`  
-**C.** Tôi thích lịch làm việc cố định hơn. → `D3 +0`
+A. Rất quan trọng. → `D3 +2`  
+ B. Khá quan trọng. → `D3 +1`  
+ C. Ít hoặc không quan trọng. → `D3 +0`
 
-## **D4 \- Meaning & Contribution**
+**D4 — Relationships: Quan hệ và giá trị xã hội**
 
-### **D4.1**
+**D4.1**
 
-Nếu hai công việc có mức lương tương đương, bạn nghiêng về:
+Khi lựa chọn nơi làm việc, việc được làm cùng những đồng nghiệp thân thiện quan trọng với bạn đến mức nào?
 
-**A.** Công việc trực tiếp tạo ra giá trị cho cộng đồng. → `D4 +2`  
-**B.** Công việc vừa có ích vừa có lợi ích cá nhân. → `D4 +1`  
-**C.** Công việc chủ yếu phục vụ mục tiêu cá nhân. → `D4 +0`
+A. Rất quan trọng. → `D4 +2`  
+ B. Khá quan trọng. → `D4 +1`  
+ C. Ít hoặc không quan trọng. → `D4 +0`
 
-### **D4.2**
+**D4.2**
 
-Điều gì khiến bạn cảm thấy công việc “đáng làm” nhất?
+Việc công việc tạo cơ hội để bạn giúp ích cho người khác quan trọng với bạn đến mức nào?
 
-**A.** Biết rằng công việc của mình giúp giải quyết một vấn đề có ý nghĩa. → `D4 +2`  
-**B.** Công việc vừa có ý nghĩa vừa giúp tôi phát triển. → `D4 +1`  
-**C.** Công việc mang lại thành công cho chính tôi. → `D4 +0`
+A. Rất quan trọng. → `D4 +2`  
+ B. Khá quan trọng. → `D4 +1`  
+ C. Ít hoặc không quan trọng. → `D4 +0`
 
-### **D4.3**
+**D4.3**
 
-Bạn sẽ cân nhắc thế nào về một công việc có thu nhập thấp hơn nhưng tạo tác động xã hội rõ rệt?
+Việc nội dung công việc phù hợp với những điều bạn tin là đúng đắn quan trọng với bạn đến mức nào?
 
-**A.** Tôi sẵn sàng cân nhắc nghiêm túc. → `D4 +2`  
-**B.** Tôi sẽ cân nhắc nếu các điều kiện khác phù hợp. → `D4 +1`  
-**C.** Tôi ưu tiên công việc mang lại lợi ích cá nhân cao hơn. → `D4 +0`
+A. Rất quan trọng. → `D4 +2`  
+ B. Khá quan trọng. → `D4 +1`  
+ C. Ít hoặc không quan trọng. → `D4 +0`
 
-## **D5 \- Recognition & Status**
+**D5 — Recognition: Sự công nhận**
 
-### **D5.1**
+**D5.1**
 
-Điều nào khiến bạn cảm thấy thành công nhất?
+Việc những đóng góp của bạn được người khác ghi nhận quan trọng với bạn đến mức nào?
 
-**A.** Được công nhận là người có năng lực và có ảnh hưởng. → `D5 +2`  
-**B.** Được ghi nhận khi hoàn thành tốt công việc. → `D5 +1`  
-**C.** Biết bản thân làm tốt là đủ. → `D5 +0`
+A. Rất quan trọng. → `D5 +2`  
+ B. Khá quan trọng. → `D5 +1`  
+ C. Ít hoặc không quan trọng. → `D5 +0`
 
-### **D5.2**
+**D5.2**
 
-Trong một tổ chức, vị trí nào hấp dẫn bạn hơn?
+Khi lựa chọn công việc, cơ hội tiến lên vị trí cao hơn quan trọng với bạn đến mức nào?
 
-**A.** Vị trí có quyền quyết định và tiếng nói lớn. → `D5 +2`  
-**B.** Vị trí có uy tín và được đồng nghiệp tôn trọng. → `D5 +1`  
-**C.** Vị trí chuyên môn tốt nhưng không cần nhiều sự chú ý. → `D5 +0`
+A. Rất quan trọng. → `D5 +2`  
+ B. Khá quan trọng. → `D5 +1`  
+ C. Ít hoặc không quan trọng. → `D5 +0`
 
-### **D5.3**
+**D5.3**
 
-Nếu thành tích của bạn không được công khai, bạn sẽ:
+Việc có cơ hội đảm nhận vị trí được giao quyền điều phối công việc của người khác quan trọng với bạn đến mức nào?
 
-**A.** Khá thất vọng vì tôi muốn thành quả được ghi nhận. → `D5 +2`  
-**B.** Hơi tiếc nhưng không quá quan trọng. → `D5 +1`  
-**C.** Không vấn đề gì, kết quả quan trọng hơn sự công nhận. → `D5 +0`
+A. Rất quan trọng. → `D5 +2`  
+ B. Khá quan trọng. → `D5 +1`  
+ C. Ít hoặc không quan trọng. → `D5 +0`
 
-## **D6 \- Lifestyle & Balance**
+**D6 — Working Conditions: Điều kiện làm việc**
 
-### **D6.1**
+**D6.1**
 
-Bạn ưu tiên công việc nào?
+Khi lựa chọn công việc, mức thu nhập đáp ứng nhu cầu tài chính của bạn quan trọng đến mức nào?
 
-**A.** Có thời gian ổn định cho gia đình, bạn bè và bản thân. → `D6 +2`  
-**B.** Có thể bận vào một số giai đoạn nhưng vẫn có thời gian nghỉ. → `D6 +1`  
-**C.** Sẵn sàng dành phần lớn thời gian cho sự nghiệp nếu cơ hội đủ tốt. → `D6 +0`
+A. Rất quan trọng. → `D6 +2`  
+ B. Khá quan trọng. → `D6 +1`  
+ C. Ít hoặc không quan trọng. → `D6 +0`
 
-### **D6.2**
+**D6.2**
 
-Nếu một công việc yêu cầu thường xuyên làm ngoài giờ để đổi lấy cơ hội thăng tiến nhanh:
+Việc công việc mang lại khả năng có việc làm ổn định lâu dài quan trọng với bạn đến mức nào?
 
-**A.** Tôi không muốn đánh đổi quá nhiều thời gian cá nhân. → `D6 +2`  
-**B.** Tôi chấp nhận trong một khoảng thời gian nhất định. → `D6 +1`  
-**C.** Tôi sẵn sàng hy sinh thời gian cá nhân để phát triển sự nghiệp. → `D6 +0`
+A. Rất quan trọng. → `D6 +2`  
+ B. Khá quan trọng. → `D6 +1`  
+ C. Ít hoặc không quan trọng. → `D6 +0`
 
-### **D6.3**
+**D6.3**
 
-Môi trường nào phù hợp với bạn nhất?
+Việc nơi làm việc có điều kiện vật chất thuận tiện để thực hiện công việc quan trọng với bạn đến mức nào?
 
-**A.** Thời gian linh hoạt, miễn hoàn thành công việc. → `D6 +2`  
-**B.** Lịch làm việc tương đối ổn định nhưng có một số linh hoạt. → `D6 +1`  
-**C.** Lịch làm việc cố định và ưu tiên tối đa cho công việc. → `D6 +0`
+A. Rất quan trọng. → `D6 +2`  
+ B. Khá quan trọng. → `D6 +1`  
+ C. Ít hoặc không quan trọng. → `D6 +0`
 
-# **4\. Output cho người chơi**
+**4\. Output cho người chơi**
 
 Ví dụ:
 
@@ -237,145 +237,174 @@ Dựa vào Các nền tảng lý thuyết gốc
 
 **E đo dạng năng lực mà người chơi có xu hướng phát huy trong công việc.**
 
-Gồm 3 nhóm:
-
-* **E1 — Technical Expertise:** chuyên môn kỹ thuật  
-* **E2 — Cognitive Expertise:** tư duy & giải quyết vấn đề  
-* **E3 — Interpersonal Expertise:** giao tiếp & kết nối
+| Mã | Nhóm E | Nội dung |
+| :---- | ----- | ----- |
+| **E1** | **Basic Skills \- Kỹ năng nền tảng** | Đọc hiểu, lắng nghe, diễn đạt, tính toán, học hỏi và tư duy phản biện. |
+| **E2** | **Complex Problem Solving — Giải quyết vấn đề phức tạp** | Nhận diện vấn đề, xem xét thông tin, xây dựng và đánh giá phương án giải quyết. |
+| **E3** | **Social Skills — Kỹ năng tương tác xã hội** | Phối hợp, thuyết phục, thương lượng, hướng dẫn và hiểu phản ứng của người khác. |
+| **E4** | **Technical Skills — Kỹ năng kỹ thuật** | Lựa chọn, vận hành, kiểm tra và xử lý sự cố của công cụ, thiết bị hoặc hệ thống kỹ thuật. |
+| **E5** | **Systems Skills — Kỹ năng hệ thống** | Hiểu quan hệ giữa các bộ phận, đánh giá tác động của thay đổi và cải thiện cách hệ thống hoạt động. |
+| **E6** | **Resource Management Skills — Kỹ năng quản lý nguồn lực** | Phân bổ thời gian, tiền bạc, vật tư và nhân sự. |
 
 **Mỗi nhóm 5 câu. Mỗi câu 3 lựa chọn.**
 
-# **E1 \- TECHNICAL EXPERTISE**
+**3\. Bộ 18 câu**
 
-### **Chuyên môn kỹ thuật**
+**E1 — Basic Skills: Kỹ năng nền tảng**
 
-### **E1.1**
+**E1.1**
 
-Khi học một lĩnh vực mới, điều nào khiến bạn hứng thú nhất?
+Khi đọc hướng dẫn của một bài tập hoặc hoạt động, bạn xác định được những yêu cầu chính ở mức nào?
 
-**A.** Tìm hiểu cách một công cụ hoặc hệ thống cụ thể hoạt động. → `E1 +2`  
- **B.** Hiểu nguyên lý rồi thử áp dụng vào thực tế. → `E1 +1`  
- **C.** Tìm hiểu lĩnh vực đó ảnh hưởng đến con người hoặc xã hội như thế nào. → `E1 +0`
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E1 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E1 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E1 \+0
 
-### **E1.2**
+**E1.2**
 
-Bạn thích loại nhiệm vụ nào hơn?
+Khi trình bày một nội dung quen thuộc, bạn diễn đạt để người nghe hiểu được ý chính ở mức nào?
 
-**A.** Sử dụng kiến thức chuyên môn để tạo ra một sản phẩm hoặc kết quả cụ thể. → `E1 +2`  
- **B.** Kết hợp chuyên môn với những loại công việc khác. → `E1 +1`  
- **C.** Làm việc chủ yếu với ý tưởng hoặc con người hơn là công cụ chuyên môn. → `E1 +0`
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E1 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E1 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E1 \+0
 
-### **E1.3**
+**E1.3**
 
-Khi đã sử dụng một công cụ nhiều lần, bạn thường:
+Khi cần tính tỉ lệ phần trăm hoặc tổng chi phí cho một hoạt động, bạn tính chính xác ở mức nào?
 
-**A.** Muốn hiểu sâu và thành thạo nó. → `E1 +2`  
- **B.** Biết đủ để sử dụng hiệu quả. → `E1 +1`  
- **C.** Chỉ muốn biết cách sử dụng cơ bản rồi chuyển sang thứ khác. → `E1 +0`
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E1 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E1 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E1 \+0
 
-### **E1.4**
+**E2 — Complex Problem Solving: Giải quyết vấn đề phức tạp**
 
-Bạn cảm thấy tự tin nhất khi:
+**E2.1**
 
-**A.** Có thể tự mình thực hiện một nhiệm vụ đòi hỏi chuyên môn cụ thể. → `E1 +2`  
- **B.** Có thể thực hiện nhiệm vụ sau khi được hướng dẫn. → `E1 +1`  
- **C.** Có thể đóng góp ở những phần không yêu cầu chuyên môn kỹ thuật sâu. → `E1 +0`
+Khi một dự án gặp nhiều trở ngại cùng lúc, bạn xác định được vấn đề chính cần giải quyết từ thông tin có sẵn ở mức nào?
 
-### **E1.5**
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E2 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E2 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E2 \+0
 
-Nếu phải dành nhiều thời gian để trở thành người rất giỏi trong một kỹ năng chuyên môn:
+**E2.2**
 
-**A.** Tôi thấy đó là khoản đầu tư đáng giá. → `E1 +2`  
- **B.** Tôi sẽ làm nếu kỹ năng đó thực sự cần thiết. → `E1 +1`  
- **C.** Tôi thích phát triển nhiều năng lực khác nhau hơn. → `E1 +0`
+Khi cách làm ban đầu không giải quyết được vấn đề, bạn xây dựng được những phương án khác khả thi ở mức nào?
 
-# **E2 \- COGNITIVE EXPERTISE**
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E2 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E2 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E2 \+0
 
-### **Chuyên môn tư duy & giải quyết vấn đề**
+**E2.3**
 
-### **E2.1**
+Khi có nhiều phương án giải quyết một vấn đề, bạn so sánh được ưu điểm và hạn chế của chúng để chọn phương án phù hợp ở mức nào?
 
-Khi gặp một vấn đề khó, bạn thường:
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E2 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E2 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E2 \+0
 
-**A.** Phân tích nguyên nhân và tìm cấu trúc của vấn đề. → `E2 +2`  
- **B.** Tìm một vài cách giải quyết rồi so sánh. → `E2 +1`  
- **C.** Hỏi người có kinh nghiệm để tìm hướng xử lý. → `E2 +0`
+**E3 — Social Skills: Kỹ năng tương tác xã hội**
 
-### **E2.2**
+**E3.1**
 
-Bạn thích nhiệm vụ nào nhất?
+Khi công việc của bạn phụ thuộc vào phần việc của người khác, bạn phối hợp để hai phần việc khớp với nhau ở mức nào?
 
-**A.** Một vấn đề chưa có đáp án rõ ràng và cần tự tìm lời giải. → `E2 +2`  
- **B.** Một vấn đề có nhiều phương án để lựa chọn. → `E2 +1`  
- **C.** Một nhiệm vụ có quy trình và đáp án tương đối rõ. → `E2 +0`
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E3 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E3 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E3 \+0
 
-### **E2.3**
+**E3.2**
 
-Khi hai nguồn thông tin đưa ra kết luận khác nhau, bạn thường:
+Khi đề xuất một ý tưởng, bạn đưa ra được lý lẽ phù hợp để thuyết phục người khác cân nhắc ý tưởng đó ở mức nào?
 
-**A.** Kiểm tra bằng chứng và tự đánh giá logic của từng bên. → `E2 +2`  
- **B.** So sánh các nguồn rồi chọn phương án đáng tin hơn. → `E2 +1`  
- **C.** Tin vào nguồn mà mình quen thuộc hoặc có chuyên môn hơn. → `E2 +0`
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E3 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E3 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E3 \+0
 
-### **E2.4**
+**E3.3**
 
-Trong một quyết định quan trọng, bạn ưu tiên:
+Khi hướng dẫn một bạn làm việc mình đã biết, bạn giúp bạn ấy hiểu cách thực hiện ở mức nào?
 
-**A.** Phân tích dữ liệu, nguyên nhân và hệ quả. → `E2 +2`  
- **B.** Kết hợp thông tin với kinh nghiệm và trực giác. → `E2 +1`  
- **C.** Hỏi ý kiến những người liên quan trước khi quyết định. → `E2 +0`
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E3 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E3 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E3 \+0
 
-### **E2.5**
+**E4 — Technical Skills: Kỹ năng kỹ thuật**
 
-Điều nào khiến bạn thấy một nhiệm vụ thú vị?
+**E4.1**
 
-**A.** Nó khiến tôi phải suy nghĩ theo một cách chưa từng thử. → `E2 +2`  
- **B.** Nó yêu cầu tôi kết hợp nhiều thông tin. → `E2 +1`  
- **C.** Nó cho phép tôi áp dụng một cách làm mà mình đã thành thạo. → `E2 +0`
+Khi thực hiện một sản phẩm hoặc thí nghiệm đã được học, bạn chọn đúng dụng cụ hoặc thiết bị cần dùng ở mức nào?
 
-# **E3 \- INTERPERSONAL EXPERTISE**
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E4 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E4 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E4 \+0
 
-### **Chuyên môn giao tiếp & kết nối**
+**E4.2**
 
-### **E3.1**
+Với dụng cụ hoặc thiết bị đã được hướng dẫn sử dụng, bạn thao tác đúng để đạt kết quả yêu cầu ở mức nào?
 
-Khi làm việc nhóm, bạn thường mạnh nhất ở việc:
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E4 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E4 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E4 \+0
 
-**A.** Kết nối mọi người và giúp nhóm phối hợp hiệu quả. → `E3 +2`  
- **B.** Đóng góp ý tưởng và hỗ trợ các thành viên khác. → `E3 +1`  
- **C.** Tập trung hoàn thành phần việc của mình. → `E3 +0`
+**E4.3**
 
-### **E3.2**
+Khi dụng cụ hoặc thiết bị quen thuộc không hoạt động như dự kiến, bạn xác định được nguyên nhân từ các dấu hiệu quan sát được ở mức nào?
 
-Khi hai người trong nhóm bất đồng, bạn có xu hướng:
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E4 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E4 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E4 \+0
 
-**A.** Tìm hiểu quan điểm của cả hai và giúp họ tìm điểm chung. → `E3 +2`  
- **B.** Đưa ra ý kiến để nhóm cân nhắc. → `E3 +1`  
- **C.** Để họ tự giải quyết nếu vấn đề không liên quan trực tiếp đến mình. → `E3 +0`
+**E5 — Systems Skills: Kỹ năng hệ thống**
 
-### **E3.3**
+**E5.1**
 
-Bạn cảm thấy tự tin nhất khi:
+Trong một hoạt động gồm nhiều bước liên kết, bạn xác định được ảnh hưởng của một bước bị chậm đến các bước khác ở mức nào?
 
-**A.** Thuyết phục hoặc dẫn dắt người khác cùng hướng tới một mục tiêu. → `E3 +2`  
- **B.** Trình bày rõ ý tưởng của mình cho người khác. → `E3 +1`  
- **C.** Làm tốt công việc mà không cần phải tương tác quá nhiều. → `E3 +0`
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E5 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E5 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E5 \+0
 
-### **E3.4**
+**E5.2**
 
-Một nhiệm vụ yêu cầu bạn thường xuyên gặp gỡ, trao đổi và xây dựng quan hệ với nhiều người khiến bạn:
+Khi xem lại cách một nhóm tổ chức công việc, bạn chỉ ra được khâu cần cải thiện dựa trên kết quả thực tế ở mức nào?
 
-**A.** Khá hứng thú. → `E3 +2`  
- **B.** Có thể làm tốt nếu cần. → `E3 +1`  
- **C.** Thích những nhiệm vụ ít tương tác hơn. → `E3 +0`
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E5 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E5 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E5 \+0
 
-### **E3.5**
+**E5.3**
 
-Khi cần thuyết phục một người không đồng ý với mình, bạn thường:
+Khi cân nhắc thay đổi cách tổ chức một hoạt động, bạn đánh giá được lợi ích so với chi phí của thay đổi đó ở mức nào?
 
-**A.** Tìm hiểu điều họ quan tâm rồi điều chỉnh cách tiếp cận. → `E3 +2`  
- **B.** Trình bày rõ lý do và đưa ra bằng chứng. → `E3 +1`  
- **C.** Giữ quan điểm của mình và để họ tự quyết định. → `E3 +0`
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E5 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E5 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E5 \+0
+
+**E6 — Resource Management Skills: Kỹ năng quản lý nguồn lực**
+
+**E6.1**
+
+Khi có nhiều việc cần hoàn thành, bạn sắp xếp thời gian để đáp ứng các hạn nộp ở mức nào?
+
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E6 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E6 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E6 \+0
+
+**E6.2**
+
+Khi được giao một khoản tiền cho hoạt động nhóm, bạn phân bổ các khoản chi trong giới hạn ngân sách ở mức nào?
+
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E6 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E6 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E6 \+0
+
+**E6.3**
+
+Khi có cơ hội phân công việc nhóm, bạn giao nhiệm vụ phù hợp với khả năng của từng thành viên ở mức nào?
+
+A. Tôi thường làm được đúng yêu cầu mà không cần người khác hướng dẫn từng bước. → E6 \+2  
+ B. Tôi làm được nhưng thường cần một số gợi ý hoặc chỉnh sửa. → E6 \+1  
+ C. Tôi đã thử nhưng còn khó đạt yêu cầu, thường cần hướng dẫn từng bước. → E6 \+0
 
 # 
 
@@ -729,154 +758,175 @@ Ví dụ:
 
 **Như vậy, kết quả cuối cùng của S chỉ có 3 hướng chính: S1 / S2 / S3.** Các sub-role không phải kết quả độc lập mà dùng để **giải thích người chơi thuộc S1/S2/S3 theo kiểu nào**.
 
-# **M \- MIND**
+# **M — MIND**
 
-### **Dựa vào nền tảng lý thuyết**
+### **Mục đích**
 
-* **Cognitive Information Processing (CIP) Theory:** Sampson, Lenz, Reardon & Peterson (1999), tập trung vào cách cá nhân **xử lý thông tin, giải quyết vấn đề và ra quyết định trong bối cảnh nghề nghiệp**.  
-* **Career Decision-Making:** nhấn mạnh quá trình cá nhân tiếp nhận thông tin, xác định lựa chọn, đánh giá các phương án và đưa ra quyết định nghề nghiệp.
+M đánh giá **cách người dùng vận dụng trí tuệ để phân tích vấn đề, tạo ra ý tưởng và xử lý tình huống thực tế**.
 
-M **không đo kiến thức, IQ hay năng lực chuyên môn**. M tập trung vào **quá trình tư duy và cách người chơi tiếp cận thông tin trước khi hành động**.
+M trả lời câu hỏi:
 
-### **Gồm 3 nhóm:**
+> **“Tôi thường sử dụng trí tuệ theo cách nào để giải quyết vấn đề?”**
 
-* **M1 — Information Processing:** Cách tiếp nhận, chọn lọc và đánh giá thông tin  
-* **M2 — Cognitive Flexibility:** Khả năng thay đổi góc nhìn và điều chỉnh cách suy nghĩ  
-* **M3 — Decision Making:** Cách cân nhắc và đưa ra quyết định
+M không đo kiến thức chuyên môn, sở thích nghề nghiệp hay toàn bộ trí thông minh của một cá nhân.
 
-**Mỗi nhóm 5 câu. Mỗi câu 3 lựa chọn.**
+### **Cơ sở lý thuyết**
 
-# **M1 \- INFORMATION PROCESSING**
+M được xây dựng dựa trên **Lý thuyết trí tuệ ba thành phần** (*Triarchic Theory of Human Intelligence*) do Robert J. Sternberg đề xuất trong *Beyond IQ* năm 1985 và được phát triển tiếp thành **Theory of Successful Intelligence**.
 
-### **Xử lý thông tin**
+Theo hướng phát triển này, việc giải quyết vấn đề và đạt mục tiêu đòi hỏi sự phối hợp của ba dạng năng lực:
 
-### **M1.1**
+* **Analytical:** phân tích và đánh giá ý tưởng;  
+* **Creative:** tạo ra và xử lý ý tưởng mới;  
+* **Practical:** áp dụng ý tưởng trong bối cảnh thực tế.
 
-Khi nhận được một lượng lớn thông tin về một vấn đề, bạn thường:
+Sternberg nhấn mạnh rằng ba dạng năng lực này phối hợp với nhau, không nhất thiết tồn tại như ba kiểu người hoàn toàn tách biệt.
 
-**A.** Xác định những thông tin quan trọng nhất trước. → `M1 +2`  
- **B.** Đọc qua toàn bộ rồi mới quyết định thông tin nào cần chú ý. → `M1 +1`  
- **C.** Tập trung vào thông tin dễ hiểu hoặc quen thuộc nhất. → `M1 +0`
+## **1\. Cấu trúc M**
 
-### **M1.2**
+M gồm **3 dimensions**:
 
-Khi hai nguồn thông tin đưa ra kết luận khác nhau, bạn thường:
+| Mã | Dimension | Nội dung |
+| ----- | ----- | ----- |
+| **M1** | **Analytical Intelligence — Trí thông minh phân tích** | Phân tích thông tin, so sánh phương án, phát hiện điểm chưa hợp lý và đánh giá bằng chứng. |
+| **M2** | **Creative Intelligence — Trí thông minh sáng tạo** | Tạo ra ý tưởng mới, nhìn vấn đề từ góc độ khác và xử lý tình huống chưa quen thuộc. |
+| **M3** | **Practical Intelligence — Trí thông minh thực tiễn** | Áp dụng kiến thức vào tình huống thực tế, nhận biết yêu cầu của hoàn cảnh và điều chỉnh cách xử lý để đạt mục tiêu. |
 
-**A.** Kiểm tra bằng chứng và cách mỗi bên đưa ra kết luận. → `M1 +2`  
- **B.** So sánh hai nguồn rồi chọn nguồn đáng tin hơn. → `M1 +1`  
- **C.** Tin vào nguồn mà bạn quen thuộc hoặc thường sử dụng. → `M1 +0`
+## **3\. Bộ 15 câu**
 
-### **M1.3**
+### **M1 — Analytical Intelligence: Trí thông minh phân tích**
 
-Khi phải tìm hiểu một vấn đề bạn chưa biết, bạn thường:
+#### **M1.1**
 
-**A.** Tìm nhiều góc nhìn khác nhau trước khi hình thành kết luận. → `M1 +2`  
- **B.** Tìm một nguồn đáng tin rồi dựa vào đó để hiểu vấn đề. → `M1 +1`  
- **C.** Tìm câu trả lời nhanh nhất có thể. → `M1 +0`
+Khi hai nguồn đưa ra kết luận trái ngược về cùng một vấn đề, bạn thường:
 
-### **M1.4**
+**A.** Kiểm tra bằng chứng, nguồn dữ liệu và cách lập luận của cả hai trước khi kết luận. → `M1 +2`  
+**B.** So sánh nội dung chính rồi chọn nguồn có vẻ đáng tin hơn. → `M1 +1`  
+**C.** Chọn nguồn quen thuộc hoặc được nhiều người tin hơn. → `M1 +0`
 
-Khi một thông tin mới mâu thuẫn với điều bạn đã tin trước đó, bạn thường:
+#### **M1.2**
 
-**A.** Kiểm tra lại cả thông tin cũ và mới trước khi kết luận. → `M1 +2`  
- **B.** Xem xét thông tin mới nhưng vẫn giữ quan điểm ban đầu nếu chưa chắc chắn. → `M1 +1`  
- **C.** Bỏ qua thông tin mới nếu nó không phù hợp với suy nghĩ của bạn. → `M1 +0`
+Khi gặp một vấn đề phức tạp, bạn thường:
 
-### **M1.5**
+**A.** Tách vấn đề thành từng phần, xác định nguyên nhân và mối liên hệ giữa chúng. → `M1 +2`  
+**B.** Xem xét những yếu tố nổi bật rồi tìm hướng giải quyết. → `M1 +1`  
+**C.** Thử ngay cách đầu tiên mình nghĩ đến. → `M1 +0`
 
-Khi phải đưa ra kết luận từ nhiều thông tin chưa hoàn chỉnh, bạn thường:
+#### **M1.3**
 
-**A.** Xác định thông tin còn thiếu trước khi kết luận. → `M1 +2`  
- **B.** Sử dụng những thông tin hiện có và thừa nhận rằng kết luận có thể thay đổi. → `M1 +1`  
- **C.** Chọn phương án có vẻ hợp lý nhất và quyết định luôn. → `M1 +0`
+Khi phải chọn giữa nhiều phương án, bạn thường:
 
-# **M2 \- COGNITIVE FLEXIBILITY**
+**A.** Đặt ra tiêu chí, so sánh ưu–nhược điểm của từng phương án rồi mới chọn. → `M1 +2`  
+**B.** So sánh một vài điểm quan trọng rồi đưa ra lựa chọn. → `M1 +1`  
+**C.** Chọn phương án tạo cho mình cảm giác phù hợp nhất lúc đó. → `M1 +0`
 
-### **Linh hoạt trong tư duy**
+#### **M1.4**
 
-### **M2.1**
+Khi đọc một lập luận nghe khá thuyết phục, bạn thường:
 
-Khi cách tiếp cận ban đầu không mang lại kết quả, bạn thường:
+**A.** Kiểm tra giả định, bằng chứng và xem kết luận có thực sự xuất phát từ chúng không. → `M1 +2`  
+**B.** Xem lập luận có hợp lý tổng thể hay không. → `M1 +1`  
+**C.** Chấp nhận nếu cách trình bày rõ ràng và có vẻ hợp lý. → `M1 +0`
 
-**A.** Xem xét lại giả định ban đầu và thử một cách tiếp cận khác. → `M2 +2`  
- **B.** Điều chỉnh một vài điểm trong cách làm hiện tại. → `M2 +1`  
- **C.** Tiếp tục với cách ban đầu vì đã quen với nó. → `M2 +0`
+#### **M1.5**
 
-### **M2.2**
+Sau khi hoàn thành một bài hoặc nhiệm vụ nhưng kết quả không như mong đợi, bạn thường:
 
-Khi một người đưa ra quan điểm hoàn toàn trái ngược với bạn, bạn thường:
+**A.** Xem lại từng bước để xác định chính xác chỗ sai và nguyên nhân. → `M1 +2`  
+**B.** Xem lại những phần mình chưa chắc chắn. → `M1 +1`  
+**C.** Làm lại theo một cách khác mà không phân tích nhiều lỗi cũ. → `M1 +0`
 
-**A.** Cố gắng hiểu lý do khiến họ có quan điểm đó. → `M2 +2`  
- **B.** Nghe quan điểm của họ rồi so sánh với quan điểm của mình. → `M2 +1`  
- **C.** Giữ quan điểm của mình nếu bạn đã tin rằng nó đúng. → `M2 +0`
+### **M2 — Creative Intelligence: Trí thông minh sáng tạo**
 
-### **M2.3**
+#### **M2.1**
 
-Khi một vấn đề có nhiều cách tiếp cận khác nhau, bạn thường:
+Khi cách giải quyết quen thuộc không còn hiệu quả, bạn thường:
 
-**A.** Thử xem xét vấn đề từ nhiều góc độ trước khi chọn cách tiếp cận. → `M2 +2`  
- **B.** So sánh một vài cách tiếp cận rồi chọn cách phù hợp nhất. → `M2 +1`  
- **C.** Chọn cách bạn quen thuộc nhất. → `M2 +0`
+**A.** Thử nhìn vấn đề từ nhiều góc độ và tạo ra một số hướng giải quyết mới. → `M2 +2`  
+**B.** Điều chỉnh một vài phần của cách làm cũ. → `M2 +1`  
+**C.** Tiếp tục cách cũ hoặc chờ một cách làm mẫu. → `M2 +0`
 
-### **M2.4**
+#### **M2.2**
 
-Nếu phát hiện một quyết định trước đây của mình không còn phù hợp với tình hình hiện tại, bạn thường:
+Khi nhận một nhiệm vụ mới nhưng hướng dẫn chưa đầy đủ, bạn thường:
 
-**A.** Sẵn sàng thay đổi quyết định dựa trên tình hình mới. → `M2 +2`  
- **B.** Cân nhắc lại nhưng chỉ thay đổi khi có bằng chứng rõ ràng. → `M2 +1`  
- **C.** Giữ quyết định cũ vì đã mất nhiều công sức để đưa ra nó. → `M2 +0`
+**A.** Dựa vào mục tiêu và kinh nghiệm liên quan để chủ động xây dựng cách tiếp cận. → `M2 +2`  
+**B.** Thử một cách tương đối quen thuộc rồi điều chỉnh dần. → `M2 +1`  
+**C.** Khó bắt đầu cho đến khi có hướng dẫn cụ thể. → `M2 +0`
 
-### **M2.5**
+#### **M2.3**
 
-Khi một tình huống bất ngờ xảy ra và kế hoạch ban đầu không còn phù hợp, bạn thường:
+Khi cần nghĩ ý tưởng cho một sản phẩm hoặc hoạt động, bạn thường:
 
-**A.** Nhanh chóng xây dựng một phương án mới dựa trên tình hình hiện tại. → `M2 +2`  
- **B.** Điều chỉnh kế hoạch ban đầu để phù hợp với tình hình. → `M2 +1`  
- **C.** Cố gắng thực hiện kế hoạch ban đầu nếu vẫn còn khả năng. → `M2 +0`
+**A.** Kết hợp những yếu tố từ nhiều nguồn để tạo thành một hướng mới. → `M2 +2`  
+**B.** Phát triển thêm từ một ý tưởng đã có. → `M2 +1`  
+**C.** Chọn một mẫu quen thuộc và làm gần giống mẫu đó. → `M2 +0`
 
-# **M3 \- DECISION MAKING**
+#### **M2.4**
 
-### **Ra quyết định**
+Nếu ý tưởng đầu tiên bị bác bỏ, bạn thường:
 
-### **M3.1**
+**A.** Tìm hiểu lý do, đổi góc nhìn và đề xuất một hướng khác biệt. → `M2 +2`  
+**B.** Chỉnh sửa ý tưởng cũ để phù hợp hơn. → `M2 +1`  
+**C.** Chờ người khác đưa ra hướng thay thế. → `M2 +0`
 
-Khi phải lựa chọn giữa hai phương án đều có ưu điểm, bạn thường:
+#### **M2.5**
 
-**A.** Xác định các tiêu chí quan trọng rồi so sánh từng phương án. → `M3 +2`  
- **B.** Cân nhắc ưu và nhược điểm của mỗi phương án. → `M3 +1`  
- **C.** Chọn phương án bạn cảm thấy phù hợp hơn. → `M3 +0`
+Khi một vấn đề có nhiều cách hiểu khác nhau, bạn thường:
 
-### **M3.2**
+**A.** Khám phá các cách hiểu và dùng chúng để tìm ra khả năng chưa được chú ý. → `M2 +2`  
+**B.** Cân nhắc thêm một cách hiểu khác trước khi chọn. → `M2 +1`  
+**C.** Giữ cách hiểu đầu tiên để tránh làm vấn đề phức tạp hơn. → `M2 +0`
 
-Khi phải đưa ra quyết định trong thời gian ngắn, bạn thường:
+### **M3 — Practical Intelligence: Trí thông minh thực tiễn**
 
-**A.** Xác định yếu tố quan trọng nhất rồi quyết định dựa trên nó. → `M3 +2`  
- **B.** Cân nhắc nhanh một vài ưu và nhược điểm chính. → `M3 +1`  
- **C.** Chọn phương án đầu tiên có vẻ hợp lý. → `M3 +0`
+#### **M3.1**
 
-### **M3.3**
+Khi kế hoạch tốt trên lý thuyết nhưng không phù hợp với thời gian và nguồn lực thực tế, bạn thường:
 
-Khi một lựa chọn có lợi ích lớn nhưng cũng có rủi ro cao, bạn thường:
+**A.** Điều chỉnh kế hoạch theo giới hạn hiện có nhưng vẫn giữ mục tiêu quan trọng nhất. → `M3 +2`  
+**B.** Cắt bớt một số phần để kế hoạch có thể thực hiện. → `M3 +1`  
+**C.** Cố làm theo kế hoạch ban đầu dù khó hoàn thành. → `M3 +0`
 
-**A.** Đánh giá khả năng xảy ra và mức độ ảnh hưởng của rủi ro trước khi quyết định. → `M3 +2`  
- **B.** Cân nhắc lợi ích và rủi ro rồi lựa chọn phương án phù hợp. → `M3 +1`  
- **C.** Tránh lựa chọn vì không muốn gặp rủi ro. → `M3 +0`
+#### **M3.2**
 
-### **M3.4**
+Khi bước vào một môi trường mới có những quy tắc chưa được nói rõ, bạn thường:
 
-Khi quyết định của bạn ảnh hưởng đến nhiều người khác, bạn thường:
+**A.** Quan sát cách mọi người hành động, hỏi khi cần và điều chỉnh cách ứng xử. → `M3 +2`  
+**B.** Làm theo những gì mình biết rồi thay đổi nếu được nhắc. → `M3 +1`  
+**C.** Giữ nguyên cách làm quen thuộc của mình. → `M3 +0`
 
-**A.** Cân nhắc lợi ích và tác động đối với các bên liên quan. → `M3 +2`  
- **B.** Hỏi ý kiến những người bị ảnh hưởng trước khi quyết định. → `M3 +1`  
- **C.** Ưu tiên phương án mà bạn cho là tốt nhất. → `M3 +0`
+#### **M3.3**
 
-### **M3.5**
+Khi có nhiều việc quan trọng nhưng không đủ thời gian làm tất cả, bạn thường:
 
-Sau khi đưa ra một quyết định quan trọng, bạn thường:
+**A.** Xác định việc ảnh hưởng lớn và khẩn cấp nhất để ưu tiên nguồn lực. → `M3 +2`  
+**B.** Làm lần lượt theo hạn nộp hoặc thứ tự được giao. → `M3 +1`  
+**C.** Bắt đầu bằng việc dễ làm nhất. → `M3 +0`
 
-**A.** Theo dõi kết quả và đánh giá xem quyết định có hiệu quả không. → `M3 +2`  
- **B.** Xem xét lại nếu kết quả không như mong đợi. → `M3 +1`  
- **C.** Chuyển sang việc khác sau khi quyết định đã được đưa ra. → `M3 +0`
+#### **M3.4**
+
+Khi giải thích một đề xuất cho những người có mối quan tâm khác nhau, bạn thường:
+
+**A.** Điều chỉnh cách trình bày và ví dụ theo điều mỗi người cần biết. → `M3 +2`  
+**B.** Trình bày rõ nội dung chung rồi trả lời thêm nếu được hỏi. → `M3 +1`  
+**C.** Dùng cùng một cách trình bày cho tất cả mọi người. → `M3 +0`
+
+#### **M3.5**
+
+Khi giải pháp đang thực hiện phát sinh một trở ngại bất ngờ, bạn thường:
+
+**A.** Đánh giá tình hình, tận dụng nguồn lực sẵn có và chuyển sang phương án khả thi hơn. → `M3 +2`  
+**B.** Điều chỉnh một phần giải pháp để tiếp tục. → `M3 +1`  
+**C.** Tạm dừng và chờ điều kiện trở lại như dự kiến. → `M3 +0`
+
+## **4\. Output cho người dùng**
+
+Ví dụ:
+
+> **M1 — Analytical Intelligence: 8/10 — 80/100**  
+> **M2 — Creative Intelligence: 6/10 — 60/100**  
+> **M3 — Practical Intelligence: 9/10 — 90/100**
 
 # **Logic tổng hợp kết quả**
 
@@ -1053,8 +1103,7 @@ P **không đo mức độ stress hay sức khỏe tâm lý**. P tập trung và
 
 Cơ sở lý thuyết chính có thể tham khảo:
 
-* **COPSOQ III** — Copenhagen Psychosocial Questionnaire: các dạng job demands như quantitative demands, work pace, cognitive demands, emotional demands.  
-* **Challenge–Hindrance Stressor Framework** — LePine, Podsakoff & LePine (2005): phân biệt các dạng stressor/challenge trong công việc.
+**Challenge–Hindrance Stressor Framework** — LePine, Podsakoff & LePine (2005): phân biệt các dạng stressor/challenge trong công việc.
 
 > **Lưu ý:** Các dimension dưới đây là cấu trúc được **xây dựng cho DEPMAP dựa trên các nhóm work demands/stressors trong nghiên cứu**, không phải nguyên bản một thang đo có sẵn.
 
