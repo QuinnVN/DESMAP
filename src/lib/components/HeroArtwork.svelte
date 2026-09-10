@@ -1,11 +1,58 @@
-<div class="relative isolate aspect-[1.16] w-[120%] -ml-[10%] overflow-hidden drop-shadow-[0_0_2rem_rgb(11_84_255_/.18)] before:absolute before:inset-x-0 before:top-[4%] before:bottom-0 before:-z-2 before:bg-[radial-gradient(ellipse_at_58%_48%,rgb(6_78_250_/.2),transparent_39%),radial-gradient(ellipse_at_53%_58%,rgb(177_62_255_/.16),transparent_38%)] min-[701px]:ml-0 min-[701px]:w-[min(100%,48rem)]" aria-label="Kính thực tế ảo màu xanh mở ra cánh cổng nghề nghiệp neon" role="img">
-	<div class="absolute top-[17%] left-[46%] aspect-square w-[56%] rotate-x-65 -rotate-z-17 rounded-full border-2 border-[#1282ff] opacity-32 shadow-[0_0_1rem_#1568ff,0_0_3rem_rgb(0_70_255_/.55),inset_0_0_1rem_rgb(0_157_255_/.95)]"></div>
-	<div class="absolute top-[25%] left-[52%] aspect-square w-[44%] rotate-x-65 -rotate-z-17 animate-portal-float rounded-full border-2 border-[#a949ff] shadow-[0_0_1.5rem_#774dff,0_0_2.3rem_rgb(197_50_255_/.5),inset_0_0_.8rem_#276fff] motion-reduce:animate-none"></div>
-	<div class="absolute top-[31%] left-[57%] aspect-square w-[35%] rotate-x-65 -rotate-z-17 rounded-full border-2 border-[#55d7ff] shadow-[0_0_1.5rem_#2bd4ff,0_0_3rem_rgb(0_110_255_/.8),inset_0_0_1.3rem_#1f90ff]"></div>
-	<div class="absolute top-[36%] left-[61%] aspect-square w-[27%] animate-core-pulse rounded-full bg-[radial-gradient(circle,#07136e_0_29%,#182cff_32%_38%,#00b3ff_42%_45%,#122085_52%,transparent_63%)] shadow-[0_0_2rem_#0869ff] motion-reduce:animate-none [&>span]:absolute [&>span]:top-[-1rem] [&>span]:left-[48%] [&>span]:h-48 [&>span]:w-0.5 [&>span]:origin-[50%_100%] [&>span]:rotate-18 [&>span]:bg-[linear-gradient(transparent,#52d8ff,transparent)] [&>span]:opacity-72 [&>span:nth-child(2)]:-rotate-33 [&>span:nth-child(2)]:opacity-46 [&>span:nth-child(3)]:rotate-82 [&>span:nth-child(3)]:opacity-32"><span></span><span></span><span></span></div>
-	<div class="absolute bottom-[-14%] left-[37%] h-[43%] w-[69%] -rotate-z-11 rotate-x-53 bg-[repeating-linear-gradient(90deg,transparent_0_2rem,rgb(11_128_255_/.65)_2.1rem_2.2rem),repeating-linear-gradient(0deg,transparent_0_1.8rem,rgb(49_161_255_/.72)_1.9rem_2rem)] opacity-78 [mask-image:linear-gradient(transparent,#000_25%,transparent)] [transform:perspective(16rem)_rotateX(53deg)_rotateZ(-11deg)]"></div>
-	<div class="absolute top-[31%] left-[8%] z-2 h-[34%] w-1/2 -rotate-5 drop-shadow-[0_0_1.3rem_#0a55ff]"><div class="absolute top-[-48%] left-[27%] h-[89%] w-[53%] rotate-10 rounded-t-[52%] border-[1.4rem] border-b-0 border-[#2379ee] bg-[linear-gradient(90deg,#b3efff,#2473ef_44%,#0624af)]"></div><div class="absolute inset-[21%_2%_0_0] -skew-x-8 rounded-[25%_23%_32%_21%] border border-[#2fbcff] bg-[linear-gradient(145deg,#22a8ff_0%,#1044d3_24%,#031264_77%,#021354)] shadow-[inset_0_.5rem_1rem_rgb(173_242_255_/.5),inset_-.9rem_-1rem_2rem_rgb(0_0_0_/.6),0_.9rem_1.5rem_rgb(0_0_0_/.48)] after:absolute after:top-[19%] after:right-[-16%] after:h-1/2 after:w-1/4 after:skew-x-6 after:rounded-r-[50%] after:bg-[linear-gradient(90deg,#145fe7,#55bfff,#0954cc)]"><div class="absolute top-[35%] left-[12%] h-[13%] w-[19%] rounded-full border-[.18rem] border-[#001b83] bg-[#092693] shadow-[inset_0_0_.4rem_#43b7ff]"></div><div class="absolute top-[35%] right-[17%] h-[13%] w-[19%] rounded-full border-[.18rem] border-[#001b83] bg-[#092693] shadow-[inset_0_0_.4rem_#43b7ff]"></div></div><div class="absolute top-[18%] right-[-16%] h-[61%] w-1/5 rounded-[35%] bg-[linear-gradient(135deg,#48c1ff,#0c42cd_56%,#031f9b)] shadow-[inset_0_0_.9rem_rgb(160_239_255_/.48)]"></div></div>
-	<div class="absolute top-[8%] right-[1%] z-4 grid w-36 scale-72 -rotate-8 grid-cols-[auto_1fr] items-center gap-x-[.65rem] rounded-xl border border-[#2280ff] bg-[rgb(7_46_142_/.66)] p-[.8rem_.9rem] font-mono text-[.7rem] tracking-[.08em] text-[#eff6ff] shadow-[0_0_1rem_rgb(24_121_255_/.75),inset_0_0_.8rem_rgb(76_174_255_/.18)] backdrop-blur-sm min-[701px]:scale-100 [&_b]:row-span-2 [&_b]:text-[1.6rem] [&_b]:text-[#8de8ff] [&_i]:h-[.15rem] [&_i]:w-[70%] [&_i]:bg-[#4c8cff] [&_i]:opacity-80"><b>✦</b><span>BÁC SĨ</span><i></i><i></i></div>
-	<div class="absolute top-[52%] right-[-3%] z-4 grid w-36 scale-72 rotate-8 grid-cols-[auto_1fr] items-center gap-x-[.65rem] rounded-xl border border-[#2280ff] bg-[rgb(7_46_142_/.66)] p-[.8rem_.9rem] font-mono text-[.7rem] tracking-[.08em] text-[#eff6ff] shadow-[0_0_1rem_rgb(24_121_255_/.75),inset_0_0_.8rem_rgb(76_174_255_/.18)] backdrop-blur-sm min-[701px]:scale-100 [&_b]:row-span-2 [&_b]:text-[1.6rem] [&_b]:text-[#8de8ff] [&_i]:h-[.15rem] [&_i]:w-[70%] [&_i]:bg-[#4c8cff] [&_i]:opacity-80"><b>⌁</b><span>GIÁO VIÊN</span><i></i><i></i></div>
-	<div class="absolute bottom-[11%] left-[40%] z-4 grid w-36 scale-72 -rotate-15 grid-cols-[auto_1fr] items-center gap-x-[.65rem] rounded-xl border border-[#2280ff] bg-[rgb(7_46_142_/.66)] p-[.8rem_.9rem] font-mono text-[.7rem] tracking-[.08em] text-[#eff6ff] shadow-[0_0_1rem_rgb(24_121_255_/.75),inset_0_0_.8rem_rgb(76_174_255_/.18)] backdrop-blur-sm min-[701px]:scale-100 [&_b]:row-span-2 [&_b]:text-[1.6rem] [&_b]:text-[#8de8ff] [&_i]:h-[.15rem] [&_i]:w-[70%] [&_i]:bg-[#4c8cff] [&_i]:opacity-80"><b>⌁</b><span>LUẬT SƯ</span><i></i><i></i></div>
+<div
+	class="relative isolate aspect-[1.16] w-[120%] -ml-[10%] overflow-hidden drop-shadow-[0_0_2rem_rgb(11_84_255_/.18)] before:absolute before:inset-x-0 before:top-[4%] before:bottom-0 before:-z-2 before:bg-[radial-gradient(ellipse_at_58%_48%,rgb(6_78_250_/.2),transparent_39%),radial-gradient(ellipse_at_53%_58%,rgb(177_62_255_/.16),transparent_38%)] min-[701px]:ml-0 min-[701px]:w-[min(100%,48rem)]"
+	aria-label="Kính thực tế ảo màu xanh mở ra cánh cổng nghề nghiệp neon"
+	role="img"
+>
+	<div
+		class="absolute top-[17%] left-[46%] aspect-square w-[56%] rotate-x-65 -rotate-z-17 rounded-full border-2 border-[#1282ff] opacity-32 shadow-[0_0_1rem_#1568ff,0_0_3rem_rgb(0_70_255_/.55),inset_0_0_1rem_rgb(0_157_255_/.95)]"
+	></div>
+	<div
+		class="absolute top-[25%] left-[52%] aspect-square w-[44%] rotate-x-65 -rotate-z-17 animate-portal-float rounded-full border-2 border-[#a949ff] shadow-[0_0_1.5rem_#774dff,0_0_2.3rem_rgb(197_50_255_/.5),inset_0_0_.8rem_#276fff] motion-reduce:animate-none"
+	></div>
+	<div
+		class="absolute top-[31%] left-[57%] aspect-square w-[35%] rotate-x-65 -rotate-z-17 rounded-full border-2 border-[#55d7ff] shadow-[0_0_1.5rem_#2bd4ff,0_0_3rem_rgb(0_110_255_/.8),inset_0_0_1.3rem_#1f90ff]"
+	></div>
+	<div
+		class="absolute top-[36%] left-[61%] aspect-square w-[27%] animate-core-pulse rounded-full bg-[radial-gradient(circle,#07136e_0_29%,#182cff_32%_38%,#00b3ff_42%_45%,#122085_52%,transparent_63%)] shadow-[0_0_2rem_#0869ff] motion-reduce:animate-none [&>span]:absolute [&>span]:top-[-1rem] [&>span]:left-[48%] [&>span]:h-48 [&>span]:w-0.5 [&>span]:origin-[50%_100%] [&>span]:rotate-18 [&>span]:bg-[linear-gradient(transparent,#52d8ff,transparent)] [&>span]:opacity-72 [&>span:nth-child(2)]:-rotate-33 [&>span:nth-child(2)]:opacity-46 [&>span:nth-child(3)]:rotate-82 [&>span:nth-child(3)]:opacity-32"
+	>
+		<span></span><span></span><span></span>
+	</div>
+	<div
+		class="absolute bottom-[-14%] left-[37%] h-[43%] w-[69%] -rotate-z-11 rotate-x-53 bg-[repeating-linear-gradient(90deg,transparent_0_2rem,rgb(11_128_255_/.65)_2.1rem_2.2rem),repeating-linear-gradient(0deg,transparent_0_1.8rem,rgb(49_161_255_/.72)_1.9rem_2rem)] opacity-78 [mask-image:linear-gradient(transparent,#000_25%,transparent)] [transform:perspective(16rem)_rotateX(53deg)_rotateZ(-11deg)]"
+	></div>
+	<div
+		class="absolute top-[31%] left-[8%] z-2 h-[34%] w-1/2 -rotate-5 drop-shadow-[0_0_1.3rem_#0a55ff]"
+	>
+		<div
+			class="absolute top-[-48%] left-[27%] h-[89%] w-[53%] rotate-10 rounded-t-[52%] border-[1.4rem] border-b-0 border-[#2379ee] bg-[linear-gradient(90deg,#b3efff,#2473ef_44%,#0624af)]"
+		></div>
+		<div
+			class="absolute inset-[21%_2%_0_0] -skew-x-8 rounded-[25%_23%_32%_21%] border border-[#2fbcff] bg-[linear-gradient(145deg,#22a8ff_0%,#1044d3_24%,#031264_77%,#021354)] shadow-[inset_0_.5rem_1rem_rgb(173_242_255_/.5),inset_-.9rem_-1rem_2rem_rgb(0_0_0_/.6),0_.9rem_1.5rem_rgb(0_0_0_/.48)] after:absolute after:top-[19%] after:right-[-16%] after:h-1/2 after:w-1/4 after:skew-x-6 after:rounded-r-[50%] after:bg-[linear-gradient(90deg,#145fe7,#55bfff,#0954cc)]"
+		>
+			<div
+				class="absolute top-[35%] left-[12%] h-[13%] w-[19%] rounded-full border-[.18rem] border-[#001b83] bg-[#092693] shadow-[inset_0_0_.4rem_#43b7ff]"
+			></div>
+			<div
+				class="absolute top-[35%] right-[17%] h-[13%] w-[19%] rounded-full border-[.18rem] border-[#001b83] bg-[#092693] shadow-[inset_0_0_.4rem_#43b7ff]"
+			></div>
+		</div>
+		<div
+			class="absolute top-[18%] right-[-16%] h-[61%] w-1/5 rounded-[35%] bg-[linear-gradient(135deg,#48c1ff,#0c42cd_56%,#031f9b)] shadow-[inset_0_0_.9rem_rgb(160_239_255_/.48)]"
+		></div>
+	</div>
+	<div
+		class="absolute top-[8%] right-[1%] z-4 grid w-36 scale-72 -rotate-8 grid-cols-[auto_1fr] items-center gap-x-[.65rem] rounded-xl border border-[#2280ff] bg-[rgb(7_46_142_/.66)] p-[.8rem_.9rem] font-mono text-[.7rem] tracking-[.08em] text-[#eff6ff] shadow-[0_0_1rem_rgb(24_121_255_/.75),inset_0_0_.8rem_rgb(76_174_255_/.18)] backdrop-blur-sm min-[701px]:scale-100 [&_b]:row-span-2 [&_b]:text-[1.6rem] [&_b]:text-[#8de8ff] [&_i]:h-[.15rem] [&_i]:w-[70%] [&_i]:bg-[#4c8cff] [&_i]:opacity-80"
+	>
+		<b>✦</b><span>BÁC SĨ</span><i></i><i></i>
+	</div>
+	<div
+		class="absolute top-[52%] right-[-3%] z-4 grid w-36 scale-72 rotate-8 grid-cols-[auto_1fr] items-center gap-x-[.65rem] rounded-xl border border-[#2280ff] bg-[rgb(7_46_142_/.66)] p-[.8rem_.9rem] font-mono text-[.7rem] tracking-[.08em] text-[#eff6ff] shadow-[0_0_1rem_rgb(24_121_255_/.75),inset_0_0_.8rem_rgb(76_174_255_/.18)] backdrop-blur-sm min-[701px]:scale-100 [&_b]:row-span-2 [&_b]:text-[1.6rem] [&_b]:text-[#8de8ff] [&_i]:h-[.15rem] [&_i]:w-[70%] [&_i]:bg-[#4c8cff] [&_i]:opacity-80"
+	>
+		<b>⌁</b><span>GIÁO VIÊN</span><i></i><i></i>
+	</div>
+	<div
+		class="absolute bottom-[11%] left-[40%] z-4 grid w-36 scale-72 -rotate-15 grid-cols-[auto_1fr] items-center gap-x-[.65rem] rounded-xl border border-[#2280ff] bg-[rgb(7_46_142_/.66)] p-[.8rem_.9rem] font-mono text-[.7rem] tracking-[.08em] text-[#eff6ff] shadow-[0_0_1rem_rgb(24_121_255_/.75),inset_0_0_.8rem_rgb(76_174_255_/.18)] backdrop-blur-sm min-[701px]:scale-100 [&_b]:row-span-2 [&_b]:text-[1.6rem] [&_b]:text-[#8de8ff] [&_i]:h-[.15rem] [&_i]:w-[70%] [&_i]:bg-[#4c8cff] [&_i]:opacity-80"
+	>
+		<b>⌁</b><span>LUẬT SƯ</span><i></i><i></i>
+	</div>
 </div>

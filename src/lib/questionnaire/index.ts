@@ -14,8 +14,8 @@ export {
 	scoreAnswers,
 	totalQuestionCount,
 	writeSavedQuestionnaire,
-	writeCompletionPayload
-} from './data';
+	writeCompletionPayload,
+} from "./data";
 
 export type {
 	CareerInterest,
@@ -28,5 +28,5 @@ export type {
 	QuestionnaireStage,
 	QuestionnaireSubmission,
 	StageId,
-	QuestionOption
-} from './data';
+	QuestionOption,
+} from "./data";

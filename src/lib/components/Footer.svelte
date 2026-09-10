@@ -1,4 +1,38 @@
 <footer class="border-t border-line bg-[#020202] pt-20">
-	<div class="mx-auto block w-[min(100%_-_2rem,90rem)] gap-8 pb-14 min-[641px]:flex min-[641px]:w-[min(100%_-_4rem,90rem)] min-[641px]:items-end min-[641px]:justify-between min-[641px]:pb-20"><div><a class="text-[clamp(3rem,8vw,7.4rem)] leading-[.8] font-[760] tracking-[-.1em] text-text no-underline" href="/">DESMAP<span class="align-top text-[.3em] text-lime">®</span></a><p class="mt-[1.4rem] mb-0 text-muted">Tìm hướng đi mang đậm dấu ấn của bạn.</p></div><a class="mt-[2.2rem] inline-flex min-h-[3.15rem] items-center justify-center gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)] min-[641px]:mt-0" href="/questionnaire">Bắt đầu hồ sơ <span aria-hidden="true">↗</span></a></div>
-	<div class="mx-auto flex w-[min(100%_-_2rem,90rem)] flex-wrap justify-between gap-6 border-t border-line py-[1.1rem] font-mono text-[.6rem] tracking-[.06em] text-muted uppercase min-[641px]:w-[min(100%_-_4rem,90rem)]"><span>© {new Date().getFullYear()} DESMAP</span><div class="order-first flex w-full flex-wrap gap-x-4 gap-y-3 min-[641px]:order-none min-[641px]:w-auto min-[641px]:gap-6"><a class="text-text no-underline hover:text-lime" href="/#about">Về chúng tôi</a><a class="text-text no-underline hover:text-lime" href="/experiences">Thư viện nghề nghiệp</a><a class="text-text no-underline hover:text-lime" href="/evaluation">Hồ sơ của tôi</a></div><span>Đồng hành cùng chặng đường tiếp theo.</span></div>
+	<div
+		class="mx-auto block w-[min(100%_-_2rem,90rem)] gap-8 pb-14 min-[641px]:flex min-[641px]:w-[min(100%_-_4rem,90rem)] min-[641px]:items-end min-[641px]:justify-between min-[641px]:pb-20"
+	>
+		<div>
+			<a
+				class="text-[clamp(3rem,8vw,7.4rem)] leading-[.8] font-[760] tracking-[-.1em] text-text no-underline"
+				href="/"
+				>DESMAP<span class="align-top text-[.3em] text-lime">®</span></a
+			>
+			<p class="mt-[1.4rem] mb-0 text-muted">
+				Tìm hướng đi mang đậm dấu ấn của bạn.
+			</p>
+		</div>
+		<a
+			class="mt-[2.2rem] inline-flex min-h-[3.15rem] items-center justify-center gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)] min-[641px]:mt-0"
+			href="/questionnaire"
+			>Bắt đầu hồ sơ <span aria-hidden="true">↗</span></a
+		>
+	</div>
+	<div
+		class="mx-auto flex w-[min(100%_-_2rem,90rem)] flex-wrap justify-between gap-6 border-t border-line py-[1.1rem] font-mono text-[.6rem] tracking-[.06em] text-muted uppercase min-[641px]:w-[min(100%_-_4rem,90rem)]"
+	>
+		<span>© {new Date().getFullYear()} DESMAP</span>
+		<div
+			class="order-first flex w-full flex-wrap gap-x-4 gap-y-3 min-[641px]:order-none min-[641px]:w-auto min-[641px]:gap-6"
+		>
+			<a class="text-text no-underline hover:text-lime" href="/#about"
+				>Về chúng tôi</a
+			><a class="text-text no-underline hover:text-lime" href="/experiences"
+				>Thư viện nghề nghiệp</a
+			><a class="text-text no-underline hover:text-lime" href="/evaluation"
+				>Hồ sơ của tôi</a
+			>
+		</div>
+		<span>Đồng hành cùng chặng đường tiếp theo.</span>
+	</div>
 </footer>
