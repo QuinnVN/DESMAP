@@ -33,13 +33,22 @@ namespace NCKH.VR.Sales
         public int DialogueIndex { get; private set; }
         private bool[] previousLocomotion;
         private bool locomotionLocked;
-        private SalesActionTarget hovered;
         private Coroutine transition;
         private float nextActionTime;
         private bool initialized;
+        private InputAction advanceDialogueAction;
+
+        public InputAction AdvanceDialogueAction => advanceDialogueAction;
 
         private void OnEnable()
         {
+            if (advanceDialogueAction == null)
+                advanceDialogueAction = new InputAction(
+                    "Advance Dialogue",
+                    InputActionType.Button,
+                    "<XRController>{RightHand}/primaryButton");
+            advanceDialogueAction.performed += OnAdvanceDialogue;
+            advanceDialogueAction.Enable();
             if (!initialized) return;
             focus.enabled = true;
             ResetMission();
@@ -66,17 +75,6 @@ namespace NCKH.VR.Sales
                 delta.y = 0;
                 if (delta.sqrMagnitude <= conversationDistance * conversationDistance) BeginDialogue();
             }
-            UpdateDesktopPointer();
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard == null) return;
-            if (keyboard.spaceKey.wasPressedThisFrame) HandleAction(-1);
-            if (keyboard.rKey.wasPressedThisFrame) HandleAction(-2);
-            if (Stage == SalesMissionStage.Choosing)
-            {
-                if (keyboard.digit1Key.wasPressedThisFrame) HandleAction(0);
-                else if (keyboard.digit2Key.wasPressedThisFrame) HandleAction(1);
-                else if (keyboard.digit3Key.wasPressedThisFrame) HandleAction(2);
-            }
         }
 
         private void LateUpdate()
@@ -85,24 +83,6 @@ namespace NCKH.VR.Sales
             // Only the presentation follows the head. The tracked camera is never moved.
             dialogueRoot.SetPositionAndRotation(playerCamera.transform.position +
                 playerCamera.transform.rotation * new Vector3(0, -.34f, 1.35f), playerCamera.transform.rotation);
-        }
-
-        private void UpdateDesktopPointer()
-        {
-            Mouse mouse = Mouse.current;
-            if (mouse == null || playerCamera == null) return;
-            Ray ray = playerCamera.ScreenPointToRay(mouse.position.ReadValue());
-            SalesActionTarget target = null;
-            // Focus interactions deliberately ignore store geometry, like the focus render pass.
-            if (Physics.Raycast(ray, out RaycastHit hit, 8f, 1 << 9, QueryTriggerInteraction.Collide))
-                target = hit.collider.GetComponentInParent<SalesActionTarget>();
-            if (hovered != target)
-            {
-                if (hovered != null) hovered.SetDesktopHover(false);
-                hovered = target;
-                if (hovered != null) hovered.SetDesktopHover(true);
-            }
-            if (target != null && mouse.leftButton.wasPressedThisFrame) target.Invoke();
         }
 
         public void BeginDialogue()
@@ -121,8 +101,15 @@ namespace NCKH.VR.Sales
         {
             speakerText.text = data.customerName + "  ·  KHÁCH HÀNG";
             dialogueText.text = data.dialogue[DialogueIndex].text;
-            nextText.text = DialogueIndex + 1 < data.dialogue.Length ? "Tiếp tục  →" : "Xem ba đôi giày  →";
+            nextText.text = DialogueIndex + 1 < data.dialogue.Length
+                ? "NHẤN A ĐỂ TIẾP TỤC"
+                : "NHẤN A ĐỂ XEM BA ĐÔI GIÀY";
             ReplayAudio();
+        }
+
+        private void OnAdvanceDialogue(InputAction.CallbackContext _)
+        {
+            HandleAction(-1);
         }
 
         public void HandleAction(int action)
@@ -215,6 +202,11 @@ namespace NCKH.VR.Sales
 
         private void OnDisable()
         {
+            if (advanceDialogueAction != null)
+            {
+                advanceDialogueAction.performed -= OnAdvanceDialogue;
+                advanceDialogueAction.Disable();
+            }
             if (transition != null) StopCoroutine(transition);
             transition = null;
             if (voice != null) voice.Stop();
@@ -222,7 +214,6 @@ namespace NCKH.VR.Sales
             if (displayRoot != null) displayRoot.gameObject.SetActive(false);
             if (dialogueRoot != null) dialogueRoot.gameObject.SetActive(false);
             SetLocomotionLocked(false);
-            if (hovered != null) hovered.SetDesktopHover(false);
         }
     }
 }

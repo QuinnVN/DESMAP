@@ -8,8 +8,10 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Jump;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals;
 
 namespace NCKH.VR.Sales.Editor
 {
@@ -35,6 +37,7 @@ namespace NCKH.VR.Sales.Editor
             if (player == null) throw new InvalidOperationException("The open scene needs its VR Player.");
             Camera camera = player.GetComponentInChildren<Camera>(true);
             if (camera == null) throw new InvalidOperationException("VR Player camera missing.");
+            DisableJump(player);
             EnsureBothControllerRays(player);
             // Preserve the rig and all bindings; disable the imported animated demo camera only.
             foreach (var root in scene.GetRootGameObjects())
@@ -88,9 +91,7 @@ namespace NCKH.VR.Sales.Editor
             Plate(dialogue, new Vector3(0, 0, .025f), new Vector3(1.85f, .64f, .025f), panel);
             mission.speakerText = Text(dialogue, "", new Vector3(-.02f, .23f, -.01f), 1.68f, .09f, 3.2f, TextAlignmentOptions.Left);
             mission.dialogueText = Text(dialogue, "", new Vector3(0, .035f, -.01f), 1.68f, .28f, 3.6f, TextAlignmentOptions.TopLeft);
-            mission.nextText = Button(dialogue, mission, -1, "Tiếp tục  →", new Vector3(.47f, -.23f, -.02f), new Vector2(.7f, .12f)).caption;
-            Button(dialogue, mission, -2, "Nghe lại", new Vector3(-.65f, -.23f, -.02f), new Vector2(.35f, .12f));
-            Text(dialogue, "Trỏ tia + bóp cò  ·  Chuột / Space", new Vector3(-.14f, -.23f, -.03f), .62f, .09f, 1.45f);
+            mission.nextText = Text(dialogue, "NHẤN A ĐỂ TIẾP TỤC", new Vector3(0, -.23f, -.03f), 1.68f, .09f, 2.3f);
 
             var display = NewTransform("Shoe Comparison Display", rootObject.transform);
             mission.displayRoot = display;
@@ -109,7 +110,6 @@ namespace NCKH.VR.Sales.Editor
                 card.localPosition = new Vector3((i - 1) * .96f, -.09f, 0);
                 Plate(card, new Vector3(0, -.04f, .08f), new Vector3(.89f, 1.1f, .018f), panel);
                 var action = card.gameObject.AddComponent<SalesActionTarget>();
-                card.gameObject.AddComponent<LawyerActivationOnlySelectFilter>();
                 var collider = card.gameObject.AddComponent<BoxCollider>();
                 collider.center = new Vector3(0, -.04f, .07f);
                 collider.size = new Vector3(.9f, 1.1f, .56f);
@@ -135,7 +135,7 @@ namespace NCKH.VR.Sales.Editor
                 var interaction = card.GetComponent<XRSimpleInteractable>();
                 interaction.colliders.Clear(); interaction.colliders.Add(collider);
             }
-            Text(choices, "Trỏ vào giày để xoay nhanh hơn  ·  Bóp cò / nhấp chuột để chọn", new Vector3(0, -.8f, -.02f), 2.9f, .12f, 2.7f);
+            Text(choices, "Trỏ tia vào giày để xoay nhanh hơn  ·  Bóp cò để chọn", new Vector3(0, -.8f, -.02f), 2.9f, .12f, 2.7f);
             Transform result = NewTransform("Selection Result", display);
             mission.resultRoot = result.gameObject;
             Plate(result, new Vector3(0, 0, .05f), new Vector3(2.4f, 1.3f, .02f), panel);
@@ -151,6 +151,43 @@ namespace NCKH.VR.Sales.Editor
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             Debug.Log("Sales Part 1 setup complete.");
+        }
+
+        [MenuItem("NCKH/Sales/Apply A Button Dialogue Controls To Saved Sale Scene")]
+        public static void ApplyDialogueControlsToSavedScene()
+        {
+            const string scenePath = "Assets/Scenes/Sale/Shoes store - showroom with footwear.unity";
+            var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+            SalesMissionController mission = scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<SalesMissionController>(true))
+                .Single();
+            GameObject player = mission.playerCamera.transform.root.gameObject;
+            DisableJump(player);
+
+            SalesActionTarget[] dialogueButtons = mission.dialogueRoot
+                .GetComponentsInChildren<SalesActionTarget>(true);
+            foreach (SalesActionTarget dialogueButton in dialogueButtons)
+                UnityEngine.Object.DestroyImmediate(dialogueButton.gameObject);
+
+            TMP_Text[] dialogueLabels = mission.dialogueRoot.GetComponentsInChildren<TMP_Text>(true);
+            foreach (TMP_Text label in dialogueLabels)
+            {
+                if (label == mission.speakerText || label == mission.dialogueText) continue;
+                UnityEngine.Object.DestroyImmediate(label.gameObject);
+            }
+
+            font = CreateFont();
+            mission.nextText = Text(
+                mission.dialogueRoot,
+                "NHẤN A ĐỂ TIẾP TỤC",
+                new Vector3(0, -.23f, -.03f),
+                1.68f,
+                .09f,
+                2.3f);
+            EditorUtility.SetDirty(mission);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            Debug.Log("Sales dialogue now advances with A and no longer uses conversation buttons.");
         }
 
         [MenuItem("NCKH/Sales/Repair Both Controller Rays In Open Sale Scene")]
@@ -203,16 +240,47 @@ namespace NCKH.VR.Sales.Editor
             EditorUtility.SetDirty(leftGroup);
         }
 
+        private static void DisableJump(GameObject player)
+        {
+            JumpProvider jump = player.GetComponentInChildren<JumpProvider>(true);
+            if (jump != null) jump.gameObject.SetActive(false);
+        }
+
         private static void ConfigureRayInput(XRRayInteractor ray, XRDirectInteractor sourceInteractor, int handedness)
         {
             var target = new SerializedObject(ray);
             var source = new SerializedObject(sourceInteractor);
             target.CopyFromSerializedProperty(source.FindProperty("m_SelectInput"));
             target.CopyFromSerializedProperty(source.FindProperty("m_ActivateInput"));
+            target.FindProperty("m_InteractionLayers.m_Bits").uintValue = 1;
+            SerializedProperty raycastMask = target.FindProperty("m_RaycastMask.m_Bits");
+            raycastMask.uintValue |= 1u << 9;
             target.FindProperty("m_Handedness").enumValueIndex = handedness;
             target.FindProperty("m_AllowHoveredActivate").boolValue = true;
             target.ApplyModifiedPropertiesWithoutUndo();
+            XRInteractorLineVisual lineVisual = ray.GetComponent<XRInteractorLineVisual>();
+            if (lineVisual == null)
+                throw new InvalidOperationException(ray.name + " requires an XR Interactor Line Visual.");
+            lineVisual.invalidColorGradient = CreateRayGradient(new Color(.2f, .75f, 1f), .7f, .08f);
+            EditorUtility.SetDirty(lineVisual);
             EditorUtility.SetDirty(ray);
+        }
+
+        private static Gradient CreateRayGradient(Color color, float startAlpha, float endAlpha)
+        {
+            return new Gradient
+            {
+                colorKeys = new[]
+                {
+                    new GradientColorKey(color, 0f),
+                    new GradientColorKey(color, 1f)
+                },
+                alphaKeys = new[]
+                {
+                    new GradientAlphaKey(startAlpha, 0f),
+                    new GradientAlphaKey(endAlpha, 1f)
+                }
+            };
         }
 
         private static SalesMissionData CreateData()
@@ -258,18 +326,15 @@ namespace NCKH.VR.Sales.Editor
 
         private static void ConfigureRenderers()
         {
-            foreach (string path in new[] {"Assets/Settings/PC_Renderer.asset", "Assets/Settings/Mobile_Renderer.asset"})
-            {
-                var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(path);
-                if (renderer == null) continue;
-                if (renderer.rendererFeatures.OfType<LawyerFocusDimRendererFeature>().Any()) continue;
-                var feature = ScriptableObject.CreateInstance<LawyerFocusDimRendererFeature>();
-                feature.name = "Lawyer Focus Dim";
-                feature.ConfigureInEditor(AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Lawyer/Lawyer Focus Dim.mat"), 1 << 9, 1u << 31);
-                AssetDatabase.AddObjectToAsset(feature, renderer);
-                renderer.rendererFeatures.Add(feature);
-                EditorUtility.SetDirty(renderer);
-            }
+            const string path = "Assets/Settings/Mobile_Renderer.asset";
+            var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(path);
+            if (renderer == null || renderer.rendererFeatures.OfType<LawyerFocusDimRendererFeature>().Any()) return;
+            var feature = ScriptableObject.CreateInstance<LawyerFocusDimRendererFeature>();
+            feature.name = "Lawyer Focus Dim";
+            feature.ConfigureInEditor(AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Lawyer/Lawyer Focus Dim.mat"), 1 << 9, 1u << 31);
+            AssetDatabase.AddObjectToAsset(feature, renderer);
+            renderer.rendererFeatures.Add(feature);
+            EditorUtility.SetDirty(renderer);
         }
 
         private static Material MakeMaterial(string name, Color color, string shader)
@@ -310,7 +375,6 @@ namespace NCKH.VR.Sales.Editor
             var t = NewTransform(label, parent); t.localPosition = position;
             Plate(t, new Vector3(0, 0, .025f), new Vector3(size.x, size.y, .025f), accent);
             var target = t.gameObject.AddComponent<SalesActionTarget>();
-            t.gameObject.AddComponent<LawyerActivationOnlySelectFilter>();
             var box = t.gameObject.AddComponent<BoxCollider>(); box.size = new Vector3(size.x, size.y, .08f);
             var interaction = t.GetComponent<XRSimpleInteractable>(); interaction.colliders.Clear(); interaction.colliders.Add(box);
             target.mission = mission; target.action = action;

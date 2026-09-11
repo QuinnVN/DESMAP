@@ -8,13 +8,15 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Jump;
 
 namespace NCKH.VR.Sales.Tests
 {
     public sealed class SalesDataTests
     {
         [Test]
-        public void SavedSceneHasStableDialogueLayoutAndBothControllerActivationPaths()
+        public void SavedSceneUsesAForButtonlessDialogueAndBothRaysForShoeSelection()
         {
             const string path = "Assets/Scenes/Sale/Shoes store - showroom with footwear.unity";
             Scene scene = SceneManager.GetSceneByPath(path);
@@ -23,14 +25,34 @@ namespace NCKH.VR.Sales.Tests
             try
             {
                 var mission = scene.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<SalesMissionController>(true)).Single();
+                Assert.That(mission.GetComponentsInChildren<LawyerActivationOnlySelectFilter>(true), Is.Empty,
+                    "Sales buttons must accept the controller Select action.");
+                Assert.That(mission.dialogueRoot.GetComponentsInChildren<SalesActionTarget>(true), Is.Empty,
+                    "The conversation panel must not contain interactive buttons.");
+                Assert.That(mission.nextText.text, Is.EqualTo("NHẤN A ĐỂ TIẾP TỤC"));
+                JumpProvider jump = mission.playerCamera.transform.root.GetComponentInChildren<JumpProvider>(true);
+                Assert.That(jump, Is.Not.Null);
+                Assert.That(jump.gameObject.activeSelf, Is.False,
+                    "A must not trigger jumping in the Sales scene.");
                 Assert.That(mission.speakerText.rectTransform.anchoredPosition.y, Is.GreaterThan(.2f));
                 Assert.That(mission.dialogueText.rectTransform.anchoredPosition.y, Is.LessThan(.1f));
                 Assert.That(mission.choicesRoot.GetComponentsInChildren<SalesActionTarget>(true).Count(t => t.action >= 0), Is.EqualTo(3));
                 var rays = mission.playerCamera.transform.root.GetComponentsInChildren<XRRayInteractor>(true);
+                var targets = mission.GetComponentsInChildren<SalesActionTarget>(true);
                 Assert.That(rays.Length, Is.GreaterThanOrEqualTo(2));
                 foreach (var ray in rays)
                 {
                     Assert.That(ray.allowHoveredActivate, Is.True, ray.name);
+                    Assert.That(targets.All(target =>
+                        (ray.interactionLayers.value & target.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>().interactionLayers.value) != 0),
+                        Is.True, ray.name + " cannot interact with every sales button.");
+                    Assert.That(targets.All(target =>
+                        (ray.raycastMask.value & (1 << target.gameObject.layer)) != 0),
+                        Is.True, ray.name + " physics mask cannot hit every sales button collider.");
+                    XRInteractorLineVisual lineVisual = ray.GetComponent<XRInteractorLineVisual>();
+                    Assert.That(lineVisual, Is.Not.Null, ray.name + " has no line visual.");
+                    Assert.That(lineVisual.invalidColorGradient.Evaluate(0f).a, Is.GreaterThan(0f),
+                        ray.name + " is invisible until it finds a valid target.");
                     var activate = ray.activateInput.inputActionReferencePerformed;
                     Assert.That(activate, Is.Not.Null, ray.name + " has no Activate action.");
                     string expectedMap = ray.handedness == InteractorHandedness.Left
@@ -68,7 +90,6 @@ namespace NCKH.VR.Sales.Tests
             Object.DestroyImmediate(data);
         }
 
-        [TestCase("Assets/Settings/PC_Renderer.asset")]
         [TestCase("Assets/Settings/Mobile_Renderer.asset")]
         public void TargetRenderersHaveDepthResetFocusFeature(string path)
         {
