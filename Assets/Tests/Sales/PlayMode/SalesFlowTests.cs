@@ -138,6 +138,8 @@ namespace NCKH.VR.Sales.Tests
             var target = go.AddComponent<SalesActionTarget>();
             target.idleSpeed = 20;
             target.spinningModel = Child("Visual").transform;
+            Assert.That(go.GetComponent<XRSimpleInteractable>().selectMode,
+                Is.EqualTo(InteractableSelectMode.Single));
             Assert.That(target.Hovered, Is.False);
             Assert.That(target.CurrentSpeed, Is.EqualTo(20));
             Quaternion start = target.spinningModel.localRotation;

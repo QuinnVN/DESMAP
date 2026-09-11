@@ -133,6 +133,7 @@ namespace NCKH.VR.Sales.Editor
                 Text(card, shoe.properties, new Vector3(0, -.29f, -.03f), .77f, .34f, 2.6f, TextAlignmentOptions.TopLeft);
                 Text(card, "CHỌN " + shoe.label + "  ·  " + (i + 1), new Vector3(0, -.52f, -.03f), .8f, .09f, 2.6f);
                 var interaction = card.GetComponent<XRSimpleInteractable>();
+                interaction.selectMode = InteractableSelectMode.Single;
                 interaction.colliders.Clear(); interaction.colliders.Add(collider);
             }
             Text(choices, "Trỏ tia vào giày để xoay nhanh hơn  ·  Bóp cò để chọn", new Vector3(0, -.8f, -.02f), 2.9f, .12f, 2.7f);

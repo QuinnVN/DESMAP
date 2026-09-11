@@ -35,6 +35,7 @@ namespace NCKH.VR.Sales
         private bool locomotionLocked;
         private Coroutine transition;
         private float nextActionTime;
+        private bool shoeSelectionLocked;
         private bool initialized;
         private InputAction advanceDialogueAction;
 
@@ -158,6 +159,8 @@ namespace NCKH.VR.Sales
 
         private void SelectShoe(int index)
         {
+            if (shoeSelectionLocked) return;
+            shoeSelectionLocked = true;
             SelectedIndex = index;
             Stage = SalesMissionStage.Completed;
             choicesRoot.SetActive(false);
@@ -180,6 +183,7 @@ namespace NCKH.VR.Sales
             dialogueRoot.gameObject.SetActive(false);
             SetLocomotionLocked(false);
             SelectedIndex = -1;
+            shoeSelectionLocked = false;
             nextActionTime = 0f;
             DialogueIndex = 0;
             Stage = SalesMissionStage.Waiting;

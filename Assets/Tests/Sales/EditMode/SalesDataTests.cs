@@ -37,6 +37,10 @@ namespace NCKH.VR.Sales.Tests
                 Assert.That(mission.speakerText.rectTransform.anchoredPosition.y, Is.GreaterThan(.2f));
                 Assert.That(mission.dialogueText.rectTransform.anchoredPosition.y, Is.LessThan(.1f));
                 Assert.That(mission.choicesRoot.GetComponentsInChildren<SalesActionTarget>(true).Count(t => t.action >= 0), Is.EqualTo(3));
+                Assert.That(mission.choicesRoot.GetComponentsInChildren<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>(true)
+                    .Where(interactable => interactable.GetComponent<SalesActionTarget>()?.action >= 0)
+                    .All(interactable => interactable.selectMode == UnityEngine.XR.Interaction.Toolkit.Interactables.InteractableSelectMode.Single),
+                    Is.True, "Each shoe must accept only one controller selection at a time.");
                 var rays = mission.playerCamera.transform.root.GetComponentsInChildren<XRRayInteractor>(true);
                 var targets = mission.GetComponentsInChildren<SalesActionTarget>(true);
                 Assert.That(rays.Length, Is.GreaterThanOrEqualTo(2));

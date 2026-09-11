@@ -23,6 +23,7 @@ namespace NCKH.VR.Sales
         private void OnEnable()
         {
             if (interactable == null) interactable = GetComponent<XRSimpleInteractable>();
+            interactable.selectMode = InteractableSelectMode.Single;
             interactable.selectEntered.AddListener(OnSelected);
             interactable.activated.AddListener(OnActivated);
         }
