@@ -48,13 +48,6 @@
 		currentQuestion ? getStageById(currentQuestion.stage) : null
 	);
 	let answeredCount = $derived(Object.keys(answers).length);
-	let progress = $derived(
-		mode === 'career'
-			? 0
-			: mode === 'review'
-				? 100
-				: Math.round(((currentIndex + 1) / totalQuestionCount) * 100)
-	);
 	let unansweredQuestions = $derived(orderedQuestions.filter((question) => !answers[question.id]));
 	const optionLabels: OptionLetter[] = ['A', 'B', 'C'];
 
@@ -219,7 +212,7 @@
 	<div class="questionnaire-shell loading-shell" aria-live="polite">Đang tải bài đánh giá…</div>
 {:else}
 	<div class="questionnaire-shell">
-		<div class="assessment-layout">
+		<div class="assessment-layout" class:career-layout={mode === 'career'}>
 			<aside class="stage-rail" aria-label="Các giai đoạn đánh giá DESMAP">
 				<div class="rail-line" aria-hidden="true"></div>
 				{#each questionnaireStages as stage (stage.id)}
@@ -253,24 +246,6 @@
 						<p class="eyebrow">DESMAP / KHÁM PHÁ BẢN THÂN</p>
 					</div>
 				</header> -->
-
-				<div class="progress-row">
-					<div
-						class="progress-track"
-						aria-label={`${progress}% complete`}
-						role="progressbar"
-						aria-valuemin="0"
-						aria-valuemax="100"
-						aria-valuenow={progress}
-					>
-						<span style:width={`${progress}%`}></span>
-					</div>
-					{#if mode === 'questions'}
-						<div class="progress-copy">
-							<span>{progress}%</span>
-						</div>
-					{/if}
-				</div>
 
 				{#if mode === 'career'}
 					<section class="panel career-panel" aria-labelledby="career-title">
@@ -313,10 +288,12 @@
 					</section>
 				{:else if mode === 'questions' && currentQuestion}
 					<section class="panel question-panel" aria-labelledby="question-title">
-						<h1 id="question-title" tabindex="-1">{currentQuestion.prompt}</h1>
-						<p class="instruction" id="question-instruction">
-							Chọn phương án mô tả đúng nhất về bạn.
-						</p>
+						<div class="question-copy">
+							<h1 id="question-title" tabindex="-1">{currentQuestion.prompt}</h1>
+							<p class="instruction" id="question-instruction">
+								Chọn phương án mô tả đúng nhất về bạn.
+							</p>
+						</div>
 
 						<fieldset
 							class="options-fieldset"

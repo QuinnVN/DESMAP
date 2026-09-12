@@ -38,11 +38,6 @@
 >
 	<div class="mx-auto w-[min(100%_-_2rem,90rem)] min-[761px]:w-[min(100%_-_4rem,90rem)]">
 		<div
-			class="flex flex-col items-start justify-between gap-2 border-b border-line pb-[1.4rem] font-mono text-[.69rem] tracking-[.13em] text-lime uppercase min-[761px]:flex-row min-[761px]:items-center [&>span:last-child]:text-muted"
-		>
-			<span>Cách hoạt động</span><span>Từ khám phá bản thân đến trải nghiệm thực tế</span>
-		</div>
-		<div
 			class="block gap-8 py-[2.3rem] min-[761px]:flex min-[761px]:items-end min-[761px]:justify-between min-[761px]:py-[3.1rem_3.7rem]"
 		>
 			<h2

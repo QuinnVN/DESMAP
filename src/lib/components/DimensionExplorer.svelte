@@ -7,7 +7,6 @@
 		id: string;
 		letter: string;
 		label: string;
-		prompt: string;
 		title: string;
 		accent: string;
 		copy: string;
@@ -17,25 +16,22 @@
 			id: 'desire',
 			letter: 'D',
 			label: 'Desire',
-			prompt: 'Điều gì thúc đẩy tôi?',
 			title: 'DESIRE',
-			accent: 'MONG MUỐN CỦA BẠN',
+			accent: 'MONG MUỐN',
 			copy: 'Khía cạnh này khám phá các giá trị nghề nghiệp: điều bạn mong muốn và ưu tiên ở công việc tương lai, như an toàn tài chính, phát triển, tự chủ, tác động ý nghĩa, sự ghi nhận hoặc cân bằng cuộc sống.'
 		},
 		{
 			id: 'expertise',
 			letter: 'E',
 			label: 'Expertise',
-			prompt: 'Tôi giỏi điều gì?',
 			title: 'EXPERTISE',
-			accent: 'ĐIỂM MẠNH CỦA BẠN',
+			accent: 'KỸ NĂNG CHUYÊN MÔN',
 			copy: 'Khía cạnh này khám phá kỹ năng bạn mang đến cho thử thách: cách bạn học hỏi, giải quyết vấn đề, truyền đạt ý tưởng và biến điểm mạnh thành đóng góp.'
 		},
 		{
 			id: 'social',
 			letter: 'S',
 			label: 'Social Role',
-			prompt: 'Tôi làm việc với người khác thế nào?',
 			title: 'SOCIAL ROLE',
 			accent: 'VAI TRÒ XÃ HỘI',
 			copy: 'Khía cạnh này khám phá cách bạn thường đóng góp khi làm việc cùng người khác: dẫn dắt, điều phối, hỗ trợ, chia sẻ ý tưởng hay thích làm việc độc lập.'
@@ -44,16 +40,14 @@
 			id: 'mind',
 			letter: 'M',
 			label: 'Mind',
-			prompt: 'Tôi suy nghĩ như thế nào?',
 			title: 'MIND',
-			accent: 'CÁCH BẠN SUY NGHĨ',
+			accent: 'CÁCH TƯ DUY',
 			copy: 'Khía cạnh này khám phá cách bạn xử lý thông tin và giải quyết vấn đề: phân tích tình huống, đưa ra quyết định, tạo ý tưởng và tiếp cận thử thách.'
 		},
 		{
 			id: 'adaptability',
 			letter: 'A',
 			label: 'Adaptability',
-			prompt: 'Tôi phản ứng thế nào với thay đổi?',
 			title: 'ADAPTABILITY',
 			accent: 'PHẢN ỨNG VỚI THAY ĐỔI',
 			copy: 'Khía cạnh này khám phá cách bạn phản ứng khi mọi việc thay đổi: thích nghi với môi trường mới, tình huống bất ngờ, phản hồi và nhiệm vụ xa lạ.'
@@ -62,7 +56,6 @@
 			id: 'pressure',
 			letter: 'P',
 			label: 'Pressure',
-			prompt: 'Tôi hành động thế nào khi chịu áp lực?',
 			title: 'PRESSURE',
 			accent: 'KHẢ NĂNG CHỊU ÁP LỰC',
 			copy: 'Khía cạnh này khám phá cách bạn hành động trong tình huống đòi hỏi cao: quản lý căng thẳng, duy trì tập trung, ra quyết định và tiếp tục làm việc khi đối mặt áp lực.'
@@ -172,7 +165,7 @@
 				{#each dimensions as dimension, index (dimension.id)}
 					<button
 						data-dimension-id={dimension.id}
-						class={`flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-[.65rem] border bg-[linear-gradient(145deg,rgb(7_18_40_/.58),rgb(2_5_17_/.72))] p-4 text-text transition-[border-color,box-shadow,color,transform] duration-300 hover:-translate-y-1 hover:border-[#72aaff] hover:shadow-[0_0_1rem_rgb(12_102_255_/.4)] focus-visible:-translate-y-1 focus-visible:border-[#72aaff] focus-visible:shadow-[0_0_1rem_rgb(12_102_255_/.4)] focus-visible:outline-none min-[601px]:min-h-[13.3rem] min-[601px]:rounded-[.9rem] ${activeId === dimension.id ? 'border-lime text-lime shadow-[0_0_1.3rem_rgb(188_255_99_/.35),inset_0_0_1.5rem_rgb(188_255_99_/.05)]' : 'border-blue'}`}
+						class={`flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-[.65rem] border bg-[linear-gradient(145deg,rgb(7_18_40_/.58),rgb(2_5_17_/.72))] p-4 text-text transition-[border-color,box-shadow,color,transform] duration-300 hover:-translate-y-1 hover:shadow-[0_0_1rem_rgb(12_102_255_/.4)] focus-visible:-translate-y-1 focus-visible:border-[#72aaff] focus-visible:shadow-[0_0_1rem_rgb(12_102_255_/.4)] focus-visible:outline-none min-[601px]:min-h-[13.3rem] min-[601px]:rounded-[.9rem] ${activeId === dimension.id ? 'border-lime text-lime shadow-[0_0_1.3rem_rgb(188_255_99_/.35),inset_0_0_1.5rem_rgb(188_255_99_/.05)]' : 'border-blue'}`}
 						role="tab"
 						aria-selected={activeId === dimension.id}
 						aria-controls="dimension-description"
@@ -184,21 +177,12 @@
 							class="text-[4rem] leading-[.9] font-[350] tracking-[-.1em] min-[601px]:text-[clamp(4rem,6vw,6.9rem)]"
 							>{dimension.letter}</span
 						><span
-							class="mt-[.7rem] font-mono text-[.67rem] font-bold tracking-[.03em] uppercase min-[601px]:mt-[1.1rem] min-[601px]:text-[.83rem]"
+							class="mt-[.7rem] font-mono text-[.67rem] tracking-[.03em] uppercase min-[601px]:mt-[1.1rem] min-[601px]:text-[.83rem]"
 							>{dimension.label}</span
-						><span
-							class="mt-[.7rem] text-[.68rem] text-current opacity-90 min-[601px]:text-[.82rem]"
-							>{dimension.prompt}</span
 						>
 					</button>
 				{/each}
 			</div>
-			<p
-				class="mt-6 mb-0 text-center font-mono text-[.68rem] leading-normal tracking-[.04em] text-muted"
-			>
-				Câu trả lời của bạn chỉ được dùng<br class="hidden min-[601px]:block" />
-				để xây dựng hồ sơ nghề nghiệp.
-			</p>
 		</div>
 	</div>
 </section>

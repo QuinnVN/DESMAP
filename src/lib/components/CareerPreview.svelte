@@ -41,16 +41,11 @@
 </script>
 
 <section
-	class="bg-[#050505] py-[clamp(4.5rem,9vw,9rem)]"
+	class="border-y border-line bg-[radial-gradient(circle_at_74%_46%,rgb(6_38_98_/.18),transparent_36%)] py-[clamp(4.5rem,9vw,9rem)]"
 	id="careers"
 	aria-labelledby="careers-heading"
 >
 	<div class="mx-auto w-[min(100%_-_2rem,90rem)] min-[701px]:w-[min(100%_-_4rem,90rem)]">
-		<div
-			class="flex items-center justify-between border-b border-line pb-[1.4rem] font-mono text-[.69rem] tracking-[.13em] text-lime uppercase [&>span:last-child]:text-muted"
-		>
-			<span>Thư viện nghề nghiệp</span><span>Khám phá một hướng đi, rồi cảm nhận nghề đó.</span>
-		</div>
 		<div
 			class="block gap-8 py-[2.5rem_1.8rem] min-[701px]:flex min-[701px]:items-end min-[701px]:justify-between min-[701px]:py-[3.6rem_2.5rem]"
 		>

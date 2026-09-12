@@ -50,7 +50,9 @@
 				<div class="mt-[2.4rem] flex justify-center">
 					<a
 						class="inline-flex min-h-[3.15rem] items-center justify-center gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]"
-						href="/questionnaire">Bắt đầu ngay <span aria-hidden="true">↗</span></a
+						href="#about"
+					>
+						Tìm hiểu thêm <span aria-hidden="true">↓</span></a
 					>
 				</div>
 			</div>
@@ -66,8 +68,8 @@
 		</div>
 	</section>
 
-	<ProcessSteps />
 	<DimensionExplorer />
+	<ProcessSteps />
 	<CareerPreview />
 </main>
 
