@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Placeholder Sales Mission
   m_EditorClassIdentifier: NCKH.Sales::NCKH.VR.Sales.SalesMissionData
   customerName: Minh
+  closingReply: "C\u1EA3m \u01A1n b\u1EA1n nh\xE9! M\xECnh hi\u1EC3u v\xEC sao \u0111\xF4i
+    gi\xE0y n\xE0y ph\xF9 h\u1EE3p v\u1EDBi nhu c\u1EA7u c\u1EE7a m\xECnh h\u01A1n
+    r\u1ED3i."
   dialogue:
   - text: "Ch\xE0o b\u1EA1n! M\xECnh mu\u1ED1n t\xECm m\u1ED9t \u0111\xF4i gi\xE0y
       \u0111\u1EC3 ch\u1EA1y b\u1ED9 nh\u1EB9 kho\u1EA3ng 3 \u0111\u1EBFn 5 c\xE2y
@@ -26,29 +29,45 @@ MonoBehaviour:
     audioClip: {fileID: 0}
   shoes:
   - label: 1A
+    price: 1290000
     prefab: {fileID: 7413023432100978566, guid: 6418848b8bc613744b9abd6d940a6fe2, type: 3}
     properties: "Ch\u1EA1y b\u1ED9 \u0111\u01B0\u1EDDng nh\u1EF1a\n\u0110\u1EC7m
       \xEAm \xB7 Nh\u1EB9 \xB7 Tho\xE1ng\nGi\xE1: 1.290.000 \u0111"
     feedback: "Ph\xF9 h\u1EE3p: 1A c\xF3 \u0111\u1EC7m \xEAm, nh\u1EB9 v\xE0 tho\xE1ng
       cho ch\u1EA1y b\u1ED9 \u0111\u01B0\u1EDDng nh\u1EF1a; gi\xE1 n\u1EB1m trong
       ng\xE2n s\xE1ch c\u1EE7a Minh."
+    objection: "\u0110\xF4i n\xE0y h\u1EE3p v\u1EDBi nhu c\u1EA7u c\u1EE7a m\xECnh,
+      nh\u01B0ng \u0111\xF4i 3B tr\xF4ng c\xE1 t\xEDnh v\xE0 b\u1EAFt m\u1EAFt h\u01A1n.
+      M\xECnh s\u1EE3 1A h\u01A1i \u0111\u01A1n gi\u1EA3n."
+    comparisonAlternativeIndex: 1
     bestFit: 1
     rotationSpeed: 17
   - label: 3B
+    price: 1450000
     prefab: {fileID: 5465161648690233961, guid: 43a4de92c15695649970dec1fdaba62f, type: 3}
     properties: "B\xF3ng r\u1ED5 trong nh\xE0\n\xD4m c\u1ED5 ch\xE2n \xB7 \u0110\u1EBF
       ch\u1EAFc\nGi\xE1: 1.450.000 \u0111"
     feedback: "3B n\u1EB1m trong ng\xE2n s\xE1ch nh\u01B0ng thi\u1EBFt k\u1EBF cho
       b\xF3ng r\u1ED5. \u0110\xF4i n\xE0y ch\u01B0a \u0111\xE1p \u1EE9ng t\u1ED1t
       nhu c\u1EA7u ch\u1EA1y b\u1ED9 nh\u1EB9 v\xE0 tho\xE1ng c\u1EE7a Minh."
+    objection: "\u0110\xF4i 3B nh\xECn n\u1ED5i b\u1EADt th\u1EADt, nh\u01B0ng m\xECnh
+      ch\u1EE7 y\u1EBFu c\u1EA7n m\u1ED9t \u0111\xF4i nh\u1EB9 v\xE0 tho\xE1ng \u0111\u1EC3
+      ch\u1EA1y. \u0110\xF4i 1A c\xF3 v\u1EBB ph\xF9 h\u1EE3p h\u01A1n m\xE0 l\u1EA1i
+      r\u1EBB h\u01A1n."
+    comparisonAlternativeIndex: 0
     bestFit: 0
     rotationSpeed: 23
   - label: 8A
+    price: 1890000
     prefab: {fileID: 7715311782695219769, guid: e7909a3642fc8114aa601f2da9d725df, type: 3}
     properties: "Ch\u1EA1y \u0111\u1ECBa h\xECnh\n\u0110\u1EBF b\xE1m s\xE2u \xB7
       Ch\u1ED1ng n\u01B0\u1EDBc\nGi\xE1: 1.890.000 \u0111"
     feedback: "8A ph\xF9 h\u1EE3p \u0111\u1ECBa h\xECnh g\u1ED3 gh\u1EC1 nh\u01B0ng
       v\u01B0\u1EE3t ng\xE2n s\xE1ch. Kh\u1EA3 n\u0103ng ch\u1ED1ng n\u01B0\u1EDBc
       c\u0169ng kh\xF4ng ph\u1EA3i \u01B0u ti\xEAn Minh \u0111\xE3 n\xEAu."
+    objection: "\u0110\xF4i 8A ch\u1EAFc ch\u1EAFn th\u1EADt, nh\u01B0ng gi\xE1 1.890.000
+      \u0111 v\u01B0\u1EE3t ng\xE2n s\xE1ch c\u1EE7a m\xECnh. \u0110\xF4i 1A c\xF3
+      v\u1EBB v\u1EEBa t\xFAi ti\u1EC1n h\u01A1n."
+    comparisonAlternativeIndex: 0
     bestFit: 0
     rotationSpeed: 29

@@ -10,7 +10,7 @@ Nhiệm vụ không đơn giản là chọn sản phẩm tốt nhất, mà phả
 
 > **Đọc khách hàng → ghi nhớ nhu cầu → tìm sản phẩm phù hợp → thuyết phục khách mua.**
 
-Mini mission được chia thành **4 vòng**, mỗi vòng có **45 giây**.
+Mini mission được chia thành **4 vòng**. Ba vòng đầu có **45 giây** mỗi vòng. Vòng thuyết phục có **10 giây chuẩn bị**, sau đó **60 giây trả lời**.
 
 ### **2\. Round 1 \- “Đọc khách hàng”**
 
@@ -103,40 +103,41 @@ Ví dụ:
 
 ### **5\. Round 4 \- “Thuyết phục khách hàng”**
 
-Khách hàng AI xuất hiện:
+Sau khi người chơi chọn bất kỳ đôi giày nào, khách hàng đưa ra một câu phản hồi được soạn sẵn cho lựa chọn đó. Phản hồi nêu vấn đề về giá, ngân sách, nhu cầu hoặc vẻ ngoài của sản phẩm.
 
 > 👤 **Minh Anh:**  
 >  “Đôi này đẹp thật, nhưng 1,8 triệu hơi mắc. Đôi 1,2 triệu kia cũng có vẻ ổn mà?”
 
-Người chơi có **45 giây** để trực tiếp trả lời và thuyết phục khách.
+Hoặc:
+
+> "Đôi này cũng được, nhưng đôi 1,8 triệu có vẻ bắt mắt và sang hơn."
+
+Đôi giày được nhắc đến để so sánh phải có trong bảng so sánh trước đó. Giá trong lời thoại phải khớp với sản phẩm trong màn chơi; các mức giá trên là ví dụ.
+
+Bảng so sánh bị ẩn trong cả thời gian chuẩn bị và trả lời. Mục tiêu hiển thị tùy theo lựa chọn ban đầu:
+
+- Chọn đôi phù hợp nhất: "Thuyết phục khách hàng".
+- Chọn đôi khác: "Thay đổi lựa chọn hoặc thuyết phục khách hàng".
+
+Không bắt người chơi chọn lại trước khi bắt đầu phần trả lời. Người chơi có thể bảo vệ lựa chọn hoặc thay đổi đề xuất.
+
+Để thay đổi đề xuất, người chơi nói tên đôi giày khác trong bản ghi âm. Không mở lại bảng so sánh hoặc yêu cầu chọn lại bằng nút. Đồng hồ 60 giây tiếp tục chạy, không đặt lại khi người chơi đổi đề xuất.
+
+Sau câu hỏi của khách hàng, người chơi có **10 giây chuẩn bị**. Hết thời gian chuẩn bị, hệ thống tự động bắt đầu ghi âm và đếm ngược **60 giây** để người chơi trả lời và thuyết phục khách. Thời gian chuẩn bị không tính vào thời gian trả lời.
 
 Ví dụ:
 
 > “Nếu chị chỉ muốn một đôi rẻ và dễ phối thì đôi 1,2 triệu cũng ổn. Nhưng vì chị thường đi bộ nhiều và thích phong cách minimal pha streetwear, em nghĩ đôi này sẽ phù hợp hơn. Nó vẫn nằm trong ngân sách của chị, màu đen/xám cũng đúng gu của chị, mà lại khá nhẹ và êm để chị mang đi học hằng ngày.”
 
-AI tiếp tục phản hồi dựa trên câu trả lời của người chơi.
+Bản ghi âm được gửi đến backend để AI đánh giá. AI chỉ tạo điểm thuyết phục và nhận xét ngắn; cả hai được lưu ở backend. Phản hồi của khách hàng được soạn sẵn, không do AI tạo.
 
 ## **6\. Ending**
 
-### **🟢 “Closed Deal”**
+Khách hàng trả lời bằng lời thoại được soạn sẵn. AI không tạo kết quả mua hoặc từ chối mua.
 
-Khách bị thuyết phục:
+Người chơi có thể nhấn A để gửi sớm. Hết 60 giây, bản ghi tự động được gửi. Sau khi tải lên thành công, khách hàng phát lời thoại kết thúc được soạn sẵn và màn chơi hoàn thành; AI tiếp tục đánh giá ở backend.
 
-> “Ừ, nghe em phân tích thì chị thấy đôi này hợp với mình hơn. Chị lấy đôi này.”
-
-→ **Chốt được đơn hàng.**
-
-### **🟡 “Potential Customer”**
-
-> “Nghe cũng hợp lý, nhưng chị vẫn muốn suy nghĩ thêm.”
-
-→ Người chơi chưa chốt được nhưng vẫn tạo được thiện cảm.
-
-### **🔴 “Lost Customer”**
-
-> “Thôi, chị nghĩ chị sẽ chọn đôi khác.”
-
-→ Không thuyết phục được khách.
+Backend lưu điểm từ 0 đến 100 và nhận xét ngắn bằng tiếng Việt, dựa trên nhu cầu khách hàng, tính chính xác của thông tin sản phẩm và cách xử lý phản đối. Thay đổi đề xuất có lý do phù hợp vẫn có thể đạt điểm tối đa. Bản ghi im lặng nhận điểm 0 kèm giải thích. Nếu tải lên thất bại, người chơi có thể gửi lại cùng bản ghi.
 
 # Mini Mission 2: “Khách hàng khó tính”
 
@@ -261,4 +262,3 @@ Ví dụ:
 Note:
 
 - Áp dụng AI: quăng hết dữ liệu từ các bài test tính cách và dữ liệu điểm từ các game cho AI phân tích đánh giá phù hợp k, đưa giải pháp rèn luyện, khắc phục. Dùng AI tạo ra nhiều case nhất có thể để đưa vào game. 
-
