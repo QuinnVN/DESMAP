@@ -365,6 +365,7 @@
 							<button
 								class="inline-flex min-h-[3.35rem] cursor-pointer items-center justify-center gap-3 rounded-xl border-0 bg-lime px-[1.55rem] py-[.8rem] text-[.9rem] font-extrabold tracking-[.01em] text-[#090d11] transition-[transform,filter] duration-180 hover:-translate-y-0.5 hover:brightness-[1.07] focus-visible:-translate-y-0.5 focus-visible:brightness-[1.07] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-45 disabled:grayscale-[.65] max-[560px]:order-3 max-[560px]:w-full"
 								type="button"
+								disabled={selectedCareerInterests.length === 0}
 								onclick={startAssessment}
 							>
 								Tiếp tục với DESMAP <span aria-hidden="true"><ArrowRight class="size-[1em]" /></span
@@ -382,7 +383,7 @@
 					>
 						<div class="min-[1100px]:self-center min-[1100px]:[grid-area:copy]">
 							<h1
-								class="mx-auto mt-[clamp(3rem,8vh,6rem)] max-w-[60rem] text-center text-[clamp(2rem,4.3vw,4.5rem)] leading-[.98] font-[750] tracking-[-.055em] min-[1100px]:m-0 min-[1100px]:max-w-[43rem] min-[1100px]:text-left min-[1100px]:text-[clamp(2.45rem,3.25vw,4rem)]"
+								class="mx-auto mt-[clamp(3rem,8vh,6rem)] max-w-[60rem] text-center text-[clamp(2rem,4.3vw,4.5rem)] leading-none font-[750] tracking-[-.055em] min-[1100px]:m-0 min-[1100px]:max-w-[43rem] min-[1100px]:text-left min-[1100px]:text-[clamp(2.45rem,3.25vw,4rem)]"
 								id="question-title"
 								tabindex="-1"
 							>

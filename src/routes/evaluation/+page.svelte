@@ -24,7 +24,7 @@
 		S: 'Vai trò xã hội',
 		M: 'Tư duy',
 		A: 'Khả năng thích ứng',
-		P: 'Áp lực'
+		P: 'Khả năng chịu áp lực'
 	};
 
 	let payload = $state<QuestionnaireSubmission | null>(null);
@@ -135,7 +135,7 @@
 			<h1
 				class="mt-3 mb-4 max-w-[820px] text-[clamp(2.5rem,7vw,5.8rem)] leading-[.92] font-[760] tracking-[-.065em]"
 			>
-				Hồ sơ tự báo cáo, một điểm khởi đầu.
+				Hồ sơ tự báo cáo
 			</h1>
 			<p class="m-0 max-w-[760px] text-[1.05rem] leading-[1.55] text-[#91a0b4]">
 				Các phần trăm là kết quả đối chiếu tạm thời từ câu trả lời của bạn. Đây không phải khuyến
@@ -153,16 +153,56 @@
 				>
 			</section>
 		{:else if viewState === 'loading'}
-			<section
-				class="mt-8 border border-blue bg-[#071020] p-8"
-				aria-busy="true"
-				aria-live="polite"
-				role="status"
-			>
-				<h2 class="mt-0">Đang chuẩn bị kết quả…</h2>
-				<p class="mb-0 text-[#91a0b4]">
-					Qwen đang đối chiếu 28 nhóm điểm DESMAP với các nghề bạn đã chọn.
-				</p>
+			<section class="mt-8" aria-busy="true" aria-live="polite" role="status">
+				<p class="sr-only">Đang chuẩn bị kết quả đối chiếu nghề nghiệp.</p>
+				<div aria-hidden="true">
+					<!-- <div class="flex justify-end">
+						<span class="skeleton h-9 w-52 border border-blue/50"></span>
+					</div> -->
+
+					<div class="mt-3 grid gap-4 min-[850px]:grid-cols-[1.15fr_.85fr]">
+						<div class="border border-blue bg-[#071020] p-6">
+							<span class="skeleton block h-7 w-52 max-w-full"></span>
+							<span class="skeleton mt-3 block h-3 w-[78%]"></span>
+							{#each { length: 5 }, index}
+								<div
+									class="grid grid-cols-[1.6rem_minmax(7rem,auto)_1fr_3rem] items-center gap-2 border-b border-white/14 py-4 max-[560px]:grid-cols-[1.5rem_1fr_3rem]"
+								>
+									<span class="skeleton block size-5 rounded-full"></span>
+									<span class="skeleton block h-4 w-28 max-w-full"></span>
+									<span class="h-2 bg-blue/20 max-[560px]:col-span-3">
+										<span class="skeleton block h-full" style:width={`${82 - index * 9}%`}></span>
+									</span>
+									<span class="skeleton block h-5 w-10 justify-self-end"></span>
+								</div>
+							{/each}
+						</div>
+
+						<div class="border border-blue bg-[#071020] p-6">
+							<span class="skeleton block h-7 w-40"></span>
+							<span class="skeleton mt-3 block h-3 w-[68%]"></span>
+							{#each { length: 6 }, index}
+								<div class="flex items-center justify-between border-b border-white/14 py-3">
+									<span class="skeleton block h-4" style:width={`${42 + (index % 3) * 8}%`}></span>
+									<span class="skeleton block h-5 w-10"></span>
+								</div>
+							{/each}
+						</div>
+					</div>
+
+					<div
+						class="mt-4 flex flex-wrap items-center justify-between gap-5 border border-blue bg-[#071020] p-6"
+					>
+						<div class="min-w-[min(100%,22rem)] flex-1">
+							<span class="skeleton block h-7 w-40"></span>
+							<span class="skeleton mt-3 block h-3 w-[min(100%,30rem)]"></span>
+						</div>
+						<div class="flex items-center gap-4">
+							<span class="skeleton block h-11 w-36"></span>
+							<span class="skeleton block h-4 w-20"></span>
+						</div>
+					</div>
+				</div>
 			</section>
 		{:else if viewState === 'error'}
 			<section
@@ -189,13 +229,13 @@
 			<p class="sr-only" aria-live="polite" role="status">
 				Đã có kết quả đối chiếu cho {rankedResults.length} nghề.
 			</p>
-			<div class="mt-8 flex justify-end">
+			<!-- <div class="mt-8 flex justify-end">
 				<span
 					class="border border-blue px-3 py-2 text-[.68rem] tracking-[.08em] text-blue uppercase"
 				>
 					{resultSource === 'cache' ? 'Kết quả đã lưu trên thiết bị' : 'Kết quả mới từ Qwen'}
 				</span>
-			</div>
+			</div> -->
 			<section
 				class="mt-3 grid gap-4 min-[850px]:grid-cols-[1.15fr_.85fr]"
 				aria-label="Kết quả đối chiếu nghề nghiệp ban đầu"
@@ -288,3 +328,39 @@
 		{/if}
 	</div>
 </main>
+
+<style>
+	.skeleton {
+		position: relative;
+		overflow: hidden;
+		background: rgb(37 99 235 / 18%);
+	}
+
+	.skeleton::after {
+		position: absolute;
+		inset: 0;
+		content: '';
+		background: linear-gradient(
+			100deg,
+			transparent 20%,
+			rgb(188 255 99 / 18%) 48%,
+			transparent 76%
+		);
+		transform: translateX(-110%);
+		animation: skeleton-scan 1.55s ease-in-out infinite;
+	}
+
+	@keyframes skeleton-scan {
+		to {
+			transform: translateX(110%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.skeleton::after {
+			animation: none;
+			transform: none;
+			opacity: 0.35;
+		}
+	}
+</style>
