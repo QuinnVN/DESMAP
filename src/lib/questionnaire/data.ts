@@ -314,6 +314,7 @@ export function scoreAnswers(answers: QuestionnaireAnswers): QuestionnaireScores
 export type QuestionnaireSubmission = {
 	version: 1;
 	completed: true;
+	assessmentId: string;
 	completedAt: string;
 	startedAt: string;
 	careerInterests: string[];
@@ -338,6 +339,7 @@ export function buildCompletionPayload(input: {
 	careerInterests: string[];
 	startedAt: string;
 	completedAt?: string;
+	assessmentId?: string;
 }): QuestionnaireSubmission {
 	if (desmapQuestions.some((question) => !isOptionLetter(input.answers[question.id]))) {
 		throw new Error('Cannot create a completed DESMAP payload until every question has an answer.');
@@ -346,12 +348,17 @@ export function buildCompletionPayload(input: {
 	return {
 		version: 1,
 		completed: true,
+		assessmentId: input.assessmentId ?? createAssessmentId(),
 		completedAt,
 		startedAt: input.startedAt,
 		careerInterests: [...input.careerInterests],
 		answers: { ...input.answers },
 		scores: scoreAnswers(input.answers)
 	};
+}
+
+export function createAssessmentId(randomUUID: () => string = () => crypto.randomUUID()): string {
+	return `assessment-${randomUUID()}`;
 }
 
 export const QUESTIONNAIRE_STORAGE_KEY = 'desmap:questionnaire:v1';
@@ -466,28 +473,69 @@ export function writeCompletionPayload(payload: QuestionnaireSubmission): boolea
 	}
 }
 
+const assessmentIdPattern =
+	/^assessment-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export function parseCompletionPayload(
+	value: unknown,
+	createId: () => string = createAssessmentId
+): QuestionnaireSubmission | null {
+	if (!value || typeof value !== 'object') return null;
+	const parsed = value as Partial<QuestionnaireSubmission>;
+	if (
+		parsed.version !== 1 ||
+		parsed.completed !== true ||
+		!parsed.answers ||
+		!Array.isArray(parsed.careerInterests) ||
+		typeof parsed.completedAt !== 'string' ||
+		typeof parsed.startedAt !== 'string'
+	)
+		return null;
+	if (
+		parsed.careerInterests.length < 1 ||
+		parsed.careerInterests.length > 3 ||
+		new Set(parsed.careerInterests).size !== parsed.careerInterests.length ||
+		parsed.careerInterests.some(
+			(id) => !careerInterestOptions.some((interest) => interest.id === id)
+		)
+	)
+		return null;
+	const answers = parsed.answers;
+	if (
+		desmapQuestions.some((question) => !isOptionLetter(answers[question.id])) ||
+		Object.keys(answers).length !== totalQuestionCount
+	)
+		return null;
+	if (parsed.assessmentId !== undefined && !assessmentIdPattern.test(parsed.assessmentId))
+		return null;
+	const assessmentId = parsed.assessmentId ?? createId();
+	if (!assessmentIdPattern.test(assessmentId)) return null;
+	return {
+		version: 1,
+		completed: true,
+		assessmentId,
+		completedAt: parsed.completedAt,
+		startedAt: parsed.startedAt,
+		careerInterests: [...parsed.careerInterests],
+		answers: { ...answers },
+		scores: scoreAnswers(answers)
+	};
+}
+
 export function readCompletionPayload(): QuestionnaireSubmission | null {
 	if (typeof window === 'undefined') return null;
 	try {
 		const raw = window.localStorage.getItem(QUESTIONNAIRE_COMPLETION_STORAGE_KEY);
 		if (!raw) return null;
-		const parsed = JSON.parse(raw) as Partial<QuestionnaireSubmission>;
+		const parsed: unknown = JSON.parse(raw);
+		const payload = parseCompletionPayload(parsed);
 		if (
-			parsed.version !== 1 ||
-			parsed.completed !== true ||
-			!parsed.scores ||
-			!parsed.answers ||
-			!Array.isArray(parsed.careerInterests)
-		)
-			return null;
-		if (typeof parsed.completedAt !== 'string' || typeof parsed.startedAt !== 'string') return null;
-		const answers = parsed.answers;
-		if (
-			desmapQuestions.some((question) => !isOptionLetter(answers[question.id])) ||
-			Object.keys(answers).length !== totalQuestionCount
-		)
-			return null;
-		return parsed as QuestionnaireSubmission;
+			payload &&
+			(parsed as Partial<QuestionnaireSubmission>).assessmentId !== payload.assessmentId
+		) {
+			writeCompletionPayload(payload);
+		}
+		return payload;
 	} catch {
 		return null;
 	}

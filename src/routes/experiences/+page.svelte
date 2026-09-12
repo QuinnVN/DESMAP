@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { resolve } from '$app/paths';
 	import { Dialog } from 'bits-ui';
 	import { ArrowLeft, ArrowRight, ArrowUpRight, Clock3, Info, Search, X } from '@lucide/svelte';
 	import { experiences, type CareerExperience, type ExperienceCategory } from '$lib/evaluation';
@@ -52,10 +53,10 @@
 		filter = 'Tất cả';
 	}
 
-	function statusLabel(status: CareerExperience['status']): string {
-		return status === 'recommended'
-			? 'Mục tiêu của bạn'
-			: status === 'locked'
+	function statusLabel(experience: CareerExperience): string {
+		return experience.slug === recommended.slug
+			? 'Đối chiếu cao nhất'
+			: experience.status === 'locked'
 				? 'Sắp ra mắt'
 				: 'Sẵn sàng xem';
 	}
@@ -103,7 +104,8 @@
 			</div>
 			<a
 				class="text-[.76rem] font-[760] tracking-[.08em] text-blue uppercase no-underline"
-				href="/evaluation"><span aria-hidden="true"><ArrowLeft class="size-[1em]" /></span> Quay lại hồ sơ</a
+				href={resolve('/evaluation')}
+				><span aria-hidden="true"><ArrowLeft class="size-[1em]" /></span> Quay lại hồ sơ</a
 			>
 		</section>
 
@@ -112,7 +114,9 @@
 			aria-label="Bộ lọc thư viện nghề nghiệp"
 		>
 			<label class="flex min-h-[3.3rem] flex-1 items-center border border-blue bg-transparent"
-				><span class="w-10 text-center text-[1.45rem]" aria-hidden="true"><Search class="inline size-[1em]" /></span>
+				><span class="w-10 text-center text-[1.45rem]" aria-hidden="true"
+					><Search class="inline size-[1em]" /></span
+				>
 				<input
 					class="w-full border-0 bg-transparent text-[1.08rem] text-[#f7f9fb] outline-none placeholder:text-[#f7f9fb]/45"
 					bind:value={query}
@@ -137,7 +141,7 @@
 
 		<section
 			class="grid grid-cols-[minmax(0,1.35fr)_minmax(16rem,.65fr)] gap-3 max-[900px]:grid-cols-1"
-			aria-label="Nghề nghiệp được đề xuất"
+			aria-label="Trải nghiệm nghề nghiệp được chọn"
 		>
 			<button
 				class="group grid cursor-pointer grid-cols-[minmax(13rem,.9fr)_minmax(18rem,1.1fr)] overflow-hidden border border-blue bg-[#071020] text-left text-[#f7f9fb] transition hover:-translate-y-1 hover:border-lime max-[700px]:grid-cols-1"
@@ -155,14 +159,14 @@
 					<div class="flex items-center justify-between gap-4">
 						<span
 							class="inline-flex items-center gap-2 rounded-full border border-lime px-3 py-1 text-[.63rem] font-bold tracking-[.08em] text-lime uppercase"
-							>{statusLabel(recommended.status)}
+							>{statusLabel(recommended)}
 							<i class="h-1.5 w-1.5 rounded-full bg-lime"></i></span
 						><span class="text-[.7rem] font-bold tracking-[.1em] text-blue uppercase"
 							>{recommended.category}</span
 						>
 					</div>
 					<p class="mt-8 mb-0 text-[.68rem] font-[760] tracking-[.16em] text-lime uppercase">
-						Góc nhìn được đề xuất
+						Nghề đối chiếu cao nhất
 					</p>
 					<h2
 						class="mt-[.35rem] mb-0 text-[clamp(1.55rem,3vw,3rem)] leading-[.95] font-bold tracking-[-.055em] uppercase"
@@ -189,7 +193,8 @@
 						</div>
 					</div>
 					<span class="mt-auto pt-8 text-[.73rem] font-bold tracking-[.08em] text-lime uppercase"
-						>Xem chi tiết nhiệm vụ <span aria-hidden="true"><ArrowRight class="size-[1em]" /></span></span
+						>Xem chi tiết nhiệm vụ <span aria-hidden="true"><ArrowRight class="size-[1em]" /></span
+						></span
 					>
 				</div>
 			</button>
@@ -200,14 +205,14 @@
 				>
 				<div>
 					<p class="m-0 text-[.68rem] font-[760] tracking-[.16em] text-lime uppercase">
-						Vì sao là nghề này?
+						Vì sao nghề này đứng đầu?
 					</p>
 					<strong class="mt-3 block text-[.92rem]"
-						>{recommended.title} là mục tiêu hiện tại của bạn.</strong
+						>{recommended.title} có phần trăm đối chiếu ban đầu cao nhất.</strong
 					>
 					<p class="mt-2 mb-0 text-[.78rem] leading-[1.5] text-[#91a0b4]">
-						Đề xuất dựa trên sở thích nghề nghiệp bạn đã chọn. Tỷ lệ so sánh trong hồ sơ vẫn là dữ
-						liệu minh họa cho đến khi AI được kết nối.
+						Kết quả này chỉ dựa trên câu trả lời tự báo cáo. Đây chưa phải khuyến nghị nghề nghiệp
+						hay kết luận cuối cùng.
 					</p>
 				</div>
 			</aside>
@@ -247,7 +252,7 @@
 							/>
 							<span
 								class={`absolute top-3 left-3 border px-2 py-1 text-[.6rem] font-bold tracking-[.08em] uppercase ${experience.status === 'locked' ? 'border-[#f5ba66] bg-[#2c1e08] text-[#f5ba66]' : 'border-lime bg-[#081306] text-lime'}`}
-								>{statusLabel(experience.status)}</span
+								>{statusLabel(experience)}</span
 							>
 						</div>
 						<div class="flex min-h-[15rem] flex-col p-5">
@@ -268,7 +273,8 @@
 								{experience.description}
 							</p>
 							<span class="mt-auto pt-6 text-[.7rem] font-bold tracking-[.08em] text-lime uppercase"
-								>Xem chi tiết <span aria-hidden="true"><ArrowRight class="size-[1em]" /></span></span
+								>Xem chi tiết <span aria-hidden="true"><ArrowRight class="size-[1em]" /></span
+								></span
 							>
 						</div>
 					</button>
@@ -310,7 +316,8 @@
 		>
 			<a
 				class="text-[.76rem] font-[760] tracking-[.08em] text-blue uppercase no-underline"
-				href="/evaluation"><span aria-hidden="true"><ArrowLeft class="size-[1em]" /></span> Quay lại kết quả</a
+				href={resolve('/evaluation')}
+				><span aria-hidden="true"><ArrowLeft class="size-[1em]" /></span> Quay lại kết quả</a
 			><span
 				>Các tình huống nghề nghiệp được thiết kế để suy ngẫm. Không có trải nghiệm nào được khởi
 				chạy từ bản xem trước này.</span
@@ -331,7 +338,7 @@
 					<div>
 						<p class="m-0 text-[.68rem] font-[760] tracking-[.16em] text-lime uppercase">
 							{selected.category}
-							/ {statusLabel(selected.status)}
+							/ {statusLabel(selected)}
 						</p>
 						<Dialog.Title
 							class="mt-3 text-[clamp(2rem,5vw,4.2rem)] leading-[.9] font-bold tracking-[-.07em] uppercase"
@@ -392,7 +399,8 @@
 						>Quay lại kết quả</Dialog.Close
 					><a
 						class="inline-flex min-h-[3.35rem] items-center justify-center gap-3 border border-lime bg-lime px-5 py-3 text-[.75rem] font-[760] tracking-[.07em] text-[#061006] uppercase no-underline"
-						href="/evaluation">Xem hồ sơ <span aria-hidden="true"><ArrowUpRight class="size-[1em]" /></span></a
+						href={resolve('/evaluation')}
+						>Xem hồ sơ <span aria-hidden="true"><ArrowUpRight class="size-[1em]" /></span></a
 					>
 				</div>
 			{/if}

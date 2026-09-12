@@ -234,7 +234,12 @@
 			careerInterests: selectedCareerInterests,
 			startedAt
 		});
-		writeCompletionPayload(payload);
+		if (!writeCompletionPayload(payload)) {
+			errorMessage =
+				'Không thể lưu bảng câu hỏi đã hoàn tất trên thiết bị này. Hãy kiểm tra quyền lưu trữ rồi thử lại.';
+			persistDraft('review', currentIndex);
+			return;
+		}
 		clearSavedQuestionnaire();
 		void goto(resolve('/evaluation'));
 	}
@@ -311,7 +316,7 @@
 							Bạn tò mò về<br /><span class="text-lime">loại công việc nào?</span>
 						</h1>
 						<p
-							class="mt-[1.2rem] mb-8 max-w-[37rem] text-right text-[clamp(.94rem,1.2vw,1.15rem)] leading-[1.55] min-[1100px]:m-[0_0_.25rem] min-[1100px]:max-w-[32rem] min-[1100px]:justify-self-end min-[1100px]:self-end min-[1100px]:[grid-area:intro]"
+							class="mt-[1.2rem] mb-8 max-w-[37rem] text-right text-[clamp(.94rem,1.2vw,1.15rem)] leading-[1.55] min-[1100px]:m-[0_0_.25rem] min-[1100px]:max-w-[32rem] min-[1100px]:self-end min-[1100px]:justify-self-end min-[1100px]:[grid-area:intro]"
 						>
 							Chọn tối đa ba lĩnh vực rộng. Lựa chọn của bạn giúp bài đánh giá có thêm ngữ cảnh khi
 							bạn khám phá các câu hỏi.
@@ -404,7 +409,7 @@
 								{#each currentOptions as option, optionIndex (option.letter)}
 									{@const optionId = `${currentQuestion.id}-${option.letter}`}
 									<label
-									class={`relative flex min-h-[14rem] cursor-pointer flex-col items-start justify-between gap-5 rounded-[.9rem] border bg-[#030303]/48 p-6 transition-[border-color,background,transform] duration-180 focus-within:-translate-y-0.5 focus-within:border-lime hover:-translate-y-0.5 hover:border-lime max-[560px]:min-h-40 min-[1100px]:grid min-[1100px]:min-h-[8.75rem] min-[1100px]:grid-cols-[auto_minmax(0,1fr)_auto] min-[1100px]:items-center min-[1100px]:gap-6 min-[1100px]:p-[1.45rem_1.65rem] ${answers[currentQuestion.id] === option.letter ? 'border-2 border-lime bg-lime/10' : 'border-blue'}`}
+										class={`relative flex min-h-[14rem] cursor-pointer flex-col items-start justify-between gap-5 rounded-[.9rem] border bg-[#030303]/48 p-6 transition-[border-color,background,transform] duration-180 focus-within:-translate-y-0.5 focus-within:border-lime hover:-translate-y-0.5 hover:border-lime max-[560px]:min-h-40 min-[1100px]:grid min-[1100px]:min-h-[8.75rem] min-[1100px]:grid-cols-[auto_minmax(0,1fr)_auto] min-[1100px]:items-center min-[1100px]:gap-6 min-[1100px]:p-[1.45rem_1.65rem] ${answers[currentQuestion.id] === option.letter ? 'border-2 border-lime bg-lime/10' : 'border-blue'}`}
 										for={optionId}
 									>
 										<input
@@ -417,11 +422,11 @@
 											onchange={() => selectOption(currentQuestion.id, option.letter)}
 										/>
 										<span
-										class={`grid h-[2.8rem] w-[2.8rem] place-items-center rounded-full border text-[1.05rem] font-bold ${answers[currentQuestion.id] === option.letter ? 'border-lime bg-lime text-[#070a0b]' : 'border-blue text-[#f6f7fb]'}`}
+											class={`grid h-[2.8rem] w-[2.8rem] place-items-center rounded-full border text-[1.05rem] font-bold ${answers[currentQuestion.id] === option.letter ? 'border-lime bg-lime text-[#070a0b]' : 'border-blue text-[#f6f7fb]'}`}
 											aria-hidden="true">{optionLabels[optionIndex]}</span
 										>
 										<span
-										class="text-[1.08rem] leading-[1.5] text-[#f6f7fb] min-[1100px]:text-[clamp(1.05rem,1.15vw,1.2rem)]"
+											class="text-[1.08rem] leading-[1.5] text-[#f6f7fb] min-[1100px]:text-[clamp(1.05rem,1.15vw,1.2rem)]"
 											>{option.text}</span
 										>
 										<span

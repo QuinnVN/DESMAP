@@ -72,7 +72,7 @@ export const experiences: CareerExperience[] = [
 			'Trao đổi ưu tiên điều trị với nhóm của bạn'
 		],
 		whyItFits:
-			'Hồ sơ DESMAP mẫu cho thấy bạn có xu hướng mạnh về ý nghĩa, chuyên môn giao tiếp và trách nhiệm cao.'
+			'Tình huống này giúp người tham gia tìm hiểu công việc phân loại và trao đổi ưu tiên điều trị.'
 	},
 	{
 		slug: 'lawyer',
@@ -89,7 +89,7 @@ export const experiences: CareerExperience[] = [
 			'Đưa ra khuyến nghị với lập luận rõ ràng'
 		],
 		whyItFits:
-			'Một nghề đối chiếu hữu ích cho người yêu thích tư duy có cấu trúc và giao tiếp trong tình huống quan trọng.'
+			'Tình huống này giúp người tham gia tìm hiểu cách phân tích bằng chứng và trình bày lập luận.'
 	},
 	{
 		slug: 'teacher',
@@ -106,7 +106,7 @@ export const experiences: CareerExperience[] = [
 			'Diễn giải lại khái niệm khi sự chú ý giảm'
 		],
 		whyItFits:
-			'Một tình huống lấy con người làm trung tâm để kiểm tra cách điểm mạnh giao tiếp của bạn chuyển hóa thành hoạt động hướng dẫn trực tiếp.'
+			'Tình huống này giúp người tham gia tìm hiểu cách điều chỉnh hướng dẫn theo nhu cầu của người học.'
 	},
 	{
 		slug: 'sales-representative',
@@ -120,7 +120,7 @@ export const experiences: CareerExperience[] = [
 		observedFactors: ['Xây dựng kết nối', 'Lắng nghe', 'Kiên cường'],
 		missions: ['Khám phá nhu cầu khách hàng qua hội thoại', 'Phản hồi băn khoăn mà không mất đà'],
 		whyItFits:
-			'Một tình huống xã hội nhanh cho thấy phong cách giao tiếp của bạn hoạt động thế nào khi có nhiều ưu tiên cạnh tranh.'
+			'Tình huống này giúp người tham gia tìm hiểu cách khám phá nhu cầu và phản hồi băn khoăn của khách hàng.'
 	},
 	{
 		slug: 'automotive-engineer',
@@ -134,7 +134,7 @@ export const experiences: CareerExperience[] = [
 		observedFactors: ['Tư duy hệ thống', 'Chính xác', 'Khả năng thích ứng'],
 		missions: ['Lần theo lỗi trong một hệ thống xa lạ', 'Chọn trình tự kiểm tra an toàn'],
 		whyItFits:
-			'Một mô-đun tương lai để so sánh khả năng tập trung phân tích và giải quyết vấn đề thực tế trong môi trường kỹ thuật.'
+			'Mô-đun tương lai này sẽ giới thiệu công việc chẩn đoán lỗi và chọn trình tự kiểm tra an toàn.'
 	}
 ];
 
