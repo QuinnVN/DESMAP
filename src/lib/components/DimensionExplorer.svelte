@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
+	import { Clock3, FileText, HardDrive, Headset, Infinity } from '@lucide/svelte';
 	import { totalQuestionCount } from '$lib/questionnaire';
 
 	type Dimension = {
@@ -117,7 +118,7 @@
 					>
 						<div id="dimension-description" role="tabpanel" tabindex="-1">
 							<h2
-								class="m-0 max-w-96 text-[clamp(2rem,4.8vw,4.1rem)] leading-[.98] font-[450] tracking-[-.07em] uppercase"
+								class="m-0 max-w-96 text-[clamp(2rem,4.8vw,4.1rem)] leading-none font-[450] tracking-[-.07em] uppercase"
 								id="explorer-heading"
 							>
 								{active.title.split(' — ')[0]} <span class="text-text">—</span><strong
@@ -136,21 +137,24 @@
 				aria-label="Chi tiết bài đánh giá"
 			>
 				<div>
-					<span class="text-[1.3rem] leading-none text-blue">▤</span><b>{totalQuestionCount}</b
-					><small>CÂU HỎI</small>
+					<span class="text-[1.3rem] leading-none text-blue" aria-hidden="true"
+						><FileText class="size-[1em]" /></span
+					><b>{totalQuestionCount}</b><small>CÂU HỎI</small>
 				</div>
 				<div>
-					<span class="text-[1.3rem] leading-none text-blue">◷</span><b>NHỊP ĐỘ</b><small
-						>THEO CÁCH CỦA BẠN</small
-					>
+					<span class="text-[1.3rem] leading-none text-blue" aria-hidden="true"
+						><Clock3 class="size-[1em]" /></span
+					><b>NHỊP ĐỘ</b><small>THEO CÁCH CỦA BẠN</small>
 				</div>
 				<div>
-					<span class="text-[1.3rem] leading-none text-blue">⌁</span><b>VR</b><small
-						>TRẢI NGHIỆM</small
-					>
+					<span class="text-[1.3rem] leading-none text-blue" aria-hidden="true"
+						><Headset class="size-[1em]" /></span
+					><b>VR</b><small>TRẢI NGHIỆM</small>
 				</div>
 				<div>
-					<span class="text-[1.3rem] leading-none text-blue">⌂</span><b>∞</b><small
+					<span class="text-[1.3rem] leading-none text-blue" aria-hidden="true"
+						><HardDrive class="size-[1em]" /></span
+					><b><Infinity class="size-[1em]" aria-label="Không giới hạn" /></b><small
 						>ĐÃ LƯU TIẾN TRÌNH</small
 					>
 				</div>

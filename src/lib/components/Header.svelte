@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Dialog } from 'bits-ui';
+	import { ArrowLeft, ArrowUpRight, X } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import BrandMark from './BrandMark.svelte';
 
@@ -48,12 +49,12 @@
 				type="button"
 				onclick={returnToPreviousPage}
 			>
-				<span class="text-[1.1em]" aria-hidden="true">←</span> Quay lại
+				<span class="text-[1.1em]" aria-hidden="true"><ArrowLeft class="size-[1em]" /></span> Quay lại
 			</button>
 		{:else}
 			<a
 				class="hidden min-h-[3.15rem] min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 py-[.85rem] font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase no-underline transition hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem] min-[761px]:inline-flex"
-				href="/questionnaire">Bắt đầu ngay <span class="text-[1.1em]" aria-hidden="true">↗</span></a
+				href="/questionnaire">Bắt đầu ngay <span class="text-[1.1em]" aria-hidden="true"><ArrowUpRight class="size-[1em]" /></span></a
 			>
 		{/if}
 		<Dialog.Root bind:open={menuOpen}>
@@ -76,7 +77,7 @@
 						<BrandMark compact />
 						<Dialog.Close
 							class="h-[2.4rem] w-[2.4rem] cursor-pointer rounded-full border border-line-strong bg-transparent text-2xl text-text"
-							aria-label="Đóng menu">×</Dialog.Close
+							aria-label="Đóng menu"><X class="size-[1em]" aria-hidden="true" /></Dialog.Close
 						>
 					</div>
 					<nav
@@ -102,7 +103,7 @@
 								returnToPreviousPage();
 							}}
 						>
-							Quay lại <span class="text-[1.1em]" aria-hidden="true">←</span>
+							Quay lại <span class="text-[1.1em]" aria-hidden="true"><ArrowLeft class="size-[1em]" /></span>
 						</button>
 					{:else}
 						<a
@@ -110,7 +111,7 @@
 							href="/questionnaire"
 							onclick={closeMenu}
 							>Bắt đầu ngay
-							<span class="text-[1.1em]" aria-hidden="true">↗</span></a
+							<span class="text-[1.1em]" aria-hidden="true"><ArrowUpRight class="size-[1em]" /></span></a
 						>
 					{/if}
 				</Dialog.Content>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { ArrowUpRight } from '@lucide/svelte';
+
 	const steps = [
 		{
 			number: '01',
@@ -37,19 +39,17 @@
 	aria-labelledby="process-heading"
 >
 	<div class="mx-auto w-[min(100%_-_2rem,90rem)] min-[761px]:w-[min(100%_-_4rem,90rem)]">
-		<div
-			class="block gap-8 py-[2.3rem] min-[761px]:flex min-[761px]:items-end min-[761px]:justify-between min-[761px]:py-[3.1rem_3.7rem]"
-		>
+		<div class="py-[2.3rem] min-[761px]:py-[3.1rem_3.7rem]">
 			<h2
-				class="m-0 max-w-[31rem] text-[clamp(2.5rem,6vw,5.2rem)] leading-[.9] font-[430] tracking-[-.08em] text-text uppercase"
+				class="mx-auto my-0 max-w-full text-center text-[clamp(2.5rem,6vw,5.2rem)] leading-[1.1] font-[430] tracking-[-.08em] text-text uppercase"
 				id="process-heading"
 			>
 				Lộ trình rõ ràng hơn<br />
 				<span class="text-lime">cho bước đi tiếp theo.</span>
 			</h2>
-			<p class="mt-[1.3rem] mb-0 max-w-72 leading-normal text-muted min-[761px]:mt-0">
-				Bốn bước trọng tâm biến những câu hỏi về tương lai thành hồ sơ để bạn hành động.
-			</p>
+			<!-- <p class="mt-[1.3rem] mb-0 max-w-72 leading-normal text-muted min-[761px]:mt-0">
+					Bốn bước trọng tâm biến những câu hỏi về tương lai thành hồ sơ để bạn hành động.
+				</p> -->
 		</div>
 		<div class="grid grid-cols-2 border-t border-line min-[761px]:grid-cols-4">
 			{#each steps as step (step.number)}
@@ -62,7 +62,7 @@
 							>{step.number}</span
 						><span
 							class="text-[1.3rem] text-blue transition group-hover:translate-x-[.2rem] group-hover:-translate-y-[.2rem] group-hover:text-lime"
-							aria-hidden="true">↗</span
+							aria-hidden="true"><ArrowUpRight class="size-[1em]" /></span
 						>
 					</div>
 					<div

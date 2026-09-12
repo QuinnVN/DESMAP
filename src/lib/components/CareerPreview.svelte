@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Dialog } from 'bits-ui';
+	import { ArrowUpRight, X } from '@lucide/svelte';
 
 	type Career = {
 		title: string;
@@ -54,27 +55,34 @@
 					CẨM NANG CHO CHẶNG ĐƯỜNG TIẾP THEO
 				</p>
 				<h2
-					class="mt-[1.3rem] mb-0 max-w-[40rem] text-[clamp(3rem,7vw,6rem)] leading-[.84] font-[430] tracking-[-.09em] text-text uppercase"
+					class="mt-[1.3rem] mb-0 max-w-[40rem] text-[clamp(3rem,7vw,6rem)] leading-none font-[430] tracking-[-.09em] text-text uppercase"
 					id="careers-heading"
 				>
 					Biến điều<br /><span class="text-lime">chưa biết</span>
 					thành cụ thể.
 				</h2>
 			</div>
-			<a
-				class="mt-[1.7rem] inline-block font-mono text-[.72rem] tracking-[.04em] whitespace-nowrap text-text uppercase no-underline min-[701px]:mt-0 [&>span]:text-[1.2rem] [&>span]:text-lime"
-				href="/experiences">Xem toàn bộ thư viện <span aria-hidden="true">↗</span></a
-			>
 		</div>
-		<div class="mb-[1.3rem] flex flex-wrap gap-[.6rem]" aria-label="Danh mục nghề nghiệp">
-			{#each filters as item (item)}
-				<button
-					class={`cursor-pointer rounded-full border bg-transparent px-[.85rem] py-2 font-mono text-[.65rem] tracking-[.05em] uppercase transition duration-200 hover:border-lime hover:text-lime focus-visible:border-lime focus-visible:text-lime focus-visible:outline-none ${filter === item ? 'border-lime text-lime' : 'border-line-strong text-muted'}`}
-					onclick={() => (filter = item)}
+		<div class="grid grid-cols-2">
+			<div class="mb-[1.3rem] flex flex-wrap gap-[.6rem]" aria-label="Danh mục nghề nghiệp">
+				{#each filters as item (item)}
+					<button
+						class={`cursor-pointer rounded-full border bg-transparent px-[.85rem] py-2 font-mono text-[.65rem] tracking-[.05em] uppercase transition duration-200 hover:border-lime hover:text-lime focus-visible:border-lime focus-visible:text-lime focus-visible:outline-none ${filter === item ? 'border-lime text-lime' : 'border-line-strong text-muted'}`}
+						onclick={() => (filter = item)}
+					>
+						{item}
+					</button>
+				{/each}
+			</div>
+			<div class="flex items-center justify-end">
+				<a
+					class="mt-[1.7rem] mb-2 inline-block font-mono text-[.72rem] tracking-[.04em] whitespace-nowrap text-text uppercase no-underline min-[701px]:mt-0 [&>span]:text-[1.2rem] [&>span]:text-lime"
+					href="/experiences"
+					>Xem toàn bộ thư viện <span aria-hidden="true"
+						><ArrowUpRight class="inline size-[1em]" /></span
+					></a
 				>
-					{item}
-				</button>
-			{/each}
+			</div>
 		</div>
 		<div class="grid grid-cols-1 gap-4 min-[701px]:grid-cols-3">
 			{#each visibleCareers as career (career.title)}
@@ -106,7 +114,9 @@
 					<span
 						class="mt-auto inline-flex gap-[.55rem] font-mono text-[.67rem] tracking-[.08em] uppercase"
 						>Xem vai trò
-						<b class="text-[1.1rem] text-lime" aria-hidden="true">↗</b></span
+						<b class="text-[1.1rem] text-lime" aria-hidden="true"
+							><ArrowUpRight class="size-[1em]" /></b
+						></span
 					>
 				</button>
 			{/each}
@@ -159,12 +169,15 @@
 						</div>
 						<a
 							class="inline-flex min-h-[3.15rem] items-center justify-center gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]"
-							href="/questionnaire">Xem mức độ phù hợp <span aria-hidden="true">↗</span></a
+							href="/questionnaire"
+							>Xem mức độ phù hợp <span aria-hidden="true"><ArrowUpRight class="size-[1em]" /></span
+							></a
 						>
 					</div>
 					<Dialog.Close
 						class="absolute top-4 right-4 h-[2.4rem] w-[2.4rem] cursor-pointer rounded-full border border-line-strong bg-transparent text-2xl text-text"
-						aria-label="Đóng chi tiết vai trò">×</Dialog.Close
+						aria-label="Đóng chi tiết vai trò"
+						><X class="size-[1em]" aria-hidden="true" /></Dialog.Close
 					>
 				{/if}
 			</Dialog.Content>
