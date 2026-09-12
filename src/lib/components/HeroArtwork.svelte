@@ -1,5 +1,5 @@
 <div
-	class="relative isolate aspect-[1.16] w-[120%] -ml-[10%] overflow-hidden drop-shadow-[0_0_2rem_rgb(11_84_255_/.18)] before:absolute before:inset-x-0 before:top-[4%] before:bottom-0 before:-z-2 before:bg-[radial-gradient(ellipse_at_58%_48%,rgb(6_78_250_/.2),transparent_39%),radial-gradient(ellipse_at_53%_58%,rgb(177_62_255_/.16),transparent_38%)] min-[701px]:ml-0 min-[701px]:w-[min(100%,48rem)]"
+	class="relative isolate -ml-[10%] aspect-[1.16] w-[120%] overflow-hidden drop-shadow-[0_0_2rem_rgb(11_84_255_/.18)] before:absolute before:inset-x-0 before:top-[4%] before:bottom-0 before:-z-2 before:bg-[radial-gradient(ellipse_at_58%_48%,rgb(6_78_250_/.2),transparent_39%),radial-gradient(ellipse_at_53%_58%,rgb(177_62_255_/.16),transparent_38%)] min-[701px]:ml-0 min-[701px]:w-[min(100%,48rem)]"
 	aria-label="Kính thực tế ảo màu xanh mở ra cánh cổng nghề nghiệp neon"
 	role="img"
 >
@@ -18,7 +18,7 @@
 		<span></span><span></span><span></span>
 	</div>
 	<div
-		class="absolute bottom-[-14%] left-[37%] h-[43%] w-[69%] -rotate-z-11 rotate-x-53 bg-[repeating-linear-gradient(90deg,transparent_0_2rem,rgb(11_128_255_/.65)_2.1rem_2.2rem),repeating-linear-gradient(0deg,transparent_0_1.8rem,rgb(49_161_255_/.72)_1.9rem_2rem)] opacity-78 [mask-image:linear-gradient(transparent,#000_25%,transparent)] [transform:perspective(16rem)_rotateX(53deg)_rotateZ(-11deg)]"
+		class="absolute bottom-[-14%] left-[37%] h-[43%] w-[69%] rotate-x-53 -rotate-z-11 [transform:perspective(16rem)_rotateX(53deg)_rotateZ(-11deg)] bg-[repeating-linear-gradient(90deg,transparent_0_2rem,rgb(11_128_255_/.65)_2.1rem_2.2rem),repeating-linear-gradient(0deg,transparent_0_1.8rem,rgb(49_161_255_/.72)_1.9rem_2rem)] [mask-image:linear-gradient(transparent,#000_25%,transparent)] opacity-78"
 	></div>
 	<div
 		class="absolute top-[31%] left-[8%] z-2 h-[34%] w-1/2 -rotate-5 drop-shadow-[0_0_1.3rem_#0a55ff]"

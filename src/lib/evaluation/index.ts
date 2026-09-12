@@ -1,17 +1,17 @@
-import doctorImage from "./assets/doctor.png";
-import lawyerImage from "./assets/lawyer.png";
-import teacherImage from "./assets/teacher.png";
-import salesImage from "./assets/sales.png";
-import engineeringImage from "./assets/engineering.png";
+import doctorImage from './assets/doctor.png';
+import lawyerImage from './assets/lawyer.png';
+import teacherImage from './assets/teacher.png';
+import salesImage from './assets/sales.png';
+import engineeringImage from './assets/engineering.png';
 
 import type {
 	QuestionnaireDraft,
 	QuestionnaireScores,
 	QuestionnaireSubmission,
-	StageId,
-} from "$lib/questionnaire";
+	StageId
+} from '$lib/questionnaire';
 
-export type EvaluationStatus = "completed" | "sample";
+export type EvaluationStatus = 'completed' | 'sample';
 
 export type ProfileRow = {
 	code: StageId;
@@ -23,7 +23,7 @@ export type ProfileRow = {
 export type CareerMatch = {
 	label: string;
 	percent: number;
-	accent: "lime" | "blue";
+	accent: 'lime' | 'blue';
 };
 
 export type EvaluationModel = {
@@ -40,19 +40,14 @@ export type EvaluationModel = {
 	observations: Array<{ self: string; observed: string }>;
 };
 
-export type ExperienceCategory =
-	| "Y tế"
-	| "Luật"
-	| "Giáo dục"
-	| "Kinh doanh"
-	| "Kỹ thuật";
+export type ExperienceCategory = 'Y tế' | 'Luật' | 'Giáo dục' | 'Kinh doanh' | 'Kỹ thuật';
 
 export type CareerExperience = {
 	slug: string;
 	title: string;
 	category: ExperienceCategory;
 	image: string;
-	status: "recommended" | "ready" | "locked";
+	status: 'recommended' | 'ready' | 'locked';
 	duration: string;
 	missionCount: number;
 	description: string;
@@ -63,99 +58,84 @@ export type CareerExperience = {
 
 export const experiences: CareerExperience[] = [
 	{
-		slug: "doctor",
-		title: "Bác sĩ",
-		category: "Y tế",
+		slug: 'doctor',
+		title: 'Bác sĩ',
+		category: 'Y tế',
 		image: doctorImage,
-		status: "recommended",
-		duration: "10 phút",
+		status: 'recommended',
+		duration: '10 phút',
 		missionCount: 2,
-		description:
-			"Phân loại bệnh nhân và xác định thông tin quan trọng trong áp lực.",
-		observedFactors: ["Tốc độ quyết định", "Ưu tiên", "Phản ứng với áp lực"],
+		description: 'Phân loại bệnh nhân và xác định thông tin quan trọng trong áp lực.',
+		observedFactors: ['Tốc độ quyết định', 'Ưu tiên', 'Phản ứng với áp lực'],
 		missions: [
-			"Phân loại ba bệnh nhân khi có thông tin mới",
-			"Trao đổi ưu tiên điều trị với nhóm của bạn",
+			'Phân loại ba bệnh nhân khi có thông tin mới',
+			'Trao đổi ưu tiên điều trị với nhóm của bạn'
 		],
 		whyItFits:
-			"Hồ sơ DESMAP mẫu cho thấy bạn có xu hướng mạnh về ý nghĩa, chuyên môn giao tiếp và trách nhiệm cao.",
+			'Hồ sơ DESMAP mẫu cho thấy bạn có xu hướng mạnh về ý nghĩa, chuyên môn giao tiếp và trách nhiệm cao.'
 	},
 	{
-		slug: "lawyer",
-		title: "Luật sư",
-		category: "Luật",
+		slug: 'lawyer',
+		title: 'Luật sư',
+		category: 'Luật',
 		image: lawyerImage,
-		status: "ready",
-		duration: "12 phút",
+		status: 'ready',
+		duration: '12 phút',
 		missionCount: 2,
-		description:
-			"Phân tích vụ việc và đưa ra khuyến nghị hợp lý trong thời hạn gấp.",
-		observedFactors: [
-			"Tổng hợp bằng chứng",
-			"Tự tin quyết định",
-			"Giao tiếp khi căng thẳng",
-		],
+		description: 'Phân tích vụ việc và đưa ra khuyến nghị hợp lý trong thời hạn gấp.',
+		observedFactors: ['Tổng hợp bằng chứng', 'Tự tin quyết định', 'Giao tiếp khi căng thẳng'],
 		missions: [
-			"Tách bằng chứng liên quan khỏi hồ sơ vụ việc phức tạp",
-			"Đưa ra khuyến nghị với lập luận rõ ràng",
+			'Tách bằng chứng liên quan khỏi hồ sơ vụ việc phức tạp',
+			'Đưa ra khuyến nghị với lập luận rõ ràng'
 		],
 		whyItFits:
-			"Một nghề đối chiếu hữu ích cho người yêu thích tư duy có cấu trúc và giao tiếp trong tình huống quan trọng.",
+			'Một nghề đối chiếu hữu ích cho người yêu thích tư duy có cấu trúc và giao tiếp trong tình huống quan trọng.'
 	},
 	{
-		slug: "teacher",
-		title: "Giáo viên",
-		category: "Giáo dục",
+		slug: 'teacher',
+		title: 'Giáo viên',
+		category: 'Giáo dục',
 		image: teacherImage,
-		status: "ready",
-		duration: "10 phút",
+		status: 'ready',
+		duration: '10 phút',
 		missionCount: 2,
-		description:
-			"Thu hút học sinh và điều chỉnh cách dạy trong thời gian thực.",
-		observedFactors: ["Thấu cảm", "Khả năng thích ứng", "Điều phối nhóm"],
+		description: 'Thu hút học sinh và điều chỉnh cách dạy trong thời gian thực.',
+		observedFactors: ['Thấu cảm', 'Khả năng thích ứng', 'Điều phối nhóm'],
 		missions: [
-			"Đáp ứng các nhu cầu học tập khác nhau trong một buổi học",
-			"Diễn giải lại khái niệm khi sự chú ý giảm",
+			'Đáp ứng các nhu cầu học tập khác nhau trong một buổi học',
+			'Diễn giải lại khái niệm khi sự chú ý giảm'
 		],
 		whyItFits:
-			"Một tình huống lấy con người làm trung tâm để kiểm tra cách điểm mạnh giao tiếp của bạn chuyển hóa thành hoạt động hướng dẫn trực tiếp.",
+			'Một tình huống lấy con người làm trung tâm để kiểm tra cách điểm mạnh giao tiếp của bạn chuyển hóa thành hoạt động hướng dẫn trực tiếp.'
 	},
 	{
-		slug: "sales-representative",
-		title: "Nhân viên kinh doanh",
-		category: "Kinh doanh",
+		slug: 'sales-representative',
+		title: 'Nhân viên kinh doanh',
+		category: 'Kinh doanh',
 		image: salesImage,
-		status: "ready",
-		duration: "8 phút",
+		status: 'ready',
+		duration: '8 phút',
 		missionCount: 2,
-		description:
-			"Xây dựng kết nối và chốt giao dịch trong các tình huống thực tế.",
-		observedFactors: ["Xây dựng kết nối", "Lắng nghe", "Kiên cường"],
-		missions: [
-			"Khám phá nhu cầu khách hàng qua hội thoại",
-			"Phản hồi băn khoăn mà không mất đà",
-		],
+		description: 'Xây dựng kết nối và chốt giao dịch trong các tình huống thực tế.',
+		observedFactors: ['Xây dựng kết nối', 'Lắng nghe', 'Kiên cường'],
+		missions: ['Khám phá nhu cầu khách hàng qua hội thoại', 'Phản hồi băn khoăn mà không mất đà'],
 		whyItFits:
-			"Một tình huống xã hội nhanh cho thấy phong cách giao tiếp của bạn hoạt động thế nào khi có nhiều ưu tiên cạnh tranh.",
+			'Một tình huống xã hội nhanh cho thấy phong cách giao tiếp của bạn hoạt động thế nào khi có nhiều ưu tiên cạnh tranh.'
 	},
 	{
-		slug: "automotive-engineer",
-		title: "Kỹ sư ô tô",
-		category: "Kỹ thuật",
+		slug: 'automotive-engineer',
+		title: 'Kỹ sư ô tô',
+		category: 'Kỹ thuật',
 		image: engineeringImage,
-		status: "locked",
-		duration: "Sắp ra mắt",
+		status: 'locked',
+		duration: 'Sắp ra mắt',
 		missionCount: 2,
-		description:
-			"Chẩn đoán và giải quyết thử thách kỹ thuật trong phòng thí nghiệm ảo.",
-		observedFactors: ["Tư duy hệ thống", "Chính xác", "Khả năng thích ứng"],
-		missions: [
-			"Lần theo lỗi trong một hệ thống xa lạ",
-			"Chọn trình tự kiểm tra an toàn",
-		],
+		description: 'Chẩn đoán và giải quyết thử thách kỹ thuật trong phòng thí nghiệm ảo.',
+		observedFactors: ['Tư duy hệ thống', 'Chính xác', 'Khả năng thích ứng'],
+		missions: ['Lần theo lỗi trong một hệ thống xa lạ', 'Chọn trình tự kiểm tra an toàn'],
 		whyItFits:
-			"Một mô-đun tương lai để so sánh khả năng tập trung phân tích và giải quyết vấn đề thực tế trong môi trường kỹ thuật.",
-	},
+			'Một mô-đun tương lai để so sánh khả năng tập trung phân tích và giải quyết vấn đề thực tế trong môi trường kỹ thuật.'
+	}
 ];
 
 const sampleStageScores: Record<StageId, number> = {
@@ -164,54 +144,49 @@ const sampleStageScores: Record<StageId, number> = {
 	S: 67,
 	M: 70,
 	A: 62,
-	P: 48,
+	P: 48
 };
 
 const interestToCareer: Record<string, { label: string; slug: string }> = {
-	"technology-engineering": {
-		label: "Kỹ sư ô tô",
-		slug: "automotive-engineer",
+	'technology-engineering': {
+		label: 'Kỹ sư ô tô',
+		slug: 'automotive-engineer'
 	},
-	"science-research": { label: "Bác sĩ", slug: "doctor" },
-	"design-creative": { label: "Giáo viên", slug: "teacher" },
-	"business-entrepreneurship": {
-		label: "Nhân viên kinh doanh",
-		slug: "sales-representative",
+	'science-research': { label: 'Bác sĩ', slug: 'doctor' },
+	'design-creative': { label: 'Giáo viên', slug: 'teacher' },
+	'business-entrepreneurship': {
+		label: 'Nhân viên kinh doanh',
+		slug: 'sales-representative'
 	},
-	"people-education": { label: "Giáo viên", slug: "teacher" },
-	"health-wellbeing": { label: "Bác sĩ", slug: "doctor" },
-	"law-public-service": { label: "Luật sư", slug: "lawyer" },
-	"media-communication": {
-		label: "Nhân viên kinh doanh",
-		slug: "sales-representative",
+	'people-education': { label: 'Giáo viên', slug: 'teacher' },
+	'health-wellbeing': { label: 'Bác sĩ', slug: 'doctor' },
+	'law-public-service': { label: 'Luật sư', slug: 'lawyer' },
+	'media-communication': {
+		label: 'Nhân viên kinh doanh',
+		slug: 'sales-representative'
 	},
-	"environment-sustainability": {
-		label: "Kỹ sư ô tô",
-		slug: "automotive-engineer",
+	'environment-sustainability': {
+		label: 'Kỹ sư ô tô',
+		slug: 'automotive-engineer'
 	},
-	"operations-trades": { label: "Kỹ sư ô tô", slug: "automotive-engineer" },
-	exploring: { label: "Bác sĩ", slug: "doctor" },
+	'operations-trades': { label: 'Kỹ sư ô tô', slug: 'automotive-engineer' },
+	exploring: { label: 'Bác sĩ', slug: 'doctor' }
 };
 
 const stageCopy: Record<StageId, { label: string; detail: string }> = {
-	D: { label: "Mong muốn", detail: "Ý nghĩa & đóng góp" },
-	E: { label: "Chuyên môn", detail: "Giao tiếp" },
-	S: { label: "Vai trò xã hội", detail: "Điều phối" },
-	M: { label: "Tư duy", detail: "Phân tích" },
-	A: { label: "Khả năng thích ứng", detail: "Linh hoạt" },
-	P: { label: "Áp lực", detail: "Trung bình" },
+	D: { label: 'Mong muốn', detail: 'Ý nghĩa & đóng góp' },
+	E: { label: 'Chuyên môn', detail: 'Giao tiếp' },
+	S: { label: 'Vai trò xã hội', detail: 'Điều phối' },
+	M: { label: 'Tư duy', detail: 'Phân tích' },
+	A: { label: 'Khả năng thích ứng', detail: 'Linh hoạt' },
+	P: { label: 'Áp lực', detail: 'Trung bình' }
 };
 
-function scoreFor(
-	scores: QuestionnaireScores | undefined,
-	stage: StageId,
-): number {
+function scoreFor(scores: QuestionnaireScores | undefined, stage: StageId): number {
 	return scores?.stages[stage]?.percent ?? sampleStageScores[stage];
 }
 
-export function createEvaluationModel(
-	payload?: QuestionnaireSubmission | null,
-): EvaluationModel {
+export function createEvaluationModel(payload?: QuestionnaireSubmission | null): EvaluationModel {
 	const stageScores = {} as Record<StageId, number>;
 	for (const stage of Object.keys(stageCopy) as StageId[])
 		stageScores[stage] = scoreFor(payload?.scores, stage);
@@ -220,11 +195,11 @@ export function createEvaluationModel(
 		interestToCareer.exploring;
 	const comparisonLabels = [
 		target.label,
-		"Bác sĩ",
-		"Luật sư",
-		"Giáo viên",
-		"Nhân viên kinh doanh",
-		"Kỹ sư ô tô",
+		'Bác sĩ',
+		'Luật sư',
+		'Giáo viên',
+		'Nhân viên kinh doanh',
+		'Kỹ sư ô tô'
 	]
 		.filter((label, index, labels) => labels.indexOf(label) === index)
 		.slice(0, 3);
@@ -233,11 +208,11 @@ export function createEvaluationModel(
 		code,
 		label: stageCopy[code].label,
 		value: `${stageScores[code]}%`,
-		detail: stageCopy[code].detail,
+		detail: stageCopy[code].detail
 	}));
 
 	return {
-		status: payload ? "completed" : "sample",
+		status: payload ? 'completed' : 'sample',
 		completedAt: payload?.completedAt,
 		targetCareer: target.label,
 		targetExperienceSlug: target.slug,
@@ -245,38 +220,34 @@ export function createEvaluationModel(
 		stageScores,
 		careerMatches: comparisonLabels.map((label, index) => ({
 			label,
-			percent: index === 0 ? 87 : label === "Luật sư" ? 81 : 78,
-			accent: index === 0 ? ("lime" as const) : ("blue" as const),
+			percent: index === 0 ? 87 : label === 'Luật sư' ? 81 : 78,
+			accent: index === 0 ? ('lime' as const) : ('blue' as const)
 		})),
-		strengths: [
-			"Phân tích thông tin tốt",
-			"Ưu tiên rõ ràng",
-			"Duy trì tập trung",
-		],
+		strengths: ['Phân tích thông tin tốt', 'Ưu tiên rõ ràng', 'Duy trì tập trung'],
 		gaps: [
-			"Tốc độ quyết định khi chịu áp lực",
-			"Quản lý các yêu cầu đồng thời",
-			"Phản ứng với thay đổi bất ngờ",
+			'Tốc độ quyết định khi chịu áp lực',
+			'Quản lý các yêu cầu đồng thời',
+			'Phản ứng với thay đổi bất ngờ'
 		],
 		roadmap: [
-			"Luyện tập phân loại có giới hạn thời gian",
-			"Đóng vai giao tiếp áp lực cao",
-			"Xem lại tiến độ sau 4 tuần",
+			'Luyện tập phân loại có giới hạn thời gian',
+			'Đóng vai giao tiếp áp lực cao',
+			'Xem lại tiến độ sau 4 tuần'
 		],
 		observations: [
 			{
-				self: "Tôi xử lý áp lực tốt",
-				observed: "Tốc độ quyết định giảm khi nhiệm vụ chồng chéo",
+				self: 'Tôi xử lý áp lực tốt',
+				observed: 'Tốc độ quyết định giảm khi nhiệm vụ chồng chéo'
 			},
 			{
-				self: "Tôi giao tiếp tự tin",
-				observed: "Xác định chính xác thông tin quan trọng nhất",
+				self: 'Tôi giao tiếp tự tin',
+				observed: 'Xác định chính xác thông tin quan trọng nhất'
 			},
 			{
-				self: "Tôi thích làm việc độc lập",
-				observed: "Có xu hướng điều phối và sắp xếp ưu tiên",
-			},
-		],
+				self: 'Tôi thích làm việc độc lập',
+				observed: 'Có xu hướng điều phối và sắp xếp ưu tiên'
+			}
+		]
 	};
 }
 
@@ -285,12 +256,12 @@ export function answeredCount(draft: QuestionnaireDraft | null): number {
 }
 
 export function formatDate(value?: string): string {
-	if (!value) return "Chế độ xem trước";
+	if (!value) return 'Chế độ xem trước';
 	const date = new Date(value);
-	if (Number.isNaN(date.getTime())) return "Vừa hoàn tất";
-	return new Intl.DateTimeFormat("vi-VN", {
-		day: "2-digit",
-		month: "short",
-		year: "numeric",
+	if (Number.isNaN(date.getTime())) return 'Vừa hoàn tất';
+	return new Intl.DateTimeFormat('vi-VN', {
+		day: '2-digit',
+		month: 'short',
+		year: 'numeric'
 	}).format(date);
 }

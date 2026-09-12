@@ -1,8 +1,8 @@
-import questionnaireData from "./questions.json";
+import questionnaireData from './questions.json';
 
 /** The six sections in the order used by the DESMAP assessment. */
-export type StageId = "D" | "E" | "S" | "M" | "A" | "P";
-export type OptionLetter = "A" | "B" | "C";
+export type StageId = 'D' | 'E' | 'S' | 'M' | 'A' | 'P';
+export type OptionLetter = 'A' | 'B' | 'C';
 
 export type QuestionOption = {
 	letter: OptionLetter;
@@ -43,116 +43,114 @@ export type CareerInterest = {
 
 export const careerInterestOptions: CareerInterest[] = [
 	{
-		id: "technology-engineering",
-		label: "Công nghệ & kỹ thuật",
-		description: "Xây dựng hệ thống, sản phẩm và giải pháp kỹ thuật.",
+		id: 'technology-engineering',
+		label: 'Công nghệ & kỹ thuật',
+		description: 'Xây dựng hệ thống, sản phẩm và giải pháp kỹ thuật.'
 	},
 	{
-		id: "science-research",
-		label: "Khoa học & nghiên cứu",
-		description: "Khám phá câu hỏi, bằng chứng và cách thế giới vận hành.",
+		id: 'science-research',
+		label: 'Khoa học & nghiên cứu',
+		description: 'Khám phá câu hỏi, bằng chứng và cách thế giới vận hành.'
 	},
 	{
-		id: "design-creative",
-		label: "Thiết kế & sáng tạo",
-		description:
-			"Định hình ý tưởng, trải nghiệm, hình ảnh và tác phẩm nguyên bản.",
+		id: 'design-creative',
+		label: 'Thiết kế & sáng tạo',
+		description: 'Định hình ý tưởng, trải nghiệm, hình ảnh và tác phẩm nguyên bản.'
 	},
 	{
-		id: "business-entrepreneurship",
-		label: "Kinh doanh & khởi nghiệp",
-		description: "Phát triển tổ chức, sản phẩm và dự án mới.",
+		id: 'business-entrepreneurship',
+		label: 'Kinh doanh & khởi nghiệp',
+		description: 'Phát triển tổ chức, sản phẩm và dự án mới.'
 	},
 	{
-		id: "people-education",
-		label: "Con người & giáo dục",
-		description: "Giảng dạy, cố vấn và giúp mọi người phát triển.",
+		id: 'people-education',
+		label: 'Con người & giáo dục',
+		description: 'Giảng dạy, cố vấn và giúp mọi người phát triển.'
 	},
 	{
-		id: "health-wellbeing",
-		label: "Sức khỏe & hạnh phúc",
-		description: "Hỗ trợ sức khỏe, chăm sóc và chất lượng cuộc sống.",
+		id: 'health-wellbeing',
+		label: 'Sức khỏe & hạnh phúc',
+		description: 'Hỗ trợ sức khỏe, chăm sóc và chất lượng cuộc sống.'
 	},
 	{
-		id: "law-public-service",
-		label: "Luật & dịch vụ công",
-		description: "Làm việc với chính sách, công lý và lợi ích cộng đồng.",
+		id: 'law-public-service',
+		label: 'Luật & dịch vụ công',
+		description: 'Làm việc với chính sách, công lý và lợi ích cộng đồng.'
 	},
 	{
-		id: "media-communication",
-		label: "Truyền thông & giao tiếp",
-		description: "Kết nối mọi người qua ngôn ngữ, câu chuyện và thông tin.",
+		id: 'media-communication',
+		label: 'Truyền thông & giao tiếp',
+		description: 'Kết nối mọi người qua ngôn ngữ, câu chuyện và thông tin.'
 	},
 	{
-		id: "environment-sustainability",
-		label: "Môi trường & bền vững",
-		description: "Bảo vệ không gian, tài nguyên và tương lai dài hạn.",
+		id: 'environment-sustainability',
+		label: 'Môi trường & bền vững',
+		description: 'Bảo vệ không gian, tài nguyên và tương lai dài hạn.'
 	},
 	{
-		id: "operations-trades",
-		label: "Vận hành & nghề kỹ thuật",
-		description:
-			"Thực hiện công việc thực tế, dịch vụ và hệ thống đáng tin cậy.",
+		id: 'operations-trades',
+		label: 'Vận hành & nghề kỹ thuật',
+		description: 'Thực hiện công việc thực tế, dịch vụ và hệ thống đáng tin cậy.'
 	},
 	{
-		id: "exploring",
-		label: "Tôi vẫn đang khám phá",
-		description: "Giữ lựa chọn rộng mở khi tôi hiểu thêm về bản thân.",
-	},
+		id: 'exploring',
+		label: 'Tôi vẫn đang khám phá',
+		description: 'Giữ lựa chọn rộng mở khi tôi hiểu thêm về bản thân.'
+	}
 ];
 
-const stageMeta: Record<StageId, Omit<QuestionnaireStage, "questions">> = {
+const stageMeta: Record<StageId, Omit<QuestionnaireStage, 'questions'>> = {
 	D: {
-		id: "D",
-		shortLabel: "MONG MUỐN",
-		label: "Desire - Mong muốn",
-		subtitle: "Điều bạn mong công việc mang lại",
-		dimensionIds: ["D1", "D2", "D3", "D4", "D5", "D6"],
+		id: 'D',
+		shortLabel: 'MONG MUỐN',
+		label: 'Desire - Mong muốn',
+		subtitle: 'Điều bạn mong công việc mang lại',
+		dimensionIds: ['D1', 'D2', 'D3', 'D4', 'D5', 'D6']
 	},
 	E: {
-		id: "E",
-		shortLabel: "CHUYÊN MÔN",
-		label: "Expertise -Chuyên môn",
-		subtitle: "Những điểm mạnh bạn muốn phát huy",
-		dimensionIds: ["E1", "E2", "E3", "E4", "E5", "E6"],
+		id: 'E',
+		shortLabel: 'CHUYÊN MÔN',
+		label: 'Expertise -Chuyên môn',
+		subtitle: 'Những điểm mạnh bạn muốn phát huy',
+		dimensionIds: ['E1', 'E2', 'E3', 'E4', 'E5', 'E6']
 	},
 	S: {
-		id: "S",
-		shortLabel: "VAI TRÒ XÃ HỘI",
-		label: "Social Role - Vai trò xã hội",
-		subtitle: "Cách bạn thường đóng góp cùng người khác",
-		dimensionIds: ["S1", "S2", "S3"],
+		id: 'S',
+		shortLabel: 'VAI TRÒ XÃ HỘI',
+		label: 'Social Role - Vai trò xã hội',
+		subtitle: 'Cách bạn thường đóng góp cùng người khác',
+		dimensionIds: ['S1', 'S2', 'S3']
 	},
 	M: {
-		id: "M",
-		shortLabel: "TƯ DUY",
-		label: "Mindset - Tư duy",
-		subtitle: "Cách bạn xử lý thông tin và quyết định",
-		dimensionIds: ["M1", "M2", "M3"],
+		id: 'M',
+		shortLabel: 'TƯ DUY',
+		label: 'Mindset - Tư duy',
+		subtitle: 'Cách bạn xử lý thông tin và quyết định',
+		dimensionIds: ['M1', 'M2', 'M3']
 	},
 	A: {
-		id: "A",
-		shortLabel: "THÍCH ỨNG",
-		label: "Adaptability - Khả năng thích ứng",
-		subtitle: "Cách bạn đón nhận thay đổi",
-		dimensionIds: ["A1", "A2", "A3", "A4"],
+		id: 'A',
+		shortLabel: 'THÍCH ỨNG',
+		label: 'Adaptability - Khả năng thích ứng',
+		subtitle: 'Cách bạn đón nhận thay đổi',
+		dimensionIds: ['A1', 'A2', 'A3', 'A4']
 	},
 	P: {
-		id: "P",
-		shortLabel: "ÁP LỰC",
-		label: "Pressure - Phản ứng với áp lực",
-		subtitle: "Cách bạn phản ứng khi công việc trở nên căng thẳng",
-		dimensionIds: ["P1", "P2", "P3", "P4", "P5", "P6"],
-	},
+		id: 'P',
+		shortLabel: 'ÁP LỰC',
+		label: 'Pressure - Phản ứng với áp lực',
+		subtitle: 'Cách bạn phản ứng khi công việc trở nên căng thẳng',
+		dimensionIds: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6']
+	}
 };
 
-const stageIds: StageId[] = ["D", "E", "S", "M", "A", "P"];
+const stageIds: StageId[] = ['D', 'E', 'S', 'M', 'A', 'P'];
 export const desmapQuestions = questionnaireData as DesmapQuestion[];
 export const totalQuestionCount = desmapQuestions.length;
 
 export const questionnaireStages: QuestionnaireStage[] = stageIds.map((id) => ({
 	...stageMeta[id],
-	questions: desmapQuestions.filter((question) => question.stage === id),
+	questions: desmapQuestions.filter((question) => question.stage === id)
 }));
 
 function shuffled<T>(values: readonly T[], random: () => number): T[] {
@@ -166,7 +164,7 @@ function shuffled<T>(values: readonly T[], random: () => number): T[] {
 
 /** Create one display order for a questionnaire attempt. */
 export function createQuestionnairePresentationOrder(
-	random: () => number = Math.random,
+	random: () => number = Math.random
 ): QuestionnairePresentationOrder {
 	return {
 		questionIds: stageIds.flatMap((stageId) =>
@@ -174,36 +172,33 @@ export function createQuestionnairePresentationOrder(
 				desmapQuestions
 					.filter((question) => question.stage === stageId)
 					.map((question) => question.id),
-				random,
-			),
+				random
+			)
 		),
 		optionLettersByQuestion: Object.fromEntries(
 			desmapQuestions.map((question) => [
 				question.id,
 				shuffled(
 					question.options.map((option) => option.letter),
-					random,
-				),
-			]),
-		),
+					random
+				)
+			])
+		)
 	};
 }
 
 export function questionsInPresentationOrder(
-	order: QuestionnairePresentationOrder,
+	order: QuestionnairePresentationOrder
 ): DesmapQuestion[] {
 	return order.questionIds.map((id) => getQuestionById(id) as DesmapQuestion);
 }
 
 export function optionsInPresentationOrder(
 	question: DesmapQuestion,
-	order: QuestionnairePresentationOrder,
+	order: QuestionnairePresentationOrder
 ): QuestionOption[] {
 	return order.optionLettersByQuestion[question.id].map(
-		(letter) =>
-			question.options.find(
-				(option) => option.letter === letter,
-			) as QuestionOption,
+		(letter) => question.options.find((option) => option.letter === letter) as QuestionOption
 	);
 }
 
@@ -212,9 +207,7 @@ export function getQuestionById(id: string): DesmapQuestion | undefined {
 }
 
 export function getStageById(id: StageId): QuestionnaireStage {
-	return questionnaireStages.find(
-		(stage) => stage.id === id,
-	) as QuestionnaireStage;
+	return questionnaireStages.find((stage) => stage.id === id) as QuestionnaireStage;
 }
 
 export type QuestionnaireAnswers = Record<string, OptionLetter>;
@@ -239,21 +232,13 @@ function percentage(raw: number, max: number): number {
 }
 
 /** Score only the submitted answers; unanswered questions remain visible in `answered`. */
-export function scoreAnswers(
-	answers: QuestionnaireAnswers,
-): QuestionnaireScores {
+export function scoreAnswers(answers: QuestionnaireAnswers): QuestionnaireScores {
 	const dimensionTotals = new Map<
 		string,
 		{ raw: number; answered: number; questionCount: number }
 	>();
-	const groupTotals = new Map<
-		string,
-		{ raw: number; answered: number; questionCount: number }
-	>();
-	const stageTotals = new Map<
-		StageId,
-		{ raw: number; answered: number; questionCount: number }
-	>();
+	const groupTotals = new Map<string, { raw: number; answered: number; questionCount: number }>();
+	const stageTotals = new Map<StageId, { raw: number; answered: number; questionCount: number }>();
 	let raw = 0;
 	let answered = 0;
 
@@ -261,24 +246,22 @@ export function scoreAnswers(
 		const dimension = dimensionTotals.get(question.dimension) ?? {
 			raw: 0,
 			answered: 0,
-			questionCount: 0,
+			questionCount: 0
 		};
 		dimension.questionCount += 1;
 		const group = groupTotals.get(question.dimensionGroup) ?? {
 			raw: 0,
 			answered: 0,
-			questionCount: 0,
+			questionCount: 0
 		};
 		group.questionCount += 1;
 		const stage = stageTotals.get(question.stage) ?? {
 			raw: 0,
 			answered: 0,
-			questionCount: 0,
+			questionCount: 0
 		};
 		stage.questionCount += 1;
-		const selected = question.options.find(
-			(option) => option.letter === answers[question.id],
-		);
+		const selected = question.options.find((option) => option.letter === answers[question.id]);
 		if (selected) {
 			raw += selected.score;
 			answered += 1;
@@ -303,7 +286,7 @@ export function scoreAnswers(
 		max: item.questionCount * 2,
 		percent: percentage(item.raw, item.questionCount * 2),
 		answered: item.answered,
-		questionCount: item.questionCount,
+		questionCount: item.questionCount
 	});
 
 	const dimensions: Record<string, DimensionScore> = {};
@@ -312,9 +295,7 @@ export function scoreAnswers(
 	for (const [key, value] of groupTotals) groups[key] = toScore(value);
 	const stages = {} as Record<StageId, DimensionScore>;
 	for (const stage of stageIds)
-		stages[stage] = toScore(
-			stageTotals.get(stage) ?? { raw: 0, answered: 0, questionCount: 0 },
-		);
+		stages[stage] = toScore(stageTotals.get(stage) ?? { raw: 0, answered: 0, questionCount: 0 });
 
 	return {
 		overall: {
@@ -322,11 +303,11 @@ export function scoreAnswers(
 			max: totalQuestionCount * 2,
 			percent: percentage(raw, totalQuestionCount * 2),
 			answered,
-			questionCount: totalQuestionCount,
+			questionCount: totalQuestionCount
 		},
 		dimensions,
 		groups,
-		stages,
+		stages
 	};
 }
 
@@ -343,7 +324,7 @@ export type QuestionnaireSubmission = {
 export type QuestionnaireDraft = {
 	version: 1;
 	completed: false;
-	step: "career" | "questions" | "review";
+	step: 'career' | 'questions' | 'review';
 	currentIndex: number;
 	startedAt: string;
 	updatedAt: string;
@@ -358,14 +339,8 @@ export function buildCompletionPayload(input: {
 	startedAt: string;
 	completedAt?: string;
 }): QuestionnaireSubmission {
-	if (
-		desmapQuestions.some(
-			(question) => !isOptionLetter(input.answers[question.id]),
-		)
-	) {
-		throw new Error(
-			"Cannot create a completed DESMAP payload until every question has an answer.",
-		);
+	if (desmapQuestions.some((question) => !isOptionLetter(input.answers[question.id]))) {
+		throw new Error('Cannot create a completed DESMAP payload until every question has an answer.');
 	}
 	const completedAt = input.completedAt ?? new Date().toISOString();
 	return {
@@ -375,37 +350,31 @@ export function buildCompletionPayload(input: {
 		startedAt: input.startedAt,
 		careerInterests: [...input.careerInterests],
 		answers: { ...input.answers },
-		scores: scoreAnswers(input.answers),
+		scores: scoreAnswers(input.answers)
 	};
 }
 
-export const QUESTIONNAIRE_STORAGE_KEY = "desmap:questionnaire:v1";
-export const QUESTIONNAIRE_COMPLETION_STORAGE_KEY =
-	"desmap:questionnaire:completed:v1";
+export const QUESTIONNAIRE_STORAGE_KEY = 'desmap:questionnaire:v1';
+export const QUESTIONNAIRE_COMPLETION_STORAGE_KEY = 'desmap:questionnaire:completed:v1';
 
 function isOptionLetter(value: unknown): value is OptionLetter {
-	return value === "A" || value === "B" || value === "C";
+	return value === 'A' || value === 'B' || value === 'C';
 }
 
-function isPresentationOrder(
-	value: unknown,
-): value is QuestionnairePresentationOrder {
-	if (!value || typeof value !== "object") return false;
+function isPresentationOrder(value: unknown): value is QuestionnairePresentationOrder {
+	if (!value || typeof value !== 'object') return false;
 	const order = value as Partial<QuestionnairePresentationOrder>;
 	if (!Array.isArray(order.questionIds)) return false;
 	if (
 		order.questionIds.length !== totalQuestionCount ||
 		new Set(order.questionIds).size !== totalQuestionCount ||
 		order.questionIds.some((id, index) => {
-			const question = typeof id === "string" ? getQuestionById(id) : undefined;
+			const question = typeof id === 'string' ? getQuestionById(id) : undefined;
 			return !question || question.stage !== desmapQuestions[index]?.stage;
 		})
 	)
 		return false;
-	if (
-		!order.optionLettersByQuestion ||
-		typeof order.optionLettersByQuestion !== "object"
-	)
+	if (!order.optionLettersByQuestion || typeof order.optionLettersByQuestion !== 'object')
 		return false;
 	return desmapQuestions.every((question) => {
 		const letters = order.optionLettersByQuestion?.[question.id];
@@ -413,38 +382,27 @@ function isPresentationOrder(
 			Array.isArray(letters) &&
 			letters.length === question.options.length &&
 			new Set(letters).size === question.options.length &&
-			letters.every((letter) =>
-				question.options.some((option) => option.letter === letter),
-			)
+			letters.every((letter) => question.options.some((option) => option.letter === letter))
 		);
 	});
 }
 
 function parseDraft(value: unknown): QuestionnaireDraft | null {
-	if (!value || typeof value !== "object") return null;
+	if (!value || typeof value !== 'object') return null;
 	const draft = value as Partial<QuestionnaireDraft>;
 	if (
 		draft.version !== 1 ||
 		draft.completed !== false ||
 		!Array.isArray(draft.careerInterests) ||
-		typeof draft.answers !== "object"
+		typeof draft.answers !== 'object'
 	)
 		return null;
-	if (
-		!draft.answers ||
-		typeof draft.startedAt !== "string" ||
-		typeof draft.updatedAt !== "string"
-	)
+	if (!draft.answers || typeof draft.startedAt !== 'string' || typeof draft.updatedAt !== 'string')
 		return null;
-	if (
-		draft.step !== "career" &&
-		draft.step !== "questions" &&
-		draft.step !== "review"
-	)
-		return null;
+	if (draft.step !== 'career' && draft.step !== 'questions' && draft.step !== 'review') return null;
 	const currentIndex = draft.currentIndex;
 	if (
-		typeof currentIndex !== "number" ||
+		typeof currentIndex !== 'number' ||
 		!Number.isInteger(currentIndex) ||
 		currentIndex < 0 ||
 		currentIndex >= totalQuestionCount
@@ -452,22 +410,22 @@ function parseDraft(value: unknown): QuestionnaireDraft | null {
 		return null;
 	if (
 		!Object.entries(draft.answers).every(
-			([id, answer]) => Boolean(getQuestionById(id)) && isOptionLetter(answer),
+			([id, answer]) => Boolean(getQuestionById(id)) && isOptionLetter(answer)
 		)
 	)
 		return null;
 
 	return {
-		...(draft as Omit<QuestionnaireDraft, "presentationOrder">),
+		...(draft as Omit<QuestionnaireDraft, 'presentationOrder'>),
 		presentationOrder: isPresentationOrder(draft.presentationOrder)
 			? draft.presentationOrder
-			: createQuestionnairePresentationOrder(),
+			: createQuestionnairePresentationOrder()
 	};
 }
 
 /** Browser-only, failure-tolerant draft persistence. Safe to call during SSR. */
 export function readSavedQuestionnaire(): QuestionnaireDraft | null {
-	if (typeof window === "undefined") return null;
+	if (typeof window === 'undefined') return null;
 	try {
 		const raw = window.localStorage.getItem(QUESTIONNAIRE_STORAGE_KEY);
 		if (!raw) return null;
@@ -479,12 +437,9 @@ export function readSavedQuestionnaire(): QuestionnaireDraft | null {
 }
 
 export function writeSavedQuestionnaire(draft: QuestionnaireDraft): boolean {
-	if (typeof window === "undefined") return false;
+	if (typeof window === 'undefined') return false;
 	try {
-		window.localStorage.setItem(
-			QUESTIONNAIRE_STORAGE_KEY,
-			JSON.stringify(draft),
-		);
+		window.localStorage.setItem(QUESTIONNAIRE_STORAGE_KEY, JSON.stringify(draft));
 		return true;
 	} catch {
 		return false;
@@ -492,7 +447,7 @@ export function writeSavedQuestionnaire(draft: QuestionnaireDraft): boolean {
 }
 
 export function clearSavedQuestionnaire(): void {
-	if (typeof window === "undefined") return;
+	if (typeof window === 'undefined') return;
 	try {
 		window.localStorage.removeItem(QUESTIONNAIRE_STORAGE_KEY);
 	} catch {
@@ -501,15 +456,10 @@ export function clearSavedQuestionnaire(): void {
 }
 
 /** Store the latest completed payload for the client-side evaluation route. */
-export function writeCompletionPayload(
-	payload: QuestionnaireSubmission,
-): boolean {
-	if (typeof window === "undefined") return false;
+export function writeCompletionPayload(payload: QuestionnaireSubmission): boolean {
+	if (typeof window === 'undefined') return false;
 	try {
-		window.localStorage.setItem(
-			QUESTIONNAIRE_COMPLETION_STORAGE_KEY,
-			JSON.stringify(payload),
-		);
+		window.localStorage.setItem(QUESTIONNAIRE_COMPLETION_STORAGE_KEY, JSON.stringify(payload));
 		return true;
 	} catch {
 		return false;
@@ -517,11 +467,9 @@ export function writeCompletionPayload(
 }
 
 export function readCompletionPayload(): QuestionnaireSubmission | null {
-	if (typeof window === "undefined") return null;
+	if (typeof window === 'undefined') return null;
 	try {
-		const raw = window.localStorage.getItem(
-			QUESTIONNAIRE_COMPLETION_STORAGE_KEY,
-		);
+		const raw = window.localStorage.getItem(QUESTIONNAIRE_COMPLETION_STORAGE_KEY);
 		if (!raw) return null;
 		const parsed = JSON.parse(raw) as Partial<QuestionnaireSubmission>;
 		if (
@@ -532,16 +480,10 @@ export function readCompletionPayload(): QuestionnaireSubmission | null {
 			!Array.isArray(parsed.careerInterests)
 		)
 			return null;
-		if (
-			typeof parsed.completedAt !== "string" ||
-			typeof parsed.startedAt !== "string"
-		)
-			return null;
+		if (typeof parsed.completedAt !== 'string' || typeof parsed.startedAt !== 'string') return null;
 		const answers = parsed.answers;
 		if (
-			desmapQuestions.some(
-				(question) => !isOptionLetter(answers[question.id]),
-			) ||
+			desmapQuestions.some((question) => !isOptionLetter(answers[question.id])) ||
 			Object.keys(answers).length !== totalQuestionCount
 		)
 			return null;

@@ -10,8 +10,8 @@ export type {
 	QuestionnaireStage,
 	QuestionnaireSubmission,
 	QuestionOption,
-	StageId,
-} from "./data";
+	StageId
+} from './data';
 export {
 	buildCompletionPayload,
 	careerInterestOptions,
@@ -30,5 +30,5 @@ export {
 	scoreAnswers,
 	totalQuestionCount,
 	writeCompletionPayload,
-	writeSavedQuestionnaire,
-} from "./data";
+	writeSavedQuestionnaire
+} from './data';

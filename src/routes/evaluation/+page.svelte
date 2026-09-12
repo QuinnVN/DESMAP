@@ -1,117 +1,107 @@
 <script lang="ts">
-import { onMount } from "svelte";
-import Header from "$lib/components/Header.svelte";
-import {
-	answeredCount,
-	createEvaluationModel,
-	formatDate,
-	type EvaluationModel,
-} from "$lib/evaluation";
-import {
-	readCompletionPayload,
-	readSavedQuestionnaire,
-	totalQuestionCount,
-	type QuestionnaireDraft,
-	type QuestionnaireSubmission,
-	type StageId,
-} from "$lib/questionnaire";
+	import { onMount } from 'svelte';
+	import Header from '$lib/components/Header.svelte';
+	import {
+		answeredCount,
+		createEvaluationModel,
+		formatDate,
+		type EvaluationModel
+	} from '$lib/evaluation';
+	import {
+		readCompletionPayload,
+		readSavedQuestionnaire,
+		totalQuestionCount,
+		type QuestionnaireDraft,
+		type QuestionnaireSubmission,
+		type StageId
+	} from '$lib/questionnaire';
 
-type Tab = "profile" | "report";
+	type Tab = 'profile' | 'report';
 
-const stageOrder: StageId[] = ["D", "E", "S", "M", "A", "P"];
-let activeTab = $state<Tab>("profile");
-let payload = $state<QuestionnaireSubmission | null>(null);
-let draft = $state<QuestionnaireDraft | null>(null);
-let copied = $state(false);
-let downloadNotice = $state("");
-let showSample = $state(false);
+	const stageOrder: StageId[] = ['D', 'E', 'S', 'M', 'A', 'P'];
+	let activeTab = $state<Tab>('profile');
+	let payload = $state<QuestionnaireSubmission | null>(null);
+	let draft = $state<QuestionnaireDraft | null>(null);
+	let copied = $state(false);
+	let downloadNotice = $state('');
+	let showSample = $state(false);
 
-const model = $derived(createEvaluationModel(payload));
-const completed = $derived(Boolean(payload));
-const visibleModel = $derived(model);
+	const model = $derived(createEvaluationModel(payload));
+	const completed = $derived(Boolean(payload));
+	const visibleModel = $derived(model);
 
-onMount(() => {
-	payload = readCompletionPayload();
-	draft = readSavedQuestionnaire();
-});
-
-function pointFor(index: number, value: number, radius = 108) {
-	const angle = -Math.PI / 2 + (Math.PI * 2 * index) / stageOrder.length;
-	return {
-		x: 160 + Math.cos(angle) * radius * (value / 100),
-		y: 145 + Math.sin(angle) * radius * (value / 100),
-	};
-}
-
-function radarPoints(
-	values: EvaluationModel["stageScores"],
-	radius = 108,
-): string {
-	return stageOrder
-		.map((stage, index) => {
-			const point = pointFor(index, values[stage], radius);
-			return `${point.x},${point.y}`;
-		})
-		.join(" ");
-}
-
-function framePoints(level: number): string {
-	return radarPoints(
-		{ D: level, E: level, S: level, M: level, A: level, P: level },
-		108,
-	);
-}
-
-function saveJson() {
-	const exportModel = createEvaluationModel(payload);
-	const data = {
-		format: "Bản xem trước kết quả DESMAP trên giao diện",
-		label: completed
-			? "Tóm tắt tự đánh giá; các nghề nghiệp phù hợp chỉ có tính minh họa cho đến khi AI được kết nối."
-			: "Bản xem trước báo cáo mẫu; chưa hoàn tất bảng câu hỏi.",
-		questionnaire: payload,
-		evaluation: exportModel,
-	};
-	const blob = new Blob([JSON.stringify(data, null, 2)], {
-		type: "application/json",
+	onMount(() => {
+		payload = readCompletionPayload();
+		draft = readSavedQuestionnaire();
 	});
-	const url = URL.createObjectURL(blob);
-	const link = document.createElement("a");
-	link.href = url;
-	link.download = `desmap-${completed ? "results" : "sample-preview"}.json`;
-	link.click();
-	URL.revokeObjectURL(url);
-	downloadNotice = "Đã lưu JSON trên thiết bị này.";
-	window.setTimeout(() => (downloadNotice = ""), 2400);
-}
 
-function printReport() {
-	window.print();
-}
-
-async function copySummary() {
-	const text = `${visibleModel.targetCareer} · ${visibleModel.careerMatches[0]?.percent ?? 0}% mức độ phù hợp minh họa\n${visibleModel.strengths.join(" · ")}`;
-	try {
-		await navigator.clipboard.writeText(text);
-		copied = true;
-		window.setTimeout(() => (copied = false), 2400);
-	} catch {
-		downloadNotice = "Không thể sao chép trong trình duyệt này.";
-		window.setTimeout(() => (downloadNotice = ""), 2400);
+	function pointFor(index: number, value: number, radius = 108) {
+		const angle = -Math.PI / 2 + (Math.PI * 2 * index) / stageOrder.length;
+		return {
+			x: 160 + Math.cos(angle) * radius * (value / 100),
+			y: 145 + Math.sin(angle) * radius * (value / 100)
+		};
 	}
-}
 
-function exploreTarget() {
-	window.location.href = `/experiences?career=${visibleModel.targetExperienceSlug}`;
-}
+	function radarPoints(values: EvaluationModel['stageScores'], radius = 108): string {
+		return stageOrder
+			.map((stage, index) => {
+				const point = pointFor(index, values[stage], radius);
+				return `${point.x},${point.y}`;
+			})
+			.join(' ');
+	}
 
-function profileTabLabel() {
-	return completed
-		? "Hồ sơ ban đầu"
-		: showSample
-			? "Hồ sơ mẫu"
-			: "Hồ sơ của bạn";
-}
+	function framePoints(level: number): string {
+		return radarPoints({ D: level, E: level, S: level, M: level, A: level, P: level }, 108);
+	}
+
+	function saveJson() {
+		const exportModel = createEvaluationModel(payload);
+		const data = {
+			format: 'Bản xem trước kết quả DESMAP trên giao diện',
+			label: completed
+				? 'Tóm tắt tự đánh giá; các nghề nghiệp phù hợp chỉ có tính minh họa cho đến khi AI được kết nối.'
+				: 'Bản xem trước báo cáo mẫu; chưa hoàn tất bảng câu hỏi.',
+			questionnaire: payload,
+			evaluation: exportModel
+		};
+		const blob = new Blob([JSON.stringify(data, null, 2)], {
+			type: 'application/json'
+		});
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = `desmap-${completed ? 'results' : 'sample-preview'}.json`;
+		link.click();
+		URL.revokeObjectURL(url);
+		downloadNotice = 'Đã lưu JSON trên thiết bị này.';
+		window.setTimeout(() => (downloadNotice = ''), 2400);
+	}
+
+	function printReport() {
+		window.print();
+	}
+
+	async function copySummary() {
+		const text = `${visibleModel.targetCareer} · ${visibleModel.careerMatches[0]?.percent ?? 0}% mức độ phù hợp minh họa\n${visibleModel.strengths.join(' · ')}`;
+		try {
+			await navigator.clipboard.writeText(text);
+			copied = true;
+			window.setTimeout(() => (copied = false), 2400);
+		} catch {
+			downloadNotice = 'Không thể sao chép trong trình duyệt này.';
+			window.setTimeout(() => (downloadNotice = ''), 2400);
+		}
+	}
+
+	function exploreTarget() {
+		window.location.href = `/experiences?career=${visibleModel.targetExperienceSlug}`;
+	}
+
+	function profileTabLabel() {
+		return completed ? 'Hồ sơ ban đầu' : showSample ? 'Hồ sơ mẫu' : 'Hồ sơ của bạn';
+	}
 </script>
 
 <svelte:head>
@@ -119,7 +109,7 @@ function profileTabLabel() {
 	<meta
 		name="description"
 		content="Xem lại bản tự đánh giá DESMAP và khám phá báo cáo nghề nghiệp mẫu được gắn nhãn rõ ràng."
-	>
+	/>
 </svelte:head>
 
 <Header showBack />
@@ -132,7 +122,9 @@ function profileTabLabel() {
 					{completed ? 'Kết quả DESMAP ban đầu' : 'Hồ sơ của bạn đang chờ'}
 				</p>
 				<h1>
-					{completed ? 'Nhìn thấy mô thức trong câu trả lời của bạn.' : 'Hoàn tất bảng câu hỏi để mở khóa hồ sơ.'}
+					{completed
+						? 'Nhìn thấy mô thức trong câu trả lời của bạn.'
+						: 'Hoàn tất bảng câu hỏi để mở khóa hồ sơ.'}
 				</h1>
 				<p class="intro-copy">
 					{completed
@@ -144,10 +136,18 @@ function profileTabLabel() {
 				<span class="signal-dot"></span>
 				<div>
 					<strong
-						>{completed ? 'Đã lưu trên thiết bị này' : draft ? `Đã lưu ${answeredCount(draft)} câu trả lời` : 'Chưa có câu trả lời được lưu'}</strong
+						>{completed
+							? 'Đã lưu trên thiết bị này'
+							: draft
+								? `Đã lưu ${answeredCount(draft)} câu trả lời`
+								: 'Chưa có câu trả lời được lưu'}</strong
 					>
 					<small
-						>{completed ? formatDate(payload?.completedAt) : draft ? 'Tiếp tục khi bạn sẵn sàng' : 'Kết quả của bạn sẽ ở lại trên thiết bị này'}</small
+						>{completed
+							? formatDate(payload?.completedAt)
+							: draft
+								? 'Tiếp tục khi bạn sẵn sàng'
+								: 'Kết quả của bạn sẽ ở lại trên thiết bị này'}</small
 					>
 				</div>
 			</div>
@@ -162,10 +162,14 @@ function profileTabLabel() {
 							{draft ? 'Tiếp tục bảng câu hỏi' : 'Bắt đầu tự đánh giá'}
 						</p>
 						<h2>
-							{draft ? `Đã lưu ${answeredCount(draft)} trên ${totalQuestionCount} câu hỏi` : 'Câu trả lời của bạn tạo nên bản đồ đầu tiên.'}
+							{draft
+								? `Đã lưu ${answeredCount(draft)} trên ${totalQuestionCount} câu hỏi`
+								: 'Câu trả lời của bạn tạo nên bản đồ đầu tiên.'}
 						</h2>
 						<p>
-							{draft ? 'Các câu trả lời mới nhất chỉ được lưu trong trình duyệt này.' : 'Hãy cho DESMAP biết điều quan trọng với bạn trước khi chúng tôi so sánh hồ sơ với các tình huống nghề nghiệp.'}
+							{draft
+								? 'Các câu trả lời mới nhất chỉ được lưu trong trình duyệt này.'
+								: 'Hãy cho DESMAP biết điều quan trọng với bạn trước khi chúng tôi so sánh hồ sơ với các tình huống nghề nghiệp.'}
 						</p>
 					</div>
 				</div>
@@ -176,18 +180,12 @@ function profileTabLabel() {
 			</section>
 			<div class="sample-callout">
 				<div>
-					<span class="sample-tag">MẪU TÙY CHỌN</span
-					><strong>Bạn muốn xem trước bố cục hoàn chỉnh?</strong>
-					<p>
-						Mở hồ sơ minh họa được gắn nhãn rõ ràng. Đây không phải dự đoán về
-						bạn.
-					</p>
+					<span class="sample-tag">MẪU TÙY CHỌN</span><strong
+						>Bạn muốn xem trước bố cục hoàn chỉnh?</strong
+					>
+					<p>Mở hồ sơ minh họa được gắn nhãn rõ ràng. Đây không phải dự đoán về bạn.</p>
 				</div>
-				<button
-					class="text-button"
-					type="button"
-					onclick={() => (showSample = !showSample)}
-				>
+				<button class="text-button" type="button" onclick={() => (showSample = !showSample)}>
 					{showSample ? 'Ẩn mẫu' : 'Xem trước mẫu'}
 					<span aria-hidden="true">→</span>
 				</button>
@@ -223,9 +221,8 @@ function profileTabLabel() {
 						<p class="kicker">Chưa tạo hồ sơ</p>
 						<h2>Trả lời một vài câu hỏi và bản đồ của bạn sẽ hiện tại đây.</h2>
 						<p>
-							Các câu trả lời đã lưu không rời khỏi trình duyệt này trong bản
-							xem trước giao diện. Khi hoàn tất, hãy trở lại đây để xem các khía
-							cạnh DESMAP của riêng bạn.
+							Các câu trả lời đã lưu không rời khỏi trình duyệt này trong bản xem trước giao diện.
+							Khi hoàn tất, hãy trở lại đây để xem các khía cạnh DESMAP của riêng bạn.
 						</p>
 					</div>
 					<a class="button button-outline" href="/questionnaire"
@@ -271,12 +268,7 @@ function profileTabLabel() {
 										stroke-width="1"
 									/>
 									{@const label = pointFor(index, 122, 108)}
-									<text
-										x={label.x}
-										y={label.y}
-										text-anchor="middle"
-										dominant-baseline="middle"
-									>
+									<text x={label.x} y={label.y} text-anchor="middle" dominant-baseline="middle">
 										{stage}
 									</text>
 								{/each}
@@ -292,8 +284,7 @@ function profileTabLabel() {
 								{/each}
 							</svg>
 							<div class="radar-note">
-								<span class="legend-dot"></span
-								><span
+								<span class="legend-dot"></span><span
 									>{completed ? 'Điểm tự đánh giá' : 'Điểm mẫu minh họa'}</span
 								>
 							</div>
@@ -326,9 +317,8 @@ function profileTabLabel() {
 							</div>
 							{#each visibleModel.careerMatches as match, index (match.label)}
 								<div class="match-row">
-									<span class="match-index">0{index + 1}</span
-									><strong class:lime={match.accent === 'lime'}
-										>{match.label}</strong
+									<span class="match-index">0{index + 1}</span><strong
+										class:lime={match.accent === 'lime'}>{match.label}</strong
 									>
 									<div class="match-track">
 										<span style:width={`${match.percent}%`}></span>
@@ -337,8 +327,8 @@ function profileTabLabel() {
 								</div>
 							{/each}
 							<p class="panel-footnote">
-								Báo cáo AI thực tế sẽ thay thế các giá trị minh họa sau khi dịch
-								vụ đánh giá được kết nối.
+								Báo cáo AI thực tế sẽ thay thế các giá trị minh họa sau khi dịch vụ đánh giá được
+								kết nối.
 							</p>
 						</div>
 
@@ -348,22 +338,22 @@ function profileTabLabel() {
 									<p class="kicker">03 / Góc nhìn tiếp theo</p>
 									<h2>Khoảng cần phát triển</h2>
 								</div>
-								<span class="target-pill"
-									>MỤC TIÊU: {visibleModel.targetCareer.toUpperCase()}</span
-								>
+								<span class="target-pill">MỤC TIÊU: {visibleModel.targetCareer.toUpperCase()}</span>
 							</div>
 							<div class="gap-list">
 								{#each visibleModel.gaps as gap, index (gap)}
 									<div class="gap-row">
 										<span>0{index + 1}</span>
 										<div>
-											<strong>{gap}</strong
-											><small
-												>{index === 0 ? 'Hiện tại: đang phát triển' : index === 1 ? 'Hiện tại: trung bình' : 'Hiện tại: tốt'}</small
+											<strong>{gap}</strong><small
+												>{index === 0
+													? 'Hiện tại: đang phát triển'
+													: index === 1
+														? 'Hiện tại: trung bình'
+														: 'Hiện tại: tốt'}</small
 											>
 										</div>
-										<i style:--gap={`${24 - index * 4}%`}></i
-										><b>CHÊNH LỆCH {24 - index * 4}%</b>
+										<i style:--gap={`${24 - index * 4}%`}></i><b>CHÊNH LỆCH {24 - index * 4}%</b>
 									</div>
 								{/each}
 							</div>
@@ -376,29 +366,25 @@ function profileTabLabel() {
 						<span class="rail-icon">◎</span>
 						<div>
 							<strong
-								>{completed ? 'Hồ sơ của bạn cho thấy một điểm khởi đầu.' : 'Hồ sơ mẫu cho thấy hành trình.'}</strong
+								>{completed
+									? 'Hồ sơ của bạn cho thấy một điểm khởi đầu.'
+									: 'Hồ sơ mẫu cho thấy hành trình.'}</strong
 							>
 							<p>
-								{completed ? 'Các tình huống VR có thể bổ sung hành vi quan sát được sau khi kết nối.' : 'Hãy dùng bảng câu hỏi để thay thế bản xem trước bằng câu trả lời của riêng bạn.'}
+								{completed
+									? 'Các tình huống VR có thể bổ sung hành vi quan sát được sau khi kết nối.'
+									: 'Hãy dùng bảng câu hỏi để thay thế bản xem trước bằng câu trả lời của riêng bạn.'}
 							</p>
 						</div>
 					</div>
-					<button
-						class="button button-lime"
-						type="button"
-						onclick={exploreTarget}
-					>
+					<button class="button button-lime" type="button" onclick={exploreTarget}>
 						Khám phá nghề {visibleModel.targetCareer}
 						<span aria-hidden="true">→</span>
 					</button>
 					<div class="rail-actions">
 						<button class="text-button" type="button" onclick={saveJson}>
 							↓ Tải JSON
-						</button><button
-							class="text-button"
-							type="button"
-							onclick={copySummary}
-						>
+						</button><button class="text-button" type="button" onclick={copySummary}>
 							{copied ? 'Đã sao chép trên thiết bị này' : 'Sao chép tóm tắt'}
 						</button>
 					</div>
@@ -411,8 +397,7 @@ function profileTabLabel() {
 						<p class="kicker">BÁO CÁO MINH HỌA / 04</p>
 						<h2>Hồ sơ nghề nghiệp cuối cùng</h2>
 						<p class="report-disclaimer">
-							Đây là bố cục báo cáo mẫu. Đây không phải kết luận từ AI và không
-							bao gồm quan sát VR.
+							Đây là bố cục báo cáo mẫu. Đây không phải kết luận từ AI và không bao gồm quan sát VR.
 						</p>
 					</div>
 					<div class="fit-ring">
@@ -432,8 +417,7 @@ function profileTabLabel() {
 								<div class="observation-row">
 									<span>→</span>
 									<div>
-										<strong>{observation.self}</strong
-										><small>{observation.observed}</small>
+										<strong>{observation.self}</strong><small>{observation.observed}</small>
 									</div>
 								</div>
 							{/each}
@@ -468,30 +452,17 @@ function profileTabLabel() {
 							{/each}
 							<h3>Nghề nghiệp tương tự</h3>
 							<div class="similar-list">
-								<span>Y học cấp cứu</span><span>Điều dưỡng</span
-								><span>Điều phối lâm sàng</span>
+								<span>Y học cấp cứu</span><span>Điều dưỡng</span><span>Điều phối lâm sàng</span>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="report-actions">
-					<button
-						class="button button-outline"
-						type="button"
-						onclick={saveJson}
-					>
+					<button class="button button-outline" type="button" onclick={saveJson}>
 						↓ Tải JSON
-					</button><button
-						class="button button-outline"
-						type="button"
-						onclick={printReport}
-					>
+					</button><button class="button button-outline" type="button" onclick={printReport}>
 						In / lưu PDF
-					</button><button
-						class="button button-lime"
-						type="button"
-						onclick={copySummary}
-					>
+					</button><button class="button button-lime" type="button" onclick={copySummary}>
 						{copied ? 'Đã sao chép trên thiết bị này' : 'Sao chép tóm tắt báo cáo'}
 					</button>
 				</div>

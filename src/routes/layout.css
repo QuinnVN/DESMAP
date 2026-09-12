@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 @theme {
 	--color-bg: #030303;
@@ -11,8 +11,8 @@
 	--color-muted: #a7abb5;
 	--color-line: rgb(185 191 204 / 24%);
 	--color-line-strong: rgb(193 201 219 / 50%);
-	--font-sans: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
-	--font-mono: "DM Mono", "SFMono-Regular", Consolas, monospace;
+	--font-sans: 'Manrope', 'Avenir Next', 'Segoe UI', sans-serif;
+	--font-mono: 'DM Mono', 'SFMono-Regular', Consolas, monospace;
 	--animate-overlay-in: overlay-in 0.2s ease-out;
 	--animate-menu-in: menu-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	--animate-rise-in: rise-in 0.8s both;
@@ -97,13 +97,9 @@
 			min-height: 100dvh;
 			padding: clamp(1rem, 2.8vw, 3rem);
 			background:
-				radial-gradient(
-					circle at 78% 16%,
-					rgb(37 99 235 / 0.1),
-					transparent 32rem
-				),
+				radial-gradient(circle at 78% 16%, rgb(37 99 235 / 0.1), transparent 32rem),
 				var(--bg, #030303);
-			font-family: "Avenir Next", "Helvetica Neue", sans-serif;
+			font-family: 'Avenir Next', 'Helvetica Neue', sans-serif;
 		}
 
 		.loading-shell {
@@ -255,11 +251,7 @@
 			padding: clamp(1.4rem, 4vw, 4.3rem) clamp(1.2rem, 6vw, 7rem);
 			border: 2px solid var(--blue, #2563eb);
 			border-radius: 1.55rem;
-			background: linear-gradient(
-				145deg,
-				rgb(11 19 34 / 0.98),
-				rgb(5 10 20 / 0.98)
-			);
+			background: linear-gradient(145deg, rgb(11 19 34 / 0.98), rgb(5 10 20 / 0.98));
 			box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 0.28);
 		}
 		.panel-kicker {
@@ -856,11 +848,7 @@
 			align-items: center;
 			padding: 1.35rem 1.6rem;
 			border: 1px solid var(--line);
-			background: linear-gradient(
-				100deg,
-				rgba(37, 99, 235, 0.14),
-				rgba(7, 16, 32, 0.9)
-			);
+			background: linear-gradient(100deg, rgba(37, 99, 235, 0.14), rgba(7, 16, 32, 0.9));
 		}
 		.resume-copy {
 			display: flex;
@@ -964,7 +952,7 @@
 			text-transform: uppercase;
 		}
 		.report-tabs button::after {
-			content: "";
+			content: '';
 			position: absolute;
 			right: 1rem;
 			bottom: -1px;
@@ -998,12 +986,7 @@
 			padding: clamp(1.6rem, 4vw, 3.2rem);
 			border: 1px solid var(--line);
 			background:
-				radial-gradient(
-					circle at 15% 40%,
-					rgba(37, 99, 235, 0.18),
-					transparent 32%
-				),
-				var(--surface);
+				radial-gradient(circle at 15% 40%, rgba(37, 99, 235, 0.18), transparent 32%), var(--surface);
 		}
 		.empty-symbol {
 			display: grid;
@@ -1033,12 +1016,7 @@
 		.panel {
 			border: 1px solid var(--line);
 			background:
-				radial-gradient(
-					circle at 85% 12%,
-					rgba(37, 99, 235, 0.1),
-					transparent 30%
-				),
-				var(--surface);
+				radial-gradient(circle at 85% 12%, rgba(37, 99, 235, 0.1), transparent 30%), var(--surface);
 		}
 		.profile-panel {
 			padding: 1.55rem;
@@ -1762,7 +1740,7 @@
 		}
 		.recommended-image::after,
 		.experience-image::after {
-			content: "";
+			content: '';
 			position: absolute;
 			inset: 0;
 			background: linear-gradient(90deg, transparent 40%, rgba(3, 3, 3, 0.28));
@@ -1772,11 +1750,7 @@
 			display: flex;
 			flex-direction: column;
 			padding: clamp(1.2rem, 3vw, 2.2rem);
-			background: linear-gradient(
-				140deg,
-				rgba(7, 16, 32, 0.88),
-				rgba(3, 3, 3, 0.72)
-			);
+			background: linear-gradient(140deg, rgba(7, 16, 32, 0.88), rgba(3, 3, 3, 0.72));
 		}
 		.card-topline {
 			align-items: start;
@@ -1882,8 +1856,7 @@
 			padding: 1.4rem;
 			border: 1px solid var(--line);
 			background:
-				radial-gradient(circle at 0 0, rgba(37, 99, 235, 0.14), transparent 50%),
-				var(--surface);
+				radial-gradient(circle at 0 0, rgba(37, 99, 235, 0.14), transparent 50%), var(--surface);
 		}
 		.note-icon {
 			display: grid;

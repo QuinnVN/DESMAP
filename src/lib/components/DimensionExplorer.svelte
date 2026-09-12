@@ -1,111 +1,104 @@
 <script lang="ts">
-import { onMount } from "svelte";
-import { fade, fly } from "svelte/transition";
-import { totalQuestionCount } from "$lib/questionnaire";
+	import { onMount } from 'svelte';
+	import { fade, fly } from 'svelte/transition';
+	import { totalQuestionCount } from '$lib/questionnaire';
 
-type Dimension = {
-	id: string;
-	letter: string;
-	label: string;
-	prompt: string;
-	title: string;
-	accent: string;
-	copy: string;
-};
-const dimensions: Dimension[] = [
-	{
-		id: "desire",
-		letter: "D",
-		label: "Desire",
-		prompt: "Điều gì thúc đẩy tôi?",
-		title: "DESIRE",
-		accent: "MONG MUỐN CỦA BẠN",
-		copy: "Khía cạnh này khám phá các giá trị nghề nghiệp: điều bạn mong muốn và ưu tiên ở công việc tương lai, như an toàn tài chính, phát triển, tự chủ, tác động ý nghĩa, sự ghi nhận hoặc cân bằng cuộc sống.",
-	},
-	{
-		id: "expertise",
-		letter: "E",
-		label: "Expertise",
-		prompt: "Tôi giỏi điều gì?",
-		title: "EXPERTISE",
-		accent: "ĐIỂM MẠNH CỦA BẠN",
-		copy: "Khía cạnh này khám phá kỹ năng bạn mang đến cho thử thách: cách bạn học hỏi, giải quyết vấn đề, truyền đạt ý tưởng và biến điểm mạnh thành đóng góp.",
-	},
-	{
-		id: "social",
-		letter: "S",
-		label: "Social Role",
-		prompt: "Tôi làm việc với người khác thế nào?",
-		title: "SOCIAL ROLE",
-		accent: "VAI TRÒ XÃ HỘI",
-		copy: "Khía cạnh này khám phá cách bạn thường đóng góp khi làm việc cùng người khác: dẫn dắt, điều phối, hỗ trợ, chia sẻ ý tưởng hay thích làm việc độc lập.",
-	},
-	{
-		id: "mind",
-		letter: "M",
-		label: "Mind",
-		prompt: "Tôi suy nghĩ như thế nào?",
-		title: "MIND",
-		accent: "CÁCH BẠN SUY NGHĨ",
-		copy: "Khía cạnh này khám phá cách bạn xử lý thông tin và giải quyết vấn đề: phân tích tình huống, đưa ra quyết định, tạo ý tưởng và tiếp cận thử thách.",
-	},
-	{
-		id: "adaptability",
-		letter: "A",
-		label: "Adaptability",
-		prompt: "Tôi phản ứng thế nào với thay đổi?",
-		title: "ADAPTABILITY",
-		accent: "PHẢN ỨNG VỚI THAY ĐỔI",
-		copy: "Khía cạnh này khám phá cách bạn phản ứng khi mọi việc thay đổi: thích nghi với môi trường mới, tình huống bất ngờ, phản hồi và nhiệm vụ xa lạ.",
-	},
-	{
-		id: "pressure",
-		letter: "P",
-		label: "Pressure",
-		prompt: "Tôi hành động thế nào khi chịu áp lực?",
-		title: "PRESSURE",
-		accent: "KHẢ NĂNG CHỊU ÁP LỰC",
-		copy: "Khía cạnh này khám phá cách bạn hành động trong tình huống đòi hỏi cao: quản lý căng thẳng, duy trì tập trung, ra quyết định và tiếp tục làm việc khi đối mặt áp lực.",
-	},
-];
-let activeId = $state("desire");
-let reduceMotion = $state(false);
-let active = $derived(
-	dimensions.find((item) => item.id === activeId) ?? dimensions[0],
-);
+	type Dimension = {
+		id: string;
+		letter: string;
+		label: string;
+		prompt: string;
+		title: string;
+		accent: string;
+		copy: string;
+	};
+	const dimensions: Dimension[] = [
+		{
+			id: 'desire',
+			letter: 'D',
+			label: 'Desire',
+			prompt: 'Điều gì thúc đẩy tôi?',
+			title: 'DESIRE',
+			accent: 'MONG MUỐN CỦA BẠN',
+			copy: 'Khía cạnh này khám phá các giá trị nghề nghiệp: điều bạn mong muốn và ưu tiên ở công việc tương lai, như an toàn tài chính, phát triển, tự chủ, tác động ý nghĩa, sự ghi nhận hoặc cân bằng cuộc sống.'
+		},
+		{
+			id: 'expertise',
+			letter: 'E',
+			label: 'Expertise',
+			prompt: 'Tôi giỏi điều gì?',
+			title: 'EXPERTISE',
+			accent: 'ĐIỂM MẠNH CỦA BẠN',
+			copy: 'Khía cạnh này khám phá kỹ năng bạn mang đến cho thử thách: cách bạn học hỏi, giải quyết vấn đề, truyền đạt ý tưởng và biến điểm mạnh thành đóng góp.'
+		},
+		{
+			id: 'social',
+			letter: 'S',
+			label: 'Social Role',
+			prompt: 'Tôi làm việc với người khác thế nào?',
+			title: 'SOCIAL ROLE',
+			accent: 'VAI TRÒ XÃ HỘI',
+			copy: 'Khía cạnh này khám phá cách bạn thường đóng góp khi làm việc cùng người khác: dẫn dắt, điều phối, hỗ trợ, chia sẻ ý tưởng hay thích làm việc độc lập.'
+		},
+		{
+			id: 'mind',
+			letter: 'M',
+			label: 'Mind',
+			prompt: 'Tôi suy nghĩ như thế nào?',
+			title: 'MIND',
+			accent: 'CÁCH BẠN SUY NGHĨ',
+			copy: 'Khía cạnh này khám phá cách bạn xử lý thông tin và giải quyết vấn đề: phân tích tình huống, đưa ra quyết định, tạo ý tưởng và tiếp cận thử thách.'
+		},
+		{
+			id: 'adaptability',
+			letter: 'A',
+			label: 'Adaptability',
+			prompt: 'Tôi phản ứng thế nào với thay đổi?',
+			title: 'ADAPTABILITY',
+			accent: 'PHẢN ỨNG VỚI THAY ĐỔI',
+			copy: 'Khía cạnh này khám phá cách bạn phản ứng khi mọi việc thay đổi: thích nghi với môi trường mới, tình huống bất ngờ, phản hồi và nhiệm vụ xa lạ.'
+		},
+		{
+			id: 'pressure',
+			letter: 'P',
+			label: 'Pressure',
+			prompt: 'Tôi hành động thế nào khi chịu áp lực?',
+			title: 'PRESSURE',
+			accent: 'KHẢ NĂNG CHỊU ÁP LỰC',
+			copy: 'Khía cạnh này khám phá cách bạn hành động trong tình huống đòi hỏi cao: quản lý căng thẳng, duy trì tập trung, ra quyết định và tiếp tục làm việc khi đối mặt áp lực.'
+		}
+	];
+	let activeId = $state('desire');
+	let reduceMotion = $state(false);
+	let active = $derived(dimensions.find((item) => item.id === activeId) ?? dimensions[0]);
 
-onMount(() => {
-	const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-	const update = () => (reduceMotion = media.matches);
-	update();
-	media.addEventListener("change", update);
-	return () => media.removeEventListener("change", update);
-});
+	onMount(() => {
+		const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const update = () => (reduceMotion = media.matches);
+		update();
+		media.addEventListener('change', update);
+		return () => media.removeEventListener('change', update);
+	});
 
-function choose(id: string, moveFocus = false) {
-	activeId = id;
-	if (moveFocus)
-		queueMicrotask(() =>
-			(
-				document.querySelector(
-					`[data-dimension-id="${id}"]`,
-				) as HTMLButtonElement | null
-			)?.focus({ preventScroll: true }),
-		);
-}
-function onCardKeydown(event: KeyboardEvent, index: number) {
-	if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-		event.preventDefault();
-		choose(dimensions[(index + 1) % dimensions.length].id, true);
+	function choose(id: string, moveFocus = false) {
+		activeId = id;
+		if (moveFocus)
+			queueMicrotask(() =>
+				(document.querySelector(`[data-dimension-id="${id}"]`) as HTMLButtonElement | null)?.focus({
+					preventScroll: true
+				})
+			);
 	}
-	if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-		event.preventDefault();
-		choose(
-			dimensions[(index + dimensions.length - 1) % dimensions.length].id,
-			true,
-		);
+	function onCardKeydown(event: KeyboardEvent, index: number) {
+		if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+			event.preventDefault();
+			choose(dimensions[(index + 1) % dimensions.length].id, true);
+		}
+		if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+			event.preventDefault();
+			choose(dimensions[(index + dimensions.length - 1) % dimensions.length].id, true);
+		}
 	}
-}
 </script>
 
 <section
@@ -116,12 +109,8 @@ function onCardKeydown(event: KeyboardEvent, index: number) {
 	<div
 		class="mx-auto grid w-[min(100%_-_2rem,90rem)] grid-cols-1 items-center gap-8 min-[1001px]:w-[min(100%_-_4rem,90rem)] min-[1001px]:grid-cols-[minmax(18rem,.7fr)_minmax(35rem,1.3fr)] min-[1001px]:gap-[clamp(2rem,6vw,7.4rem)]"
 	>
-		<div
-			class="flex min-h-0 flex-col pt-12 pb-0 min-[1001px]:min-h-[40rem] min-[1001px]:pb-12"
-		>
-			<p
-				class="m-0 font-mono text-[.73rem] font-[760] tracking-[.14em] text-lime uppercase"
-			>
+		<div class="flex min-h-0 flex-col pt-12 pb-0 min-[1001px]:min-h-[40rem] min-[1001px]:pb-12">
+			<p class="m-0 font-mono text-[.73rem] font-[760] tracking-[.14em] text-lime uppercase">
 				ĐÁNH GIÁ DESMAP
 			</p>
 			<div
@@ -138,14 +127,11 @@ function onCardKeydown(event: KeyboardEvent, index: number) {
 								class="m-0 max-w-96 text-[clamp(2rem,4.8vw,4.1rem)] leading-[.98] font-[450] tracking-[-.07em] uppercase"
 								id="explorer-heading"
 							>
-								{active.title.split(' — ')[0]} <span class="text-text">—</span
-								><strong class="block font-[450] text-lime"
-									>{active.accent}</strong
+								{active.title.split(' — ')[0]} <span class="text-text">—</span><strong
+									class="block font-[450] text-lime">{active.accent}</strong
 								>
 							</h2>
-							<p
-								class="mt-8 mb-0 max-w-[29rem] text-[1.02rem] leading-[1.58] text-muted"
-							>
+							<p class="mt-8 mb-0 max-w-[29rem] text-[1.02rem] leading-[1.58] text-muted">
 								{active.copy}
 							</p>
 						</div>
@@ -153,24 +139,27 @@ function onCardKeydown(event: KeyboardEvent, index: number) {
 				{/key}
 			</div>
 			<div
-				class="mt-12 grid max-w-[38rem] grid-cols-4 border-y border-line min-[1001px]:mt-auto [&>div]:flex [&>div]:min-w-0 [&>div]:flex-col [&>div]:gap-[.18rem] [&>div]:border-r [&>div]:border-line [&>div]:px-[.45rem] [&>div]:py-4 min-[601px]:[&>div]:px-[.7rem] [&>div:last-child]:border-r-0 [&_b]:text-[.95rem] [&_b]:font-[580] [&_b]:tracking-[-.04em] min-[601px]:[&_b]:text-[1.15rem] [&_small]:font-mono [&_small]:text-[.45rem] [&_small]:leading-[1.2] [&_small]:tracking-[.06em] [&_small]:text-muted min-[601px]:[&_small]:text-[.53rem]"
+				class="mt-12 grid max-w-[38rem] grid-cols-4 border-y border-line min-[1001px]:mt-auto [&_b]:text-[.95rem] [&_b]:font-[580] [&_b]:tracking-[-.04em] min-[601px]:[&_b]:text-[1.15rem] [&_small]:font-mono [&_small]:text-[.45rem] [&_small]:leading-[1.2] [&_small]:tracking-[.06em] [&_small]:text-muted min-[601px]:[&_small]:text-[.53rem] [&>div]:flex [&>div]:min-w-0 [&>div]:flex-col [&>div]:gap-[.18rem] [&>div]:border-r [&>div]:border-line [&>div]:px-[.45rem] [&>div]:py-4 min-[601px]:[&>div]:px-[.7rem] [&>div:last-child]:border-r-0"
 				aria-label="Chi tiết bài đánh giá"
 			>
 				<div>
-					<span class="text-[1.3rem] leading-none text-blue">▤</span
-					><b>{totalQuestionCount}</b><small>CÂU HỎI</small>
+					<span class="text-[1.3rem] leading-none text-blue">▤</span><b>{totalQuestionCount}</b
+					><small>CÂU HỎI</small>
 				</div>
 				<div>
-					<span class="text-[1.3rem] leading-none text-blue">◷</span
-					><b>NHỊP ĐỘ</b><small>THEO CÁCH CỦA BẠN</small>
+					<span class="text-[1.3rem] leading-none text-blue">◷</span><b>NHỊP ĐỘ</b><small
+						>THEO CÁCH CỦA BẠN</small
+					>
 				</div>
 				<div>
-					<span class="text-[1.3rem] leading-none text-blue">⌁</span><b>VR</b
-					><small>TRẢI NGHIỆM</small>
+					<span class="text-[1.3rem] leading-none text-blue">⌁</span><b>VR</b><small
+						>TRẢI NGHIỆM</small
+					>
 				</div>
 				<div>
-					<span class="text-[1.3rem] leading-none text-blue">⌂</span><b>∞</b
-					><small>ĐÃ LƯU TIẾN TRÌNH</small>
+					<span class="text-[1.3rem] leading-none text-blue">⌂</span><b>∞</b><small
+						>ĐÃ LƯU TIẾN TRÌNH</small
+					>
 				</div>
 			</div>
 		</div>
@@ -207,7 +196,7 @@ function onCardKeydown(event: KeyboardEvent, index: number) {
 			<p
 				class="mt-6 mb-0 text-center font-mono text-[.68rem] leading-normal tracking-[.04em] text-muted"
 			>
-				Câu trả lời của bạn chỉ được dùng<br class="hidden min-[601px]:block">
+				Câu trả lời của bạn chỉ được dùng<br class="hidden min-[601px]:block" />
 				để xây dựng hồ sơ nghề nghiệp.
 			</p>
 		</div>

@@ -1,34 +1,34 @@
 <script lang="ts">
-const steps = [
-	{
-		number: "01",
-		title: "Sở thích",
-		copy: "Chọn nghề nghiệp bạn muốn khám phá.",
-		icon: "/desmap/landing-02.png",
-		delay: "[animation-delay:0ms]",
-	},
-	{
-		number: "02",
-		title: "Bài test DESMAP",
-		copy: "Khám phá đặc điểm và điểm mạnh của bạn.",
-		icon: "/desmap/landing-03.png",
-		delay: "[animation-delay:90ms]",
-	},
-	{
-		number: "03",
-		title: "Trải nghiệm VR",
-		copy: "Trải nghiệm mô phỏng nghề nghiệp thực tế.",
-		icon: "/desmap/landing-04.png",
-		delay: "[animation-delay:180ms]",
-	},
-	{
-		number: "04",
-		title: "Hồ sơ cuối cùng",
-		copy: "Nhận kết quả và lộ trình phát triển của bạn.",
-		icon: "/desmap/landing-05.png",
-		delay: "[animation-delay:270ms]",
-	},
-];
+	const steps = [
+		{
+			number: '01',
+			title: 'Sở thích',
+			copy: 'Chọn nghề nghiệp bạn muốn khám phá.',
+			icon: '/desmap/landing-02.png',
+			delay: '[animation-delay:0ms]'
+		},
+		{
+			number: '02',
+			title: 'Bài test DESMAP',
+			copy: 'Khám phá đặc điểm và điểm mạnh của bạn.',
+			icon: '/desmap/landing-03.png',
+			delay: '[animation-delay:90ms]'
+		},
+		{
+			number: '03',
+			title: 'Trải nghiệm VR',
+			copy: 'Trải nghiệm mô phỏng nghề nghiệp thực tế.',
+			icon: '/desmap/landing-04.png',
+			delay: '[animation-delay:180ms]'
+		},
+		{
+			number: '04',
+			title: 'Hồ sơ cuối cùng',
+			copy: 'Nhận kết quả và lộ trình phát triển của bạn.',
+			icon: '/desmap/landing-05.png',
+			delay: '[animation-delay:270ms]'
+		}
+	];
 </script>
 
 <section
@@ -36,14 +36,11 @@ const steps = [
 	id="how-it-works"
 	aria-labelledby="process-heading"
 >
-	<div
-		class="mx-auto w-[min(100%_-_2rem,90rem)] min-[761px]:w-[min(100%_-_4rem,90rem)]"
-	>
+	<div class="mx-auto w-[min(100%_-_2rem,90rem)] min-[761px]:w-[min(100%_-_4rem,90rem)]">
 		<div
 			class="flex flex-col items-start justify-between gap-2 border-b border-line pb-[1.4rem] font-mono text-[.69rem] tracking-[.13em] text-lime uppercase min-[761px]:flex-row min-[761px]:items-center [&>span:last-child]:text-muted"
 		>
-			<span>Cách hoạt động</span
-			><span>Từ khám phá bản thân đến trải nghiệm thực tế</span>
+			<span>Cách hoạt động</span><span>Từ khám phá bản thân đến trải nghiệm thực tế</span>
 		</div>
 		<div
 			class="block gap-8 py-[2.3rem] min-[761px]:flex min-[761px]:items-end min-[761px]:justify-between min-[761px]:py-[3.1rem_3.7rem]"
@@ -52,14 +49,11 @@ const steps = [
 				class="m-0 max-w-[31rem] text-[clamp(2.5rem,6vw,5.2rem)] leading-[.9] font-[430] tracking-[-.08em] text-text uppercase"
 				id="process-heading"
 			>
-				Lộ trình rõ ràng hơn<br>
+				Lộ trình rõ ràng hơn<br />
 				<span class="text-lime">cho bước đi tiếp theo.</span>
 			</h2>
-			<p
-				class="mt-[1.3rem] mb-0 max-w-72 leading-normal text-muted min-[761px]:mt-0"
-			>
-				Bốn bước trọng tâm biến những câu hỏi về tương lai thành hồ sơ để bạn
-				hành động.
+			<p class="mt-[1.3rem] mb-0 max-w-72 leading-normal text-muted min-[761px]:mt-0">
+				Bốn bước trọng tâm biến những câu hỏi về tương lai thành hồ sơ để bạn hành động.
 			</p>
 		</div>
 		<div class="grid grid-cols-2 border-t border-line min-[761px]:grid-cols-4">
@@ -73,8 +67,7 @@ const steps = [
 							>{step.number}</span
 						><span
 							class="text-[1.3rem] text-blue transition group-hover:translate-x-[.2rem] group-hover:-translate-y-[.2rem] group-hover:text-lime"
-							aria-hidden="true"
-							>↗</span
+							aria-hidden="true">↗</span
 						>
 					</div>
 					<div
@@ -85,7 +78,7 @@ const steps = [
 							src={step.icon}
 							alt=""
 							loading="lazy"
-						>
+						/>
 					</div>
 					<h3 class="m-0 font-mono text-[.9rem] tracking-[.07em] uppercase">
 						{step.title}
