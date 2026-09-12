@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 966 145" role="img" aria-labelledby="title">
+  <title id="title">DESMAP</title>
+  <defs>
+    <linearGradient id="mark" x1="0" y1="0" x2="158" y2="145" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8edb2e"/>
+      <stop offset="0.52" stop-color="#bcff63"/>
+      <stop offset="1" stop-color="#d2ff96"/>
+    </linearGradient>
+    <linearGradient id="word" x1="183" y1="0" x2="966" y2="145" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f7f9ff"/>
+      <stop offset="0.55" stop-color="#dce5f4"/>
+      <stop offset="1" stop-color="#f7f9ff"/>
+    </linearGradient>
+  </defs>
+
+  <path
+    fill="url(#mark)"
+    fill-rule="evenodd"
+    d="M0 0h84c44 0 74 31 74 72.5S128 145 84 145H0v-27h84c28 0 47-18.7 47-45.5S112 27 84 27H0V0Z"
+  />
+  <path fill="#f7f9ff" d="m68 45 6.8 20.7L96 72.5l-21.2 6.8L68 100l-6.8-20.7L40 72.5l21.2-6.8L68 45Z"/>
+
+  <path fill="url(#word)" d="M183 10h120v20H205v32h90v20h-90v33h98v20H183V10Z"/>
+  <path
+    fill="url(#word)"
+    d="M380 10h82v20h-81c-8 0-14 6-14 14s6 14 14 14h57c24 0 42 16 42 38.5S462 135 438 135h-91v-20h90c12 0 21-7 21-18.5S449 78 437 78h-57c-21 0-35-15-35-34s14-34 35-34Z"
+  />
+  <path fill="url(#word)" d="M498 135V10h20l56 72 56-72h20v125h-22V45l-41 54h-26l-41-54v90h-22Z"/>
+  <path fill="url(#word)" d="M667 135 729 10h17l68 125h-27L738 42l-45 93h-26Z"/>
+  <path
+    fill="url(#word)"
+    d="M837 10h92c23 0 37 17 37 38s-14 38-37 38h-70v49h-22V66h91c10 0 16-8 16-18s-6-18-16-18h-91V10Z"
+  />
+</svg>

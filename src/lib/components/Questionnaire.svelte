@@ -264,30 +264,28 @@ function submitAssessment() {
 			</aside>
 
 			<main class="assessment-main">
-				<header class="assessment-header">
+				<!-- <header class="assessment-header">
 					<div>
 						<p class="eyebrow">DESMAP / KHÁM PHÁ BẢN THÂN</p>
-						<p class="header-caption">
-							Một khoảng dừng để cân nhắc trước hướng đi tiếp theo.
-						</p>
 					</div>
-					<div class="progress-copy">
-						<span>{progress}%</span
-						><small
-							>{mode === 'career' ? 'SỞ THÍCH NGHỀ NGHIỆP' : mode === 'review' ? 'SẴN SÀNG GỬI' : `${currentIndex + 1} / ${totalQuestionCount} CÂU HỎI`}</small
-						>
-					</div>
-				</header>
+				</header> -->
 
-				<div
-					class="progress-track"
-					aria-label={`${progress}% complete`}
-					role="progressbar"
-					aria-valuemin="0"
-					aria-valuemax="100"
-					aria-valuenow={progress}
-				>
-					<span style:width={`${progress}%`}></span>
+				<div class="progress-row">
+					<div
+						class="progress-track"
+						aria-label={`${progress}% complete`}
+						role="progressbar"
+						aria-valuemin="0"
+						aria-valuemax="100"
+						aria-valuenow={progress}
+					>
+						<span style:width={`${progress}%`}></span>
+					</div>
+					{#if mode === 'questions'}
+						<div class="progress-copy">
+							<span>{progress}%</span>
+						</div>
+					{/if}
 				</div>
 
 				{#if mode === 'career'}
@@ -343,14 +341,7 @@ function submitAssessment() {
 					<section
 						class="panel question-panel"
 						aria-labelledby="question-title"
-					>
-						<div class="question-topline">
-							<div class="stage-heading">
-								<span class="stage-chip">{currentQuestion.stage}</span
-								><span>{currentStage?.label}</span>
-							</div>
-							<span class="dimension-tag">{currentQuestion.dimension}</span>
-						</div>
+					> 
 						<h1 id="question-title" tabindex="-1">{currentQuestion.prompt}</h1>
 						<p class="instruction" id="question-instruction">
 							Chọn phương án mô tả đúng nhất về bạn.

@@ -30,57 +30,39 @@ import Footer from "$lib/components/Footer.svelte";
 		aria-labelledby="hero-heading"
 	>
 		<div
-			class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_47%,rgb(5_82_255_/.16),transparent_25%),radial-gradient(circle_at_83%_50%,rgb(159_64_255_/.11),transparent_24%)]"
+			class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_46%,rgb(5_82_255_/.13),transparent_32%),radial-gradient(circle_at_50%_52%,rgb(159_64_255_/.08),transparent_46%)]"
 			aria-hidden="true"
 		></div>
 		<div
-			class="relative mx-auto flex w-[min(100%_-_2rem,90rem)] flex-col items-stretch gap-4 pt-[4.2rem] min-[761px]:grid min-[761px]:min-h-[45rem] min-[761px]:w-[min(100%_-_4rem,90rem)] min-[761px]:grid-cols-[minmax(19rem,.92fr)_minmax(30rem,1.08fr)] min-[761px]:items-center min-[761px]:pt-[4.5rem] min-[761px]:pb-4 max-[1000px]:min-h-[40rem] max-[1000px]:grid-cols-[minmax(18rem,.8fr)_minmax(23rem,1.2fr)]"
+			class="relative mx-auto flex min-h-[38rem] w-[min(100%_-_2rem,90rem)] items-center justify-center pt-[7rem] pb-16 min-[761px]:min-h-[45rem] min-[761px]:w-[min(100%_-_4rem,90rem)] min-[761px]:pt-[8rem] min-[761px]:pb-20"
 		>
-			<div class="relative z-2 min-[761px]:pt-8">
+			<div class="relative z-2 flex w-full max-w-[58rem] flex-col items-center text-center">
 				<p
 					class="mb-[1.7rem] font-mono text-xs font-[740] tracking-[.13em] text-lime uppercase min-[761px]:mb-[2.4rem]"
 				>
 					ĐỊNH HƯỚNG NGHỀ NGHIỆP AI × VR
 				</p>
 				<h1
-					class="m-0 max-w-96 text-[clamp(3rem,14vw,5.6rem)] leading-[.87] font-[390] tracking-[-.085em] text-text uppercase min-[761px]:max-w-[44rem] min-[761px]:text-[clamp(3rem,6.35vw,6.7rem)] max-[1000px]:text-[clamp(3.1rem,6.8vw,5.4rem)]"
+					class="m-0 max-w-[58rem] text-[clamp(3rem,14vw,5.6rem)] leading-[.87] font-[390] tracking-[-.085em] text-text uppercase min-[761px]:text-[clamp(3rem,7vw,6.7rem)]"
 					id="hero-heading"
 				>
-					Đừng chỉ<br>chọn.<br><span class="text-lime">Hãy trải nghiệm</span>
+					Đừng chỉ chọn.<br><span class="text-lime">Hãy trải nghiệm</span>
 				</h1>
 				<p
-					class="mt-8 mb-0 max-w-[33rem] text-[.96rem] leading-[1.45] text-muted min-[761px]:text-[1.06rem]"
+					class="mt-8 mb-0 max-w-[38rem] text-[.96rem] leading-[1.55] text-muted min-[761px]:text-[1.06rem]"
 				>
 					DESMAP giúp bạn hiểu điểm mạnh, khám phá nghề nghiệp thực tế và tự tin
 					lựa chọn tương lai.
 				</p>
 				<div
-					class="mt-[2.4rem] flex flex-col items-start gap-[1.3rem] min-[471px]:flex-row min-[471px]:flex-wrap min-[471px]:items-center min-[471px]:gap-6"
+					class="mt-[2.4rem] flex justify-center"
 				>
 					<a
 						class="inline-flex min-h-[3.15rem] items-center justify-center gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]"
 						href="/questionnaire"
-						>Tạo hồ sơ của tôi <span aria-hidden="true">↗</span></a
-					><a
-						class="group inline-flex items-center gap-[.7rem] border-b border-text pb-2 font-mono text-[.72rem] tracking-[.05em] text-text uppercase no-underline transition-[color,border-color] duration-250 hover:border-lime hover:text-lime"
-						href="#how-it-works"
-						>Khám phá quy trình
-						<span
-							class="text-base text-lime transition-transform duration-250 group-hover:translate-x-1"
-							aria-hidden="true"
-							>→</span
-						></a
+						>Bắt đầu ngay <span aria-hidden="true">↗</span></a
 					>
 				</div>
-			</div>
-			<div
-				class="relative grid min-h-72 min-w-0 place-items-center -mt-4 min-[471px]:min-h-[22rem] min-[761px]:mt-0 min-[761px]:min-h-[35rem]"
-			>
-				<img
-					class="absolute z-1 aspect-[800/533] w-[130%] max-w-none object-contain object-center drop-shadow-[0_0_1.8rem_rgb(17_95_255_/.24)] min-[761px]:w-[124%] max-[1000px]:w-[140%]"
-					src="/desmap/landing-01.png"
-					alt="Kính thực tế ảo màu xanh mở ra cánh cổng nghề nghiệp neon"
-				>
 			</div>
 		</div>
 		<div

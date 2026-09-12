@@ -145,6 +145,7 @@
 			font-size: 0.83rem;
 		}
 		.progress-copy {
+			flex: 0 0 auto;
 			display: grid;
 			justify-items: end;
 			gap: 0.15rem;
@@ -160,9 +161,16 @@
 			font-size: 0.65rem;
 			letter-spacing: 0.1em;
 		}
-		.progress-track {
-			height: 0.6rem;
+		.progress-row {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
 			margin: 1.8rem 0 2rem;
+		}
+		.progress-track {
+			flex: 1;
+			min-width: 0;
+			height: 0.6rem;
 			background: rgb(45 75 123 / 0.65);
 			overflow: hidden;
 		}
@@ -663,7 +671,7 @@
 			.header-caption {
 				max-width: 12rem;
 			}
-			.progress-track {
+			.progress-row {
 				margin: 1.1rem 0;
 			}
 			.panel {
