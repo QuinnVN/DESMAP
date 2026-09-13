@@ -1,7 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { describe, expect, it, vi } from 'vitest';
-import { buildInitialAssessmentRequest } from '$lib/assessment';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { buildInitialAssessmentRequest, calculateInitialAssessment } from '$lib/assessment';
 import { buildCompletionPayload, desmapQuestions } from '$lib/questionnaire';
+
+const mode = vi.hoisted(() => vi.fn(() => 'ai' as 'ai' | 'weighted'));
+vi.mock('$lib/server/initial-assessment-mode', () => ({ getInitialAssessmentMode: mode }));
+
 import { POST } from './+server';
 
 const payload = buildCompletionPayload({
@@ -34,6 +38,10 @@ function event(body: string, fetcher: typeof fetch): RequestEvent {
 }
 
 describe('initial assessment proxy', () => {
+	afterEach(() => {
+		mode.mockReturnValue('ai');
+	});
+
 	it('rejects malformed browser input before contacting the backend', async () => {
 		const fetcher = vi.fn<typeof fetch>();
 		const response = await POST(event('{}', fetcher));
@@ -55,6 +63,29 @@ describe('initial assessment proxy', () => {
 			'http://127.0.0.1:8000/api/ai/initial-career-assessment',
 			expect.objectContaining({ method: 'POST' })
 		);
+	});
+
+	it.each(['true', 'TRUE'])('calculates a valid request without contacting AI for %s', async () => {
+		mode.mockReturnValue('weighted');
+		const fetcher = vi.fn<typeof fetch>();
+		const response = await POST(event(JSON.stringify(requestBody), fetcher));
+
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual(calculateInitialAssessment(requestBody));
+		expect(fetcher).not.toHaveBeenCalled();
+	});
+
+	it('continues to AI when the flag value is invalid', async () => {
+		const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+			new Response(JSON.stringify(validResponse), {
+				status: 200,
+				headers: { 'content-type': 'application/json' }
+			})
+		);
+		const response = await POST(event(JSON.stringify(requestBody), fetcher));
+
+		expect(response.status).toBe(200);
+		expect(fetcher).toHaveBeenCalledOnce();
 	});
 
 	it('turns an invalid successful backend response into a safe 502', async () => {

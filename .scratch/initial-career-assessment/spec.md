@@ -1,18 +1,18 @@
 # Initial career assessment
 
-Status: ready-for-agent
+Status: implemented
 
 ## Problem Statement
 
 A participant can complete the DESMAP questionnaire, but the website does not request an AI assessment. It stores the questionnaire in the browser and shows fixed demonstration percentages and report content. Those values are not derived from the participant's answers.
 
-The existing AI contract does not fit the approved initial assessment. It accepts only 20 dimensions even though the questionnaire produces 28 grouped DESMAP scores. It also requires a written evaluation that the product must not show at this stage. The initial assessment has only self-reported questionnaire data, so it cannot support claims about personal strengths, gaps, VR observations, or a final career recommendation.
+The initial assessment has only self-reported questionnaire data, so it cannot support claims about personal strengths, gaps, VR observations, or a final career recommendation. Production uses the existing AI evaluator, but automated and manual tests need a deterministic mode that cannot contact AI and that derives the same response contract directly from the 28 grouped DESMAP scores.
 
 ## Solution
 
 After questionnaire completion, the website will preserve the participant's full questionnaire record, navigate to the evaluation page, and request an initial assessment through a local SvelteKit proxy. The request will contain the 28 grouped DESMAP scores and the career candidates derived from the participant's selected career interests. Each career candidate will include all 28 criteria from an editable, typed weight matrix.
 
-The renamed AI endpoint will use Qwen to return one provisional match percentage for each career candidate. It will return no written evaluation. The website will cache the successful response, rank the percentages for display, retain the six-stage DESMAP profile, and remove unsupported claims from completed initial results.
+By default, the endpoint will use Qwen to return one provisional match percentage for each career candidate. When `DISABLE_AI_INIT_ASSESSMENT=true`, the SvelteKit endpoint will instead calculate each percentage as the rounded importance-weighted mean of all 28 grouped DESMAP scores and will not contact AI. Both modes return no written evaluation. The website will cache each mode separately, rank the percentages for display, retain the six-stage DESMAP profile, and remove unsupported claims from completed initial results.
 
 The website will retain all 35 fine DESMAP scores under the same stable assessment identifier for a future final assessment. This feature will not store questionnaire data on the backend or combine it with telemetry.
 
@@ -25,7 +25,7 @@ The website will retain all 35 fine DESMAP scores under the same stable assessme
 5. As a participant, I want the website to accept my completed questionnaire before contacting the AI service, so that a model failure cannot erase my work.
 6. As a participant, I want one stable assessment identifier assigned to my completed questionnaire, so that its initial result and future analysis can refer to the same attempt.
 7. As a participant, I want to reach the evaluation page immediately after completion, so that I can see that the assessment is being prepared.
-8. As a participant, I want a visible Vietnamese loading message while Qwen is processing the request, so that I know the website has accepted my questionnaire.
+8. As a participant, I want a visible Vietnamese loading message while the initial assessment is processing, so that I know the website has accepted my questionnaire.
 9. As a screen-reader user, I want loading and result state changes announced without stealing focus, so that I can follow the assessment progress.
 10. As a participant, I want duplicate submissions disabled while a request is pending, so that one click does not create multiple model requests.
 11. As a participant, I want the six-stage DESMAP profile to remain visible, so that I can review the questionnaire scores separately from the AI result.
@@ -69,7 +69,10 @@ The website will retain all 35 fine DESMAP scores under the same stable assessme
 - Remove `evaluation` from the initial response contract, model schema, prompt, parser, repair prompt, examples, and tests. Each result contains only `career_id`, `career_name`, and `match_percentage`.
 - Preserve the request assessment identifier, career identifiers, career names, career count, and request order in the backend response. The backend rejects a model response that changes any of them.
 - Keep percentages independent. They are integers from 0 through 100 and do not need to total 100.
-- Keep Qwen as the evaluator. The model interprets grouped DESMAP scores, career descriptions, and importance weights rather than applying a fixed arithmetic formula.
+- Keep Qwen as the default evaluator. The model interprets grouped DESMAP scores, career descriptions, and importance weights.
+- Add the server-only `DISABLE_AI_INIT_ASSESSMENT` testing flag. Missing values, `false`, and values other than case-insensitive `true` keep the AI path. A case-insensitive `true` selects deterministic weighted scoring and prevents any call to the AI backend.
+- In deterministic mode, calculate each career percentage as `round(sum(grouped score * importance) / sum(importance))` across all 28 grouped dimensions. Keep the result order and response contract identical to the AI mode.
+- In deterministic mode, do not show career names or percentages in the "Mức đối chiếu ban đầu" container. Show only "Chưa đủ dữ liệu để đưa ra gợi ý" below its heading. Keep the AI-mode display unchanged.
 - Reduce the initial generation temperature from 0.6 to 0.2. Keep strict JSON output, hidden reasoning, the existing bounded request behavior, and one formatting-repair attempt.
 - Change the system prompt so it requests percentages only. It must prohibit written evaluations, strengths, gaps, recommendations, diagnoses, guarantees, telemetry claims, VR observations, hidden reasoning, and additional output.
 - Extend the versioned browser completion record with one schema-safe stable identifier in the form `assessment-<UUID>`. Reuse that identifier for requests, cached results, export, retry, and future handoff.
@@ -88,43 +91,43 @@ The website will retain all 35 fine DESMAP scores under the same stable assessme
 - Validate the configuration in tests. It must contain 28 unique schema-safe grouped dimensions, five unique schema-safe careers, 28 integer weights per career, valid descriptions, and no unknown identifiers.
 - Use this approved provisional matrix:
 
-| Grouped DESMAP dimension | Bác sĩ | Luật sư | Giáo viên | Nhân viên kinh doanh | Kỹ sư ô tô |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| D1 Thu nhập, phúc lợi, ổn định | 3 | 3 | 2 | 5 | 4 |
-| D2 Học hỏi, phát triển, thử thách | 5 | 4 | 5 | 4 | 5 |
-| D3 Tự chủ | 2 | 4 | 3 | 4 | 4 |
-| D4 Ý nghĩa và đóng góp | 5 | 4 | 5 | 3 | 3 |
-| D5 Công nhận và ảnh hưởng | 2 | 4 | 3 | 5 | 3 |
-| D6 Điều kiện và cân bằng công việc | 2 | 2 | 3 | 2 | 3 |
-| E1 Kỹ năng nền tảng | 5 | 5 | 5 | 4 | 4 |
-| E2 Giải quyết vấn đề phức tạp | 5 | 5 | 4 | 4 | 5 |
-| E3 Kỹ năng tương tác xã hội | 5 | 5 | 5 | 5 | 3 |
-| E4 Kỹ năng kỹ thuật | 3 | 1 | 2 | 2 | 5 |
-| E5 Kỹ năng hệ thống | 4 | 4 | 4 | 3 | 5 |
-| E6 Quản lý nguồn lực | 4 | 4 | 4 | 5 | 4 |
-| S1 Vai trò hướng nhiệm vụ | 5 | 5 | 4 | 4 | 5 |
-| S2 Vai trò duy trì quan hệ | 5 | 3 | 5 | 5 | 3 |
-| S3 Vai trò định hướng cá nhân | 2 | 4 | 2 | 4 | 3 |
-| M1 Tư duy phân tích | 5 | 5 | 4 | 4 | 5 |
-| M2 Tư duy sáng tạo | 3 | 4 | 5 | 4 | 4 |
-| M3 Tư duy thực tiễn | 5 | 4 | 5 | 5 | 5 |
-| A1 Chuẩn bị cho tương lai | 4 | 4 | 4 | 3 | 4 |
-| A2 Chủ động và chịu trách nhiệm | 5 | 5 | 4 | 5 | 5 |
-| A3 Khám phá khả năng mới | 4 | 4 | 5 | 4 | 5 |
-| A4 Tự tin vượt qua khó khăn | 5 | 5 | 4 | 5 | 5 |
-| P1 Áp lực thời gian và tốc độ | 5 | 5 | 4 | 5 | 4 |
-| P2 Áp lực khối lượng công việc | 5 | 5 | 4 | 5 | 4 |
-| P3 Áp lực tư duy và quyết định | 5 | 5 | 4 | 4 | 5 |
-| P4 Áp lực cảm xúc | 5 | 4 | 5 | 5 | 3 |
-| P5 Áp lực tương tác và xung đột | 4 | 5 | 5 | 5 | 3 |
-| P6 Áp lực trách nhiệm và hậu quả | 5 | 5 | 4 | 4 | 5 |
+| Grouped DESMAP dimension           | Bác sĩ | Luật sư | Giáo viên | Nhân viên kinh doanh | Kỹ sư ô tô |
+| ---------------------------------- | -----: | ------: | --------: | -------------------: | ---------: |
+| D1 Thu nhập, phúc lợi, ổn định     |      3 |       3 |         2 |                    5 |          4 |
+| D2 Học hỏi, phát triển, thử thách  |      5 |       4 |         5 |                    4 |          5 |
+| D3 Tự chủ                          |      2 |       4 |         3 |                    4 |          4 |
+| D4 Ý nghĩa và đóng góp             |      5 |       4 |         5 |                    3 |          3 |
+| D5 Công nhận và ảnh hưởng          |      2 |       4 |         3 |                    5 |          3 |
+| D6 Điều kiện và cân bằng công việc |      2 |       2 |         3 |                    2 |          3 |
+| E1 Kỹ năng nền tảng                |      5 |       5 |         5 |                    4 |          4 |
+| E2 Giải quyết vấn đề phức tạp      |      5 |       5 |         4 |                    4 |          5 |
+| E3 Kỹ năng tương tác xã hội        |      5 |       5 |         5 |                    5 |          3 |
+| E4 Kỹ năng kỹ thuật                |      3 |       1 |         2 |                    2 |          5 |
+| E5 Kỹ năng hệ thống                |      4 |       4 |         4 |                    3 |          5 |
+| E6 Quản lý nguồn lực               |      4 |       4 |         4 |                    5 |          4 |
+| S1 Vai trò hướng nhiệm vụ          |      5 |       5 |         4 |                    4 |          5 |
+| S2 Vai trò duy trì quan hệ         |      5 |       3 |         5 |                    5 |          3 |
+| S3 Vai trò định hướng cá nhân      |      2 |       4 |         2 |                    4 |          3 |
+| M1 Tư duy phân tích                |      5 |       5 |         4 |                    4 |          5 |
+| M2 Tư duy sáng tạo                 |      3 |       4 |         5 |                    4 |          4 |
+| M3 Tư duy thực tiễn                |      5 |       4 |         5 |                    5 |          5 |
+| A1 Chuẩn bị cho tương lai          |      4 |       4 |         4 |                    3 |          4 |
+| A2 Chủ động và chịu trách nhiệm    |      5 |       5 |         4 |                    5 |          5 |
+| A3 Khám phá khả năng mới           |      4 |       4 |         5 |                    4 |          5 |
+| A4 Tự tin vượt qua khó khăn        |      5 |       5 |         4 |                    5 |          5 |
+| P1 Áp lực thời gian và tốc độ      |      5 |       5 |         4 |                    5 |          4 |
+| P2 Áp lực khối lượng công việc     |      5 |       5 |         4 |                    5 |          4 |
+| P3 Áp lực tư duy và quyết định     |      5 |       5 |         4 |                    4 |          5 |
+| P4 Áp lực cảm xúc                  |      5 |       4 |         5 |                    5 |          3 |
+| P5 Áp lực tương tác và xung đột    |      4 |       5 |         5 |                    5 |          3 |
+| P6 Áp lực trách nhiệm và hậu quả   |      5 |       5 |         4 |                    4 |          5 |
 
-- Add one same-origin SvelteKit POST endpoint for the browser. It forwards the validated body to `http://127.0.0.1:8000/api/ai/initial-career-assessment` and returns the backend status and safe response.
+- Add one same-origin SvelteKit POST endpoint for the browser. In the default AI mode, it forwards the validated body to `http://127.0.0.1:8000/api/ai/initial-career-assessment` and returns the backend status and safe response. In deterministic mode, it validates and calculates the response locally without contacting that backend.
 - Keep the loopback backend address fixed for this local-only implementation. Assume backend token authentication is disabled. Public deployment, configurable remote origins, and browser-direct CORS are outside this work.
 - Put request construction, career expansion, strict response validation, stable ranking, and cache fingerprinting behind one public frontend assessment adapter. Keep browser storage and network calls at its boundary so tests can supply controlled implementations.
-- Build a canonical request fingerprint from every request field, including the current weights. A cached success is valid only when its assessment identifier and request fingerprint match the current request.
+- Build a canonical request fingerprint from every request field, including the current weights and evaluation mode. A cached success is valid only when its assessment identifier, evaluation mode, and request fingerprint match the current request. Store AI and deterministic results under separate cache keys.
 - Cache only successful, validated responses. Preserve the completion record after all failures. Never cache error responses or demonstration values.
-- On questionnaire completion, persist the completion record, clear only the draft, and navigate to the evaluation page without waiting for Qwen.
+- On questionnaire completion, persist the completion record, clear only the draft, and navigate to the evaluation page without waiting for the evaluator.
 - The evaluation page owns `loading`, `success`, and `error` states. It first reads the completion record, checks for a matching cached result, and requests an assessment only when no valid cache exists.
 - Prevent concurrent requests for the same page state. A retry starts one new request only after the previous request has failed.
 - Treat 502, 503, and network failures as recoverable. Show a Vietnamese error and a retry action. Treat 401 and 422 as configuration or data errors, show a specific Vietnamese message, and retain the completion record.
@@ -152,6 +155,10 @@ The website will retain all 35 fine DESMAP scores under the same stable assessme
 - Test descending display order and stable request-order tie handling without changing the cached raw response.
 - Test cache hits, cache misses, invalid JSON, mismatched identifiers, changed questionnaire scores, changed career candidates, changed weights, and corrupted local storage.
 - Test that only successful validated responses enter the cache.
+- Test the deterministic weighted-mean formula against all 28 grouped scores and all configured importance weights.
+- Test that case-insensitive `true` selects deterministic mode, while missing, `false`, and invalid flag values select AI mode.
+- Test that deterministic mode returns the normal response contract without calling the AI backend and that AI and deterministic results cannot share a cache entry.
+- Test that the initial-match container hides weighted-mode career scores and shows "Chưa đủ dữ liệu để đưa ra gợi ý", while AI mode still shows its scores.
 - Test recoverable classification for 502, 503, and network errors. Test non-recoverable configuration or data messaging for 401 and 422.
 - Keep backend contract tests at the existing assessment request, response, parser, prompt, and route boundaries. This is the highest existing backend seam and avoids testing Qwen internals.
 - Update backend tests for the renamed route, 28-dimension and 28-criterion limits, removed evaluation field, strict percentage-only model schema, identity and order preservation, generation settings, and the single repair attempt.
@@ -179,7 +186,7 @@ The website will retain all 35 fine DESMAP scores under the same stable assessme
 ## Further Notes
 
 - The matrix is approved as provisional product data. A maintainer may change it in the typed configuration and rebuild the website.
-- Any questionnaire score, career mapping, description, or weight change changes the request fingerprint and invalidates the cached initial result.
-- The model percentage is an AI judgment, not the direct result of an arithmetic weighting formula. The product must not imply that a weight change guarantees a specific numeric delta.
+- Any questionnaire score, career mapping, description, weight, or evaluation-mode change changes the request fingerprint and invalidates the cached initial result.
+- In the default mode, the percentage is an AI judgment. In deterministic test mode, the percentage is the direct rounded weighted mean defined above.
 - The full 35-score record remains browser-local until the final-assessment identity, privacy, persistence, and telemetry contracts are designed.
 - Existing unrelated website changes must remain untouched during implementation.

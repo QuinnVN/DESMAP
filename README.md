@@ -11,6 +11,14 @@ pnpm dev
 
 The development server defaults to `http://localhost:5173/`.
 
+Copy `.env.example` to `.env` when local configuration is needed. AI remains enabled for initial assessments by default. For deterministic assessment tests that must not contact AI, set:
+
+```env
+DISABLE_AI_INIT_ASSESSMENT=true
+```
+
+Missing, `false`, or invalid values keep the AI path enabled.
+
 Run the production checks with:
 
 ```sh

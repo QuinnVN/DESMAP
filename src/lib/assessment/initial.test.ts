@@ -8,13 +8,15 @@ import {
 } from './config';
 import {
 	buildInitialAssessmentRequest,
-	INITIAL_ASSESSMENT_CACHE_KEY,
+	calculateInitialAssessment,
+	initialAssessmentCacheKey,
 	InitialAssessmentError,
 	rankInitialMatches,
 	readCachedInitialAssessment,
 	requestFingerprint,
 	runInitialAssessment,
 	validateInitialAssessmentResponse,
+	writeCachedInitialAssessment,
 	type AssessmentStorage,
 	type InitialAssessmentRequest,
 	type InitialAssessmentResponse
@@ -188,6 +190,35 @@ describe('request and response contract', () => {
 		]);
 		expect(response).toEqual(before);
 	});
+
+	it('calculates each career from all 28 grouped scores and importance weights', () => {
+		const request = buildInitialAssessmentRequest(questionnaire(['exploring']));
+		request.dimensions.forEach((dimension, index) => {
+			dimension.score = index % 3 === 0 ? 100 : index % 3 === 1 ? 50 : 0;
+		});
+		const scores = new Map(request.dimensions.map((dimension) => [dimension.id, dimension.score]));
+		const expected = request.careers.map((career) => {
+			const weightedTotal = career.criteria.reduce(
+				(total, criterion) =>
+					total + (scores.get(criterion.dimension_id) as number) * criterion.importance,
+				0
+			);
+			const totalImportance = career.criteria.reduce(
+				(total, criterion) => total + criterion.importance,
+				0
+			);
+			return {
+				career_id: career.id,
+				career_name: career.name,
+				match_percentage: Math.round(weightedTotal / totalImportance)
+			};
+		});
+
+		expect(calculateInitialAssessment(request)).toEqual({
+			assessment_id: request.assessment_id,
+			results: expected
+		});
+	});
 });
 
 describe('cache and network boundary', () => {
@@ -197,10 +228,11 @@ describe('cache and network boundary', () => {
 		const response = responseFor(request);
 		const cached = JSON.stringify({
 			assessment_id: request.assessment_id,
-			fingerprint: requestFingerprint(request),
+			fingerprint: requestFingerprint(request, 'ai'),
+			mode: 'ai',
 			response
 		});
-		const { storage } = memoryStorage({ [INITIAL_ASSESSMENT_CACHE_KEY]: cached });
+		const { storage } = memoryStorage({ [initialAssessmentCacheKey('ai')]: cached });
 		const fetcher = vi.fn();
 		const result = await runInitialAssessment(payload, { storage, fetcher });
 		expect(result.source).toBe('cache');
@@ -220,17 +252,34 @@ describe('cache and network boundary', () => {
 		const { storage, values } = memoryStorage();
 		for (const current of [changedScore, changedCareer, changedWeight, mismatchedId]) {
 			values.set(
-				INITIAL_ASSESSMENT_CACHE_KEY,
+				initialAssessmentCacheKey('ai'),
 				JSON.stringify({
 					assessment_id: request.assessment_id,
-					fingerprint: requestFingerprint(request),
+					fingerprint: requestFingerprint(request, 'ai'),
+					mode: 'ai',
 					response
 				})
 			);
 			expect(readCachedInitialAssessment(storage, current)).toBeNull();
 		}
-		values.set(INITIAL_ASSESSMENT_CACHE_KEY, '{broken');
+		values.set(initialAssessmentCacheKey('ai'), '{broken');
 		expect(readCachedInitialAssessment(storage, request)).toBeNull();
+	});
+
+	it('keeps AI and weighted results in separate caches', () => {
+		const request = buildInitialAssessmentRequest(questionnaire());
+		const aiResponse = responseFor(request, [81]);
+		const weightedResponse = responseFor(request, [67]);
+		const { storage, values } = memoryStorage();
+
+		writeCachedInitialAssessment(storage, request, aiResponse, 'ai');
+		expect(readCachedInitialAssessment(storage, request, 'weighted')).toBeNull();
+		writeCachedInitialAssessment(storage, request, weightedResponse, 'weighted');
+
+		expect(readCachedInitialAssessment(storage, request, 'ai')).toEqual(aiResponse);
+		expect(readCachedInitialAssessment(storage, request, 'weighted')).toEqual(weightedResponse);
+		expect(values.has(initialAssessmentCacheKey('ai'))).toBe(true);
+		expect(values.has(initialAssessmentCacheKey('weighted'))).toBe(true);
 	});
 
 	it('caches only a successful validated network response', async () => {

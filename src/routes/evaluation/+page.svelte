@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
+	import type { PageProps } from './$types';
 	import { ArrowRight, Download, RefreshCw } from '@lucide/svelte';
 	import Header from '$lib/components/Header.svelte';
+	import InitialMatchPanel from '$lib/components/InitialMatchPanel.svelte';
 	import { experiences } from '$lib/evaluation';
 	import {
 		browserAssessmentStorage,
@@ -16,6 +18,8 @@
 		type QuestionnaireSubmission,
 		type StageId
 	} from '$lib/questionnaire';
+
+	let { data }: PageProps = $props();
 
 	const stageOrder: StageId[] = ['D', 'E', 'S', 'M', 'A', 'P'];
 	const stageLabels: Record<StageId, string> = {
@@ -52,7 +56,8 @@
 		try {
 			const result = await runInitialAssessment(payload, {
 				storage: browserAssessmentStorage(),
-				skipCache: retry
+				skipCache: retry,
+				mode: data.initialAssessmentMode
 			});
 			response = result.response;
 			rankedResults = result.rankedResults;
@@ -240,29 +245,7 @@
 				class="mt-3 grid gap-4 min-[850px]:grid-cols-[1.15fr_.85fr]"
 				aria-label="Kết quả đối chiếu nghề nghiệp ban đầu"
 			>
-				<div class="border border-blue bg-[#071020] p-6">
-					<h2 class="mt-0">Mức đối chiếu ban đầu</h2>
-					<p class="text-[.83rem] text-[#91a0b4]">
-						Các phần trăm độc lập được xếp từ cao xuống thấp. Đây không phải khuyến nghị.
-					</p>
-					{#each rankedResults as match, index (match.career_id)}
-						<div
-							class="grid grid-cols-[1.6rem_minmax(7rem,auto)_1fr_3rem] items-center gap-2 border-b border-white/14 py-4 max-[560px]:grid-cols-[1.5rem_1fr_3rem]"
-						>
-							<span class="font-mono text-blue">0{index + 1}</span>
-							<strong>{match.career_name}</strong>
-							<div
-								class="h-2 bg-blue/30 max-[560px]:col-span-3"
-								role="img"
-								aria-label={`${match.career_name}: ${match.match_percentage}%`}
-							>
-								<span class="block h-full bg-lime" style:width={`${match.match_percentage}%`}
-								></span>
-							</div>
-							<b class="text-right text-lime">{match.match_percentage}%</b>
-						</div>
-					{/each}
-				</div>
+				<InitialMatchPanel mode={data.initialAssessmentMode} matches={rankedResults} />
 				<div class="border border-blue bg-[#071020] p-6">
 					<h2 class="mt-0">Hồ sơ DESMAP</h2>
 					<p class="text-[.83rem] text-[#91a0b4]">Điểm tự báo cáo theo sáu giai đoạn.</p>
@@ -278,10 +261,18 @@
 				class="mt-4 flex flex-wrap items-center justify-between gap-5 border border-blue bg-[#071020] p-6"
 			>
 				<div>
-					<h2 class="mt-0 mb-2">Bước tiếp theo</h2>
-					<p class="m-0 max-w-[34rem] text-[#91a0b4]">
-						Bạn có thể xem trải nghiệm của nghề đứng đầu hoặc lưu kết quả này.
-					</p>
+					{#if data.initialAssessmentMode === 'ai'}
+						<h2 class="mt-0 mb-1 text-lg font-bold">Bước tiếp theo</h2>
+						<p class="m-0 max-w-[34rem] text-[.83rem] text-[#91a0b4]">
+							Bạn có thể xem trải nghiệm của nghề đứng đầu hoặc lưu kết quả này.
+						</p>
+					{:else}
+						<h2 class="mt-0 mb-1 text-lg font-bold">Cảm ơn bạn vì đã tham gia bài test này.</h2>
+						<p class="m-0 max-w-[34rem] text-[.83rem] text-[#91a0b4]">
+							Để nhận được kết quả chính xác nhất và gợi ý nghề nghiệp phù hợp, hãy tới buổi trải
+							nghiệm bằng VR của tụi mình!
+						</p>
+					{/if}
 				</div>
 				<div class="flex flex-wrap items-center gap-4">
 					{#if target?.status === 'locked'}
@@ -292,7 +283,7 @@
 						>
 							{target.title}: Sắp ra mắt
 						</button>
-					{:else if target}
+					{:else if target && data.initialAssessmentMode !== 'weighted'}
 						<a
 							class="inline-flex items-center gap-2 border border-lime bg-lime px-5 py-3 font-bold text-[#061006] no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lime"
 							href={resolve(`/experiences?career=${encodeURIComponent(target.slug)}`)}

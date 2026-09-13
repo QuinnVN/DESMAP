@@ -31,6 +31,7 @@ export type InitialCareerMatch = {
 	match_percentage: number;
 };
 export type InitialAssessmentResponse = { assessment_id: string; results: InitialCareerMatch[] };
+export type InitialAssessmentMode = 'ai' | 'weighted';
 
 export type AssessmentStorage = {
 	getItem(key: string): string | null;
@@ -58,7 +59,11 @@ export class InitialAssessmentError extends Error {
 	}
 }
 
-export const INITIAL_ASSESSMENT_CACHE_KEY = 'desmap:assessment:initial:v1';
+export const INITIAL_ASSESSMENT_CACHE_KEY = 'desmap:assessment:initial:v2';
+
+export function initialAssessmentCacheKey(mode: InitialAssessmentMode): string {
+	return `${INITIAL_ASSESSMENT_CACHE_KEY}:${mode}`;
+}
 
 function stable(value: unknown): string {
 	if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
@@ -71,8 +76,11 @@ function stable(value: unknown): string {
 	return JSON.stringify(value);
 }
 
-export function requestFingerprint(request: InitialAssessmentRequest): string {
-	return stable(request);
+export function requestFingerprint(
+	request: InitialAssessmentRequest,
+	mode: InitialAssessmentMode = 'ai'
+): string {
+	return stable({ mode, request });
 }
 
 export function buildInitialAssessmentRequest(
@@ -242,6 +250,30 @@ export function validateInitialAssessmentResponse(
 	return { assessment_id: body.assessment_id as string, results };
 }
 
+export function calculateInitialAssessment(
+	request: InitialAssessmentRequest
+): InitialAssessmentResponse {
+	validateInitialAssessmentRequest(request);
+	const scores = new Map(request.dimensions.map((dimension) => [dimension.id, dimension.score]));
+	const response: InitialAssessmentResponse = {
+		assessment_id: request.assessment_id,
+		results: request.careers.map((career) => {
+			let weightedTotal = 0;
+			let totalImportance = 0;
+			for (const criterion of career.criteria) {
+				weightedTotal += (scores.get(criterion.dimension_id) as number) * criterion.importance;
+				totalImportance += criterion.importance;
+			}
+			return {
+				career_id: career.id,
+				career_name: career.name,
+				match_percentage: Math.round(weightedTotal / totalImportance)
+			};
+		})
+	};
+	return validateInitialAssessmentResponse(response, request);
+}
+
 export function rankInitialMatches(response: InitialAssessmentResponse): InitialCareerMatch[] {
 	return response.results
 		.map((result, index) => ({ result, index }))
@@ -251,18 +283,21 @@ export function rankInitialMatches(response: InitialAssessmentResponse): Initial
 
 export function readCachedInitialAssessment(
 	storage: AssessmentStorage,
-	request: InitialAssessmentRequest
+	request: InitialAssessmentRequest,
+	mode: InitialAssessmentMode = 'ai'
 ): InitialAssessmentResponse | null {
 	try {
-		const parsed = JSON.parse(storage.getItem(INITIAL_ASSESSMENT_CACHE_KEY) ?? 'null') as {
+		const parsed = JSON.parse(storage.getItem(initialAssessmentCacheKey(mode)) ?? 'null') as {
 			assessment_id?: string;
 			fingerprint?: string;
+			mode?: InitialAssessmentMode;
 			response?: unknown;
 		} | null;
 		if (
 			!parsed ||
 			parsed.assessment_id !== request.assessment_id ||
-			parsed.fingerprint !== requestFingerprint(request)
+			parsed.mode !== mode ||
+			parsed.fingerprint !== requestFingerprint(request, mode)
 		)
 			return null;
 		return validateInitialAssessmentResponse(parsed.response, request);
@@ -274,14 +309,16 @@ export function readCachedInitialAssessment(
 export function writeCachedInitialAssessment(
 	storage: AssessmentStorage,
 	request: InitialAssessmentRequest,
-	response: InitialAssessmentResponse
+	response: InitialAssessmentResponse,
+	mode: InitialAssessmentMode = 'ai'
 ): void {
 	try {
 		storage.setItem(
-			INITIAL_ASSESSMENT_CACHE_KEY,
+			initialAssessmentCacheKey(mode),
 			JSON.stringify({
 				assessment_id: request.assessment_id,
-				fingerprint: requestFingerprint(request),
+				fingerprint: requestFingerprint(request, mode),
+				mode,
 				response
 			})
 		);
@@ -339,11 +376,13 @@ export async function runInitialAssessment(
 		storage?: AssessmentStorage | null;
 		fetcher?: AssessmentFetch;
 		skipCache?: boolean;
+		mode?: InitialAssessmentMode;
 	} = {}
 ): Promise<InitialAssessmentRun> {
 	const request = buildInitialAssessmentRequest(payload);
+	const mode = options.mode ?? 'ai';
 	if (!options.skipCache && options.storage) {
-		const cached = readCachedInitialAssessment(options.storage, request);
+		const cached = readCachedInitialAssessment(options.storage, request, mode);
 		if (cached) {
 			return {
 				request,
@@ -354,7 +393,7 @@ export async function runInitialAssessment(
 		}
 	}
 	const response = await fetchInitialAssessment(request, options.fetcher);
-	if (options.storage) writeCachedInitialAssessment(options.storage, request, response);
+	if (options.storage) writeCachedInitialAssessment(options.storage, request, response, mode);
 	return {
 		request,
 		response,

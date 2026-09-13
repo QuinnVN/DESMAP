@@ -1,9 +1,11 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import {
+	calculateInitialAssessment,
 	InitialAssessmentError,
 	validateInitialAssessmentRequest,
 	validateInitialAssessmentResponse
 } from '$lib/assessment';
+import { getInitialAssessmentMode } from '$lib/server/initial-assessment-mode';
 
 const BACKEND_URL = 'http://127.0.0.1:8000/api/ai/initial-career-assessment';
 
@@ -16,6 +18,9 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 		const message =
 			error instanceof InitialAssessmentError ? error.message : 'Dữ liệu yêu cầu không hợp lệ.';
 		return json({ error: message }, { status: 422 });
+	}
+	if (getInitialAssessmentMode() === 'weighted') {
+		return json(calculateInitialAssessment(body));
 	}
 
 	try {
