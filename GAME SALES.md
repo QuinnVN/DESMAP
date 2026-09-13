@@ -139,125 +139,121 @@ Người chơi có thể nhấn A để gửi sớm. Hết 60 giây, bản ghi t
 
 Backend lưu điểm từ 0 đến 100 và nhận xét ngắn bằng tiếng Việt, dựa trên nhu cầu khách hàng, tính chính xác của thông tin sản phẩm và cách xử lý phản đối. Thay đổi đề xuất có lý do phù hợp vẫn có thể đạt điểm tối đa. Bản ghi im lặng nhận điểm 0 kèm giải thích. Nếu tải lên thất bại, người chơi có thể gửi lại cùng bản ghi.
 
-# Mini Mission 2: “Khách hàng khó tính”
+# Mini Mission 2: "Khôi phục niềm tin khách hàng"
 
-### **1\. Bối cảnh**
+## 1. Bối cảnh
 
-Người chơi là **nhân viên sales tại một cửa hàng giày thể thao**.
+Đây là phần thứ hai của trải nghiệm hướng nghiệp sales. Sau khi bản ghi của Phần 1 được tải lên thành công, màn hình mờ dần và hiển thị "Ba ngày sau". Người chơi được đặt sau quầy thanh toán. Một khách hàng khác đi từ cửa vào quầy và dừng đối diện người chơi.
 
-Một khách hàng quay lại sau **3 ngày mua giày**.
+Khách hàng là Lan, 22 tuổi, sinh viên đại học. Lan mang theo đôi giày đã mua tại cửa hàng ba ngày trước. Đôi giày đúng cỡ và không bị hỏng, nhưng nặng hơn đôi cô thường mang. Lan đã dùng giày khi đi bộ từ trạm xe buýt đến trường và di chuyển giữa các lớp cả ngày. Cô vẫn thích màu sắc và kiểu dáng của đôi giày.
 
-Khách bước vào cửa hàng với vẻ khá khó chịu:
+Lan mở đầu:
 
-> 👩 **Khách:**  
->  “Em ơi, chị muốn đổi đôi giày này. Lúc mua em tư vấn chị lấy đôi này, nhưng đi mấy ngày chị thấy không ổn chút nào.”
+> "Em ơi, chị muốn đổi đôi giày này. Chị mới mua ở đây ba ngày trước, nhưng mang vào thì bị đau chân. Lần trước em tư vấn đôi này phù hợp với chị nên chị khá thất vọng."
 
-Mục tiêu:
+Người chơi nói tự do bằng tiếng Việt. AI trả lời bằng đoạn hội thoại tiếng Việt ngắn trên HUD. Phiên bản này chưa phát giọng nói của Lan.
 
-> **Xử lý phàn nàn → tìm đúng vấn đề → đưa ra giải pháp → giữ khách hàng.**
+## 2. Chính sách đổi hàng
 
-## **2\. Round 1 \- “Khách đang bực”**
+HUD luôn hiển thị chính sách trong suốt Phần 2:
 
-Khách nói:
+> CHÍNH SÁCH ĐỔI HÀNG
+>
+> Trong 7 ngày • Giày còn nguyên vẹn
+>
+> Không hoàn tiền hoặc giảm giá
+>
+> Tự xử lý, không chuyển quản lý
 
-> “Lúc mua em bảo đôi này hợp với chị. Nhưng chị đi mới 3 ngày mà chân đã đau rồi. Chị thấy hơi thất vọng.”
+Nếu người chơi đề nghị chuyển khách cho quản lý, cuộc hội thoại kết thúc ngay với trạng thái mất niềm tin.
 
-Người chơi có **30 giây** để phản hồi.
+## 3. Hội thoại theo mục tiêu
 
-### **Lựa chọn**
+Cuộc hội thoại có bốn mục tiêu bắt buộc theo thứ tự. HUD hiển thị mục tiêu hiện tại ở mỗi lượt. Mỗi lượt chỉ có thể hoàn thành một mục tiêu. Thông tin dành cho mục tiêu sau không được tính nếu người chơi nói sớm, và Lan sẽ đưa cuộc hội thoại trở lại mục tiêu hiện tại.
 
-**A.** “Nhưng lúc mua em đã tư vấn kỹ cho chị rồi ạ.”
+### Mục tiêu 1: Lắng nghe và làm rõ phàn nàn
 
-**B.**“Em xin lỗi chị. Chị có thể kể rõ hơn xem phần nào của đôi giày khiến chị khó chịu không ạ?”
+HUD hiển thị: "LẮNG NGHE VÀ LÀM RÕ PHÀN NÀN".
 
-**C.**“Vậy em đổi cho chị sang đôi khác nhé.”
+Người chơi phải:
 
-**D.**“Có thể chị chưa quen giày mới thôi ạ.”
+- Ghi nhận sự thất vọng của Lan hoặc xin lỗi về trải nghiệm của cô mà không đổ lỗi.
+- Đặt một câu hỏi mở phù hợp để Lan mô tả vấn đề.
 
-→ AI theo dõi cách người chơi **xử lý cảm xúc của khách trước khi giải quyết vấn đề**.
+Một lời xin lỗi chung chung không đủ để chuyển mục tiêu.
 
-## **3\. Round 2 \- “Tìm nguyên nhân”**
+### Mục tiêu 2: Tìm nguyên nhân thực sự
 
-Nếu người chơi chọn cách tiếp cận phù hợp, khách bắt đầu kể:
+HUD hiển thị: "TÌM NGUYÊN NHÂN THỰC SỰ".
 
-> “Thật ra lúc thử ở cửa hàng chị thấy khá ổn. Nhưng hôm qua chị mang nó đi học cả ngày. Chị đi bộ từ trạm xe buýt đến trường rồi còn đi lại giữa các lớp khá nhiều. Đến chiều thì chân bắt đầu đau.
+Lan chỉ cung cấp thông tin liên quan đến câu hỏi hiện tại. Người chơi phải:
 
-> À, với lại chị thường mang tất khá mỏng. Đôi trước của chị cũng nhẹ hơn đôi này. Nhưng mà chị thích đôi này vì màu của nó rất hợp với quần áo của chị...”
+- Hỏi về cách dùng và thời gian mang giày.
+- Hỏi về độ vừa chân, tình trạng giày, cảm giác đau hoặc đôi giày Lan thường dùng trước đây.
+- Kết luận rằng đôi giày nặng không phù hợp với việc đi bộ nhiều mỗi ngày và thói quen mang giày nhẹ của Lan.
 
-Người chơi phải **lọc thông tin**.
+Đoán đúng mà chưa tìm hiểu không hoàn thành mục tiêu.
 
-### **Câu hỏi:**
+### Mục tiêu 3: Đề xuất giải pháp phù hợp
 
-> **“Theo bạn, nguyên nhân chính khiến khách không hài lòng là gì?”**
+HUD hiển thị: "ĐỀ XUẤT GIẢI PHÁP PHÙ HỢP".
 
-**A.** Khách không thích màu giày nữa.
+Người chơi phải đề nghị đổi sang một đôi nhẹ hơn, phù hợp với việc đi bộ lâu, đồng thời đề nghị kiểm tra độ vừa chân hoặc cho Lan đi thử trong cửa hàng. Một đề nghị đổi sang "đôi khác" mà không nêu lý do hoặc cách kiểm tra chưa đủ.
 
-**B.** Khách sử dụng giày với cường độ cao hơn dự kiến và đôi giày hơi nặng so với thói quen của khách.
+### Mục tiêu 4: Khôi phục niềm tin
 
-**C.** Khách chưa quen với thiết kế mới.
+HUD hiển thị: "KHÔI PHỤC NIỀM TIN".
 
-**D.** Khách chỉ muốn đổi sang một đôi giày đẹp hơn.
+Lan luôn phản hồi giải pháp đầu tiên bằng câu hỏi:
 
-⏱️ **45 giây**
+> "Nhưng lần trước em cũng tư vấn đôi này phù hợp với chị. Làm sao chị biết lần này sẽ không gặp vấn đề tương tự?"
 
-→ Đo:
+Người chơi phải nhận trách nhiệm vì lần trước chưa hỏi kỹ về việc Lan đi bộ nhiều, giải thích vì sao đề xuất mới phù hợp hơn, và đưa ra cách kiểm tra cụ thể. Không chấp nhận lời đảm bảo tuyệt đối rằng đôi mới sẽ không bao giờ gây khó chịu.
 
-* Khả năng lắng nghe  
-* Khả năng lọc thông tin  
-* Khả năng xác định vấn đề
+## 4. Lượt nói và giới hạn
 
-## **4\. Round 3 \- “Giải quyết thế nào?”**
+- Mỗi lượt tự động bắt đầu ghi âm sau khi tin nhắn của Lan xuất hiện.
+- Người chơi nhấn A để gửi sớm. Hết 45 giây, lượt nói được gửi tự động.
+- Không hiển thị hoặc yêu cầu người chơi xác nhận bản chép lời.
+- Cuộc hội thoại kết thúc sau năm phút hoạt động hoặc tám lượt hợp lệ, tùy điều kiện nào đến trước.
+- Bộ đếm dừng trong lúc chép lời, gửi lại dữ liệu hoặc chờ AI trả lời.
+- Chỉ lượt đã được chép lời, chấp nhận và lưu ở backend mới tính vào giới hạn tám lượt.
+- Bản ghi im lặng hợp lệ khiến Lan nhắc người chơi một lần. Lần im lặng thứ hai làm mất niềm tin. Lỗi microphone hoặc tệp âm thanh không hợp lệ là lỗi kỹ thuật, không phải lỗi của người chơi.
+- Nếu hệ thống nhận ra người chơi đang dùng ngôn ngữ khác, Lan yêu cầu nói lại bằng tiếng Việt và lượt đó không được tính.
 
-Người chơi phải chọn cách xử lý:
+Phiên bản hiện tại chưa dùng độ tin cậy của STT. Một bản chép lời không rỗng được gửi thẳng cho AI. Người chơi có thể sửa hiểu lầm trong lượt sau. Backend ghi lại tên và phiên bản mô hình STT cho mỗi lượt.
 
-**A.** Đổi sang một đôi nhẹ hơn và phù hợp với việc đi bộ nhiều.
+## 5. Kết quả
 
-**B.** Giữ nguyên đôi giày và hướng dẫn khách cách sử dụng để làm quen.
+Khi hội thoại kết thúc, AI phân tích toàn bộ bản chép lời đã gắn mục tiêu và chọn một trong ba trạng thái dựa trên cách người chơi xử lý cảm xúc, tìm nguyên nhân, đưa giải pháp và khôi phục niềm tin. Các tiêu chí này hướng dẫn AI nhưng không tạo thành công thức điểm cố định.
 
-**C.** Cho khách đổi sang bất kỳ đôi nào khách thích.
+Ba trường hợp luôn được xử lý trực tiếp:
 
-**D.** Giải thích rằng đôi giày hiện tại vẫn tốt và không cần đổi.
+- Chuyển cho quản lý, im lặng lần thứ hai, hành vi xúc phạm, hoặc tiếp tục hứa sai sau khi Lan phản đối: mất niềm tin.
+- Lỗi kỹ thuật không thể khôi phục: không có trạng thái niềm tin.
+- Các trường hợp hội thoại hoàn tất khác: AI chọn trạng thái dựa trên toàn bộ ngữ cảnh.
 
-⏱️ **45 giây**
+Unity hiển thị một câu kết đã soạn sẵn trước khi chuyển sang HUD kết quả:
 
-→ AI kiểm tra:
+- Đã khôi phục niềm tin: "Ừ, vậy chị sẽ thử đôi nhẹ hơn. Lần sau chị vẫn sẽ quay lại nhờ em tư vấn."
+- Đã giải quyết, nhưng chưa khôi phục hoàn toàn niềm tin: "Được rồi, chị sẽ thử đổi sang đôi này trước."
+- Đã mất niềm tin: "Thôi, chị không muốn tiếp tục nữa. Lần sau chị sẽ mua ở chỗ khác."
 
-> **Người chơi có đưa ra giải pháp dựa trên nguyên nhân vừa xác định không?**
+Lan đứng tại quầy trong lúc hiển thị câu kết. Sau đó màn hình mờ dần và chỉ hiển thị một trong ba trạng thái bằng tiếng Việt. Không hiển thị điểm, nhận xét hoặc chỉ số chi tiết trong VR. HUD kết quả giữ nguyên cho đến khi bộ điều khiển từ xa gửi lệnh tải cảnh, khởi động lại hoặc đặt lại.
 
-## **5\. Round 4 \- “Giữ khách”**
+Ba nhãn kết quả chính xác là:
 
-Sau khi người chơi đưa ra giải pháp, khách vẫn hơi nghi ngờ:
+- "ĐÃ KHÔI PHỤC NIỀM TIN"
+- "ĐÃ GIẢI QUYẾT, NHƯNG CHƯA KHÔI PHỤC HOÀN TOÀN NIỀM TIN"
+- "ĐÃ MẤT NIỀM TIN"
 
-> 👩 **Khách:**  
->  “Nhưng lần trước em tư vấn chị đôi này mà. Giờ chị đổi sang đôi khác thì chị có biết chắc là sẽ không gặp vấn đề tương tự không?”
+Nếu lỗi kỹ thuật vẫn còn sau khi gửi lại, HUD hiển thị "KHÔNG THỂ HOÀN THÀNH TÌNH HUỐNG" và cho phép thử lại. Hệ thống không ghi lỗi này thành kết quả kém của người chơi.
 
-Người chơi có **45 giây** để tự trả lời.
+## 6. Dữ liệu chẩn đoán
 
-Ví dụ:
+Phần 1 và Phần 2 dùng chung một mã phiên sales giả danh. Backend lưu bản chép lời, âm thanh gốc, mục tiêu, cờ đánh giá, thời gian, số lượt thử lại, trạng thái niềm tin, lỗi đã làm sạch, cùng tên và phiên bản mô hình. Âm thanh mặc định được giữ 30 ngày, có thể cấu hình theo môi trường, và chỉ tài khoản chẩn đoán được truy cập. Hệ thống phải hỗ trợ xóa toàn bộ âm thanh và bản chép lời theo mã phiên.
 
-> “Lần trước em chưa hỏi kỹ về việc chị phải đi bộ nhiều mỗi ngày nên tư vấn chưa sát với nhu cầu của chị. Nếu chị thường xuyên đi bộ từ trạm xe buýt đến trường thì em nghĩ đôi nhẹ hơn sẽ phù hợp hơn. Lần này em sẽ cho chị thử và đi lại một chút trong cửa hàng trước khi quyết định.”
-
-→ Đây là lúc người chơi phải **nhận trách nhiệm \+ giải thích \+ tạo lại niềm tin**.
-
-# **6\. Ending**
-
-### **🟢 “Loyal Customer”**
-
-> “Ừ, vậy chị thử đôi này xem. Lần sau chị vẫn sẽ quay lại tìm em tư vấn.”
-
-→ **Giữ được khách.**
-
-### **🟡 “Resolved”**
-
-> “Được rồi, chị thử đổi sang đôi này trước.”
-
-→ **Giải quyết được vấn đề nhưng khách chưa hoàn toàn tin tưởng.**
-
-### **🔴 “Lost Customer”**
-
-> “Thôi, lần sau chị sẽ tự chọn. Chị không muốn mua ở đây nữa.”
-
-→ **Mất khách.**
+Trước Phần 1, người chơi được thông báo bằng tiếng Việt rằng microphone được sử dụng và âm thanh được lưu tạm thời để chẩn đoán.
 
 Note:
 

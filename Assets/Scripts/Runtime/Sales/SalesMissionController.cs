@@ -137,6 +137,7 @@ namespace NCKH.VR.Sales
         public int UploadStartCount { get; private set; }
         public int RecordingSubmitCount { get; private set; }
         public string AttemptId => pendingTelemetry?.roundId ?? string.Empty;
+        public string SalesSessionId { get; private set; } = string.Empty;
         public byte[] PendingWavBytes => pendingTelemetry?.audio == null
             || string.IsNullOrEmpty(pendingTelemetry.audio.dataBase64)
             ? null : Convert.FromBase64String(pendingTelemetry.audio.dataBase64);
@@ -157,6 +158,8 @@ namespace NCKH.VR.Sales
         private string[] devices = Array.Empty<string>();
 
         public InputAction AdvanceDialogueAction => advanceDialogueAction;
+        public event Action<string> SalesSessionStarted;
+        public event Action<string> Part1RecordingUploaded;
 
         private void OnEnable()
         {
@@ -446,6 +449,7 @@ private void FinishRecording(bool endedEarly)
             string attemptId = "sales-persuasion-" + Guid.NewGuid().ToString("N");
             pendingTelemetry = new GameplayTelemetryData
             {
+                salesSessionId = SalesSessionId,
                 roundId = attemptId,
                 caseId = data.customerName,
                 questionId = "sales-part-1-persuasion",
@@ -545,6 +549,7 @@ private void FinishRecording(bool endedEarly)
                 ShowUploadFailure("Không thể gửi bản ghi. Nhấn A để thử lại.");
                 return;
             }
+            string completedAttemptId = pendingTelemetry != null ? pendingTelemetry.roundId : string.Empty;
             if (pendingTelemetry?.audio != null) pendingTelemetry.audio.dataBase64 = string.Empty;
             pendingTelemetry = null;
             Stage = SalesMissionStage.Completed;
@@ -555,6 +560,9 @@ private void FinishRecording(bool endedEarly)
             SetRetryButtons(false, false);
             SetObjective("HOÀN THÀNH THUYẾT PHỤC");
             ShowCustomerMessage(data.closingReply, "NHẤN A ĐỂ CHƠI LẠI");
+            Part1RecordingUploaded?.Invoke(completedAttemptId);
+            // Notify the Part 2 bridge only after Part 1 has finished its own
+            // cleanup, so the bridge can safely take over the HUD and locomotion.
         }
 
         private void ShowMicrophoneFailure(string message)
@@ -621,11 +629,13 @@ private void SetRecordingIndicator(bool visible)
             shoeSelectionLocked = false;
             nextActionTime = 0f;
             DialogueIndex = 0;
+            SalesSessionId = Guid.NewGuid().ToString("N");
+            SalesSessionStarted?.Invoke(SalesSessionId);
             Stage = SalesMissionStage.Waiting;
             if (objectiveText != null)
             {
                 objectiveText.gameObject.SetActive(true);
-                objectiveText.text = "ĐẾN GẶP KHÁCH Ở CỬA CHÍNH";
+                objectiveText.text = "ĐẾN GẶP KHÁCH Ở CỬA CHÍNH\nTrò chơi dùng micrô và lưu tạm bản ghi để chẩn đoán kỹ thuật.";
             }
             if (customerMarker != null) customerMarker.SetActive(true);
             SetRetryButtons(false, false);

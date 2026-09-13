@@ -19,7 +19,7 @@ namespace NCKH.VR.Sales.Tests
         [Test]
         public void SavedSceneUsesAForButtonlessDialogueAndBothRaysForShoeSelection()
         {
-            const string path = "Assets/Scenes/Sale/Shoes store - showroom with footwear.unity";
+            const string path = "Assets/Scenes/Sale/Store.unity";
             Scene scene = SceneManager.GetSceneByPath(path);
             bool opened = !scene.isLoaded;
             if (opened) scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
@@ -102,7 +102,7 @@ Assert.That(objectivePanel.localScale.y, Is.LessThan(.3f));
         [Test]
         public void SavedRetryButtonDoesNotCoverFailureText()
         {
-            const string path = "Assets/Scenes/Sale/Shoes store - showroom with footwear.unity";
+            const string path = "Assets/Scenes/Sale/Store.unity";
             Scene scene = SceneManager.GetSceneByPath(path);
             bool opened = !scene.isLoaded;
             if (opened) scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);

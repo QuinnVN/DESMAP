@@ -139,8 +139,8 @@ namespace NCKH.VR.GameControl.Tests
             Assert.That(scenes, Has.Length.GreaterThanOrEqualTo(3));
             Assert.That(scenes[0].enabled, Is.True);
             Assert.That(scenes[0].path, Is.EqualTo(StandbyScenePath));
-            Assert.That(scenes[1].path, Is.EqualTo(ClinicScenePath));
-            Assert.That(scenes[2].path, Is.EqualTo(DoctorScenePath));
+            Assert.That(scenes.Where(scene => scene.enabled).Select(scene => scene.path),
+                Does.Contain(ClinicScenePath).And.Contain(DoctorScenePath).And.Contain("Assets/Scenes/Sale/Store.unity"));
         }
 
         [Test]
@@ -223,11 +223,11 @@ namespace NCKH.VR.GameControl.Tests
                 Assert.That(serialized.FindProperty("sttWebSocketRoute").stringValue,
                     Is.EqualTo(GameControlApi.SttWebSocketRoute));
                 SerializedProperty catalog = serialized.FindProperty("scenes");
-                Assert.That(catalog.arraySize, Is.EqualTo(4));
+                Assert.That(catalog.arraySize, Is.EqualTo(5));
                 string[] ids = Enumerable.Range(0, catalog.arraySize)
                     .Select(i => catalog.GetArrayElementAtIndex(i).FindPropertyRelative("id").stringValue)
                     .ToArray();
-                Assert.That(ids, Is.EquivalentTo(new[] { "standby", "clinic", "doctor", "lawyer" }));
+                Assert.That(ids, Is.EquivalentTo(new[] { "standby", "clinic", "doctor", "lawyer", "sale" }));
             });
         }
 

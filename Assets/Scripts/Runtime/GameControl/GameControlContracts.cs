@@ -136,6 +136,9 @@ namespace NCKH.VR.GameControl
     [Serializable]
     public sealed class GameplayTelemetryData
     {
+        // Shared across Sales Part 1 and Part 2 so recordings, turns, analysis,
+        // retries, and the final outcome can be correlated without a player name.
+        public string salesSessionId;
         public string roundId;
         public string caseId;
         public string questionId;

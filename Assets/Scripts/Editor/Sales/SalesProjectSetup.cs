@@ -162,7 +162,7 @@ namespace NCKH.VR.Sales.Editor
         [MenuItem("NCKH/Sales/Apply Persuasion Stage To Saved Sale Scene")]
         public static void ApplyPersuasionStageToSavedSaleScene()
         {
-            const string scenePath = "Assets/Scenes/Sale/Shoes store - showroom with footwear.unity";
+            const string scenePath = "Assets/Scenes/Sale/Store.unity";
             Scene scene = EditorSceneManager.GetActiveScene();
             bool opened = scene.path != scenePath;
             if (opened) scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
@@ -301,7 +301,7 @@ private static void EnsureRecordingIndicator(SalesMissionController mission)
         [MenuItem("NCKH/Sales/Apply A Button Dialogue Controls To Saved Sale Scene")]
         public static void ApplyDialogueControlsToSavedScene()
         {
-            const string scenePath = "Assets/Scenes/Sale/Shoes store - showroom with footwear.unity";
+            const string scenePath = "Assets/Scenes/Sale/Store.unity";
             var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
             SalesMissionController mission = scene.GetRootGameObjects()
                 .SelectMany(root => root.GetComponentsInChildren<SalesMissionController>(true))
