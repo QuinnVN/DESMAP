@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import type { PageProps } from './$types';
 	import { ArrowRight, Download, RefreshCw } from '@lucide/svelte';
+	import GroupedDesmapProfile from '$lib/components/GroupedDesmapProfile.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import InitialMatchPanel from '$lib/components/InitialMatchPanel.svelte';
 	import { experiences } from '$lib/evaluation';
@@ -13,23 +14,9 @@
 		type AssessmentErrorKind,
 		type InitialAssessmentResponse
 	} from '$lib/assessment';
-	import {
-		readCompletionPayload,
-		type QuestionnaireSubmission,
-		type StageId
-	} from '$lib/questionnaire';
+	import { readCompletionPayload, type QuestionnaireSubmission } from '$lib/questionnaire';
 
 	let { data }: PageProps = $props();
-
-	const stageOrder: StageId[] = ['D', 'E', 'S', 'M', 'A', 'P'];
-	const stageLabels: Record<StageId, string> = {
-		D: 'Mong muốn',
-		E: 'Chuyên môn',
-		S: 'Vai trò xã hội',
-		M: 'Tư duy',
-		A: 'Khả năng thích ứng',
-		P: 'Khả năng chịu áp lực'
-	};
 
 	let payload = $state<QuestionnaireSubmission | null>(null);
 	let response = $state<InitialAssessmentResponse | null>(null);
@@ -37,7 +24,6 @@
 	let viewState = $state<'loading' | 'success' | 'error' | 'empty'>('loading');
 	let errorKind = $state<AssessmentErrorKind | null>(null);
 	let errorMessage = $state('');
-	let resultSource = $state<'cache' | 'network' | null>(null);
 	let copied = $state(false);
 	let notice = $state('');
 	let requestInFlight = $state(false);
@@ -61,11 +47,9 @@
 			});
 			response = result.response;
 			rankedResults = result.rankedResults;
-			resultSource = result.source;
 			viewState = 'success';
 		} catch (error) {
 			viewState = 'error';
-			resultSource = null;
 			errorKind = error instanceof InitialAssessmentError ? error.kind : 'invalid-response';
 			errorMessage =
 				error instanceof InitialAssessmentError
@@ -158,15 +142,17 @@
 				>
 			</section>
 		{:else if viewState === 'loading'}
-			<section class="mt-8" aria-busy="true" aria-live="polite" role="status">
-				<p class="sr-only">Đang chuẩn bị kết quả đối chiếu nghề nghiệp.</p>
-				<div aria-hidden="true">
+			<section class="mt-8">
+				<p class="sr-only" aria-live="polite" role="status">
+					Đang chuẩn bị kết quả đối chiếu nghề nghiệp.
+				</p>
+				<div>
 					<!-- <div class="flex justify-end">
 						<span class="skeleton h-9 w-52 border border-blue/50"></span>
 					</div> -->
 
 					<div class="mt-3 grid gap-4 min-[850px]:grid-cols-[1.15fr_.85fr]">
-						<div class="border border-blue bg-[#071020] p-6">
+						<div class="border border-blue bg-[#071020] p-6" aria-hidden="true">
 							<span class="skeleton block h-7 w-52 max-w-full"></span>
 							<span class="skeleton mt-3 block h-3 w-[78%]"></span>
 							{#each { length: 5 }, index}
@@ -183,20 +169,26 @@
 							{/each}
 						</div>
 
-						<div class="border border-blue bg-[#071020] p-6">
-							<span class="skeleton block h-7 w-40"></span>
-							<span class="skeleton mt-3 block h-3 w-[68%]"></span>
-							{#each { length: 6 }, index}
-								<div class="flex items-center justify-between border-b border-white/14 py-3">
-									<span class="skeleton block h-4" style:width={`${42 + (index % 3) * 8}%`}></span>
-									<span class="skeleton block h-5 w-10"></span>
-								</div>
-							{/each}
-						</div>
+						{#if payload}
+							<GroupedDesmapProfile scores={payload.scores} />
+						{:else}
+							<div class="border border-blue bg-[#071020] p-6" aria-hidden="true">
+								<span class="skeleton block h-7 w-40"></span>
+								<span class="skeleton mt-3 block h-3 w-[68%]"></span>
+								{#each { length: 6 }, index}
+									<div class="flex items-center justify-between border-b border-white/14 py-3">
+										<span class="skeleton block h-4" style:width={`${42 + (index % 3) * 8}%`}
+										></span>
+										<span class="skeleton block h-5 w-10"></span>
+									</div>
+								{/each}
+							</div>
+						{/if}
 					</div>
 
 					<div
 						class="mt-4 flex flex-wrap items-center justify-between gap-5 border border-blue bg-[#071020] p-6"
+						aria-hidden="true"
 					>
 						<div class="min-w-[min(100%,22rem)] flex-1">
 							<span class="skeleton block h-7 w-40"></span>
@@ -230,32 +222,21 @@
 					</button>
 				{/if}
 			</section>
+			{#if payload}
+				<div class="mt-4">
+					<GroupedDesmapProfile scores={payload.scores} />
+				</div>
+			{/if}
 		{:else if response && payload}
 			<p class="sr-only" aria-live="polite" role="status">
 				Đã có kết quả đối chiếu cho {rankedResults.length} nghề.
 			</p>
-			<!-- <div class="mt-8 flex justify-end">
-				<span
-					class="border border-blue px-3 py-2 text-[.68rem] tracking-[.08em] text-blue uppercase"
-				>
-					{resultSource === 'cache' ? 'Kết quả đã lưu trên thiết bị' : 'Kết quả mới từ Qwen'}
-				</span>
-			</div> -->
 			<section
 				class="mt-3 grid gap-4 min-[850px]:grid-cols-[1.15fr_.85fr]"
 				aria-label="Kết quả đối chiếu nghề nghiệp ban đầu"
 			>
 				<InitialMatchPanel mode={data.initialAssessmentMode} matches={rankedResults} />
-				<div class="border border-blue bg-[#071020] p-6">
-					<h2 class="mt-0">Hồ sơ DESMAP</h2>
-					<p class="text-[.83rem] text-[#91a0b4]">Điểm tự báo cáo theo sáu giai đoạn.</p>
-					{#each stageOrder as stage (stage)}
-						<div class="flex items-center justify-between border-b border-white/14 py-3">
-							<span>{stageLabels[stage]}</span>
-							<strong class="text-lime">{payload.scores.stages[stage].percent}%</strong>
-						</div>
-					{/each}
-				</div>
+				<GroupedDesmapProfile scores={payload.scores} />
 			</section>
 			<section
 				class="mt-4 flex flex-wrap items-center justify-between gap-5 border border-blue bg-[#071020] p-6"
