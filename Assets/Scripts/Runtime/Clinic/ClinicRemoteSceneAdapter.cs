@@ -61,6 +61,13 @@ namespace NCKH.VR.Clinic
             }
             if (gameManager.RoundState != ClinicRoundState.Idle)
             {
+                // Gameplay scenes auto-start after loading. Treat the backend's
+                // follow-up start command as idempotent while that round is active.
+                if (gameManager.RoundState != ClinicRoundState.Finished)
+                {
+                    errorCode = string.Empty;
+                    return true;
+                }
                 errorCode = "invalid_phase";
                 return false;
             }

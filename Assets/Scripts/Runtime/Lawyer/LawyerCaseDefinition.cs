@@ -26,6 +26,12 @@ namespace NCKH.VR.Lawyer
 
         [Header("Defendant Interview")]
         [SerializeField, Tooltip("Ví dụ: MINH")] private string defendantName = string.Empty;
+        [SerializeField] private List<LawyerInterviewWave> interviewWaves =
+            new List<LawyerInterviewWave>();
+        [SerializeField, TextArea(4, 12)] private List<string> sampleAnswers =
+            new List<string>();
+
+        [Header("Legacy Interview Data")]
         [SerializeField, Min(1)] private int mainQuestionLimit = 2;
         [SerializeField] private List<LawyerInterviewQuestion> questions = new List<LawyerInterviewQuestion>();
 
@@ -43,6 +49,8 @@ namespace NCKH.VR.Lawyer
         public IReadOnlyList<LawyerClueDefinition> Clues => clues;
         public IReadOnlyList<string> StartingClueIds => startingClueIds;
         public string DefendantName => defendantName;
+        public IReadOnlyList<LawyerInterviewWave> InterviewWaves => interviewWaves;
+        public IReadOnlyList<string> SampleAnswers => sampleAnswers;
         public int MainQuestionLimit => mainQuestionLimit;
         public IReadOnlyList<LawyerInterviewQuestion> Questions => questions;
         public LawyerCaseResolution Resolution => resolution;
@@ -61,6 +69,18 @@ namespace NCKH.VR.Lawyer
 
         public LawyerInterviewQuestion GetQuestion(string questionId)
         {
+            for (int waveIndex = 0; waveIndex < interviewWaves.Count; waveIndex++)
+            {
+                LawyerInterviewWave wave = interviewWaves[waveIndex];
+                if (wave == null)
+                    continue;
+                for (int questionIndex = 0; questionIndex < wave.Questions.Count; questionIndex++)
+                {
+                    LawyerInterviewQuestion waveQuestion = wave.Questions[questionIndex];
+                    if (waveQuestion != null && waveQuestion.Id == questionId)
+                        return waveQuestion;
+                }
+            }
             for (int index = 0; index < questions.Count; index++)
             {
                 LawyerInterviewQuestion question = questions[index];
@@ -76,13 +96,6 @@ namespace NCKH.VR.Lawyer
             if (errors == null)
                 throw new ArgumentNullException(nameof(errors));
             errors.Clear();
-
-            if (questions.Count != 5)
-                errors.Add("Hồ sơ luật sư phải có đúng 5 câu hỏi chính.");
-            if (mainQuestionLimit < 1 || mainQuestionLimit > questions.Count)
-                errors.Add("Giới hạn câu hỏi chính phải nằm trong số câu hỏi của hồ sơ.");
-
-            int keyCount = 0;
             HashSet<string> clueIds = new HashSet<string>(StringComparer.Ordinal);
             HashSet<string> questionIds = new HashSet<string>(StringComparer.Ordinal);
             for (int index = 0; index < clues.Count; index++)
@@ -92,38 +105,39 @@ namespace NCKH.VR.Lawyer
                     errors.Add($"Manh mối ở vị trí {index} có mã trống hoặc trùng.");
             }
 
-            for (int index = 0; index < questions.Count; index++)
+            if (interviewWaves.Count != 4)
+                errors.Add("Hồ sơ luật sư phải có đúng 4 đợt hỏi.");
+            HashSet<string> waveIds = new HashSet<string>(StringComparer.Ordinal);
+            for (int waveIndex = 0; waveIndex < interviewWaves.Count; waveIndex++)
             {
-                LawyerInterviewQuestion question = questions[index];
-                if (question == null || string.IsNullOrWhiteSpace(question.Id)
-                    || !questionIds.Add(question.Id))
+                LawyerInterviewWave wave = interviewWaves[waveIndex];
+                if (wave == null || string.IsNullOrWhiteSpace(wave.Id)
+                    || !waveIds.Add(wave.Id))
                 {
-                    errors.Add($"Câu hỏi ở vị trí {index} có mã trống hoặc trùng.");
+                    errors.Add($"Đợt hỏi ở vị trí {waveIndex} có mã trống hoặc trùng.");
                     continue;
                 }
-
-                if (question.FollowUps.Count != 3)
-                    errors.Add($"Câu hỏi chính '{question.Id}' phải có đúng 3 câu hỏi tiếp theo.");
-                if (question.IsKeyQuestion)
-                    keyCount++;
-
-                ValidateTestimony(question.Response, clueIds, question.Id, errors);
-                HashSet<string> followUpIds = new HashSet<string>(StringComparer.Ordinal);
-                for (int followIndex = 0; followIndex < question.FollowUps.Count; followIndex++)
+                if (wave.Questions.Count != 5)
+                    errors.Add($"Đợt hỏi '{wave.Id}' phải có đúng 5 câu hỏi.");
+                for (int questionIndex = 0; questionIndex < wave.Questions.Count; questionIndex++)
                 {
-                    LawyerFollowUpQuestion followUp = question.FollowUps[followIndex];
-                    if (followUp == null || string.IsNullOrWhiteSpace(followUp.Id)
-                        || !followUpIds.Add(followUp.Id))
+                    LawyerInterviewQuestion question = wave.Questions[questionIndex];
+                    if (question == null || string.IsNullOrWhiteSpace(question.Id)
+                        || !questionIds.Add(question.Id))
                     {
-                        errors.Add($"Câu hỏi tiếp theo của '{question.Id}' có mã trống hoặc trùng.");
+                        errors.Add($"Câu hỏi ở đợt '{wave.Id}' có mã trống hoặc trùng.");
                         continue;
                     }
-                    ValidateTestimony(followUp.Response, clueIds, followUp.Id, errors);
+                    if (question.FollowUps.Count != 0)
+                        errors.Add($"Câu hỏi '{question.Id}' không được có câu hỏi tiếp theo.");
+                    if (question.Response == null || question.Response.RevealedClueIds.Count != 1)
+                        errors.Add($"Câu hỏi '{question.Id}' phải mở đúng một manh mối.");
+                    ValidateTestimony(question.Response, clueIds, question.Id, errors);
                 }
             }
 
-            if (keyCount != mainQuestionLimit)
-                errors.Add("Số câu hỏi trọng tâm phải bằng giới hạn câu hỏi chính.");
+            if (sampleAnswers.Count != 5 || sampleAnswers.Exists(string.IsNullOrWhiteSpace))
+                errors.Add("Hồ sơ luật sư phải có đúng 5 bài bào chữa mẫu.");
 
             for (int index = 0; index < startingClueIds.Count; index++)
                 if (!clueIds.Contains(startingClueIds[index]))
@@ -139,12 +153,35 @@ namespace NCKH.VR.Lawyer
                 errors.Add("Hồ sơ luật sư chưa có kết luận vụ án.");
                 return;
             }
-            if (resolution.RequiredLinks.Count == 0)
-                errors.Add("Kết luận vụ án phải có ít nhất một liên kết bắt buộc.");
             if (string.IsNullOrWhiteSpace(resolution.TruthConclusion))
                 errors.Add("Kết luận vụ án không được để trống.");
             if (string.IsNullOrWhiteSpace(resolution.InsufficientEvidenceMessage))
                 errors.Add("Thông báo thiếu chứng cứ không được để trống.");
+
+            IReadOnlyList<LawyerEvidenceChainSlot> slots = resolution.EvidenceChainSlots;
+            if (slots == null || slots.Count < 2)
+                errors.Add("Chuỗi chứng cứ phải có ít nhất hai vị trí.");
+            else
+            {
+                for (int slotIndex = 0; slotIndex < slots.Count; slotIndex++)
+                {
+                    LawyerEvidenceChainSlot slot = slots[slotIndex];
+                    if (slot == null || slot.EligibleClueIds.Count == 0)
+                    {
+                        errors.Add($"Vị trí chuỗi chứng cứ {slotIndex + 1} chưa có manh mối hợp lệ.");
+                        continue;
+                    }
+                    HashSet<string> slotClues = new HashSet<string>(StringComparer.Ordinal);
+                    for (int clueIndex = 0; clueIndex < slot.EligibleClueIds.Count; clueIndex++)
+                    {
+                        string clueId = slot.EligibleClueIds[clueIndex];
+                        if (!clueIds.Contains(clueId))
+                            errors.Add($"Vị trí chuỗi chứng cứ {slotIndex + 1} tham chiếu manh mối không tồn tại '{clueId}'.");
+                        if (!slotClues.Add(clueId))
+                            errors.Add($"Vị trí chuỗi chứng cứ {slotIndex + 1} có manh mối trùng '{clueId}'.");
+                    }
+                }
+            }
 
             HashSet<LawyerClueLink> links = new HashSet<LawyerClueLink>();
             for (int index = 0; index < resolution.RequiredLinks.Count; index++)
@@ -166,6 +203,9 @@ namespace NCKH.VR.Lawyer
                 resolution.ReasoningCards;
             if (reasoningCards != null)
             {
+                int expectedCardCount = slots != null ? Mathf.Max(0, slots.Count - 1) : 0;
+                if (reasoningCards.Count != expectedCardCount)
+                    errors.Add($"Chuỗi chứng cứ cần đúng {expectedCardCount} thẻ suy luận.");
                 HashSet<string> reasoningIds = new HashSet<string>(StringComparer.Ordinal);
                 for (int index = 0; index < reasoningCards.Count; index++)
                 {
@@ -176,11 +216,8 @@ namespace NCKH.VR.Lawyer
                         errors.Add($"Thẻ suy luận ở vị trí {index} có mã trống hoặc trùng.");
                         continue;
                     }
-                    if (card.RequiredLinks == null || card.RequiredLinks.Count == 0)
-                    {
-                        errors.Add($"Thẻ suy luận '{card.Id}' phải tham chiếu ít nhất một liên kết.");
+                    if (card.RequiredLinks == null)
                         continue;
-                    }
                     for (int linkIndex = 0; linkIndex < card.RequiredLinks.Count; linkIndex++)
                     {
                         LawyerRequiredClueLink required = card.RequiredLinks[linkIndex];
@@ -219,8 +256,9 @@ namespace NCKH.VR.Lawyer
             IEnumerable<LawyerClueDefinition> configuredClues,
             IEnumerable<string> configuredStartingClues,
             string configuredDefendantName,
-            IEnumerable<LawyerInterviewQuestion> configuredQuestions,
-            LawyerCaseResolution configuredResolution)
+            IEnumerable<LawyerInterviewWave> configuredWaves,
+            LawyerCaseResolution configuredResolution,
+            IEnumerable<string> configuredSampleAnswers)
         {
             caseId = configuredCaseId ?? string.Empty;
             caseTitle = title ?? string.Empty;
@@ -232,7 +270,14 @@ namespace NCKH.VR.Lawyer
             clues = configuredClues != null ? new List<LawyerClueDefinition>(configuredClues) : new List<LawyerClueDefinition>();
             startingClueIds = configuredStartingClues != null ? new List<string>(configuredStartingClues) : new List<string>();
             defendantName = configuredDefendantName ?? string.Empty;
-            questions = configuredQuestions != null ? new List<LawyerInterviewQuestion>(configuredQuestions) : new List<LawyerInterviewQuestion>();
+            interviewWaves = configuredWaves != null
+                ? new List<LawyerInterviewWave>(configuredWaves)
+                : new List<LawyerInterviewWave>();
+            sampleAnswers = configuredSampleAnswers != null
+                ? new List<string>(configuredSampleAnswers)
+                : new List<string>();
+            mainQuestionLimit = 1;
+            questions = new List<LawyerInterviewQuestion>();
             resolution = configuredResolution ?? new LawyerCaseResolution(null, string.Empty, string.Empty);
         }
 #endif

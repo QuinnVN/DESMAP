@@ -156,6 +156,8 @@ namespace NCKH.VR.GameControl
         public int bedIndex = -1;
         public int scoreDelta;
         public int scoreTotal;
+        public int interviewRestartCount;
+        public string assessmentContextJson;
         public float remainingTime;
         public AudioTelemetryData audio;
     }

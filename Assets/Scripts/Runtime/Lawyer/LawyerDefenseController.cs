@@ -4,6 +4,7 @@ using NCKH.VR.GameControl;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Networking;
 #if UNITY_ANDROID && !UNITY_EDITOR
 using UnityEngine.Android;
 #endif
@@ -26,6 +27,7 @@ namespace NCKH.VR.Lawyer
             Recording,
             Encoding,
             Uploading,
+            Processing,
             MicrophoneFailed,
             UploadFailed,
             Completed
@@ -49,9 +51,10 @@ namespace NCKH.VR.Lawyer
 
         [Header("Timing")]
         [SerializeField, Min(0.1f)] private float preparationDuration = 5f;
-        [SerializeField, Min(1f)] private float recordingDuration = 30f;
+        [SerializeField, Min(1f)] private float recordingDuration = 60f;
         [SerializeField, Min(1)] private int uploadAttempts = 5;
         [SerializeField, Min(0.1f)] private float microphoneStartupTimeout = 2f;
+        [SerializeField, Min(0.5f)] private float assessmentPollInterval = 2f;
 
         private LawyerGameSession session;
         private InputAction stopDefenseAction;
@@ -323,6 +326,8 @@ namespace NCKH.VR.Lawyer
                 roundId = session.RoundId,
                 caseId = caseDefinition != null ? caseDefinition.CaseId : string.Empty,
                 category = LawyerSessionPhase.DefenseUploading.ToString(),
+                interviewRestartCount = session.InterviewRestartCount,
+                assessmentContextJson = LawyerAssessmentContextPayload.BuildJson(caseDefinition, session),
                 audio = new AudioTelemetryData
                 {
                     fileName = $"lawyer-defense-{session.RoundId}.wav",
@@ -375,11 +380,53 @@ namespace NCKH.VR.Lawyer
                 return;
             }
 
-            if (pendingTelemetry?.audio != null)
-                pendingTelemetry.audio.dataBase64 = string.Empty;
-            pendingTelemetry = null;
-            session.TryCompleteDefense();
-            ShowCompleted();
+            StopActiveRoutine();
+            activeRoutine = StartCoroutine(PollAssessmentStatus());
+        }
+
+        private IEnumerator PollAssessmentStatus()
+        {
+            view = DefenseView.Processing;
+            SetHud("ĐANG PHÂN TÍCH", string.Empty,
+                "Máy chủ đang đánh giá bài bào chữa...", string.Empty);
+            while (view == DefenseView.Processing)
+            {
+                GameController controller = GameController.Instance;
+                if (controller == null)
+                {
+                    ShowUploadFailure("Không tìm thấy kết nối máy chủ. Nhấn A để thử lại.");
+                    yield break;
+                }
+                string route = $"api/lawyer/defense-recordings/{session.RoundId}";
+                using (UnityWebRequest request = UnityWebRequest.Get(
+                    GameControlApi.CombineUrl(controller.BackendBaseUrl, route)))
+                {
+                    request.timeout = 15;
+                    yield return request.SendWebRequest();
+                    if (request.result != UnityWebRequest.Result.Success)
+                    {
+                        ShowUploadFailure("Chưa nhận được kết quả đánh giá. Nhấn A để thử lại.");
+                        yield break;
+                    }
+                    LawyerAssessmentStatusResponse status =
+                        JsonUtility.FromJson<LawyerAssessmentStatusResponse>(request.downloadHandler.text);
+                    if (status != null && status.assessmentStatus == "completed")
+                    {
+                        if (pendingTelemetry?.audio != null)
+                            pendingTelemetry.audio.dataBase64 = string.Empty;
+                        pendingTelemetry = null;
+                        session.TryCompleteDefense();
+                        ShowCompleted();
+                        yield break;
+                    }
+                    if (status != null && status.assessmentStatus == "failed")
+                    {
+                        ShowUploadFailure("Máy chủ chưa đánh giá được bài bào chữa. Nhấn A để thử lại.");
+                        yield break;
+                    }
+                }
+                yield return new WaitForSecondsRealtime(assessmentPollInterval);
+            }
         }
 
         private void ShowMicrophoneFailure(string message)
@@ -461,6 +508,15 @@ namespace NCKH.VR.Lawyer
                 || phase == LawyerSessionPhase.DefenseRecording
                 || phase == LawyerSessionPhase.DefenseUploading
                 || phase == LawyerSessionPhase.Completed;
+        }
+
+        [Serializable]
+        private sealed class LawyerAssessmentStatusResponse
+        {
+            public string roundId;
+            public string assessmentStatus;
+            public bool retryable;
+            public string errorCode;
         }
     }
 }

@@ -115,7 +115,7 @@ namespace NCKH.VR.Doctor
             dropContents[DoctorInfoCategory.MedicalHistory] = historyContent;
             dropContents[DoctorInfoCategory.Symptoms] = symptomsContent;
             ConfigureQuestionViewport();
-            HideAllPrimaryPanels();
+            ShowWaiting();
         }
 
         private void OnEnable()
@@ -170,6 +170,14 @@ namespace NCKH.VR.Doctor
                 displayedPreparationSeconds = wholeSeconds;
                 preparationLabel.text = wholeSeconds.ToString();
             }
+        }
+
+        public void ShowWaiting()
+        {
+            HideAllPrimaryPanels();
+            if (preparationLabel != null)
+                preparationLabel.text = "ĐANG CHỜ BẮT ĐẦU";
+            SetActive(preparationOverlay, true);
         }
 
         public void ShowRunning()

@@ -259,6 +259,7 @@ namespace NCKH.VR.Clinic.Tests
             totalScore.rectTransform.anchoredPosition = scorePosition;
 
             manager.StartRound();
+            Assert.That(locomotion.activeSelf, Is.False);
             yield return null;
 
             Assert.That(manager.RoundState, Is.EqualTo(ClinicRoundState.Preparing));

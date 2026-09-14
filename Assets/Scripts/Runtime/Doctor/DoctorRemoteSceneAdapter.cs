@@ -61,6 +61,13 @@ namespace NCKH.VR.Doctor
             }
             if (gameManager.State != DoctorGameState.Idle)
             {
+                // Gameplay scenes auto-start after loading. Treat the backend's
+                // follow-up start command as idempotent while that round is active.
+                if (gameManager.State != DoctorGameState.Finished)
+                {
+                    errorCode = string.Empty;
+                    return true;
+                }
                 errorCode = "invalid_phase";
                 return false;
             }

@@ -29,6 +29,11 @@ namespace NCKH.VR.Clinic
 
         private void OnEnable()
         {
+            if (gameManager != null)
+            {
+                gameManager.RoundStarted += OnRoundStarted;
+                gameManager.RoundEnded += OnRoundEnded;
+            }
             observedState = (ClinicRoundState)(-1);
             displayedRoundSeconds = int.MinValue;
             displayedPreparationSeconds = int.MinValue;
@@ -73,9 +78,18 @@ namespace NCKH.VR.Clinic
 
         private void OnDisable()
         {
+            if (gameManager != null)
+            {
+                gameManager.RoundStarted -= OnRoundStarted;
+                gameManager.RoundEnded -= OnRoundEnded;
+            }
             RestoreLocomotion();
             HidePreparationOverlay();
         }
+
+        private void OnRoundStarted() => SynchronizeImmediately();
+
+        private void OnRoundEnded(int _) => SynchronizeImmediately();
 
         private void HandleStateChanged(ClinicRoundState state)
         {
@@ -97,6 +111,14 @@ namespace NCKH.VR.Clinic
                 fadePreparationOverlay = false;
                 ShowFinishedOverlay();
                 FreezeLocomotion();
+                return;
+            }
+
+            if (state == ClinicRoundState.Idle)
+            {
+                fadePreparationOverlay = false;
+                RestoreLocomotion();
+                ShowWaitingOverlay();
                 return;
             }
 
@@ -191,6 +213,21 @@ namespace NCKH.VR.Clinic
 
             SetTextObjectActive(preparationCountdownText, true);
             SetTextObjectActive(totalScoreText, false);
+            preparationOverlay.gameObject.SetActive(true);
+            preparationOverlay.alpha = 1f;
+            preparationOverlay.interactable = false;
+            preparationOverlay.blocksRaycasts = false;
+        }
+
+        private void ShowWaitingOverlay()
+        {
+            if (preparationOverlay == null)
+                return;
+
+            SetTextObjectActive(preparationCountdownText, true);
+            SetTextObjectActive(totalScoreText, false);
+            if (preparationCountdownText != null)
+                preparationCountdownText.text = "ĐANG CHỜ BẮT ĐẦU";
             preparationOverlay.gameObject.SetActive(true);
             preparationOverlay.alpha = 1f;
             preparationOverlay.interactable = false;
