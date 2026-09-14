@@ -780,6 +780,8 @@ namespace NCKH.VR.GameControl
                 fragmentId = payload.fragmentId,
                 runId = string.IsNullOrWhiteSpace(runIdOverride) ? currentRunId : runIdOverride,
                 gameId = string.IsNullOrWhiteSpace(gameIdOverride) ? currentSceneId : gameIdOverride,
+                participantName = participantName,
+                participantSessionId = participantSessionId,
                 startedAtUtc = string.IsNullOrWhiteSpace(startedAtOverride) ? runStartedAtUtc : startedAtOverride,
                 complete = complete,
                 requiredFields = requiredFieldsOverride ?? RequiredFieldsFor(fragmentType),

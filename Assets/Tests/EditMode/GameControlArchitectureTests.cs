@@ -115,6 +115,8 @@ namespace NCKH.VR.GameControl.Tests
                 fragmentId = "run:patient:1",
                 runId = "run-1",
                 gameId = "clinic",
+                participantName = "Nguyễn An",
+                participantSessionId = "session-1",
                 startedAtUtc = "2026-09-14T12:00:00Z",
                 complete = false,
                 requiredFields = Array.Empty<string>(),
@@ -128,6 +130,8 @@ namespace NCKH.VR.GameControl.Tests
             ResultFragmentDto fragmentCopy = JsonUtility.FromJson<ResultFragmentDto>(JsonUtility.ToJson(fragment));
             Assert.That(fragmentCopy.fragmentId, Is.EqualTo(fragment.fragmentId));
             Assert.That(fragmentCopy.kind, Is.EqualTo("clinic.patient_resolved"));
+            Assert.That(fragmentCopy.participantName, Is.EqualTo("Nguyễn An"));
+            Assert.That(fragmentCopy.participantSessionId, Is.EqualTo("session-1"));
             Assert.That(fragmentCopy.data.participantSessionId, Is.EqualTo("session-1"));
             Assert.That(fragmentCopy.data.resolutionDurationSeconds, Is.EqualTo(2.5f));
         }

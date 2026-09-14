@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using NCKH.VR.GameControl;
 using NUnit.Framework;
 using TMPro;
 using UnityEngine;
@@ -207,8 +208,12 @@ namespace NCKH.VR.Clinic.Tests
         }
 
         [UnityTest]
-        public IEnumerator AutomaticStartWaitsForStableFramesBeforePreparation()
+        public IEnumerator AutomaticStartRequiresAcknowledgedParticipant()
         {
+            if (GameController.Instance != null)
+                Object.Destroy(GameController.Instance.gameObject);
+            yield return null;
+
             ClinicGameManager manager = CreateManagerForHudTest(
                 2f,
                 60f,
@@ -220,19 +225,11 @@ namespace NCKH.VR.Clinic.Tests
                 automaticStartReadinessTimeout: 0f,
                 automaticStartStableFrames: 2);
 
-            int activationFrame = Time.frameCount;
             Assert.That(manager.RoundState, Is.EqualTo(ClinicRoundState.Idle));
 
-            while (manager.RoundState == ClinicRoundState.Idle
-                && Time.frameCount - activationFrame < 10)
-            {
-                yield return null;
-            }
-
-            Assert.That(manager.RoundState, Is.EqualTo(ClinicRoundState.Preparing));
-            Assert.That(Time.frameCount - activationFrame, Is.GreaterThanOrEqualTo(2));
-            Assert.That(manager.RemainingPreparationTime, Is.GreaterThan(1.8f));
-            Assert.That(manager.RemainingRoundTime, Is.EqualTo(60f));
+            yield return null;
+            yield return null;
+            Assert.That(manager.RoundState, Is.EqualTo(ClinicRoundState.Idle));
 
             Object.Destroy(managerObject);
             Object.Destroy(templateObject);
