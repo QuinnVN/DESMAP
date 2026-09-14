@@ -14,6 +14,42 @@ _Avoid_: Telemetry event, activity log
 The game-specific scope evaluated by one game result. Its type distinguishes values that must not be compared directly, such as a clinic patient score and a sales persuasion percentage.
 _Avoid_: Event, generic score
 
+**Participant**:
+The person completing the career minigames whose results are grouped under a real name supplied by the operator.
+_Avoid_: User, participant code
+
+**Participant session**:
+One operator-selected association between a participant and a simulation run, identified independently from the participant's real name.
+_Avoid_: Unity session, game round
+
+**Simulation run**:
+A complete execution of one career simulation for one participant. It may produce several game results but has one terminal result.
+_Avoid_: Game result, Unity session
+
+**Simulation-run result**:
+The finalized aggregate containing every game result and transcript produced by one completed simulation run. It is the single document synchronized to MongoDB for that run.
+_Avoid_: Game result, participant record
+
+**Terminal result**:
+The game result that completes a simulation run: a Clinic or Doctor round, a Lawyer defense assessment, or a Sales Part 2 assessment.
+_Avoid_: Patient result, case result, Sales Part 1 assessment
+
+**Unsynchronized result**:
+A finalized simulation-run result that exists locally but MongoDB has not confirmed storing.
+_Avoid_: Failed game result, pending assessment
+
+### Clinic
+
+**Patient resolution time**:
+The active gameplay time from when a patient becomes fully visible and actionable until the patient is cured or times out.
+_Avoid_: Spawn-to-cure wall time, fade duration
+
+### Doctor
+
+**Categorization accuracy**:
+The proportion of revealed notes placed in their authored correct categories when the player submits a case. Essential-note accuracy is recorded separately.
+_Avoid_: Case score, question coverage
+
 ### Lawyer
 
 **Interview wave**:
@@ -60,6 +96,10 @@ _Avoid_: Recording, final answer
 A backend evaluation of how well the closing defense uses the provided evidence, connects it logically, stays faithful to the defense conclusion, and communicates the argument clearly.
 _Avoid_: Verdict, case solution
 
+**Final clue set**:
+The clues retained from the final interview attempt and available for the evidence board. Clues discarded by an interview restart are not part of this set.
+_Avoid_: Clue history, evidence chain
+
 ### Sales
 
 **Recommended shoe**:
@@ -103,6 +143,10 @@ The player's spoken attempt to acknowledge the problem, offer a suitable resolut
 **Part 2 assessment**:
 A backend record produced from the completed conversation transcript. It contains the customer trust state and flags for emotional handling, cause identification, solution suitability, and trust rebuilding.
 _Avoid_: Score, written feedback
+
+**Sales conversation transcript**:
+The ordered Part 2 conversation containing each recognized player turn and each AI customer reply with its speaker and objective context.
+_Avoid_: Player-only transcript, audio recording
 
 **Customer trust state**:
 The returning customer's confidence at the end of the conversation. It is restored, partially restored, or lost.
