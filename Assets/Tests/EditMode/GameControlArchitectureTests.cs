@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NCKH.VR.Clinic;
 using NCKH.VR.Doctor;
@@ -45,6 +46,11 @@ namespace NCKH.VR.GameControl.Tests
         {
             Assert.That(GameControlApi.HealthRoute, Is.EqualTo("/api/health"));
             Assert.That(GameControlApi.TelemetryRoute, Is.EqualTo("/api/telemetry"));
+            Assert.That(GameControlApi.ResultFragmentRoute, Is.EqualTo("/api/results/fragments"));
+            Assert.That(GameControlApi.AssignParticipantCommand, Is.EqualTo("assign_participant"));
+            Assert.That(GameControlApi.ClearParticipantCommand, Is.EqualTo("clear_participant"));
+            Assert.That(GameControlApi.RunStartedFragmentKind, Is.EqualTo("run.started"));
+            Assert.That(GameControlApi.RunAbortedFragmentKind, Is.EqualTo("run.aborted"));
             Assert.That(GameControlApi.ControlWebSocketRoute, Is.EqualTo("/ws/ctrl"));
             Assert.That(GameControlApi.TtsWebSocketRoute, Is.EqualTo("/ws/tts"));
             Assert.That(GameControlApi.SttWebSocketRoute, Is.EqualTo("/ws/stt"));
@@ -86,6 +92,65 @@ namespace NCKH.VR.GameControl.Tests
             Assert.That(restored.sequence, Is.EqualTo(command.sequence));
             Assert.That(restored.type, Is.EqualTo(command.type));
             Assert.That(restored.sceneId, Is.EqualTo(command.sceneId));
+        }
+
+        [Test]
+        public void ParticipantCommandAndResultFragmentRoundTripIdentity()
+        {
+            RemoteCommandDto command = new RemoteCommandDto
+            {
+                commandId = "participant-1",
+                type = GameControlApi.AssignParticipantCommand,
+                participantName = "  Nguyễn   An  ",
+                participantSessionId = "session-1"
+            };
+            RemoteCommandDto restored = JsonUtility.FromJson<RemoteCommandDto>(JsonUtility.ToJson(command));
+            Assert.That(restored.type, Is.EqualTo(GameControlApi.AssignParticipantCommand));
+            Assert.That(restored.participantName, Is.EqualTo(command.participantName));
+            Assert.That(restored.participantSessionId, Is.EqualTo(command.participantSessionId));
+
+            ResultFragmentDto fragment = new ResultFragmentDto
+            {
+                kind = "clinic.patient_resolved",
+                fragmentId = "run:patient:1",
+                runId = "run-1",
+                gameId = "clinic",
+                participantName = "Nguyễn An",
+                participantSessionId = "session-1",
+                occurredAtUtc = "2026-09-14T12:01:00Z",
+                startedAtUtc = "2026-09-14T12:00:00Z",
+                complete = false,
+                requiredFields = Array.Empty<string>(),
+                data = new GameplayTelemetryData
+                {
+                    participantName = "Nguyễn An",
+                    participantSessionId = "session-1",
+                    resolutionDurationSeconds = 2.5f
+                }
+            };
+            ResultFragmentDto fragmentCopy = JsonUtility.FromJson<ResultFragmentDto>(JsonUtility.ToJson(fragment));
+            Assert.That(fragmentCopy.fragmentId, Is.EqualTo(fragment.fragmentId));
+            Assert.That(fragmentCopy.kind, Is.EqualTo("clinic.patient_resolved"));
+            Assert.That(fragmentCopy.participantName, Is.EqualTo("Nguyễn An"));
+            Assert.That(fragmentCopy.participantSessionId, Is.EqualTo("session-1"));
+            Assert.That(fragmentCopy.occurredAtUtc, Is.EqualTo("2026-09-14T12:01:00Z"));
+            Assert.That(fragmentCopy.data.participantSessionId, Is.EqualTo("session-1"));
+            Assert.That(fragmentCopy.data.resolutionDurationSeconds, Is.EqualTo(2.5f));
+        }
+
+        [Test]
+        public void LifecycleEnvelopeUsesBackendKindsAndTerminalRequirements()
+        {
+            ResultFragmentDto started = new ResultFragmentDto
+            {
+                kind = GameControlApi.RunStartedFragmentKind, runId = "run-1", gameId = "clinic",
+                startedAtUtc = "2026-09-14T12:00:00Z", complete = true,
+                requiredFields = Array.Empty<string>(), data = new GameplayTelemetryData()
+            };
+            ResultFragmentDto restored = JsonUtility.FromJson<ResultFragmentDto>(JsonUtility.ToJson(started));
+            Assert.That(restored.kind, Is.EqualTo(GameControlApi.RunStartedFragmentKind));
+            Assert.That(restored.complete, Is.True);
+            Assert.That(restored.gameId, Is.EqualTo("clinic"));
         }
 
         [Test]
@@ -327,8 +392,8 @@ namespace NCKH.VR.GameControl.Tests
             }
             finally
             {
-                Object.DestroyImmediate(doctorRoot);
-                Object.DestroyImmediate(clinicRoot);
+                UnityEngine.Object.DestroyImmediate(doctorRoot);
+                UnityEngine.Object.DestroyImmediate(clinicRoot);
             }
         }
 
