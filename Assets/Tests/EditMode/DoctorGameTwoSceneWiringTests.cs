@@ -7,6 +7,9 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals;
 
 namespace NCKH.VR.Doctor.Tests
 {
@@ -134,6 +137,36 @@ namespace NCKH.VR.Doctor.Tests
                 Assert.That(collider.center.z, Is.EqualTo(0f).Within(0.0001f));
                 Assert.That(collider.radius, Is.EqualTo(0.36f).Within(0.0001f));
                 Assert.That(collider.height, Is.EqualTo(1.2f).Within(0.0001f));
+            }
+            finally
+            {
+                if (openedForTest)
+                    EditorSceneManager.CloseScene(scene, true);
+            }
+        }
+
+        [Test]
+        public void RightRayIsAlwaysVisibleAndUsesLeftStickScrolling()
+        {
+            Scene scene = SceneManager.GetSceneByPath(ScenePath);
+            bool openedForTest = !scene.IsValid() || !scene.isLoaded;
+            if (openedForTest)
+                scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
+
+            try
+            {
+                XRRayInteractor ray = FindComponentsInScene<XRRayInteractor>(scene)[0];
+                SerializedObject serializedRay = new SerializedObject(ray);
+                InputActionReference scrollAction = serializedRay
+                    .FindProperty("m_UIScrollInput.m_InputActionReference")
+                    .objectReferenceValue as InputActionReference;
+                Assert.That(scrollAction, Is.Not.Null);
+                Assert.That(scrollAction.action.actionMap.name, Is.EqualTo("XRI Left Interaction"));
+                Assert.That(scrollAction.action.name, Is.EqualTo("UI Scroll"));
+
+                XRInteractorLineVisual lineVisual = ray.GetComponent<XRInteractorLineVisual>();
+                Assert.That(lineVisual, Is.Not.Null);
+                Assert.That(lineVisual.enabled, Is.True);
             }
             finally
             {

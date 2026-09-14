@@ -23,6 +23,7 @@ namespace NCKH.VR.Doctor.Editor
         private const string DataFolder = "Assets/Data/Doctor";
         private const string DatabasePath = DataFolder + "/Placeholder Doctor Case Database.asset";
         private const string InputPath = "Assets/Input/Doctor/Doctor Controls.inputactions";
+        private const string XriInputPath = "Assets/Samples/XR Interaction Toolkit/3.5.1/Starter Assets/XRI Default Input Actions.inputactions";
         private const string InputReferenceFolder = "Assets/Input/Doctor/References";
         private const string MaterialFolder = "Assets/Materials/Doctor";
         private const string UiOverlayMaterialPath = MaterialFolder + "/Doctor UI Overlay.mat";
@@ -184,8 +185,10 @@ namespace NCKH.VR.Doctor.Editor
             if (rightRayLineVisual == null)
                 throw new InvalidOperationException("Right hand Ray Interactor requires XRInteractorLineVisual.");
             IncludeLayerInRaycastMask(rightRayInteractor, hudLayer);
+            ConfigureRightRayScroll(rightRayInteractor);
             if (createdHud)
                 ConfigureRightRayVisual(rightRayLineVisual);
+            rightRayLineVisual.enabled = true;
 
             GameObject managerObject = FindRoot(scene, "Doctor Game Manager") ?? new GameObject("Doctor Game Manager");
             DoctorGameManager manager = GetOrAdd<DoctorGameManager>(managerObject);
@@ -194,8 +197,7 @@ namespace NCKH.VR.Doctor.Editor
                 ("caseDatabase", database), ("patientPresenter", presenter),
                 ("notebookInteractable", notebookActivation), ("notebookUI", notebookUi),
                 ("moveProviderRoot", FindRequiredDescendant(locomotion, "Move").gameObject),
-                ("jumpProviderRoot", FindRequiredDescendant(locomotion, "Jump").gameObject),
-                ("rightRayLineVisual", rightRayLineVisual));
+                ("jumpProviderRoot", FindRequiredDescendant(locomotion, "Jump").gameObject));
             SerializedObject managerSerialized = new SerializedObject(manager);
             managerSerialized.FindProperty("preparationDuration").floatValue = 10f;
             managerSerialized.FindProperty("roundDuration").floatValue = 300f;
@@ -452,6 +454,17 @@ namespace NCKH.VR.Doctor.Editor
                 reference.Set(action);
             EditorUtility.SetDirty(reference);
             return reference;
+        }
+
+        private static InputActionReference FindXriInputReference(string actionPath)
+        {
+            InputActionReference reference = AssetDatabase.LoadAllAssetsAtPath(XriInputPath)
+                .OfType<InputActionReference>()
+                .FirstOrDefault(candidate => candidate.action != null &&
+                    candidate.action.actionMap.name + "/" + candidate.action.name == actionPath);
+            return reference != null
+                ? reference
+                : throw new InvalidOperationException($"XRI input action '{actionPath}' is required.");
         }
 
         private static void CreateCategory(Transform parent, string name, string title, out RectTransform content, out Button button)
@@ -742,7 +755,7 @@ namespace NCKH.VR.Doctor.Editor
             lineVisual.validColorGradient = CreateRayGradient(
                 new Color(.55f, 1f, .9f, .9f),
                 new Color(.3f, .95f, .8f, .4f));
-            lineVisual.enabled = false;
+            lineVisual.enabled = true;
         }
 
         private static void IncludeLayerInRaycastMask(XRRayInteractor rayInteractor, int layer)
@@ -750,6 +763,17 @@ namespace NCKH.VR.Doctor.Editor
             LayerMask mask = rayInteractor.raycastMask;
             mask.value |= 1 << layer;
             rayInteractor.raycastMask = mask;
+        }
+
+        private static void ConfigureRightRayScroll(XRRayInteractor rayInteractor)
+        {
+            SerializedObject serializedRay = new SerializedObject(rayInteractor);
+            SerializedProperty scrollReference = serializedRay.FindProperty(
+                "m_UIScrollInput.m_InputActionReference");
+            if (scrollReference == null)
+                throw new InvalidOperationException("Right hand Ray Interactor UI scroll input could not be configured.");
+            scrollReference.objectReferenceValue = FindXriInputReference("XRI Left Interaction/UI Scroll");
+            serializedRay.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static Gradient CreateRayGradient(Color start, Color end)

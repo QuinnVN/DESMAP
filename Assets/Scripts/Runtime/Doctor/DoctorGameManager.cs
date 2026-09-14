@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals;
 
 namespace NCKH.VR.Doctor
 {
@@ -29,7 +28,6 @@ namespace NCKH.VR.Doctor
         [SerializeField] private GameObject moveProviderRoot;
         [SerializeField] private GameObject gravityProviderRoot;
         [SerializeField] private GameObject jumpProviderRoot;
-        [SerializeField] private XRInteractorLineVisual rightRayLineVisual;
 
         [Header("Round")]
         [SerializeField, Min(0f)] private float preparationDuration = 10f;
@@ -438,8 +436,6 @@ namespace NCKH.VR.Doctor
         private void SetNotebookInteractionEnabled(bool enabled)
         {
             notebookInteractable?.SetInteractionEnabled(enabled);
-            if (rightRayLineVisual != null)
-                rightRayLineVisual.enabled = enabled;
         }
 
         private void RestoreLocomotion()
