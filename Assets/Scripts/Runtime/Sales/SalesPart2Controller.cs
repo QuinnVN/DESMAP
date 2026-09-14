@@ -136,6 +136,12 @@ namespace NCKH.VR.Sales
         private float activeTimeSeconds;
         private float requestStartedAt;
         private string completionReason = string.Empty;
+        private string lastTranscript = string.Empty;
+        private string lastCustomerReply = string.Empty;
+        private bool emotionalHandling;
+        private bool causeIdentification;
+        private bool solutionSuitability;
+        private bool trustRebuilding;
         private RequestKind requestKind;
         private RequestKind failedRequestKind;
         private string completionId;
@@ -591,6 +597,9 @@ namespace NCKH.VR.Sales
                 return;
             }
 
+            lastTranscript = response.transcript ?? string.Empty;
+            lastCustomerReply = response.customerText ?? string.Empty;
+
             if (response.silent || string.Equals(response.status, "silent", StringComparison.Ordinal))
             {
                 pendingTurn = null;
@@ -742,6 +751,10 @@ namespace NCKH.VR.Sales
                 ShowIncomplete("Không thể hoàn thành tình huống. Hãy thử lại.");
                 return;
             }
+            emotionalHandling = response.emotionalHandling;
+            causeIdentification = response.causeIdentification;
+            solutionSuitability = response.solutionSuitability;
+            trustRebuilding = response.trustRebuilding;
             ResolveTrust(response.ParsedTrustState);
         }
 
@@ -756,6 +769,13 @@ namespace NCKH.VR.Sales
             if (state == SalesPart2TrustState.Unknown || Stage == SalesPart2Stage.Completed)
                 return;
             TrustState = state;
+            if (state == SalesPart2TrustState.Lost)
+            {
+                emotionalHandling = false;
+                causeIdentification = false;
+                solutionSuitability = false;
+                trustRebuilding = false;
+            }
             activeTimerRunning = false;
             finalCompletionRequested = true;
             StopAndReleaseMicrophone();
@@ -887,6 +907,12 @@ namespace NCKH.VR.Sales
             CurrentTurnId = string.Empty;
             AcceptedTurnCount = 0;
             SilenceCount = 0;
+            lastTranscript = string.Empty;
+            lastCustomerReply = string.Empty;
+            emotionalHandling = false;
+            causeIdentification = false;
+            solutionSuitability = false;
+            trustRebuilding = false;
             TrustState = SalesPart2TrustState.Unknown;
             CurrentObjective = SalesPart2Objective.ListeningAndClarifying;
             activeTimeSeconds = 0f;
@@ -1104,6 +1130,17 @@ namespace NCKH.VR.Sales
                 caseId = scenario != null && scenario.customerProfile != null
                     ? scenario.customerProfile.name : "Lan",
                 category = Stage.ToString(),
+                trustState = TrustState == SalesPart2TrustState.Restored ? "restored" : TrustState == SalesPart2TrustState.PartiallyRestored ? "partially_restored" : TrustState == SalesPart2TrustState.Lost ? "lost" : string.Empty,
+                emotionalHandling = emotionalHandling,
+                causeIdentification = causeIdentification,
+                solutionSuitability = solutionSuitability,
+                trustRebuilding = trustRebuilding,
+                completionReason = completionReason,
+                transcript = lastTranscript,
+                customerReply = lastCustomerReply,
+                objective = CurrentObjective.ToString(),
+                acceptedTurnCount = AcceptedTurnCount,
+                silenceCount = SilenceCount,
                 questionId = ((int)CurrentObjective).ToString(),
                 resolution = JsonUtility.ToJson(new DiagnosticData
                 {

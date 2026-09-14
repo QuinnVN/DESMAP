@@ -28,6 +28,7 @@ namespace NCKH.VR.GameControl
         [Header("API Routes")]
         [SerializeField] private string healthRoute = GameControlApi.HealthRoute;
         [SerializeField] private string telemetryRoute = GameControlApi.TelemetryRoute;
+        [SerializeField] private string resultFragmentRoute = GameControlApi.ResultFragmentRoute;
         [SerializeField] private string controlWebSocketRoute = GameControlApi.ControlWebSocketRoute;
         [SerializeField] private string ttsWebSocketRoute = GameControlApi.TtsWebSocketRoute;
         [SerializeField] private string sttWebSocketRoute = GameControlApi.SttWebSocketRoute;
@@ -48,6 +49,10 @@ namespace NCKH.VR.GameControl
         private string pendingAcknowledgementCommandId = string.Empty;
         private string controlSocketError = string.Empty;
         private string sessionId;
+        private string participantName = string.Empty;
+        private string participantSessionId = string.Empty;
+        private string currentRunId = string.Empty;
+        private string runStartedAtUtc = string.Empty;
         private string currentSceneId = string.Empty;
         private string configurationError;
         private float disconnectedSince = -1f;
@@ -70,6 +75,10 @@ namespace NCKH.VR.GameControl
         public string SessionId => sessionId;
         public bool IsConfigured => string.IsNullOrEmpty(configurationError);
         public string BackendBaseUrl => backendBaseUrl;
+        public string ParticipantName => participantName;
+        public string ParticipantSessionId => participantSessionId;
+        public bool HasAcknowledgedParticipant => !string.IsNullOrEmpty(participantSessionId);
+        public string CurrentRunId => currentRunId;
 
         private void Awake()
         {
@@ -398,6 +407,39 @@ namespace NCKH.VR.GameControl
                     errorMessage = resetResult.ErrorMessage;
                 }
             }
+            else if (string.Equals(commandType, GameControlApi.AssignParticipantCommand, StringComparison.Ordinal)
+                || string.Equals(commandType, GameControlApi.ClearParticipantCommand, StringComparison.Ordinal))
+            {
+                bool clear = string.Equals(commandType, GameControlApi.ClearParticipantCommand, StringComparison.Ordinal);
+                if (activeAdapter != null && activeAdapter.Phase == RemoteGamePhase.Running)
+                {
+                    status = "rejected";
+                    errorCode = "participant_locked";
+                    errorMessage = "Không thể đổi người tham gia khi trò chơi đang chạy.";
+                }
+                else
+                {
+                    string requestedName = clear ? string.Empty : (command.participantName ?? string.Empty).Trim();
+                    string requestedSession = clear ? string.Empty : (command.participantSessionId ?? string.Empty).Trim();
+                    if (!clear && string.IsNullOrWhiteSpace(requestedName))
+                    {
+                        status = "rejected";
+                        errorCode = "invalid_participant";
+                        errorMessage = "Participant assignment is missing a name.";
+                    }
+                    else if (!clear && string.IsNullOrWhiteSpace(requestedSession))
+                    {
+                        status = "rejected";
+                        errorCode = "invalid_participant_session";
+                        errorMessage = "Participant assignment is missing a session identifier.";
+                    }
+                    else
+                    {
+                        participantName = requestedName;
+                        participantSessionId = requestedSession;
+                    }
+                }
+            }
             else if (string.IsNullOrWhiteSpace(command.sceneId)
                 || !scenesById.TryGetValue(command.sceneId.Trim(), out RemoteSceneCatalogEntry targetScene))
             {
@@ -419,19 +461,65 @@ namespace NCKH.VR.GameControl
                         }
                         break;
                     case GameControlApi.StartSceneCommand:
+                        if (!HasAcknowledgedParticipant)
+                        {
+                            status = "rejected";
+                            errorCode = "participant_required";
+                            errorMessage = "Chưa có người tham gia được xác nhận.";
+                            break;
+                        }
+                        string previousStartRunId = currentRunId;
+                        string previousStartAtUtc = runStartedAtUtc;
+                        currentRunId = Guid.NewGuid().ToString("N");
+                        runStartedAtUtc = GameControlApi.UtcNow();
                         ApplyAdapterCommand(targetScene,
                             activeAdapter == null ? null : new AdapterOperation(activeAdapter.TryStart),
                             ref status, ref errorCode, ref errorMessage);
+                        if (status == "applied")
+                            yield return SendRunLifecycle(GameControlApi.RunStartedFragmentKind, currentRunId, targetScene.Id, runStartedAtUtc);
+                        else
+                        {
+                            currentRunId = previousStartRunId;
+                            runStartedAtUtc = previousStartAtUtc;
+                        }
                         break;
                     case GameControlApi.RestartSceneCommand:
+                        if (!HasAcknowledgedParticipant)
+                        {
+                            status = "rejected";
+                            errorCode = "participant_required";
+                            errorMessage = "Chưa có người tham gia được xác nhận.";
+                            break;
+                        }
+                        string supersededRunId = currentRunId;
+                        if (!string.IsNullOrWhiteSpace(supersededRunId)
+                            && CurrentPhase == RemoteGamePhase.Running)
+                            yield return SendRunLifecycle(GameControlApi.RunAbortedFragmentKind, supersededRunId, currentSceneId, runStartedAtUtc);
+                        currentRunId = Guid.NewGuid().ToString("N");
+                        runStartedAtUtc = GameControlApi.UtcNow();
                         ApplyAdapterCommand(targetScene,
                             activeAdapter == null ? null : new AdapterOperation(activeAdapter.TryRestart),
                             ref status, ref errorCode, ref errorMessage);
+                        if (status == "applied")
+                            yield return SendRunLifecycle(GameControlApi.RunStartedFragmentKind, currentRunId, targetScene.Id, runStartedAtUtc);
+                        else
+                        {
+                            currentRunId = string.Empty;
+                            runStartedAtUtc = string.Empty;
+                        }
                         break;
                     case GameControlApi.StopSceneCommand:
+                        string stoppedRunId = currentRunId;
+                        bool wasRunning = CurrentPhase == RemoteGamePhase.Running;
                         ApplyAdapterCommand(targetScene,
                             activeAdapter == null ? null : new AdapterOperation(activeAdapter.TryStop),
                             ref status, ref errorCode, ref errorMessage);
+                        if (status == "applied" && wasRunning && !string.IsNullOrWhiteSpace(stoppedRunId))
+                        {
+                            yield return SendRunLifecycle(GameControlApi.RunAbortedFragmentKind, stoppedRunId, currentSceneId, runStartedAtUtc);
+                            currentRunId = string.Empty;
+                            runStartedAtUtc = string.Empty;
+                        }
                         break;
                     default:
                         status = "rejected";
@@ -450,7 +538,9 @@ namespace NCKH.VR.GameControl
                 phase = PhaseName(CurrentPhase),
                 appliedAtUtc = GameControlApi.UtcNow(),
                 errorCode = errorCode,
-                errorMessage = errorMessage
+                errorMessage = errorMessage,
+                participantName = participantName,
+                participantSessionId = participantSessionId
             };
             acknowledgementCache[command.commandId] = acknowledgement;
 
@@ -560,6 +650,13 @@ namespace NCKH.VR.GameControl
             if (string.Equals(currentSceneId, entry.Id, StringComparison.OrdinalIgnoreCase))
                 yield break;
 
+            if (CurrentPhase == RemoteGamePhase.Running && !string.IsNullOrWhiteSpace(currentRunId))
+            {
+                yield return SendRunLifecycle(GameControlApi.RunAbortedFragmentKind, currentRunId, currentSceneId, runStartedAtUtc);
+                currentRunId = string.Empty;
+                runStartedAtUtc = string.Empty;
+            }
+
             SetStatus("Đang tải cảnh...");
             PublishTelemetry("scene.load_started", null);
             yield return SceneTransitionService.LoadScene(entry.ScenePath);
@@ -648,6 +745,113 @@ namespace NCKH.VR.GameControl
                 eventType, payload, Mathf.Max(1, maximumAttempts), completed));
         }
 
+        public void PublishResultFragmentReliable(
+            string fragmentType,
+            GameplayTelemetryData payload,
+            int maximumAttempts,
+            Action<TelemetryDeliveryResult> completed)
+        {
+            if (string.IsNullOrWhiteSpace(fragmentType))
+            {
+                completed?.Invoke(new TelemetryDeliveryResult(false, 0, "Loại fragment không hợp lệ."));
+                return;
+            }
+            StartCoroutine(SendResultFragmentReliable(
+                fragmentType, payload, Mathf.Max(1, maximumAttempts), completed));
+        }
+
+        private IEnumerator SendResultFragmentReliable(
+            string fragmentType, GameplayTelemetryData payload, int maximumAttempts,
+            Action<TelemetryDeliveryResult> completed,
+            bool? completeOverride = null,
+            string[] requiredFieldsOverride = null,
+            string runIdOverride = null,
+            string gameIdOverride = null,
+            string startedAtOverride = null)
+        {
+            payload ??= new GameplayTelemetryData();
+            StampResearchIdentity(payload);
+            if (string.IsNullOrWhiteSpace(payload.fragmentId))
+                payload.fragmentId = Guid.NewGuid().ToString("N");
+            bool complete = completeOverride ?? IsTerminalResultFragment(fragmentType);
+            ResultFragmentDto fragment = new ResultFragmentDto
+            {
+                kind = fragmentType,
+                fragmentId = payload.fragmentId,
+                runId = string.IsNullOrWhiteSpace(runIdOverride) ? currentRunId : runIdOverride,
+                gameId = string.IsNullOrWhiteSpace(gameIdOverride) ? currentSceneId : gameIdOverride,
+                participantName = participantName,
+                participantSessionId = participantSessionId,
+                occurredAtUtc = GameControlApi.UtcNow(),
+                startedAtUtc = string.IsNullOrWhiteSpace(startedAtOverride) ? runStartedAtUtc : startedAtOverride,
+                complete = complete,
+                requiredFields = requiredFieldsOverride ?? RequiredFieldsFor(fragmentType),
+                data = payload
+            };
+            string json = JsonUtility.ToJson(fragment);
+            TelemetryDeliveryResult last = new TelemetryDeliveryResult(false, 0, "Không thể gửi result fragment.");
+            for (int attempt = 0; attempt < maximumAttempts; attempt++)
+            {
+                while (telemetryRequestsInFlight >= MaximumConcurrentTelemetryRequests)
+                    yield return null;
+                if (!IsConfigured)
+                    last = new TelemetryDeliveryResult(false, 0, configurationError ?? "Máy chủ chưa được cấu hình.");
+                else
+                {
+                    telemetryRequestsInFlight++;
+                    using UnityWebRequest request = CreateJsonPost(
+                        GameControlApi.CombineUrl(backendBaseUrl, resultFragmentRoute), json);
+                    yield return request.SendWebRequest();
+                    telemetryRequestsInFlight--;
+                    bool success = request.result == UnityWebRequest.Result.Success;
+                    last = new TelemetryDeliveryResult(success, request.responseCode,
+                        success ? string.Empty : (request.error ?? "Máy chủ từ chối result fragment."));
+                    if (success)
+                    {
+                        completed?.Invoke(last);
+                        yield break;
+                    }
+                }
+                if (attempt + 1 < maximumAttempts)
+                    yield return new WaitForSecondsRealtime(ReliableRetryDelay(attempt));
+            }
+            completed?.Invoke(last);
+        }
+
+        private IEnumerator SendRunLifecycle(
+            string kind, string runId, string gameId, string startedAtUtc)
+        {
+            GameplayTelemetryData payload = new GameplayTelemetryData
+            {
+                runId = runId,
+                participantName = participantName,
+                participantSessionId = participantSessionId,
+                fragmentId = kind + ":" + runId
+            };
+            yield return SendResultFragmentReliable(
+                kind, payload, 3, null, true, Array.Empty<string>(), runId, gameId, startedAtUtc);
+        }
+
+        private static bool IsTerminalResultFragment(string fragmentType)
+        {
+            return string.Equals(fragmentType, "clinic.round_finished", StringComparison.Ordinal)
+                || string.Equals(fragmentType, "doctor.round_finished", StringComparison.Ordinal)
+                || string.Equals(fragmentType, "lawyer.defense_completed", StringComparison.Ordinal)
+                || string.Equals(fragmentType, "sales.part2.completed", StringComparison.Ordinal);
+        }
+
+        private static string[] RequiredFieldsFor(string fragmentType)
+        {
+            if (string.Equals(fragmentType, "clinic.round_finished", StringComparison.Ordinal)
+                || string.Equals(fragmentType, "doctor.round_finished", StringComparison.Ordinal))
+                return new[] { "roundId", "scoreTotal" };
+            if (string.Equals(fragmentType, "sales.part2.completed", StringComparison.Ordinal))
+                return new[] { "part1", "part2" };
+            if (string.Equals(fragmentType, "lawyer.defense_completed", StringComparison.Ordinal))
+                return new[] { "transcript", "criterionScores", "rawScore", "finalScore", "completionStatus" };
+            return Array.Empty<string>();
+        }
+
         private IEnumerator SendTelemetry(string eventType, GameplayTelemetryData payload)
         {
             telemetryRequestsInFlight++;
@@ -719,6 +923,7 @@ namespace NCKH.VR.GameControl
         private TelemetryEventDto CreateTelemetryEvent(
             string eventType, GameplayTelemetryData payload)
         {
+            StampResearchIdentity(payload);
             return new TelemetryEventDto
             {
                 eventId = Guid.NewGuid().ToString("N"),
@@ -727,8 +932,19 @@ namespace NCKH.VR.GameControl
                 sceneId = currentSceneId,
                 phase = PhaseName(CurrentPhase),
                 eventType = eventType,
+                participantName = participantName,
+                participantSessionId = participantSessionId,
+                runId = currentRunId,
                 payload = payload
             };
+        }
+
+        private void StampResearchIdentity(GameplayTelemetryData payload)
+        {
+            if (payload == null) return;
+            payload.participantName = participantName;
+            payload.participantSessionId = participantSessionId;
+            payload.runId = currentRunId;
         }
 
         private UnityWebRequest CreateJsonPost(string url, string json)
@@ -807,7 +1023,15 @@ namespace NCKH.VR.GameControl
                 && activeAdapter.Phase == RemoteGamePhase.Running
                 && Time.realtimeSinceStartup - disconnectedSince >= disconnectGraceSeconds)
             {
+                string runToAbort = currentRunId;
                 stoppedForDisconnect = activeAdapter.TryStop(out _);
+                if (stoppedForDisconnect && !string.IsNullOrWhiteSpace(runToAbort))
+                {
+                    StartCoroutine(SendRunLifecycle(GameControlApi.RunAbortedFragmentKind, runToAbort,
+                        currentSceneId, runStartedAtUtc));
+                    currentRunId = string.Empty;
+                    runStartedAtUtc = string.Empty;
+                }
             }
         }
 
@@ -854,6 +1078,45 @@ namespace NCKH.VR.GameControl
         private void OnGameplayTelemetry(string eventType, GameplayTelemetryData payload)
         {
             PublishTelemetry(eventType, payload);
+            if (IsResultFragmentEvent(eventType))
+            {
+                GameplayTelemetryData resultPayload = payload == null
+                    ? new GameplayTelemetryData()
+                    : JsonUtility.FromJson<GameplayTelemetryData>(JsonUtility.ToJson(payload));
+                PrepareResultPayload(eventType, resultPayload);
+                if (string.IsNullOrWhiteSpace(resultPayload.fragmentId))
+                    resultPayload.fragmentId = BuildFragmentId(eventType, resultPayload);
+                PublishResultFragmentReliable(eventType, resultPayload, 3, null);
+            }
+        }
+
+        private static void PrepareResultPayload(string eventType, GameplayTelemetryData payload)
+        {
+            payload.audio = null;
+            payload.errorMessage = string.Empty;
+            if (eventType.StartsWith("sales.part2.", StringComparison.Ordinal))
+                payload.resolution = string.Empty;
+        }
+
+        private static bool IsResultFragmentEvent(string eventType)
+        {
+            return string.Equals(eventType, "clinic.patient_resolved", StringComparison.Ordinal)
+                || string.Equals(eventType, "clinic.round_finished", StringComparison.Ordinal)
+                || string.Equals(eventType, "doctor.case_submitted", StringComparison.Ordinal)
+                || string.Equals(eventType, "doctor.round_finished", StringComparison.Ordinal)
+                || string.Equals(eventType, "lawyer.defense_recording", StringComparison.Ordinal)
+                || string.Equals(eventType, "sales.persuasion_recording", StringComparison.Ordinal)
+                || string.Equals(eventType, "sales.part1_recording_uploaded", StringComparison.Ordinal)
+                || string.Equals(eventType, "sales.part2.turn_accepted", StringComparison.Ordinal)
+                || string.Equals(eventType, "sales.part2.completed", StringComparison.Ordinal);
+        }
+
+        private static string BuildFragmentId(string eventType, GameplayTelemetryData payload)
+        {
+            string key = !string.IsNullOrWhiteSpace(payload.roundId) ? payload.roundId
+                : !string.IsNullOrWhiteSpace(payload.salesSessionId) ? payload.salesSessionId
+                : payload.caseId;
+            return eventType + ":" + (key ?? string.Empty) + ":" + (payload.patientId ?? payload.cardId ?? payload.questionId ?? "final");
         }
 
         private void RebuildSceneCatalog()
@@ -866,6 +1129,7 @@ namespace NCKH.VR.GameControl
 
             ValidateRoute(healthRoute, "kiểm tra sức khỏe");
             ValidateRoute(telemetryRoute, "telemetry");
+            ValidateRoute(resultFragmentRoute, "result fragment");
             ValidateRoute(controlWebSocketRoute, "WebSocket điều khiển");
             ValidateRoute(ttsWebSocketRoute, "WebSocket TTS");
             ValidateRoute(sttWebSocketRoute, "WebSocket STT");

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NCKH.VR.GameControl;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -76,6 +77,9 @@ namespace NCKH.VR.Clinic
         private bool emergencyAlertRunning;
         private Renderer[] activeRenderers = Array.Empty<Renderer>();
         private bool appearanceRenderersActive;
+        private float activeGameplaySeconds;
+        private string actionableAtUtc = string.Empty;
+        private string resolvedAtUtc = string.Empty;
 
         public event Action<PatientActor, PatientResolution> Resolved;
         public event Action<PatientActor> BecameInactive;
@@ -85,6 +89,9 @@ namespace NCKH.VR.Clinic
         public int Severity { get; private set; }
         public float RemainingTreatmentTime { get; private set; }
         public bool EmergencyAlertEnabled => enableEmergencyAlert;
+        public float ResolutionDurationSeconds => activeGameplaySeconds;
+        public string ActionableAtUtc => actionableAtUtc;
+        public string ResolvedAtUtc => resolvedAtUtc;
 
         private void Awake()
         {
@@ -121,11 +128,15 @@ namespace NCKH.VR.Clinic
                         SetAppearanceFadeMaterials(false);
                         State = PatientActorState.Active;
                         RemainingTreatmentTime = treatmentDuration;
+                        activeGameplaySeconds = 0f;
+                        actionableAtUtc = GameControlApi.UtcNow();
+                        resolvedAtUtc = string.Empty;
                         SetColliderState(true);
                     }
                     break;
 
                 case PatientActorState.Active:
+                    activeGameplaySeconds += Mathf.Max(0f, deltaTime);
                     RemainingTreatmentTime = Mathf.Max(0f, RemainingTreatmentTime - deltaTime);
                     if (RemainingTreatmentTime <= 0f)
                         Resolve(PatientResolution.TimedOut);
@@ -163,6 +174,9 @@ namespace NCKH.VR.Clinic
             Severity = Mathf.Clamp(severity, ClinicRoundRules.MinimumSeverity, ClinicRoundRules.MaximumSeverity);
             treatmentDuration = Mathf.Max(0f, treatmentSeconds);
             RemainingTreatmentTime = treatmentDuration;
+            activeGameplaySeconds = 0f;
+            actionableAtUtc = string.Empty;
+            resolvedAtUtc = string.Empty;
             playerHead = trackedHead;
             fadeDuration = Mathf.Max(0f, transitionDuration);
             visualAlpha = 0f;
@@ -229,6 +243,9 @@ namespace NCKH.VR.Clinic
             visualAlpha = 0f;
             proximityAlpha = 0f;
             RemainingTreatmentTime = 0f;
+            activeGameplaySeconds = 0f;
+            actionableAtUtc = string.Empty;
+            resolvedAtUtc = string.Empty;
             StopEmergencyAlert();
             SetColliderState(false);
             SetButtonInteractable(false);
@@ -253,6 +270,7 @@ namespace NCKH.VR.Clinic
             SetColliderState(false);
             SetButtonInteractable(false);
             SetAppearanceFadeMaterials(true);
+            resolvedAtUtc = GameControlApi.UtcNow();
             Resolved?.Invoke(this, resolution);
         }
 

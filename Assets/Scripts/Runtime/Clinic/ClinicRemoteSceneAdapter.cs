@@ -13,6 +13,8 @@ namespace NCKH.VR.Clinic
         private readonly Dictionary<PatientActor, string> patientIds = new Dictionary<PatientActor, string>();
         private string roundId = string.Empty;
         private int patientSequence;
+        private string roundStartedAtUtc = string.Empty;
+        private string roundCompletedAtUtc = string.Empty;
 
         public event Action<string, GameplayTelemetryData> TelemetryRaised;
 
@@ -117,6 +119,8 @@ namespace NCKH.VR.Clinic
             roundId = Guid.NewGuid().ToString("N");
             patientSequence = 0;
             patientIds.Clear();
+            roundStartedAtUtc = GameControlApi.UtcNow();
+            roundCompletedAtUtc = string.Empty;
             TelemetryRaised?.Invoke("clinic.round_started", CurrentRoundData());
         }
 
@@ -132,7 +136,11 @@ namespace NCKH.VR.Clinic
                 severity = patient.Severity,
                 bedIndex = bedIndex,
                 scoreTotal = gameManager.Score,
-                remainingTime = gameManager.RemainingRoundTime
+                remainingTime = gameManager.RemainingRoundTime,
+                actionableAtUtc = patient.ActionableAtUtc,
+                resolvedAtUtc = patient.ResolvedAtUtc,
+                resolutionDurationSeconds = patient.ResolutionDurationSeconds,
+                fragmentId = roundId + ":patient:" + patientId
             });
         }
 
@@ -148,7 +156,11 @@ namespace NCKH.VR.Clinic
                 resolution = resolution.ToString().ToLowerInvariant(),
                 scoreDelta = scoreDelta,
                 scoreTotal = scoreTotal,
-                remainingTime = gameManager.RemainingRoundTime
+                remainingTime = gameManager.RemainingRoundTime,
+                actionableAtUtc = patient.ActionableAtUtc,
+                resolvedAtUtc = patient.ResolvedAtUtc,
+                resolutionDurationSeconds = patient.ResolutionDurationSeconds,
+                fragmentId = roundId + ":patient:" + patientId
             });
         }
 
@@ -156,6 +168,10 @@ namespace NCKH.VR.Clinic
         {
             GameplayTelemetryData data = CurrentRoundData();
             data.scoreTotal = score;
+            roundCompletedAtUtc = GameControlApi.UtcNow();
+            data.roundStartedAtUtc = roundStartedAtUtc;
+            data.roundCompletedAtUtc = roundCompletedAtUtc;
+            data.fragmentId = roundId + ":round";
             TelemetryRaised?.Invoke("clinic.round_finished", data);
         }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.XR;
+using NCKH.VR.GameControl;
 
 namespace NCKH.VR.Clinic
 {
@@ -88,6 +89,9 @@ namespace NCKH.VR.Clinic
         private IEnumerator Start()
         {
             if (!startAutomatically)
+                yield break;
+
+            if (GameController.Instance == null || !GameController.Instance.HasAcknowledgedParticipant)
                 yield break;
 
             float deadline = Time.realtimeSinceStartup + automaticStartReadinessTimeout;

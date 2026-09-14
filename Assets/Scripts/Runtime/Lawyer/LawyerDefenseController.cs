@@ -412,6 +412,14 @@ namespace NCKH.VR.Lawyer
                         JsonUtility.FromJson<LawyerAssessmentStatusResponse>(request.downloadHandler.text);
                     if (status != null && status.assessmentStatus == "completed")
                     {
+                        GameplayTelemetryData completedData = pendingTelemetry == null
+                            ? new GameplayTelemetryData()
+                            : JsonUtility.FromJson<GameplayTelemetryData>(
+                                JsonUtility.ToJson(pendingTelemetry));
+                        completedData.audio = null;
+                        completedData.fragmentId = session.RoundId + ":defense";
+                        controller.PublishResultFragmentReliable(
+                            "lawyer.defense_completed", completedData, 3, null);
                         if (pendingTelemetry?.audio != null)
                             pendingTelemetry.audio.dataBase64 = string.Empty;
                         pendingTelemetry = null;
