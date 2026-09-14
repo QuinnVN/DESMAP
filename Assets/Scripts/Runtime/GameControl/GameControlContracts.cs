@@ -251,14 +251,14 @@ namespace NCKH.VR.GameControl
     [Serializable]
     public sealed class ResultFragmentDto
     {
+        public string kind;
         public string fragmentId;
         public string runId;
-        public string participantName;
-        public string participantSessionId;
         public string gameId;
-        public string fragmentType;
-        public string occurredAtUtc;
-        public GameplayTelemetryData payload;
+        public string startedAtUtc;
+        public bool complete;
+        public string[] requiredFields;
+        public GameplayTelemetryData data;
     }
 
     public static class GameControlApi
@@ -273,6 +273,8 @@ namespace NCKH.VR.GameControl
         public const string ResultFragmentRoute = "/api/results/fragments";
         public const string AssignParticipantCommand = "assign_participant";
         public const string ClearParticipantCommand = "clear_participant";
+        public const string RunStartedFragmentKind = "run.started";
+        public const string RunAbortedFragmentKind = "run.aborted";
         public const string ControlWebSocketRoute = "/ws/ctrl";
         public const string TtsWebSocketRoute = "/ws/tts";
         public const string SttWebSocketRoute = "/ws/stt";
