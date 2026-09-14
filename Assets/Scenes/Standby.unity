@@ -2383,6 +2383,7 @@ MonoBehaviour:
   maximumReconnectDelaySeconds: 10
   healthRoute: /api/health
   telemetryRoute: /api/telemetry
+  resultFragmentRoute: /api/results/fragments
   controlWebSocketRoute: /ws/ctrl
   ttsWebSocketRoute: /ws/tts
   sttWebSocketRoute: /ws/stt
@@ -2397,6 +2398,8 @@ MonoBehaviour:
     scenePath: Assets/Scenes/Lawyer/Office.unity
   - id: sale
     scenePath: Assets/Scenes/Sale/Store.unity
+  - id: tutorial
+    scenePath: Assets/Scenes/Tutorial.unity
 --- !u!4 &1872723863
 Transform:
   m_ObjectHideFlags: 0
