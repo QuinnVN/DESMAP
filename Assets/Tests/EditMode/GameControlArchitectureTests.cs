@@ -117,6 +117,7 @@ namespace NCKH.VR.GameControl.Tests
                 gameId = "clinic",
                 participantName = "Nguyễn An",
                 participantSessionId = "session-1",
+                occurredAtUtc = "2026-09-14T12:01:00Z",
                 startedAtUtc = "2026-09-14T12:00:00Z",
                 complete = false,
                 requiredFields = Array.Empty<string>(),
@@ -132,6 +133,7 @@ namespace NCKH.VR.GameControl.Tests
             Assert.That(fragmentCopy.kind, Is.EqualTo("clinic.patient_resolved"));
             Assert.That(fragmentCopy.participantName, Is.EqualTo("Nguyễn An"));
             Assert.That(fragmentCopy.participantSessionId, Is.EqualTo("session-1"));
+            Assert.That(fragmentCopy.occurredAtUtc, Is.EqualTo("2026-09-14T12:01:00Z"));
             Assert.That(fragmentCopy.data.participantSessionId, Is.EqualTo("session-1"));
             Assert.That(fragmentCopy.data.resolutionDurationSeconds, Is.EqualTo(2.5f));
         }

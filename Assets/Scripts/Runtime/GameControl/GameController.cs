@@ -782,6 +782,7 @@ namespace NCKH.VR.GameControl
                 gameId = string.IsNullOrWhiteSpace(gameIdOverride) ? currentSceneId : gameIdOverride,
                 participantName = participantName,
                 participantSessionId = participantSessionId,
+                occurredAtUtc = GameControlApi.UtcNow(),
                 startedAtUtc = string.IsNullOrWhiteSpace(startedAtOverride) ? runStartedAtUtc : startedAtOverride,
                 complete = complete,
                 requiredFields = requiredFieldsOverride ?? RequiredFieldsFor(fragmentType),

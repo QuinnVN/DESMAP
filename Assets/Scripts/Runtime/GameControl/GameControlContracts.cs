@@ -257,6 +257,7 @@ namespace NCKH.VR.GameControl
         public string gameId;
         public string participantName;
         public string participantSessionId;
+        public string occurredAtUtc;
         public string startedAtUtc;
         public bool complete;
         public string[] requiredFields;
