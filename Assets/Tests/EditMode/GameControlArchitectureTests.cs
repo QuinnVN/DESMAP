@@ -386,8 +386,8 @@ namespace NCKH.VR.GameControl.Tests
             }
             finally
             {
-                Object.DestroyImmediate(doctorRoot);
-                Object.DestroyImmediate(clinicRoot);
+                UnityEngine.Object.DestroyImmediate(doctorRoot);
+                UnityEngine.Object.DestroyImmediate(clinicRoot);
             }
         }
 
