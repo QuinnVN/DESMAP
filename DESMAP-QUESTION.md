@@ -3,33 +3,33 @@
 ### **Mục đích**
 
 D đo **những điều người chơi mong muốn và coi trọng khi lựa chọn nghề nghiệp**.  
-D trả lời câu hỏi (giá trị nghề nghiệp)
+D trả lời câu hỏi (giá trị nghề nghiệp) 
 
 > **“Nếu chọn một nghề, tôi muốn nghề đó mang lại điều gì cho mình?”**
 
 D **không đo năng lực** và **không đo ngành người chơi yêu thích**. Phần ngành yêu thích sẽ được xác định ở bước **Career Interest** trước DESMAP.  
-Theo hệ thống **O\*NET** (Mạng lưới thông tin nghề nghiệp do Bộ Lao động Hoa Kỳ phát triển), các giá trị nghề nghiệp (**Work Values**, hay còn gọi là _Work Importance Locator_) được chia thành 6 nhóm chính
+Theo hệ thống **O\*NET** (Mạng lưới thông tin nghề nghiệp do Bộ Lao động Hoa Kỳ phát triển), các giá trị nghề nghiệp (**Work Values**, hay còn gọi là *Work Importance Locator*) được chia thành 6 nhóm chính 
 
 ## **1\. Cấu trúc D**
 
 D gồm **6 sub-dimensions**, mỗi nhóm **2 câu**, tổng cộng **12 câu**.
 
-| Mã     | Dimension          | Nội dung                                  |
-| ------ | ------------------ | ----------------------------------------- |
-| **D1** | Achievement        | Thu nhập, phúc lợi, sự ổn định            |
-| **D2** | Support            | Học hỏi, phát triển, thành tựu, thử thách |
-| **D3** | Independence       | Tự chủ, tự quyết định cách làm việc       |
-| **D4** | Relationships      | Ý nghĩa, đóng góp, tạo giá trị            |
-| **D5** | Recognition        | Công nhận, địa vị, tiếng nói, ảnh hưởng   |
-| **D6** | Working Conditions | Cân bằng công việc – cuộc sống            |
+| Mã | Dimension | Nội dung |
+| ----- | ----- | ----- |
+| **D1** | Achievement  | Thu nhập, phúc lợi, sự ổn định |
+| **D2** | Support  | Học hỏi, phát triển, thành tựu, thử thách |
+| **D3** | Independence  | Tự chủ, tự quyết định cách làm việc |
+| **D4** | Relationships  | Ý nghĩa, đóng góp, tạo giá trị |
+| **D5** | Recognition | Công nhận, địa vị, tiếng nói, ảnh hưởng |
+| **D6** | Working Conditions  | Cân bằng công việc – cuộc sống |
 
 # **2\. Logic chấm điểm**
 
 Mỗi câu có **3 lựa chọn**.
 
-- Lựa chọn thể hiện **mong muốn cao** → `+2`
-- Lựa chọn trung gian → `+1`
-- Lựa chọn thể hiện **mong muốn thấp** → `+0`
+* Lựa chọn thể hiện **mong muốn cao** → `+2`  
+* Lựa chọn trung gian → `+1`  
+* Lựa chọn thể hiện **mong muốn thấp** → `+0`
 
 Mỗi dimension có 2 câu:
 
@@ -37,126 +37,103 @@ Mỗi dimension có 2 câu:
 
 Quy đổi:
 
-| Điểm | %    |
-| ---- | ---- |
-| 0/4  | 0%   |
-| 1/4  | 25%  |
-| 2/4  | 50%  |
-| 3/4  | 75%  |
-| 4/4  | 100% |
+| Điểm | % |
+| ----- | ----- |
+| 0/4 | 0% |
+| 1/4 | 25% |
+| 2/4 | 50% |
+| 3/4 | 75% |
+| 4/4 | 100% |
 
 **Lưu ý cho IT:** không nên hard-code rằng A luôn \= 2, B \= 1, C \= 0\. Có thể đảo vị trí đáp án để tránh người chơi đoán pattern. Database chỉ cần lưu:
 
 option → dimension → score
 
 **Bộ 12 câu hỏi**  
-**D1 — Achievement: Thành tựu**
+**D1 \- Achievement**
 
-### D1.1
+**D1.1 Nếu ba công việc có lương tương đương, bạn dễ chọn công việc nào hơn?**
 
-Nếu được chọn giữa ba công việc có mức lương và điều kiện tương đương, bạn dễ bị thu hút nhất bởi công việc nào?
+**A. Công việc quen dần theo thời gian và ít đổi mục tiêu. \-\> \+0**  
+**B. Công việc có mục tiêu mới theo từng giai đoạn. \-\> \+1**  
+**C. Công việc thường có mục tiêu khó hơn để thử sức. \-\> \+2**
 
-A. Công việc cho tôi cơ hội làm những nhiệm vụ khó và nhìn thấy rõ mình tiến bộ qua từng lần. → `D1 +2`  
-B. Công việc có một số mục tiêu để phấn đấu nhưng không tạo áp lực phải liên tục vượt qua chính mình. → `D1 +1`  
-C. Công việc quen thuộc, ổn định và không đặt nặng việc phải đạt thêm thành tích mới. → `D1 +0`
+**D1.2 Sau một thời gian làm việc, điều nào làm bạn hài lòng hơn?**
 
-### D1.2
+**A. Công việc ổn định và mình làm quen tay hơn. \-\> \+0**  
+**B. Mình hoàn thành những mục tiêu đã đặt ra. \-\> \+1**  
+**C. Mình làm được việc trước đây chưa từng làm. \-\> \+2**
 
-Sau một thời gian làm việc, điều nào khiến bạn cảm thấy công sức của mình đáng giá nhất?
+## **D2 \- Support**
 
-A. Tôi nhìn thấy một kết quả cụ thể và biết rằng mình đã làm được điều trước đây chưa làm được. → `D1 +2`  
-B. Tôi hoàn thành tốt phần việc được giao và đáp ứng yêu cầu. → `D1 +1`  
-C. Công việc diễn ra thuận lợi và tôi không phải đặt nặng việc mình đạt được thành tựu gì. → `D1 +0`
+**D2.1 Khi làm một việc mới, bạn thích môi trường nào hơn?**
 
-## **D2 — Support: Sự hỗ trợ từ tổ chức**
+**A. Được tự tìm cách làm và hỏi khi cần. \-\> \+0**  
+**B. Có người hỗ trợ ở một số lúc quan trọng. \-\> \+1**  
+**C. Có người hướng dẫn và góp ý thường xuyên. \-\> \+2**
 
-### D2.1
+**D2.2 Nếu hai nơi có công việc giống nhau, bạn dễ chọn nơi nào?**
 
-Nếu mới vào một nơi làm việc và gặp một nhiệm vụ khó, môi trường nào khiến bạn muốn gắn bó hơn?
+**A. Nơi cho mình nhiều không gian tự xử lý. \-\> \+0**  
+**B. Nơi có hỗ trợ khi gặp khó khăn. \-\> \+1**  
+**C. Nơi có hướng dẫn đều đặn trong quá trình làm. \-\> \+2**
 
-A. Có người hướng dẫn rõ ràng, sẵn sàng góp ý và giúp tôi phát triển khi gặp khó khăn. → `D2 +2`  
-B. Tôi có thể hỏi khi cần, nhưng phần lớn phải tự tìm cách xử lý. → `D2 +1`  
-C. Mỗi người chủ yếu tự chịu trách nhiệm cho công việc của mình và ít cần sự hỗ trợ từ tổ chức. → `D2 +0`
+## **D3 \- Independence**
 
-### D2.2
+**D3.1 Khi nhận một nhiệm vụ mới, bạn thích:**
 
-Hai công ty đưa ra công việc gần giống nhau. Bạn có xu hướng chọn nơi nào hơn?
+**A. Có cách làm khá rõ để làm theo. \-\> \+0**  
+**B. Có khung chung và được chỉnh một số phần. \-\> \+1**  
+**C. Biết kết quả cần đạt và tự chọn cách làm. \-\> \+2**
 
-A. Nơi có quản lý quan tâm đến sự phát triển của nhân viên và có cơ chế hỗ trợ khi gặp vấn đề. → `D2 +2`  
-B. Nơi có hỗ trợ cơ bản nhưng nhân viên vẫn phải chủ động phần lớn. → `D2 +1`  
-C. Nơi trao công việc rồi để nhân viên tự xử lý, miễn là kết quả đạt yêu cầu. → `D2 +0`
+**D3.2 Bạn thích nơi làm việc nào hơn?**
 
-## **D3 — Independence: Tự chủ**
+**A. Mọi người dùng cách làm khá giống nhau. \-\> \+0**  
+**B. Có thể đổi cách làm sau khi trao đổi. \-\> \+1**  
+**C. Mỗi người có cách riêng miễn đạt kết quả. \-\> \+2**
 
-### D3.1
+## **D4 \- Relationships**
 
-Khi được giao một nhiệm vụ, cách làm việc nào khiến bạn thoải mái nhất?
+**D4.1 Trong công việc, bạn thích kiểu tương tác nào hơn?**
 
-A. Biết mục tiêu cần đạt rồi tự quyết định cách thực hiện. → `D3 +2`  
-B. Có một khung hướng dẫn chung nhưng vẫn được tự điều chỉnh một số phần. → `D3 +1`  
-C. Có quy trình và hướng dẫn cụ thể để làm theo từng bước. → `D3 +0`
+**A. Có nhiều thời gian tập trung vào phần việc riêng. \-\> \+0**  
+**B. Vừa làm phần việc riêng, vừa trao đổi khi cần. \-\> \+1**  
+**C. Thường xuyên làm việc cùng hoặc hỗ trợ người khác. \-\> \+2**
 
-### D3.2
+**D4.2 Nếu ba công việc đều phù hợp, bạn dễ chọn công việc nào hơn?**
 
-Nếu cả ba công việc đều cho kết quả tương đương, bạn thích môi trường nào hơn?
+**A. Công việc tập trung vào kết quả cá nhân của mình. \-\> \+0**  
+**B. Công việc vừa có kết quả cá nhân, vừa có tương tác với người khác. \-\> \+1**  
+**C. Công việc cho mình thấy rõ tác động đến người khác. \-\> \+2**
 
-A. Tôi được thử cách làm và ý tưởng riêng miễn là chịu trách nhiệm về kết quả. → `D3 +2`  
-B. Tôi được đề xuất thay đổi nhưng cần trao đổi với người phụ trách trước. → `D3 +1`  
-C. Tôi làm theo cách đã được thống nhất để mọi người vận hành đồng đều. → `D3 +0`
+## **D5 \- Recognition**
 
-## **D4 — Relationships: Quan hệ và giá trị xã hội**
+**D5.1 Khi hoàn thành tốt một việc, điều nào khiến bạn vui hơn?**
 
-### **D4.1**
+**A. Bản thân biết mình đã làm tốt. \-\> \+0**  
+**B. Người làm cùng biết phần mình đóng góp. \-\> \+1**  
+**C. Phần đóng góp của mình được nhắc đến rõ hơn. \-\> \+2**
 
-Nếu phải chọn một công việc để gắn bó lâu dài, yếu tố nào dễ khiến bạn cảm thấy công việc đó “có ý nghĩa” hơn?
+**D5.2 Khi phát triển lâu dài trong một lĩnh vực, bạn thích hướng nào hơn?**
 
-A. Tôi thấy công việc của mình tạo ra giá trị tích cực cho người khác hoặc cộng đồng. → `D4 +2`  
-B. Công việc có ích ở một mức nhất định, dù đó không phải điều tôi nghĩ đến thường xuyên. → `D4 +1`  
-C. Tôi chủ yếu quan tâm công việc có phù hợp với nhu cầu cá nhân của mình hay không. → `D4 +0`
+**A. Trở nên vững chuyên môn trong vai trò hiện tại. \-\> \+0**  
+**B. Nhận thêm trách nhiệm khi thấy phù hợp. \-\> \+1**  
+**C. Có vai trò ảnh hưởng nhiều hơn đến quyết định chung. \-\> \+2**
 
-### **D4.2**
+## **D6 \- Working Conditions**
 
-Giả sử một công việc rất phù hợp với năng lực của bạn nhưng sản phẩm mà công ty tạo ra không thật sự phù hợp với những giá trị bạn tin tưởng. Bạn có xu hướng:
+**D6.1 Nếu hai công việc đều khiến bạn hứng thú, yếu tố nào dễ ảnh hưởng đến lựa chọn của bạn hơn?**
 
-A. Cân nhắc nghiêm túc việc chọn một nơi khác dù công việc hiện tại khá phù hợp. → `D4 +2`  
-B. Vẫn có thể làm nếu điểm không phù hợp đó không quá lớn. → `D4 +1`  
-C. Tách quan điểm cá nhân khỏi công việc, miễn là công việc đáp ứng những điều tôi cần. → `D4 +0`
+**A. Nội dung công việc và trải nghiệm khi làm. \-\> \+0**  
+**B. Cả nội dung công việc lẫn điều kiện làm việc. \-\> \+1**  
+**C. Thu nhập, thời gian và môi trường làm việc ổn định. \-\> \+2**
 
-## **D5 — Recognition: Sự công nhận**
+**D6.2 Một công việc rất thú vị nhưng giờ làm thay đổi nhiều và thu nhập chưa ổn định. Bạn:**
 
-### **D5.1**
+**A. Vẫn dễ chọn vì nội dung công việc hấp dẫn. \-\> \+0**  
+**B. Cân nhắc giữa điểm hấp dẫn và điểm chưa ổn định. \-\> \+1**  
+**C. Dễ nghiêng về công việc ổn định hơn. \-\> \+2**
 
-Bạn vừa hoàn thành một phần việc rất tốt. Điều nào khiến bạn hài lòng hơn?
-
-A. Thành quả của tôi được ghi nhận và mọi người biết tôi đã đóng góp như thế nào. → `D5 +2`  
-B. Tôi được ghi nhận khi có dịp, nhưng không nhất thiết phải được chú ý nhiều. → `D5 +1`  
-C. Tôi biết mình làm tốt là đủ, người khác có biết hay không không quá quan trọng. → `D5 +0`
-
-### **D5.2**
-
-Nếu phải chọn giữa ba hướng phát triển nghề nghiệp, bạn nghiêng về hướng nào hơn?
-
-A. Có cơ hội tiến lên vị trí cao hơn, được giao nhiều quyền hạn và có tiếng nói lớn hơn. → `D5 +2`  
-B. Có thể thăng tiến nếu phù hợp, nhưng tôi không đặt đó là mục tiêu chính. → `D5 +1`  
-C. Tôi không cần vị trí cao hơn nếu vẫn được làm công việc mình thấy phù hợp. → `D5 +0`
-
-## **D6 — Working Conditions: Điều kiện làm việc**
-
-### **D6.1**
-
-Nếu có hai công việc đều khá phù hợp với bạn, điều nào dễ làm bạn nghiêng về một công việc hơn?
-
-A. Thu nhập, sự ổn định và các điều kiện làm việc đáp ứng tốt nhu cầu cuộc sống của tôi. → `D6 +2`  
-B. Các điều kiện trên ở mức ổn là được, tôi còn cân nhắc nhiều yếu tố khác. → `D6 +1`  
-C. Tôi có thể chấp nhận điều kiện vật chất kém thuận lợi hơn nếu bản thân thực sự thích công việc. → `D6 +0`
-
-### **D6.2**
-
-Bạn được mời làm một công việc rất thú vị nhưng thu nhập chưa ổn định và môi trường làm việc còn nhiều bất tiện. Bạn có xu hướng:
-
-A. Cân nhắc khá kỹ vì sự ổn định và điều kiện làm việc ảnh hưởng lớn đến quyết định của tôi. → `D6 +2`  
-B. Có thể thử nếu những điểm hấp dẫn khác đủ lớn. → `D6 +1`  
-C. Sẵn sàng chấp nhận những bất tiện đó nếu công việc khiến tôi hứng thú. **→ `D6 +0`**  
 **4\. Output cho người chơi**  
 Ví dụ:
 
@@ -176,141 +153,117 @@ AI sau đó đọc **pattern 6 chỉ số**, ví dụ:
 
 Dựa vào Các nền tảng lý thuyết gốc
 
-- **Cơ sở phân loại:** cấu trúc kỹ năng trong tài liệu O*NET gồm* _**Basic Skills**_ _và_ _**Cross-Functional Skills**_\*; nhóm thứ hai gồm năm nhánh còn lại trong bảng. \*
+* **Cơ sở phân loại:** cấu trúc kỹ năng trong tài liệu O*NET gồm* ***Basic Skills*** *và* ***Cross-Functional Skills***\*; nhóm thứ hai gồm năm nhánh còn lại trong bảng. \*
 
 **E đo dạng năng lực mà người chơi có xu hướng phát huy trong công việc.**
 
-| Mã     | Nhóm E                                                     | Nội dung                                                                                            |
-| ------ | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| **E1** | **Basic Skills \- Kỹ năng nền tảng**                       | Đọc hiểu, lắng nghe, diễn đạt, tính toán, học hỏi và tư duy phản biện.                              |
-| **E2** | **Complex Problem Solving — Giải quyết vấn đề phức tạp**   | Nhận diện vấn đề, xem xét thông tin, xây dựng và đánh giá phương án giải quyết.                     |
-| **E3** | **Social Skills — Kỹ năng tương tác xã hội**               | Phối hợp, thuyết phục, thương lượng, hướng dẫn và hiểu phản ứng của người khác.                     |
-| **E4** | **Technical Skills — Kỹ năng kỹ thuật**                    | Lựa chọn, vận hành, kiểm tra và xử lý sự cố của công cụ, thiết bị hoặc hệ thống kỹ thuật.           |
-| **E5** | **Systems Skills — Kỹ năng hệ thống**                      | Hiểu quan hệ giữa các bộ phận, đánh giá tác động của thay đổi và cải thiện cách hệ thống hoạt động. |
-| **E6** | **Resource Management Skills — Kỹ năng quản lý nguồn lực** | Phân bổ thời gian, tiền bạc, vật tư và nhân sự.                                                     |
+| Mã | Nhóm E | Nội dung |
+| ----- | ----- | ----- |
+| **E1** | **Basic Skills \- Kỹ năng nền tảng** | Đọc hiểu, lắng nghe, diễn đạt, tính toán, học hỏi và tư duy phản biện. |
+| **E2** | **Complex Problem Solving — Giải quyết vấn đề phức tạp** | Nhận diện vấn đề, xem xét thông tin, xây dựng và đánh giá phương án giải quyết. |
+| **E3** | **Social Skills — Kỹ năng tương tác xã hội** | Phối hợp, thuyết phục, thương lượng, hướng dẫn và hiểu phản ứng của người khác. |
+| **E4** | **Technical Skills — Kỹ năng kỹ thuật** | Lựa chọn, vận hành, kiểm tra và xử lý sự cố của công cụ, thiết bị hoặc hệ thống kỹ thuật. |
+| **E5** | **Systems Skills — Kỹ năng hệ thống** | Hiểu quan hệ giữa các bộ phận, đánh giá tác động của thay đổi và cải thiện cách hệ thống hoạt động. |
+| **E6** | **Resource Management Skills — Kỹ năng quản lý nguồn lực** | Phân bổ thời gian, tiền bạc, vật tư và nhân sự. |
 
 **Mỗi nhóm 2 câu. Mỗi câu 3 lựa chọn.**
 
 ### **Logic chấm điểm E**
 
-- Mức thể hiện năng lực cao → `+2`
-- Mức thể hiện trung gian → `+1`
-- Mức thể hiện thấp → `+0`
+* Mức thể hiện năng lực cao → `+2`  
+* Mức thể hiện trung gian → `+1`  
+* Mức thể hiện thấp → `+0`
 
 Mỗi dimension có **2 câu × 2 điểm \= tối đa 4 điểm**.
 
 > **Điểm từng E \= (điểm đạt được / 4\) × 100**
 
 **3\. Bộ 12 câu**  
-**E1 — Basic Skills: Kỹ năng nền tảng**
+**E1 \- Basic Skills**
 
-### **E1.1**
+**E1.1 Khi nhận một hướng dẫn dài cho việc mới, bạn thường bắt đầu bằng cách:**
 
-Bạn nhận được một hướng dẫn dài cho một nhiệm vụ mới và chỉ có ít thời gian để đọc. Bạn thường:
+**A. Xem ví dụ hoặc mẫu trước. \-\> \+0**  
+**B. Đọc toàn bộ một lượt rồi làm. \-\> \+1**  
+**C. Tóm lại mục tiêu và yêu cầu chính trước khi làm. \-\> \+2**
 
-A. Xác định mục tiêu, các yêu cầu chính và những điều cần chú ý trước khi bắt đầu. → `E1 +2`  
-B. Đọc toàn bộ rồi bắt đầu làm, nếu gặp chỗ chưa rõ thì quay lại kiểm tra. → `E1 +1`  
-C. Bắt đầu từ những phần mình hiểu trước và tìm thêm hướng dẫn khi gặp khó khăn. → `E1 +0`
+**E1.2 Nhóm cần kiểm tra một bảng chi phí. Bạn thường:**
 
-### E1.2
+**A. Dùng công cụ hoặc mẫu có sẵn để kiểm tra. \-\> \+0**  
+**B. Tính các khoản chính rồi đối chiếu lại. \-\> \+1**  
+**C. Kiểm tra phép tính và các điểm chưa hợp lý. \-\> \+2**
 
-Nhóm đang chuẩn bị một hoạt động với ngân sách giới hạn. Khi cần kiểm tra các khoản chi, bạn thường:
+## **E2 \- Complex Problem Solving**
 
-A. Tự tính tổng chi phí, tỉ lệ hoặc phần chênh lệch để kiểm tra xem kế hoạch có nằm trong ngân sách không. → `E1 +2`  
-B. Tính những khoản chính rồi dùng công cụ hoặc nhờ người khác kiểm tra lại. → `E1 +1`  
-C. Ưu tiên phụ trách phần nội dung khác và để người quen xử lý số liệu đảm nhận việc tính toán. → `E1 +0`
+**E2.1 Dự án cùng lúc bị thiếu người, trễ giờ và có lỗi. Bạn thường:**
 
-## **E2 — Complex Problem Solving: Giải quyết vấn đề phức tạp**
+**A. Làm việc xử lý nhanh nhất trước. \-\> \+0**  
+**B. Làm việc đang gấp nhất trước. \-\> \+1**  
+**C. Làm việc đang ảnh hưởng nhiều phần khác trước. \-\> \+2**
 
-### E2.1
+**E2.2 Có ba cách giải quyết và không cách nào hoàn hảo. Bạn thường:**
 
-Một dự án đang gặp cùng lúc ba vấn đề: thiếu thời gian, thiếu người và kết quả chưa đạt yêu cầu. Bạn thường:
+**A. Chọn cách mình từng dùng hiệu quả. \-\> \+0**  
+**B. So sánh ưu và nhược điểm chính. \-\> \+1**  
+**C. So sánh theo vài tiêu chí quan trọng. \-\> \+2**
 
-A. Xác định vấn đề nào đang ảnh hưởng lớn nhất, tìm nguyên nhân rồi xử lý theo thứ tự ưu tiên. → `E2 +2`  
-B. Chọn vấn đề cấp bách nhất để giải quyết trước rồi xem tình hình thay đổi thế nào. → `E2 +1`  
-C. Bắt đầu xử lý vấn đề mình thấy dễ giải quyết nhất để dự án tiếp tục tiến triển. → `E2 +0`
+## **E3 \- Social Skills**
 
-### E2.2
+**E3.1 Một người gửi phần việc cho bạn trễ hơn dự kiến. Bạn thường:**
 
-Bạn có ba phương án để giải quyết cùng một vấn đề nhưng mỗi phương án đều có ưu và nhược điểm. Bạn thường:
+**A. Điều chỉnh phần của mình theo tiến độ mới. \-\> \+0**  
+**B. Hỏi lại thời gian cụ thể để sắp xếp tiếp. \-\> \+1**  
+**C. Trao đổi cách phối hợp để hạn chế ảnh hưởng đến việc chung. \-\> \+2**
 
-A. Đặt ra các tiêu chí cần đạt, so sánh từng phương án theo các tiêu chí rồi mới quyết định. → `E2 +2`  
-B. So sánh những ưu và nhược điểm nổi bật nhất rồi chọn phương án có vẻ phù hợp. → `E2 +1`  
-C. Ưu tiên phương án quen thuộc hoặc từng có hiệu quả trong tình huống tương tự. → `E2 +0`
+**E3.2 Một vài người không đồng ý với ý tưởng của bạn. Bạn thường:**
 
-## **E3 — Social Skills: Kỹ năng tương tác xã hội**
+**A. Trình bày cách mình nghĩ rồi để nhóm cân nhắc. \-\> \+0**  
+**B. Trao đổi thêm về điểm hai bên nghĩ khác nhau. \-\> \+1**  
+**C. Tìm điều họ quan tâm để chọn cách trao đổi phù hợp. \-\> \+2**
 
-### E3.1
+## **E4 \- Technical Skills**
 
-Phần việc của bạn chỉ có thể hoàn thành sau khi một thành viên khác gửi dữ liệu, nhưng tiến độ của họ đang chậm. Bạn thường:
+**E4.1 Bạn cần dùng một công cụ đã lâu không dùng. Bạn thường:**
 
-A. Trao đổi để biết tình hình, thống nhất thời điểm bàn giao và điều chỉnh phần việc hai bên để không ảnh hưởng tiến độ chung. → `E3 +2`  
-B. Nhắc họ về thời hạn và chuẩn bị trước những phần mình có thể làm. → `E3 +1`  
-C. Hoàn thành những phần của mình trước và chờ dữ liệu được gửi sang rồi xử lý tiếp. → `E3 +0`
+**A. Xem lại hướng dẫn hoặc ví dụ. \-\> \+0**  
+**B. Thử phần mình nhớ và xem lại phần chưa chắc. \-\> \+1**  
+**C. Thao tác từng bước và kiểm tra kết quả. \-\> \+2**
 
-### E3.2
+**E4.2 Một công cụ quen thuộc đột nhiên hoạt động khác bình thường. Bạn:**
 
-Bạn đề xuất một ý tưởng nhưng một số thành viên trong nhóm không đồng ý. Bạn thường:
+**A. Xem hướng dẫn hoặc tìm lỗi tương tự. \-\> \+0**  
+**B. Thử những cách xử lý thường dùng. \-\> \+1**  
+**C. Kiểm tra từng phần để tìm lỗi xuất hiện từ đâu. \-\> \+2**
 
-A. Tìm hiểu điều họ lo ngại, điều chỉnh cách giải thích và đưa ra lý do liên quan trực tiếp đến vấn đề đó. → `E3 +2`  
-B. Giải thích rõ hơn lợi ích của ý tưởng và cố gắng trả lời các phản đối chính. → `E3 +1`  
-C. Trình bày quan điểm của mình một lần rõ ràng rồi để cả nhóm tự quyết định. → `E3 +0`
+## **E5 \- Systems Skills**
 
-## **E4 — Technical Skills: Kỹ năng kỹ thuật**
+**E5.1 Một phần của dự án bị trễ hai ngày. Bạn thường:**
 
-### E4.1
+**A. Tìm cách giúp phần đó xong nhanh hơn. \-\> \+0**  
+**B. Sắp xếp lại những việc đang chờ phần đó. \-\> \+1**  
+**C. Xem phần nào bị ảnh hưởng rồi chỉnh lại kế hoạch chung. \-\> \+2**
 
-Bạn phải sử dụng một thiết bị hoặc phần mềm đã từng được hướng dẫn nhưng đã lâu không dùng. Bạn thường:
+**E5.2 Nhóm muốn dùng cách làm mới nhanh hơn nhưng cần thời gian làm quen. Bạn:**
 
-A. Nhớ lại nguyên lý/các bước chính, thử thao tác và kiểm tra kết quả để tự điều chỉnh nếu cần. → `E4 +2`  
-B. Xem nhanh lại hướng dẫn hoặc ví dụ rồi làm theo. → `E4 +1`  
-C. Muốn có người quen với thiết bị hoặc phần mềm đó hướng dẫn lại trước khi bắt đầu. → `E4 +0`
+**A. Thử cách mới ở một phần nhỏ trước. \-\> \+0**  
+**B. So sánh thời gian học và thời gian tiết kiệm được. \-\> \+1**  
+**C. Xem cách mới ảnh hưởng đến thời gian, chi phí và các phần khác. \-\> \+2**
 
-### E4.2
+## **E6 \- Resource Management**
 
-Một thiết bị hoặc phần mềm quen thuộc đột nhiên không hoạt động như bình thường. Việc đầu tiên bạn thường làm là:
+**E6.1 Bạn có ba việc cùng hạn nhưng không đủ thời gian làm kỹ cả ba. Bạn:**
 
-A. Quan sát dấu hiệu lỗi, kiểm tra từng nguyên nhân có khả năng xảy ra để xác định vấn đề. → `E4 +2`  
-B. Thử một số cách xử lý thường dùng như khởi động lại, kiểm tra cài đặt hoặc kết nối. → `E4 +1`  
-C. Tìm hướng dẫn hoặc nhờ một người có kinh nghiệm kiểm tra để tránh làm sai thêm. → `E4 +0`
+**A. Làm lần lượt theo hạn hoặc thứ tự nhận việc. \-\> \+0**  
+**B. Chia thời gian để việc nào cũng có tiến triển. \-\> \+1**  
+**C. Chia thời gian theo mức quan trọng và thời gian cần làm. \-\> \+2**
 
-## **E5 — Systems Skills: Kỹ năng hệ thống**
+**E6.2 Bạn cần chia việc cho một nhóm. Bạn thường:**
 
-### **E5.1**
+**A. Để mọi người chọn việc họ muốn làm trước. \-\> \+0**  
+**B. Chia tương đối đều rồi đổi nếu cần. \-\> \+1**  
+**C. Chia theo thời gian và điểm mạnh của từng người. \-\> \+2**
 
-Một dự án gồm nhiều công đoạn liên tiếp. Một công đoạn ở giữa bị trễ hai ngày. Bạn thường:
-
-A. Xem công đoạn đó liên quan đến những phần nào phía sau và đánh giá toàn bộ tiến độ sẽ bị ảnh hưởng ra sao. → `E5 +2`  
-B. Kiểm tra những nhiệm vụ ngay sau công đoạn đó để điều chỉnh lịch làm việc. → `E5 +1`  
-C. Tập trung giúp công đoạn đang chậm hoàn thành nhanh hơn rồi mới xử lý các vấn đề phát sinh tiếp theo. → `E5 +0`
-
-### E5.2
-
-Nhóm muốn thay đổi cách tổ chức công việc để tiết kiệm thời gian nhưng cách mới cần thêm chi phí và thời gian làm quen. Bạn thường:
-
-A. So sánh lợi ích, chi phí và ảnh hưởng của thay đổi đến toàn bộ quá trình trước khi quyết định. → `E5 +2`  
-B. Xem cách mới có giúp giải quyết vấn đề chính hay không rồi cân nhắc triển khai. → `E5 +1`  
-C. Ưu tiên giữ cách hiện tại nếu nó vẫn hoạt động tương đối ổn định. → `E5 +0`
-
-## **E6 — Resource Management Skills: Kỹ năng quản lý nguồn lực**
-
-### **E6.1**
-
-Bạn có ba nhiệm vụ cùng hạn trong tuần nhưng không đủ thời gian để làm tất cả cùng lúc. Bạn thường:
-
-A. Ước lượng thời gian và mức độ ưu tiên của từng việc rồi lập thứ tự thực hiện cụ thể. → `E6 +2`  
-B. Làm việc có hạn gần nhất trước rồi chuyển sang những việc còn lại. → `E6 +1`  
-C. Bắt đầu từ việc mình dễ tập trung hoặc làm nhanh nhất để giảm bớt lượng việc. → `E6 +0`
-
-### E6.2
-
-Khi được giao phân công một dự án nhóm, bạn thường:
-
-A. Xem yêu cầu từng nhiệm vụ và điểm mạnh của từng thành viên rồi phân công sao cho phù hợp. → `E6 +2`  
-B. Chia công việc tương đối đều và điều chỉnh lại nếu có người gặp khó khăn. → `E6 +1`  
-C. Để mọi người tự chọn phần mình muốn làm rồi xử lý những phần còn thiếu sau. → `E6 +0`
-
-# **S: SOCIAL ROLE**
+#  **S: SOCIAL ROLE**
 
 ### **Mục đích**
 
@@ -326,36 +279,36 @@ Cơ sở lý thuyết có thể dựa trên **Functional/Team Roles**, đặc bi
 
 S gồm **3 Social Role chính**, bên trong mỗi nhóm có các **sub-roles**.
 
-| Mã     | Social Role chính              | Sub-roles                                                   |
-| ------ | ------------------------------ | ----------------------------------------------------------- |
-| **S1** | **Task-oriented Roles**        | Initiator, Information Giver, Coordinator, Evaluator-Critic |
-| **S2** | **Maintenance / Social Roles** | Encourager/Energizer, Harmonizer/Mediator, Gatekeeper       |
-| **S3** | **Individual-oriented Roles**  | Dominator, Recognition Seeker, Independent Contributor      |
+| Mã | Social Role chính | Sub-roles |
+| ----- | ----- | ----- |
+| **S1** | **Task-oriented Roles** | Initiator, Information Giver, Coordinator, Evaluator-Critic |
+| **S2** | **Maintenance / Social Roles** | Encourager/Energizer, Harmonizer/Mediator, Gatekeeper |
+| **S3** | **Individual-oriented Roles** | Dominator, Recognition Seeker, Independent Contributor |
 
 ### **S1 — Task-oriented Roles**
 
 Tập trung vào **hoàn thành nhiệm vụ, giải quyết vấn đề và đạt mục tiêu chung**.
 
-- **Initiator:** Đề xuất ý tưởng hoặc hướng đi mới.
-- **Information Giver:** Cung cấp thông tin, kiến thức và kinh nghiệm.
-- **Coordinator:** Kết nối và điều phối các phần việc.
-- **Evaluator-Critic:** Phân tích, phản biện và đánh giá chất lượng.
+* **Initiator:** Đề xuất ý tưởng hoặc hướng đi mới.  
+* **Information Giver:** Cung cấp thông tin, kiến thức và kinh nghiệm.  
+* **Coordinator:** Kết nối và điều phối các phần việc.  
+* **Evaluator-Critic:** Phân tích, phản biện và đánh giá chất lượng.
 
 ### **S2 — Maintenance / Social Roles**
 
 Tập trung vào **duy trì quan hệ, động lực và sự phối hợp giữa các thành viên**.
 
-- **Encourager / Energizer:** Khích lệ và tạo động lực.
-- **Harmonizer / Mediator:** Hòa giải và giảm xung đột.
-- **Gatekeeper:** Điều tiết sự tham gia, tạo cơ hội để các thành viên lên tiếng.
+* **Encourager / Energizer:** Khích lệ và tạo động lực.  
+* **Harmonizer / Mediator:** Hòa giải và giảm xung đột.  
+* **Gatekeeper:** Điều tiết sự tham gia, tạo cơ hội để các thành viên lên tiếng.
 
 ### **S3 — Individual-oriented Roles**
 
 Tập trung vào **cách cá nhân thể hiện vị trí và nhu cầu của mình trong nhóm**.
 
-- **Dominator:** Có xu hướng kiểm soát hoặc áp đặt hướng đi.
-- **Recognition Seeker:** Tìm kiếm sự công nhận cho đóng góp cá nhân.
-- **Independent Contributor:** Ưu tiên tự chủ và đóng góp độc lập.
+* **Dominator:** Có xu hướng kiểm soát hoặc áp đặt hướng đi.  
+* **Recognition Seeker:** Tìm kiếm sự công nhận cho đóng góp cá nhân.  
+* **Independent Contributor:** Ưu tiên tự chủ và đóng góp độc lập.
 
 > **Lưu ý:** S3 không nên được diễn giải như một nhóm “tiêu cực”. Các sub-role chỉ mô tả **xu hướng hành vi**, không phải đánh giá đạo đức hay tính cách.
 
@@ -363,12 +316,12 @@ Tập trung vào **cách cá nhân thể hiện vị trí và nhu cầu của m�
 
 S gồm **20 câu hỏi**.
 
-- Mỗi sub-role có **2 câu**.
-- Mỗi câu có **3 lựa chọn**.
-- Mỗi lựa chọn tương ứng với mức độ thể hiện sub-role:
-  - Cao → `+2`
-  - Trung gian → `+1`
-  - Thấp → `+0`
+* Mỗi sub-role có **2 câu**.  
+* Mỗi câu có **3 lựa chọn**.  
+* Mỗi lựa chọn tương ứng với mức độ thể hiện sub-role:  
+  * Cao → `+2`  
+  * Trung gian → `+1`  
+  * Thấp → `+0`
 
 Tổng:
 
@@ -387,151 +340,155 @@ Ví dụ:
 
 # **4\. Bộ 20 câu**
 
-## **S1 — TASK-ORIENTED ROLES**
+# **`S - SOCIAL ROLE`**
 
-### **S1.1 — Initiator**
+**`Khi làm việc với người khác, bạn thường góp phần theo cách nào?`**
 
-Khi nhóm bắt đầu một dự án nhưng chưa biết nên làm theo hướng nào, bạn thường:  
-**A.** Đề xuất một vài hướng mới để nhóm bắt đầu thảo luận. → `Initiator +2`  
-**B.** Chờ mọi người đưa ra ý tưởng rồi đóng góp thêm nếu cần. → `Initiator +1`  
-**C.** Chờ nhóm thống nhất hướng đi rồi mới bắt đầu phần việc của mình. → `Initiator +0`
+## **`S1 - Task Roles`**
 
-### **S1.2 — Initiator**
+### **`Initiator`**
 
-Nếu bạn nhận thấy cách nhóm đang làm chưa hiệu quả, bạn sẽ:  
-**A.** Chủ động đề xuất một cách tiếp cận khác. → `Initiator +2`  
-**B.** Gợi ý thay đổi một vài điểm trong cách làm hiện tại. → `Initiator +1`  
-**C.** Tiếp tục làm theo cách nhóm đã thống nhất. → `Initiator +0`
+**`S1.1`** `Nhóm đang bắt đầu một dự án mới. Bạn thường:`
 
-### **S1.3 — Information Giver**
+`A. Nghe các hướng được đưa ra rồi chọn hướng phù hợp. -> +0`  
+`B. Phát triển thêm từ ý tưởng người khác đưa ra. -> +1`  
+`C. Đưa ra hướng mới để nhóm cùng xem xét. -> +2`
 
-Khi nhóm đang thảo luận một vấn đề mà bạn có kiến thức liên quan, bạn thường:  
-**A.** Chủ động cung cấp thông tin và giải thích những điểm quan trọng. → `Information Giver +2`  
-**B.** Chia sẻ thông tin khi có người hỏi hoặc khi thấy cần thiết. → `Information Giver +1`  
-**C.** Để người khác tự tìm hiểu nếu vấn đề không thuộc phần việc của mình. → `Information Giver +0`
+**`S1.2`** `Cách nhóm đang làm chưa hiệu quả. Bạn thường:`
 
-### **S1.4 — Information Giver**
+`A. Điều chỉnh phần mình trước. -> +0`  
+`B. Gợi ý đổi một vài bước. -> +1`  
+`C. Đề xuất một cách tiếp cận khác. -> +2`
 
-Khi nhóm thiếu dữ liệu để đưa ra quyết định, bạn có xu hướng:  
-**A.** Tìm kiếm và cung cấp thông tin cần thiết cho cả nhóm. → `Information Giver +2`  
-**B.** Tìm thông tin liên quan đến phần việc của mình. → `Information Giver +1`  
-**C.** Chờ người phụ trách thông tin giải quyết vấn đề. → `Information Giver +0`
+### **`Information Giver`**
 
-### **S1.5 — Coordinator**
+**`S1.3`** `Nhóm đang bàn về một chủ đề bạn biết khá rõ. Bạn thường:`
 
-Khi một dự án có nhiều người cùng tham gia, bạn thường:  
-**A.** Chủ động phân chia và kết nối các phần việc để mọi người phối hợp. → `Coordinator +2`  
-**B.** Theo dõi phần việc của mình và phối hợp khi cần. → `Coordinator +1`  
-**C.** Tập trung hoàn thành phần việc được giao. → `Coordinator +0`
+`A. Dùng thông tin đó cho phần việc của mình. -> +0`  
+`B. Chia sẻ khi thông tin liên quan trực tiếp. -> +1`  
+`C. Bổ sung thông tin để nhóm có thêm dữ liệu. -> +2`
 
-### **S1.6 — Coordinator**
+**`S1.4`** `Nhóm chưa đủ thông tin để chọn phương án. Bạn thường:`
 
-Nếu một thành viên hoàn thành công việc nhưng phần việc đó chưa kết nối được với phần của những người khác, bạn sẽ:  
-**A.** Tìm cách sắp xếp lại các phần việc để chúng liên kết với nhau. → `Coordinator +2`  
-**B.** Trao đổi với những người liên quan để tìm cách phối hợp. → `Coordinator +1`  
-**C.** Tiếp tục phần việc của mình và để người phụ trách xử lý. → `Coordinator +0`
+`A. Xác định thông tin mình cần cho phần việc. -> +0`  
+`B. Cùng người khác tìm thông tin còn thiếu. -> +1`  
+`C. Tổng hợp thông tin để nhóm dễ quyết định hơn. -> +2`
 
-### **S1.7 — Evaluator-Critic**
+### **`Coordinator`**
 
-Khi nhóm đưa ra một ý tưởng mới, điều bạn thường chú ý nhất là:  
-**A.** Kiểm tra xem ý tưởng có hợp lý, khả thi và hiệu quả hay không. → `Evaluator-Critic +2`  
-**B.** Cân nhắc ưu điểm và hạn chế của ý tưởng. → `Evaluator-Critic +1`  
-**C.** Quan tâm nhiều hơn đến việc mọi người có thích ý tưởng đó hay không. → `Evaluator-Critic +0`
+**`S1.5`** `Một dự án có nhiều người cùng làm. Bạn thường:`
 
-### **S1.8 — Evaluator-Critic**
+`A. Quản lý phần mình và cập nhật khi cần. -> +0`  
+`B. Trao đổi với những người có phần việc liên quan. -> +1`  
+`C. Theo dõi cách các phần nối với nhau. -> +2`
 
-Khi xem lại sản phẩm của nhóm trước khi nộp, bạn thường:  
-**A.** Tìm những lỗi, điểm thiếu logic hoặc điểm có thể cải thiện. → `Evaluator-Critic +2`  
-**B.** Kiểm tra những lỗi rõ ràng và những yêu cầu chính. → `Evaluator-Critic +1`  
-**C.** Tin rằng phần việc đã hoàn thành thì không cần kiểm tra quá nhiều. → `Evaluator-Critic +0`
+**`S1.6`** `Hai phần của dự án đang không khớp nhau. Bạn:`
 
-# **S2 — MAINTENANCE / SOCIAL ROLES**
+`A. Điều chỉnh phần mình để dễ ghép lại. -> +0`  
+`B. Trao đổi với người phụ trách phần còn lại. -> +1`  
+`C. Xem lại cả hai phần và đề xuất cách kết nối. -> +2`
 
-### **S2.1 — Encourager / Energizer**
+### **`Evaluator-Critic`**
 
-Khi nhóm bắt đầu mất động lực vì công việc khó, bạn thường:  
-**A.** Chủ động động viên và giúp mọi người lấy lại tinh thần. → `Encourager +2`  
-**B.** Động viên một vài thành viên nếu thấy họ thực sự cần. → `Encourager +1`  
-**C.** Tập trung vào phần việc của mình. → `Encourager +0`
+**`S1.7`** `Khi nhóm đưa ra một ý tưởng mới, bạn thường:`
 
-### **S2.2 — Encourager / Energizer**
+`A. Nghĩ xem ý tưởng có hợp với hướng chung không. -> +0`  
+`B. Nhìn vào điểm mạnh và điểm cần chỉnh. -> +1`  
+`C. Xem giả định, rủi ro và khả năng thực hiện. -> +2`
 
-Khi một thành viên làm tốt một phần việc, bạn thường:  
-**A.** Chủ động ghi nhận và khích lệ họ. → `Encourager +2`  
-**B.** Ghi nhận nếu thành tích đó thực sự nổi bật. → `Encourager +1`  
-**C.** Cho rằng hoàn thành tốt công việc là điều bình thường. → `Encourager +0`
+**`S1.8`** `Trước khi nộp sản phẩm nhóm, bạn thường:`
 
-### **S2.3 — Harmonizer / Mediator**
+`A. Xem tổng thể có đúng hướng không. -> +0`  
+`B. Rà yêu cầu và lỗi dễ thấy. -> +1`  
+`C. Kiểm tra logic và các điểm chưa thống nhất. -> +2`
 
-Khi hai thành viên trong nhóm xảy ra bất đồng, bạn thường:  
-**A.** Tìm hiểu quan điểm của cả hai và giúp họ tìm điểm chung. → `Harmonizer +2`  
-**B.** Đưa ra ý kiến nếu cuộc tranh luận bắt đầu ảnh hưởng đến nhóm. → `Harmonizer +1`  
-**C.** Để hai người tự giải quyết vấn đề của họ. → `Harmonizer +0`
+## **`S2 - Maintenance / Social Roles`**
 
-### **S2.4 — Harmonizer / Mediator**
+### **`Encourager`**
 
-Nếu một cuộc tranh luận trong nhóm trở nên căng thẳng, bạn sẽ:  
-**A.** Chủ động làm dịu tình hình và đưa cuộc thảo luận trở lại vấn đề. → `Harmonizer +2`  
-**B.** Chờ mọi người bình tĩnh rồi tiếp tục thảo luận. → `Harmonizer +1`  
-**C.** Không can thiệp nếu vấn đề không trực tiếp liên quan đến mình. → `Harmonizer +0`
+**`S2.1`** `Khi nhóm bắt đầu xuống tinh thần, bạn thường:`
 
-### **S2.5 — Gatekeeper**
+`A. Giữ nhịp phần việc của mình. -> +0`  
+`B. Nói chuyện với những người mình làm cùng. -> +1`  
+`C. Tìm cách giúp nhóm lấy lại nhịp làm việc. -> +2`
 
-Trong một cuộc họp, bạn nhận thấy một thành viên gần như không có cơ hội phát biểu. Bạn sẽ:  
-**A.** Chủ động mời họ chia sẻ quan điểm. → `Gatekeeper +2`  
-**B.** Chờ xem họ có muốn tham gia hay không. → `Gatekeeper +1`  
-**C.** Tiếp tục cuộc thảo luận vì họ có thể tự lên tiếng nếu muốn. → `Gatekeeper +0`
+**`S2.2`** `Một thành viên vừa làm tốt một việc. Bạn thường:`
 
-### **S2.6 — Gatekeeper**
+`A. Tiếp tục phối hợp tốt với họ. -> +0`  
+`B. Nói riêng rằng phần đó làm tốt. -> +1`  
+`C. Nhắc đến đóng góp đó trước nhóm khi phù hợp. -> +2`
 
-Khi một người liên tục nói và khiến những người khác khó tham gia, bạn thường:  
-**A.** Chủ động điều tiết cuộc trò chuyện để tạo cơ hội cho những người khác. → `Gatekeeper +2`  
-**B.** Nhắc nhẹ nếu cuộc trò chuyện bắt đầu mất cân bằng. → `Gatekeeper +1`  
-**C.** Để người dẫn cuộc họp tự xử lý. → `Gatekeeper +0`
+### **`Harmonizer`**
 
-# **S3 — INDIVIDUAL-ORIENTED ROLES**
+**`S2.3`** `Hai người trong nhóm có quan điểm trái nhau. Bạn thường:`
 
-### **S3.1 — Dominator**
+`A. Để hai bên trao đổi trực tiếp. -> +0`  
+`B. Tham gia nếu việc chung bị ảnh hưởng. -> +1`  
+`C. Giúp hai bên làm rõ điểm khác nhau. -> +2`
 
-Khi nhóm không thống nhất được cách làm, bạn thường:  
-**A.** Chủ động quyết định hướng đi và yêu cầu mọi người thực hiện. → `Dominator +2`  
-**B.** Đưa ra quan điểm mạnh và cố gắng thuyết phục nhóm theo hướng đó. → `Dominator +1`  
-**C.** Chờ nhóm thảo luận và cùng thống nhất quyết định. → `Dominator +0`
+**`S2.4`** `Cuộc thảo luận bắt đầu căng thẳng. Bạn thường:`
 
-### **S3.2 — Dominator**
+`A. Cho mọi người thêm thời gian tự điều chỉnh. -> +0`  
+`B. Gợi ý quay lại vấn đề cần giải quyết. -> +1`  
+`C. Giúp làm rõ ý từng bên để cuộc nói chuyện tiếp tục được. -> +2`
 
-Nếu bạn tin rằng phương án của mình tốt nhất nhưng nhóm đang chọn phương án khác:  
-**A.** Tôi sẽ cố gắng giành quyền quyết định để nhóm làm theo phương án của mình. → `Dominator +2`  
-**B.** Tôi sẽ cố gắng thuyết phục nhóm thêm một lần nữa. → `Dominator +1`  
-**C.** Tôi chấp nhận quyết định chung nếu nhóm đã thống nhất. → `Dominator +0`
+### **`Gatekeeper`**
 
-### **S3.3 — Recognition Seeker**
+**`S2.5`** `Một thành viên ít nói trong cuộc họp. Bạn thường:`
 
-Sau khi hoàn thành một nhiệm vụ quan trọng, điều khiến bạn hài lòng nhất là:  
-**A.** Mọi người biết và ghi nhận đóng góp của tôi. → `Recognition Seeker +2`  
-**B.** Được ghi nhận nếu tôi thực sự làm tốt. → `Recognition Seeker +1`  
-**C.** Biết mình đã hoàn thành tốt là đủ. → `Recognition Seeker +0`
+`A. Tôn trọng việc họ tự chọn lúc phát biểu. -> +0`  
+`B. Tạo khoảng trống để họ tham gia nếu muốn. -> +1`  
+`C. Hỏi ý kiến họ khi thấy phù hợp. -> +2`
 
-### **S3.4 — Recognition Seeker**
+**`S2.6`** `Một người đang nói nhiều hơn những người khác. Bạn thường:`
 
-Nếu một ý tưởng của bạn đóng góp lớn vào thành công của nhóm nhưng không ai biết đó là ý tưởng của bạn:  
-**A.** Tôi sẽ muốn mọi người biết đóng góp đó là của mình. → `Recognition Seeker +2`  
-**B.** Tôi hơi tiếc nhưng vẫn chấp nhận được. → `Recognition Seeker +1`  
-**C.** Tôi không quan tâm miễn là nhóm đạt kết quả tốt. → `Recognition Seeker +0`
+`A. Để cuộc trao đổi diễn ra nếu vẫn có ích. -> +0`  
+`B. Chuyển câu hỏi sang người khác khi có cơ hội. -> +1`  
+`C. Điều tiết để nhiều người có thời gian nói hơn. -> +2`
 
-### **S3.5 — Independent Contributor**
+## **`S3 - Individual-Oriented Roles`**
 
-Khi được giao một phần việc lớn trong dự án, bạn thích:  
-**A.** Được tự quyết định cách làm và hoàn thành phần việc độc lập. → `Independent Contributor +2`  
-**B.** Có một số trao đổi với nhóm nhưng vẫn tự xử lý phần lớn công việc. → `Independent Contributor +1`  
-**C.** Làm việc sát với các thành viên khác trong suốt quá trình. → `Independent Contributor +0`
+### **`Dominator`**
 
-### **S3.6 — Independent Contributor**
+**`S3.1`** `Nhóm chưa thể thống nhất hướng làm. Bạn thường:`
 
-Nếu có thể lựa chọn giữa:  
-**A.** Một nhiệm vụ bạn có thể tự chịu trách nhiệm từ đầu đến cuối. → `Independent Contributor +2`  
-**B.** Một nhiệm vụ kết hợp giữa làm độc lập và phối hợp. → `Independent Contributor +1`  
-**C.** Một nhiệm vụ yêu cầu liên tục trao đổi và phối hợp với người khác. → `Independent Contributor +0`
+`A. Tìm tiếp một hướng nhiều người có thể đồng ý. -> +0`  
+`B. Bảo vệ phương án mình thấy hợp lý. -> +1`  
+`C. Đứng ra chốt một hướng để nhóm đi tiếp. -> +2`
+
+**`S3.2`** `Bạn tin phương án mình tốt hơn phương án nhóm đang nghiêng về. Bạn:`
+
+`A. Trình bày quan điểm rồi theo lựa chọn chung. -> +0`  
+`B. Tiếp tục thuyết phục nếu khác biệt quan trọng. -> +1`  
+`C. Tác động để phương án cuối gần với hướng mình đề xuất. -> +2`
+
+### **`Recognition Seeker`**
+
+**`S3.3`** `Khi đóng góp nhiều cho một dự án, bạn thích:`
+
+`A. Kết quả chung tốt là đủ. -> +0`  
+`B. Người làm cùng biết phần mình đóng góp. -> +1`  
+`C. Vai trò của mình được thể hiện rõ. -> +2`
+
+**`S3.4`** `Ý tưởng của bạn được dùng nhưng mọi người không biết nó bắt đầu từ bạn. Bạn:`
+
+`A. Không cần làm rõ nếu kết quả chung tốt. -> +0`  
+`B. Muốn những người làm gần mình biết. -> +1`  
+`C. Muốn vai trò của mình trong ý tưởng đó được ghi nhận rõ. -> +2`
+
+### **`Independent Contributor`**
+
+**`S3.5`** `Với một phần việc lớn, bạn thích:`
+
+`A. Làm cùng mọi người khá thường xuyên. -> +0`  
+`B. Có lúc làm riêng, có lúc trao đổi cùng nhóm. -> +1`  
+`C. Có một phần riêng để tự theo đến cuối. -> +2`
+
+**`S3.6`** `Nếu ba nhiệm vụ quan trọng như nhau, bạn dễ chọn:`
+
+`A. Nhiệm vụ cần phối hợp liên tục. -> +0`  
+`B. Nhiệm vụ có cả phần làm chung và làm riêng. -> +1`  
+`C. Nhiệm vụ cho mình tự xử lý phần lớn công việc. -> +2`
 
 # **5\. Logic tổng hợp kết quả**
 
@@ -562,18 +519,18 @@ Tính:
 
 Ví dụ:
 
-| Sub-role                | Score |
-| ----------------------- | ----- |
-| Initiator               | 3/4   |
-| Information Giver       | 2/4   |
-| Coordinator             | 4/4   |
-| Evaluator-Critic        | 3/4   |
-| Encourager              | 2/4   |
-| Harmonizer              | 3/4   |
-| Gatekeeper              | 2/4   |
-| Dominator               | 1/4   |
-| Recognition Seeker      | 2/4   |
-| Independent Contributor | 3/4   |
+| Sub-role | Score |
+| ----- | ----- |
+| Initiator | 3/4 |
+| Information Giver | 2/4 |
+| Coordinator | 4/4 |
+| Evaluator-Critic | 3/4 |
+| Encourager | 2/4 |
+| Harmonizer | 3/4 |
+| Gatekeeper | 2/4 |
+| Dominator | 1/4 |
+| Recognition Seeker | 2/4 |
+| Independent Contributor | 3/4 |
 
 →  
 **S1 \= 12/16 \= 75%**  
@@ -607,21 +564,21 @@ Ví dụ:
 
 ### **Social Role Profile**
 
-| Role                      | Score   |
-| ------------------------- | ------- |
-| **S1 — Task-oriented**    | **75%** |
-| S2 — Maintenance / Social | 58%     |
-| S3 — Individual-oriented  | 50%     |
+| Role | Score |
+| ----- | ----- |
+| **S1 — Task-oriented** | **75%** |
+| S2 — Maintenance / Social | 58% |
+| S3 — Individual-oriented | 50% |
 
 ### **Sub-role Profile**
 
-| Sub-role          | Score |
-| ----------------- | ----- |
-| Coordinator       | 100%  |
-| Initiator         | 75%   |
-| Evaluator-Critic  | 75%   |
-| Information Giver | 50%   |
-|                   |       |
+| Sub-role | Score |
+| ----- | ----- |
+| Coordinator | 100% |
+| Initiator | 75% |
+| Evaluator-Critic | 75% |
+| Information Giver | 50% |
+|  |  |
 
 **Như vậy, kết quả cuối cùng của S chỉ có 3 hướng chính: S1 / S2 / S3.** Các sub-role không phải kết quả độc lập mà dùng để **giải thích người chơi thuộc S1/S2/S3 theo kiểu nào**.
 
@@ -638,12 +595,12 @@ M không đo kiến thức chuyên môn, sở thích nghề nghiệp hay toàn b
 
 ### **Cơ sở lý thuyết**
 
-M được xây dựng dựa trên **Lý thuyết trí tuệ ba thành phần** (_Triarchic Theory of Human Intelligence_) do Robert J. Sternberg đề xuất trong _Beyond IQ_ năm 1985 và được phát triển tiếp thành **Theory of Successful Intelligence**.  
+M được xây dựng dựa trên **Lý thuyết trí tuệ ba thành phần** (*Triarchic Theory of Human Intelligence*) do Robert J. Sternberg đề xuất trong *Beyond IQ* năm 1985 và được phát triển tiếp thành **Theory of Successful Intelligence**.  
 Theo hướng phát triển này, việc giải quyết vấn đề và đạt mục tiêu đòi hỏi sự phối hợp của ba dạng năng lực:
 
-- **Analytical:** phân tích và đánh giá ý tưởng;
-- **Creative:** tạo ra và xử lý ý tưởng mới;
-- **Practical:** áp dụng ý tưởng trong bối cảnh thực tế.
+* **Analytical:** phân tích và đánh giá ý tưởng;  
+* **Creative:** tạo ra và xử lý ý tưởng mới;  
+* **Practical:** áp dụng ý tưởng trong bối cảnh thực tế.
 
 Sternberg nhấn mạnh rằng ba dạng năng lực này phối hợp với nhau, không nhất thiết tồn tại như ba kiểu người hoàn toàn tách biệt.
 
@@ -651,103 +608,95 @@ Sternberg nhấn mạnh rằng ba dạng năng lực này phối hợp với nha
 
 M gồm **3 dimensions**:
 
-| Mã     | Dimension                                              | Nội dung                                                                                                            |
-| ------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| **M1** | **Analytical Intelligence — Trí thông minh phân tích** | Phân tích thông tin, so sánh phương án, phát hiện điểm chưa hợp lý và đánh giá bằng chứng.                          |
-| **M2** | **Creative Intelligence — Trí thông minh sáng tạo**    | Tạo ra ý tưởng mới, nhìn vấn đề từ góc độ khác và xử lý tình huống chưa quen thuộc.                                 |
-| **M3** | **Practical Intelligence — Trí thông minh thực tiễn**  | Áp dụng kiến thức vào tình huống thực tế, nhận biết yêu cầu của hoàn cảnh và điều chỉnh cách xử lý để đạt mục tiêu. |
+| Mã | Dimension | Nội dung |
+| ----- | ----- | ----- |
+| **M1** | **Analytical Intelligence — Trí thông minh phân tích** | Phân tích thông tin, so sánh phương án, phát hiện điểm chưa hợp lý và đánh giá bằng chứng. |
+| **M2** | **Creative Intelligence — Trí thông minh sáng tạo** | Tạo ra ý tưởng mới, nhìn vấn đề từ góc độ khác và xử lý tình huống chưa quen thuộc. |
+| **M3** | **Practical Intelligence — Trí thông minh thực tiễn** | Áp dụng kiến thức vào tình huống thực tế, nhận biết yêu cầu của hoàn cảnh và điều chỉnh cách xử lý để đạt mục tiêu. |
 
 ## **3\. Bộ 12 câu**
 
-### **M1 — Analytical Intelligence: Trí thông minh phân tích**
+# **`M - MIND`**
 
-#### **M1.1**
+**`Bạn thường suy nghĩ theo cách nào khi giải quyết vấn đề?`**
 
-Khi hai nguồn đưa ra kết luận trái ngược về cùng một vấn đề, bạn thường:  
-**A.** Kiểm tra bằng chứng, nguồn dữ liệu và cách lập luận của cả hai trước khi kết luận. → `M1 +2`  
-**B.** So sánh nội dung chính rồi chọn nguồn có vẻ đáng tin hơn. → `M1 +1`  
-**C.** Chọn nguồn quen thuộc hoặc được nhiều người tin hơn. → `M1 +0`
+## **`M1 - Analytical`**
 
-#### **M1.2**
+**`M1.1`** `Hai nguồn đưa ra hai kết luận khác nhau. Bạn thường:`
 
-Khi gặp một vấn đề phức tạp, bạn thường:  
-**A.** Tách vấn đề thành từng phần, xác định nguyên nhân và mối liên hệ giữa chúng. → `M1 +2`  
-**B.** Xem xét những yếu tố nổi bật rồi tìm hướng giải quyết. → `M1 +1`  
-**C.** Thử ngay cách đầu tiên mình nghĩ đến. → `M1 +0`
+`A. Xem nguồn nào quen thuộc và hợp với điều mình biết. -> +0`  
+`B. So sánh những điểm chính của hai nguồn. -> +1`  
+`C. So sánh bằng chứng và cách lập luận của hai nguồn. -> +2`
 
-#### **M1.3**
+**`M1.2`** `Khi gặp một vấn đề có nhiều phần, bạn thường:`
 
-Khi phải chọn giữa nhiều phương án, bạn thường:  
-**A.** Đặt ra tiêu chí, so sánh ưu–nhược điểm của từng phương án rồi mới chọn. → `M1 +2`  
-**B.** So sánh một vài điểm quan trọng rồi đưa ra lựa chọn. → `M1 +1`  
-**C.** Chọn phương án tạo cho mình cảm giác phù hợp nhất lúc đó. → `M1 +0`
+`A. Bắt đầu từ phần dễ thấy nhất. -> +0`  
+`B. Xác định vài yếu tố chính cần xử lý. -> +1`  
+`C. Tách vấn đề thành các phần và xem chúng liên quan thế nào. -> +2`
 
-#### **M1.5**
+**`M1.3`** `Có nhiều phương án khá ngang nhau. Bạn:`
 
-Sau khi hoàn thành một bài hoặc nhiệm vụ nhưng kết quả không như mong đợi, bạn thường:  
-**A.** Xem lại từng bước để xác định chính xác chỗ sai và nguyên nhân. → `M1 +2`  
-**B.** Xem lại những phần mình chưa chắc chắn. → `M1 +1`  
-**C.** Làm lại theo một cách khác mà không phân tích nhiều lỗi cũ. → `M1 +0`
+`A. Chọn phương án hợp với tình hình hiện tại. -> +0`  
+`B. So sánh những điểm quan trọng nhất. -> +1`  
+`C. Đặt tiêu chí rồi đánh giá từng phương án. -> +2`
 
-### **M2 — Creative Intelligence: Trí thông minh sáng tạo**
+**`M1.4`** `Kết quả một việc không như mong đợi. Bạn:`
 
-#### **M2.1**
+`A. Dùng kinh nghiệm đó để thử cách khác lần sau. -> +0`  
+`B. Xem lại những phần mình chưa chắc. -> +1`  
+`C. Xem lại từng bước để tìm điểm bắt đầu lệch. -> +2`
 
-Khi cách giải quyết quen thuộc không còn hiệu quả, bạn thường:  
-**A.** Thử nhìn vấn đề từ nhiều góc độ và tạo ra một số hướng giải quyết mới. → `M2 +2`  
-**B.** Điều chỉnh một vài phần của cách làm cũ. → `M2 +1`  
-**C.** Tiếp tục cách cũ hoặc chờ một cách làm mẫu. → `M2 +0`
+## **`M2 - Creative`**
 
-#### **M2.2**
+**`M2.1`** `Một cách làm quen thuộc không còn hiệu quả. Bạn:`
 
-Khi nhận một nhiệm vụ mới nhưng hướng dẫn chưa đầy đủ, bạn thường:  
-**A.** Dựa vào mục tiêu và kinh nghiệm liên quan để chủ động xây dựng cách tiếp cận. → `M2 +2`  
-**B.** Thử một cách tương đối quen thuộc rồi điều chỉnh dần. → `M2 +1`  
-**C.** Khó bắt đầu cho đến khi có hướng dẫn cụ thể. → `M2 +0`
+`A. Tìm cách khác từng hiệu quả ở tình huống tương tự. -> +0`  
+`B. Thay đổi một số phần của cách cũ. -> +1`  
+`C. Thử nhìn vấn đề theo hướng khác để tạo cách mới. -> +2`
 
-#### **M2.3**
+**`M2.2`** `Bạn nhận một nhiệm vụ mới nhưng hướng dẫn còn mở. Bạn:`
 
-Khi cần nghĩ ý tưởng cho một sản phẩm hoặc hoạt động, bạn thường:  
-**A.** Kết hợp những yếu tố từ nhiều nguồn để tạo thành một hướng mới. → `M2 +2`  
-**B.** Phát triển thêm từ một ý tưởng đã có. → `M2 +1`  
-**C.** Chọn một mẫu quen thuộc và làm gần giống mẫu đó. → `M2 +0`
+`A. Tìm một ví dụ gần giống để bắt đầu. -> +0`  
+`B. Dùng cách quen thuộc rồi chỉnh dần. -> +1`  
+`C. Tạo cách làm dựa trên mục tiêu cần đạt. -> +2`
 
-#### **M2.5**
+**`M2.3`** `Khi cần nghĩ ý tưởng, bạn thường:`
 
-Khi một vấn đề có nhiều cách hiểu khác nhau, bạn thường:  
-**A.** Khám phá các cách hiểu và dùng chúng để tìm ra khả năng chưa được chú ý. → `M2 +2`  
-**B.** Cân nhắc thêm một cách hiểu khác trước khi chọn. → `M2 +1`  
-**C.** Giữ cách hiểu đầu tiên để tránh làm vấn đề phức tạp hơn. → `M2 +0`
+`A. Bắt đầu từ một mẫu hoặc ý tưởng đã có. -> +0`  
+`B. Phát triển ý tưởng cũ theo hướng mới. -> +1`  
+`C. Ghép nhiều yếu tố khác nhau để tạo hướng mới. -> +2`
 
-### **M3 — Practical Intelligence: Trí thông minh thực tiễn**
+**`M2.4`** `Một vấn đề có thể được hiểu theo nhiều cách. Bạn:`
 
-#### **M3.1**
+`A. Chọn cách hiểu hợp với tình huống hiện tại. -> +0`  
+`B. Xem thêm vài cách hiểu trước khi chọn. -> +1`  
+`C. Nhìn từ nhiều góc để tìm khả năng mới. -> +2`
 
-Khi kế hoạch tốt trên lý thuyết nhưng không phù hợp với thời gian và nguồn lực thực tế, bạn thường:  
-**A.** Điều chỉnh kế hoạch theo giới hạn hiện có nhưng vẫn giữ mục tiêu quan trọng nhất. → `M3 +2`  
-**B.** Cắt bớt một số phần để kế hoạch có thể thực hiện. → `M3 +1`  
-**C.** Cố làm theo kế hoạch ban đầu dù khó hoàn thành. → `M3 +0`
+## **`M3 - Practical`**
 
-#### **M3.2**
+**`M3.1`** `Kế hoạch tốt nhưng thực tế không đủ thời gian. Bạn:`
 
-Khi bước vào một môi trường mới có những quy tắc chưa được nói rõ, bạn thường:  
-**A.** Quan sát cách mọi người hành động, hỏi khi cần và điều chỉnh cách ứng xử. → `M3 +2`  
-**B.** Làm theo những gì mình biết rồi thay đổi nếu được nhắc. → `M3 +1`  
-**C.** Giữ nguyên cách làm quen thuộc của mình. → `M3 +0`
+`A. Giữ những phần quan trọng nhất. -> +1`  
+`B. Tìm thêm nguồn lực để giữ kế hoạch ban đầu. -> +0`  
+`C. Chỉnh cách làm theo điều kiện hiện tại. -> +2`
 
-#### **M3.3**
+**`M3.2`** `Bạn bước vào nơi mới và chưa rõ cách mọi người làm việc. Bạn:`
 
-Khi có nhiều việc quan trọng nhưng không đủ thời gian làm tất cả, bạn thường:  
-**A.** Xác định việc ảnh hưởng lớn và khẩn cấp nhất để ưu tiên nguồn lực. → `M3 +2`  
-**B.** Làm lần lượt theo hạn nộp hoặc thứ tự được giao. → `M3 +1`  
-**C.** Bắt đầu bằng việc dễ làm nhất. → `M3 +0`
+`A. Dùng cách mình quen rồi đổi khi cần. -> +0`  
+`B. Hỏi một vài người về cách làm việc ở đó. -> +1`  
+`C. Quan sát cách mọi người làm rồi điều chỉnh theo. -> +2`
 
-#### **M3.5**
+**`M3.3`** `Bạn không đủ thời gian làm mọi việc như dự kiến. Bạn:`
 
-Khi giải pháp đang thực hiện phát sinh một trở ngại bất ngờ, bạn thường:  
-**A.** Đánh giá tình hình, tận dụng nguồn lực sẵn có và chuyển sang phương án khả thi hơn. → `M3 +2`  
-**B.** Điều chỉnh một phần giải pháp để tiếp tục. → `M3 +1`  
-**C.** Tạm dừng và chờ điều kiện trở lại như dự kiến. → `M3 +0`
+`A. Làm theo thứ tự đã lên từ đầu. -> +0`  
+`B. Điều chỉnh thứ tự theo deadline. -> +1`  
+`C. Đổi thứ tự theo mức ảnh hưởng đến kết quả. -> +2`
+
+**`M3.4`** `Cách bạn đang làm gặp trở ngại bất ngờ. Bạn:`
+
+`A. Giữ cách cũ và chỉnh một vài bước. -> +0`  
+`B. Chuyển sang phương án dự phòng. -> +1`  
+`C. Chọn cách xử lý mới theo tình hình hiện tại. -> +2`
 
 ## **4\. Output cho người dùng**
 
@@ -773,11 +722,11 @@ Mỗi nhóm có:
 
 Ví dụ:
 
-| Dimension                   | Score |
-| --------------------------- | ----- |
-| M1 — Information Processing | 80%   |
-| M2 — Cognitive Flexibility  | 60%   |
-| M3 — Decision Making        | 80%   |
+| Dimension | Score |
+| ----- | ----- |
+| M1 — Information Processing | 80% |
+| M2 — Cognitive Flexibility | 60% |
+| M3 — Decision Making | 80% |
 
 # **A — ADAPTABILITY**
 
@@ -789,90 +738,106 @@ Ví dụ:
 Career Adaptability được xem là nguồn lực giúp cá nhân **đối phó với nhiệm vụ nghề nghiệp, chuyển tiếp và những thay đổi trong quá trình phát triển nghề nghiệp**.  
 CAAS gồm **4 dimensions**:
 
-- **A1 — Concern:** Tôi có quan tâm và chuẩn bị cho tương lai không?
-- **A2 — Control:** Tôi có chủ động và chịu trách nhiệm với hướng đi của mình không?
-- **A3 — Curiosity:** Tôi có khám phá bản thân và những khả năng nghề nghiệp khác nhau không?
-- **A4 — Confidence:** Tôi có tin tưởng vào khả năng vượt qua khó khăn và giải quyết vấn đề của mình không?
+* **A1 — Concern:** Tôi có quan tâm và chuẩn bị cho tương lai không?  
+* **A2 — Control:** Tôi có chủ động và chịu trách nhiệm với hướng đi của mình không?  
+* **A3 — Curiosity:** Tôi có khám phá bản thân và những khả năng nghề nghiệp khác nhau không?  
+* **A4 — Confidence:** Tôi có tin tưởng vào khả năng vượt qua khó khăn và giải quyết vấn đề của mình không?
 
 > **Lưu ý:** DESMAP sử dụng 4 dimensions này làm **cơ sở lý thuyết để xây dựng nhóm A**, không đồng nghĩa DESMAP là CAAS hay sử dụng nguyên bản CAAS.
 
-# **A1 — CONCERN**
+# **`A - ADAPTABILITY`**
 
-### **Quan tâm & chuẩn bị cho tương lai**
+**`Bạn thường thích nghi với thay đổi trong hướng nghề nghiệp như thế nào?`**
 
-**A1.1** Khi nghĩ về nghề nghiệp trong tương lai, bạn thường:  
-A. Chủ động tìm hiểu những khả năng mình có thể theo đuổi. → `A1 +2`  
-B. Nghĩ về tương lai nhưng chưa tìm hiểu cụ thể. → `A1 +1`  
-C. Chỉ bắt đầu quan tâm khi phải đưa ra lựa chọn. → `A1 +0`  
-**A1.2** Nếu ngành nghề bạn đang quan tâm có nhiều thay đổi trong tương lai, bạn thường:  
-A. Tìm hiểu trước những thay đổi có thể xảy ra. → `A1 +2`  
-B. Theo dõi thêm rồi mới quyết định có cần thay đổi không. → `A1 +1`  
-C. Chỉ quan tâm khi sự thay đổi thực sự xảy ra. → `A1 +0`  
-**A1.3** Khi lập kế hoạch cho tương lai, bạn thường:  
-A. Chuẩn bị nhiều khả năng khác nhau. → `A1 +2`  
-B. Có một kế hoạch chính và một vài phương án dự phòng. → `A1 +1`  
-C. Tập trung vào kế hoạch hiện tại. → `A1 +0`
+## **`A1 - Concern`**
 
-# **A2 — CONTROL**
+**`A1.1`** `Khi nghĩ về nghề tương lai, bạn thường:`
 
-### **Chủ động & chịu trách nhiệm với hướng đi**
+`A. Tập trung vào những lựa chọn trước mắt. -> +0`  
+`B. Nghĩ đến vài năm tới khi cần chọn hướng. -> +1`  
+`C. Tìm hiểu sớm các hướng mình có thể đi. -> +2`
 
-**A2.1** Nếu nhận ra lựa chọn nghề nghiệp hiện tại không còn phù hợp với mình, bạn thường:  
-A. Chủ động tìm hiểu và điều chỉnh hướng đi. → `A2 +2`  
-B. Cân nhắc một thời gian trước khi thay đổi. → `A2 +1`  
-C. Tiếp tục lựa chọn hiện tại vì đã bắt đầu rồi. → `A2 +0`  
-**A2.2** Khi phải đưa ra một quyết định quan trọng về tương lai, bạn thường:  
-A. Tự tìm hiểu và đưa ra quyết định dựa trên thông tin mình có. → `A2 +2`  
-B. Tham khảo ý kiến người khác rồi tự quyết định. → `A2 +1`  
-C. Chờ người khác định hướng cho mình. → `A2 +0`  
-**A2.3** Nếu kế hoạch nghề nghiệp của bạn không diễn ra như dự kiến, bạn thường:  
-A. Xác định mình có thể thay đổi điều gì để tiếp tục. → `A2 +2`  
-B. Điều chỉnh kế hoạch nếu tình hình không cải thiện. → `A2 +1`  
-C. Chờ xem tình hình sẽ tự thay đổi như thế nào. → `A2 +0`
+**`A1.2`** `Nghề bạn quan tâm có thể thay đổi nhiều trong vài năm tới. Bạn:`
 
-# **A3 — CURIOSITY**
+`A. Tập trung học những gì đang cần hiện tại. -> +0`  
+`B. Theo dõi thay đổi khi chúng rõ hơn. -> +1`  
+`C. Tìm hiểu sớm nghề đó có thể thay đổi ra sao. -> +2`
 
-### **Khám phá bản thân & những khả năng mới**
+**`A1.3`** `Khi nghĩ về tương lai, bạn thường:`
 
-**A3.1** Nếu được giới thiệu một nghề mà trước đây bạn chưa từng nghĩ đến, bạn thường:  
-A. Tìm hiểu xem nghề đó có phù hợp với mình không. → `A3 +2`  
-B. Nghe thêm thông tin nhưng chưa chắc sẽ tìm hiểu sâu. → `A3 +1`  
-C. Bỏ qua vì đó không phải nghề mình đang quan tâm. → `A3 +0`  
-**A3.2** Khi phát hiện một lĩnh vực mới có thể phù hợp với năng lực của mình, bạn thường:  
-A. Chủ động tìm hiểu và thử trải nghiệm nó. → `A3 +2`  
-B. Tìm hiểu thêm trước khi quyết định có thử hay không. → `A3 +1`  
-C. Tiếp tục tập trung vào lĩnh vực ban đầu. → `A3 +0`  
-**A3.3** Khi tìm hiểu về một nghề, bạn thường muốn biết:  
-A. Nhiều khía cạnh khác nhau của nghề, kể cả những điều mình chưa biết. → `A3 +2`  
-B. Những thông tin cần thiết để quyết định có phù hợp hay không. → `A3 +1`  
-C. Chủ yếu những thông tin xác nhận rằng nghề đó phù hợp với mình. → `A3 +0`
+`A. Tập trung vào một hướng chính. -> +0`  
+`B. Có một hướng chính và một lựa chọn khác. -> +1`  
+`C. Nghĩ trước vài hướng để có thể chuyển nếu cần. -> +2`
 
-# **A4 — CONFIDENCE**
+## **`A2 - Control`**
 
-### **Tin tưởng vào khả năng của bản thân**
+**`A2.1`** `Bạn bắt đầu thấy hướng nghề hiện tại không còn hợp mình. Bạn:`
 
-**A4.1** Nếu phải học một kỹ năng hoàn toàn mới để theo đuổi một hướng nghề nghiệp, bạn thường:  
-A. Tin rằng mình có thể học được nếu dành đủ thời gian và nỗ lực. → `A4 +2`  
-B. Thử học trước rồi đánh giá khả năng của mình. → `A4 +1`  
-C. Chỉ muốn theo hướng đó nếu mình đã có sẵn kỹ năng cần thiết. → `A4 +0`  
-**A4.2** Khi bước vào một môi trường hoàn toàn mới, bạn thường:  
-A. Chủ động quan sát, học hỏi và điều chỉnh để hòa nhập. → `A4 +2`  
-B. Cần một khoảng thời gian để làm quen rồi mới chủ động hơn. → `A4 +1`  
-C. Khó bắt đầu nếu chưa biết rõ mình phải làm gì. → `A4 +0`  
-**A4.3** Nếu một lựa chọn nghề nghiệp đòi hỏi bạn phải thay đổi cách làm quen thuộc, bạn thường:  
-A. Sẵn sàng thử cách mới và điều chỉnh trong quá trình thực hiện. → `A4 +2`  
-B. Thử thay đổi nếu thấy cách cũ không còn hiệu quả. → `A4 +1`  
-C. Ưu tiên giữ cách làm mình đã quen. → `A4 +0`
+`A. Tiếp tục thêm một thời gian để quan sát cảm giác đó. -> +0`  
+`B. Tìm hiểu thêm trước khi quyết định có đổi không. -> +1`  
+`C. Xem lại lựa chọn và điều chỉnh hướng đi nếu cần. -> +2`
+
+**`A2.2`** `Khi phải đưa ra lựa chọn nghề quan trọng, bạn:`
+
+`A. Dựa nhiều vào lời khuyên của người hiểu mình. -> +0`  
+`B. Kết hợp lời khuyên với suy nghĩ của bản thân. -> +1`  
+`C. Tự thu thập thông tin và chọn phương án cuối. -> +2`
+
+**`A2.3`** `Kế hoạch nghề nghiệp không diễn ra như dự kiến. Bạn:`
+
+`A. Cho kế hoạch thêm thời gian trước khi đổi. -> +0`  
+`B. Điều chỉnh khi thấy vấn đề kéo dài. -> +1`  
+`C. Xem phần nào có thể thay đổi ngay. -> +2`
+
+## **`A3 - Curiosity`**
+
+**`A3.1`** `Có người giới thiệu một nghề bạn chưa từng nghĩ tới. Bạn:`
+
+`A. Ghi nhận nhưng tiếp tục tìm hiểu nghề đang quan tâm. -> +0`  
+`B. Tìm hiểu sơ để biết nghề đó làm gì. -> +1`  
+`C. Tìm hiểu xem nghề đó có điểm nào hợp với mình. -> +2`
+
+**`A3.2`** `Bạn phát hiện một lĩnh vực mới khá thú vị. Bạn:`
+
+`A. Tiếp tục ưu tiên lĩnh vực mình đã chọn. -> +0`  
+`B. Đọc thêm để hiểu lĩnh vực mới. -> +1`  
+`C. Thử một hoạt động liên quan để biết mình có hợp không. -> +2`
+
+**`A3.3`** `Khi tìm hiểu một nghề, bạn thường:`
+
+`A. Tập trung vào thông tin cần cho quyết định hiện tại. -> +0`  
+`B. Xem thêm một số mặt khác của nghề. -> +1`  
+`C. Tìm cả những mặt mình chưa biết trước đó. -> +2`
+
+## **`A4 - Confidence`**
+
+**`A4.1`** `Một hướng nghề yêu cầu kỹ năng bạn chưa có. Bạn:`
+
+`A. Xem mình đã có kỹ năng nào gần với yêu cầu đó chưa. -> +0`  
+`B. Thử học một thời gian rồi đánh giá lại. -> +1`  
+`C. Lên cách học từng bước nếu muốn theo hướng này. -> +2`
+
+**`A4.2`** `Khi bước vào một môi trường rất mới, bạn:`
+
+`A. Tìm hiểu kỹ yêu cầu trước khi bắt đầu. -> +0`  
+`B. Làm quen từng bước rồi tham gia nhiều hơn. -> +1`  
+`C. Vừa quan sát vừa thử và điều chỉnh trong quá trình. -> +2`
+
+**`A4.3`** `Một công việc buộc bạn đổi cách làm đã quen. Bạn:`
+
+`A. Giữ những phần của cách cũ vẫn còn dùng được. -> +0`  
+`B. Thử thay đổi từng phần. -> +1`  
+`C. Học cách mới và điều chỉnh khi thực hiện. -> +2`
 
 # **Tổng hợp điểm A**
 
-| Dimension            | Nội dung                          | Số câu | Điểm tối đa |
-| -------------------- | --------------------------------- | ------ | ----------- |
-| **A1 — Concern**     | Quan tâm & chuẩn bị cho tương lai | 3      | 6           |
-| **A2 — Control**     | Chủ động & kiểm soát hướng đi     | 3      | 6           |
-| **A3 — Curiosity**   | Khám phá khả năng mới             | 3      | 6           |
-| **A4 — Confidence**  | Tin tưởng vào khả năng bản thân   | 3      | 6           |
-| **A — Adaptability** | **Tổng**                          | **12** | **24**      |
+| Dimension | Nội dung | Số câu | Điểm tối đa |
+| ----- | ----- | ----- | ----- |
+| **A1 — Concern** | Quan tâm & chuẩn bị cho tương lai | 3 | 6 |
+| **A2 — Control** | Chủ động & kiểm soát hướng đi | 3 | 6 |
+| **A3 — Curiosity** | Khám phá khả năng mới | 3 | 6 |
+| **A4 — Confidence** | Tin tưởng vào khả năng bản thân | 3 | 6 |
+| **A — Adaptability** | **Tổng** | **12** | **24** |
 
 **Điểm A \= (Tổng điểm đạt được / 24\) × 100**  
 AI đồng thời lưu điểm của từng dimension để tạo **Adaptability Profile**, thay vì chỉ đưa ra một điểm tổng.
@@ -914,22 +879,22 @@ Cơ sở lý thuyết chính có thể tham khảo:
 
 P gồm **6 dimensions**, mỗi nhóm **2 câu**, tổng cộng **12 câu**.
 
-| Mã     | Dimension               | Nội dung                         |
-| ------ | ----------------------- | -------------------------------- |
-| **P1** | Time & Pace Pressure    | Áp lực thời gian và tốc độ       |
-| **P2** | Workload Pressure       | Áp lực khối lượng công việc      |
-| **P3** | Cognitive Pressure      | Áp lực tư duy, quyết định        |
-| **P4** | Emotional Pressure      | Áp lực kiểm soát cảm xúc         |
-| **P5** | Interpersonal Pressure  | Áp lực từ tương tác và xung đột  |
+| Mã | Dimension | Nội dung |
+| ----- | ----- | ----- |
+| **P1** | Time & Pace Pressure | Áp lực thời gian và tốc độ |
+| **P2** | Workload Pressure | Áp lực khối lượng công việc |
+| **P3** | Cognitive Pressure | Áp lực tư duy, quyết định |
+| **P4** | Emotional Pressure | Áp lực kiểm soát cảm xúc |
+| **P5** | Interpersonal Pressure | Áp lực từ tương tác và xung đột |
 | **P6** | Responsibility Pressure | Áp lực từ trách nhiệm và hậu quả |
 
 # **2\. Logic chấm điểm**
 
 Mỗi câu có **3 lựa chọn**.
 
-- Phản ứng thể hiện **khả năng duy trì hiệu quả tốt dưới áp lực** → `+2`
-- Phản ứng **trung gian** → `+1`
-- Phản ứng cho thấy **dễ bị ảnh hưởng bởi áp lực** → `+0`
+* Phản ứng thể hiện **khả năng duy trì hiệu quả tốt dưới áp lực** → `+2`  
+* Phản ứng **trung gian** → `+1`  
+* Phản ứng cho thấy **dễ bị ảnh hưởng bởi áp lực** → `+0`
 
 Mỗi dimension có 2 câu:
 
@@ -937,138 +902,114 @@ Mỗi dimension có 2 câu:
 
 Quy đổi:
 
-| Điểm | %    |
-| ---- | ---- |
-| 0/4  | 0%   |
-| 1/4  | 25%  |
-| 2/4  | 50%  |
-| 3/4  | 75%  |
-| 4/4  | 100% |
+| Điểm | % |
+| ----- | ----- |
+| 0/4 | 0% |
+| 1/4 | 25% |
+| 2/4 | 50% |
+| 3/4 | 75% |
+| 4/4 | 100% |
 
 # **3\. BỘ 12 CÂU**
 
-## **P1 — TIME & PACE PRESSURE**
+## **`P1 - Time & Pace`**
 
-### **Áp lực thời gian và tốc độ**
+**`P1.1`** `Thời gian còn lại ít hơn nhiều so với dự kiến. Bạn:`
 
-### **P1.1**
+`A. Giữ kế hoạch chính và tăng tốc độ làm. -> +0`  
+`B. Bỏ bớt một số phần ít quan trọng. -> +1`  
+`C. Xếp lại việc theo mức quan trọng. -> +2`
 
-Bạn đang làm một nhiệm vụ quan trọng nhưng thời gian còn lại chỉ bằng một nửa dự kiến. Bạn sẽ:  
-**A.** Xác định phần quan trọng nhất và tập trung hoàn thành trước. → `P1 +2`  
-**B.** Tăng tốc độ làm việc và cố gắng hoàn thành toàn bộ. → `P1 +1`  
-**C.** Khó tập trung vì quá lo lắng về thời gian. → `P1 +0`
+**`P1.2`** `Nhiều việc cần hoàn thành trong thời gian ngắn. Bạn:`
 
-### **P1.2**
+`A. Chuyển qua lại giữa các việc để tất cả cùng tiến triển. -> +0`  
+`B. Chia thời gian thành từng khoảng cho mỗi việc. -> +1`  
+`C. Xác định thứ tự ưu tiên rồi làm lần lượt. -> +2`
 
-Bạn phải hoàn thành nhiều việc trong một khoảng thời gian rất ngắn. Bạn thường:  
-**A.** Sắp xếp thứ tự ưu tiên rồi xử lý từng việc. → `P1 +2`  
-**B.** Làm nhiều việc cùng lúc để tiết kiệm thời gian. → `P1 +1`  
-**C.** Dễ bị rối vì có quá nhiều việc phải hoàn thành. → `P1 +0`
+## **`P2 - Workload`**
 
-# **P2 — WORKLOAD PRESSURE**
+**`P2.1`** `Bạn bất ngờ nhận thêm nhiều việc. Bạn:`
 
-### **Áp lực khối lượng công việc**
+`A. Kéo dài thời gian làm để xử lý thêm. -> +0`  
+`B. Chia nhỏ các việc để dễ theo dõi. -> +1`  
+`C. Xem lại khối lượng rồi đổi thứ tự và thời gian làm. -> +2`
 
-### **P2.1**
+**`P2.2`** `Có nhiều việc đều được xem là quan trọng. Bạn:`
 
-Bạn được giao nhiều nhiệm vụ cùng lúc và tất cả đều quan trọng. Bạn sẽ:  
-**A.** Phân loại mức độ ưu tiên và xây dựng cách xử lý. → `P2 +2`  
-**B.** Bắt đầu từ nhiệm vụ dễ hoặc quen thuộc nhất. → `P2 +1`  
-**C.** Cảm thấy quá tải vì không biết nên bắt đầu từ đâu. → `P2 +0`
+`A. Bắt đầu từ những việc mình làm nhanh nhất. -> +0`  
+`B. Chia thời gian tương đối đều cho các việc. -> +1`  
+`C. Chia thời gian theo mức ảnh hưởng của từng việc. -> +2`
 
-### **P2.2**
+## **`P3 - Cognitive Pressure`**
 
-Nếu khối lượng công việc tăng đột ngột, bạn thường:  
-**A.** Điều chỉnh kế hoạch và phân bổ lại thời gian. → `P2 +2`  
-**B.** Cố gắng làm nhiều hơn để theo kịp. → `P2 +1`  
-**C.** Dễ mất kiểm soát vì lượng công việc quá lớn. → `P2 +0`
+**`P3.1`** `Bạn phải quyết định nhưng thông tin vẫn còn thiếu. Bạn:`
 
-# **P3 — COGNITIVE PRESSURE**
+`A. Chọn phương án quen thuộc và ít rủi ro. -> +0`  
+`B. Dựa vào những thông tin chính đang có. -> +1`  
+`C. Xác định thông tin cần nhất rồi chọn theo dữ kiện đó. -> +2`
 
-### **Áp lực tư duy và ra quyết định**
+**`P3.2`** `Bạn phải quyết định nhanh trong tình huống có rủi ro. Bạn:`
 
-### **P3.1**
+`A. Dựa vào kinh nghiệm từ tình huống gần giống. -> +0`  
+`B. So nhanh các lựa chọn chính rồi chọn. -> +1`  
+`C. Xem hậu quả quan trọng nhất cần tránh rồi chọn. -> +2`
 
-Bạn phải đưa ra một quyết định quan trọng trong khi chưa có đầy đủ thông tin. Bạn sẽ:  
-**A.** Xác định thông tin quan trọng nhất và đưa ra quyết định dựa trên những gì có thể kiểm chứng. → `P3 +2`  
-**B.** Cân nhắc các khả năng rồi chọn phương án phù hợp nhất. → `P3 +1`  
-**C.** Khó quyết định vì sợ lựa chọn sai. → `P3 +0`
+## **`P4 - Emotional Pressure`**
 
-### **P3.3**
+**`P4.1`** `Bạn vừa mắc lỗi trong một việc quan trọng. Bạn thường:`
 
-Bạn phải đưa ra quyết định nhanh trong một tình huống có rủi ro. Bạn thường:  
-**A.** Xác định rủi ro lớn nhất và quyết định dựa trên yếu tố quan trọng nhất. → `P3 +2`  
-**B.** Cân nhắc nhanh ưu và nhược điểm trước khi chọn. → `P3 +1`  
-**C.** Khó đưa ra quyết định khi không có đủ thời gian suy nghĩ. → `P3 +0`
+`A. Nói với người liên quan để cùng nhìn lại tình huống. -> +0`  
+`B. Xác định lỗi chính rồi bắt đầu sửa. -> +1`  
+`C. Sắp xếp lại việc cần xử lý theo mức độ ảnh hưởng. -> +2`
 
-# **P4 — EMOTIONAL PRESSURE**
+**`P4.2`** `Bạn nhận góp ý khá nặng khi đang làm việc. Bạn thường:`
 
-### **Áp lực cảm xúc**
+`A. Tạm để đó và quay lại khi bình tĩnh hơn. -> +0`  
+`B. Tiếp tục làm rồi xem lại góp ý sau. -> +1`  
+`C. Lọc phần góp ý có ích để chỉnh việc đang làm. -> +2`
 
-### **P4.2**
+## **`P5 - Interpersonal Pressure`**
 
-Bạn vừa mắc một lỗi nghiêm trọng và biết rằng người khác đang chờ kết quả. Bạn sẽ:  
-**A.** Tập trung xác định lỗi và tìm cách khắc phục. → `P4 +2`  
-**B.** Cảm thấy lo lắng nhưng vẫn cố gắng sửa lỗi. → `P4 +1`  
-**C.** Quá lo lắng về hậu quả nên khó tập trung xử lý. → `P4 +0`
+**`P5.1`** `Một người phản đối bạn khá mạnh khi công việc đang gấp. Bạn:`
 
-### **P4.3**
+`A. Tạm gác điểm chưa thống nhất để việc tiếp tục. -> +0`  
+`B. Nói ngắn gọn lý do của mình rồi cùng chốt hướng. -> +1`  
+`C. Xác định điểm khác nhau và xử lý đúng điểm đó. -> +2`
 
-Bạn nhận được lời phê bình khá gay gắt ngay trước khi tiếp tục công việc. Bạn thường:  
-**A.** Tách cảm xúc khỏi vấn đề và tập trung vào điều cần cải thiện. → `P4 +2`  
-**B.** Cảm thấy khó chịu nhưng vẫn tiếp tục công việc. → `P4 +1`  
-**C.** Bị ảnh hưởng tâm lý và khó tập trung sau đó. → `P4 +0`
+**`P5.2`** `Khách hàng hoặc đối tác đang rất không hài lòng. Bạn:`
 
-# **P5 — INTERPERSONAL PRESSURE**
+`A. Mời thêm người liên quan cùng trao đổi. -> +0`  
+`B. Giải thích tình hình và đề xuất hướng xử lý. -> +1`  
+`C. Làm rõ điều họ không hài lòng nhất rồi xử lý trước. -> +2`
 
-### **Áp lực từ tương tác và xung đột**
+## **`P6 - Responsibility Pressure`**
 
-### **P5.1**
+**`P6.1`** `Bạn phải đưa ra quyết định có thể ảnh hưởng đến người khác. Bạn:`
 
-Một người liên tục phản đối ý kiến của bạn trong khi công việc đang cần được giải quyết nhanh. Bạn sẽ:  
-**A.** Giữ bình tĩnh và tập trung tìm giải pháp cho vấn đề. → `P5 +2`  
-**B.** Bảo vệ quan điểm của mình nhưng vẫn cố tiếp tục công việc. → `P5 +1`  
-**C.** Cảm thấy căng thẳng và khó tiếp tục trao đổi. → `P5 +0`
+`A. Trao đổi để nhiều người cùng tham gia quyết định. -> +0`  
+`B. Xin thêm ý kiến rồi chọn phương án cuối. -> +1`  
+`C. Xem các hậu quả có thể xảy ra rồi tự quyết định. -> +2`
 
-### **P5.2**
+**`P6.2`** `Bạn là người phụ trách chính và dự án gặp vấn đề. Bạn:`
 
-Một khách hàng/đối tác đang rất không hài lòng với kết quả công việc. Bạn sẽ:  
-**A.** Lắng nghe vấn đề và tập trung tìm cách xử lý. → `P5 +2`  
-**B.** Giải thích tình hình và cố gắng tìm giải pháp phù hợp. → `P5 +1`  
-**C.** Cảm thấy áp lực và khó biết nên phản ứng thế nào. → `P5 +0`
-
-# **P6 — RESPONSIBILITY PRESSURE**
-
-### **Áp lực trách nhiệm và hậu quả**
-
-### **P6.1**
-
-Bạn phải đưa ra một quyết định mà kết quả có thể ảnh hưởng trực tiếp đến người khác. Bạn sẽ:  
-**A.** Đánh giá thông tin, hậu quả và đưa ra quyết định có cơ sở. → `P6 +2`  
-**B.** Tham khảo ý kiến người khác trước khi quyết định. → `P6 +1`  
-**C.** Cảm thấy rất áp lực vì sợ mình đưa ra quyết định sai. → `P6 +0`
-
-### **P6.2**
-
-Bạn là người chịu trách nhiệm chính cho một nhiệm vụ quan trọng. Khi có vấn đề xảy ra:  
-**A.** Chủ động nhận trách nhiệm và tập trung giải quyết vấn đề. → `P6 +2`  
-**B.** Tìm sự hỗ trợ từ những người liên quan rồi xử lý. → `P6 +1`  
-**C.** Dễ hoang mang vì cảm thấy toàn bộ trách nhiệm đang đặt lên mình. → `P6 +0`
+`A. Chia vấn đề cho người có chuyên môn phù hợp. -> +0`  
+`B. Cùng người liên quan thống nhất cách xử lý. -> +1`  
+`C. Xác định vấn đề chính, phân công và theo dõi tiến độ. -> +2`
 
 **4\. TỔNG HỢP KẾT QUẢ**  
 Mỗi dimension:
 
 > **2 câu × 2 điểm \= tối đa 4 điểm**
 
-| Dimension               | Nội dung              | Số câu | Điểm tối đa |
-| ----------------------- | --------------------- | ------ | ----------- |
-| **P1 — Time & Pace**    | Thời gian & tốc độ    | 2      | 4           |
-| **P2 — Workload**       | Khối lượng công việc  | 2      | 4           |
-| **P3 — Cognitive**      | Tư duy & quyết định   | 2      | 4           |
-| **P4 — Emotional**      | Cảm xúc               | 2      | 4           |
-| **P5 — Interpersonal**  | Tương tác & xung đột  | 2      | 4           |
-| **P6 — Responsibility** | Trách nhiệm & hậu quả | 2      | 4           |
-| **P — Pressure**        | **Tổng**              | **12** | **24**      |
+| Dimension | Nội dung | Số câu | Điểm tối đa |
+| ----- | ----- | ----- | ----- |
+| **P1 — Time & Pace** | Thời gian & tốc độ | 2 | 4 |
+| **P2 — Workload** | Khối lượng công việc | 2 | 4 |
+| **P3 — Cognitive** | Tư duy & quyết định | 2 | 4 |
+| **P4 — Emotional** | Cảm xúc | 2 | 4 |
+| **P5 — Interpersonal** | Tương tác & xung đột | 2 | 4 |
+| **P6 — Responsibility** | Trách nhiệm & hậu quả | 2 | 4 |
+| **P — Pressure** | **Tổng** | **12** | **24** |
 
 ### **Công thức**
 
@@ -1086,11 +1027,12 @@ Ví dụ:
 
 > **Overall Pressure Response — 78%**
 
-| Dimension      | Score   |
-| -------------- | ------- |
-| Time & Pace    | **83%** |
-| Workload       | **67%** |
-| Cognitive      | **83%** |
-| Emotional      | **67%** |
-| Interpersonal  | **83%** |
+| Dimension | Score |
+| ----- | ----- |
+| Time & Pace | **83%** |
+| Workload | **67%** |
+| Cognitive | **83%** |
+| Emotional | **67%** |
+| Interpersonal | **83%** |
 | Responsibility | **83%** |
+

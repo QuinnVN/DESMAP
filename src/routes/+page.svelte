@@ -29,7 +29,7 @@
 			aria-hidden="true"
 		></div>
 		<div
-			class="relative mx-auto flex min-h-[38rem] w-[min(100%_-_2rem,90rem)] items-center justify-center pt-[7rem] pb-16 min-[761px]:min-h-[45rem] min-[761px]:w-[min(100%_-_4rem,90rem)] min-[761px]:pt-[8rem] min-[761px]:pb-20"
+			class="relative mx-auto flex min-h-[38rem] w-[min(100%_-_2rem,90rem)] items-center justify-center pt-[2rem] pb-16 min-[761px]:min-h-[45rem] min-[761px]:w-[min(100%_-_4rem,90rem)] min-[761px]:pt-[0rem] min-[761px]:pb-20"
 		>
 			<div class="relative z-2 flex w-full max-w-[58rem] flex-col items-center text-center">
 				<p
@@ -50,7 +50,7 @@
 				</p>
 				<div class="mt-[2.4rem] flex justify-center">
 					<a
-						class="inline-flex min-h-[3.15rem] items-center justify-center gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]"
+						class="inline-flex min-h-[3.15rem] items-center justify-center gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-bold tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]"
 						href="#about"
 					>
 						Tìm hiểu thêm <span aria-hidden="true"><ArrowDown class="size-[1em]" /></span></a

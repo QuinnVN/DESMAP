@@ -51,7 +51,7 @@
 			class="block gap-8 py-[2.5rem_1.8rem] min-[701px]:flex min-[701px]:items-end min-[701px]:justify-between min-[701px]:py-[3.6rem_2.5rem]"
 		>
 			<div>
-				<p class="font-mono text-[.7rem] tracking-[.12em] text-lime uppercase">
+				<p class="font-mono text-[.7rem] font-[760] tracking-[.12em] text-lime uppercase">
 					CẨM NANG CHO CHẶNG ĐƯỜNG TIẾP THEO
 				</p>
 				<h2
