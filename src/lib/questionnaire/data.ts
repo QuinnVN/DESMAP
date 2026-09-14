@@ -212,6 +212,11 @@ export function getStageById(id: StageId): QuestionnaireStage {
 
 export type QuestionnaireAnswers = Record<string, OptionLetter>;
 
+export type ParticipantDetails = {
+	name: string;
+	email: string;
+};
+
 export type DimensionScore = {
 	raw: number;
 	max: number;
@@ -317,6 +322,7 @@ export type QuestionnaireSubmission = {
 	assessmentId: string;
 	completedAt: string;
 	startedAt: string;
+	participant: ParticipantDetails;
 	careerInterests: string[];
 	answers: QuestionnaireAnswers;
 	scores: QuestionnaireScores;
@@ -325,10 +331,11 @@ export type QuestionnaireSubmission = {
 export type QuestionnaireDraft = {
 	version: 1;
 	completed: false;
-	step: 'career' | 'questions' | 'review';
+	step: 'participant' | 'career' | 'questions' | 'review';
 	currentIndex: number;
 	startedAt: string;
 	updatedAt: string;
+	participant: ParticipantDetails;
 	careerInterests: string[];
 	answers: QuestionnaireAnswers;
 	presentationOrder: QuestionnairePresentationOrder;
@@ -338,6 +345,7 @@ export function buildCompletionPayload(input: {
 	answers: QuestionnaireAnswers;
 	careerInterests: string[];
 	startedAt: string;
+	participant: ParticipantDetails;
 	completedAt?: string;
 	assessmentId?: string;
 }): QuestionnaireSubmission {
@@ -345,12 +353,17 @@ export function buildCompletionPayload(input: {
 		throw new Error('Cannot create a completed DESMAP payload until every question has an answer.');
 	}
 	const completedAt = input.completedAt ?? new Date().toISOString();
+	const participant = normalizeParticipantDetails(input.participant);
+	if (!isValidParticipantDetails(participant)) {
+		throw new Error('Cannot create a completed DESMAP payload without valid participant details.');
+	}
 	return {
 		version: 1,
 		completed: true,
 		assessmentId: input.assessmentId ?? createAssessmentId(),
 		completedAt,
 		startedAt: input.startedAt,
+		participant,
 		careerInterests: [...input.careerInterests],
 		answers: { ...input.answers },
 		scores: scoreAnswers(input.answers)
@@ -363,6 +376,32 @@ export function createAssessmentId(randomUUID: () => string = () => crypto.rando
 
 export const QUESTIONNAIRE_STORAGE_KEY = 'desmap:questionnaire:v1';
 export const QUESTIONNAIRE_COMPLETION_STORAGE_KEY = 'desmap:questionnaire:completed:v1';
+export const QUESTIONNAIRE_SYNC_STORAGE_KEY = 'desmap:questionnaire:sync:v1';
+
+export type QuestionnaireSyncStatus = {
+	assessmentId: string;
+	status: 'pending' | 'synced' | 'error';
+	message?: string;
+	recoverable?: boolean;
+};
+
+export function normalizeEmail(email: string): string {
+	return email.trim().toLowerCase();
+}
+
+export function normalizeParticipantDetails(details: ParticipantDetails): ParticipantDetails {
+	return { name: details.name.trim(), email: normalizeEmail(details.email) };
+}
+
+export function isValidParticipantDetails(details: ParticipantDetails): boolean {
+	return (
+		details.name.length >= 2 &&
+		details.name.length <= 100 &&
+		!/[\u0000-\u001f\u007f]/.test(details.name) &&
+		details.email.length <= 254 &&
+		/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email)
+	);
+}
 
 function isOptionLetter(value: unknown): value is OptionLetter {
 	return value === 'A' || value === 'B' || value === 'C';
@@ -400,13 +439,23 @@ function parseDraft(value: unknown): QuestionnaireDraft | null {
 	if (
 		draft.version !== 1 ||
 		draft.completed !== false ||
+		!draft.participant ||
+		typeof draft.participant !== 'object' ||
 		!Array.isArray(draft.careerInterests) ||
 		typeof draft.answers !== 'object'
 	)
 		return null;
 	if (!draft.answers || typeof draft.startedAt !== 'string' || typeof draft.updatedAt !== 'string')
 		return null;
-	if (draft.step !== 'career' && draft.step !== 'questions' && draft.step !== 'review') return null;
+	if (
+		draft.step !== 'participant' &&
+		draft.step !== 'career' &&
+		draft.step !== 'questions' &&
+		draft.step !== 'review'
+	)
+		return null;
+	const participant = normalizeParticipantDetails(draft.participant as ParticipantDetails);
+	if (!isValidParticipantDetails(participant)) return null;
 	const currentIndex = draft.currentIndex;
 	if (
 		typeof currentIndex !== 'number' ||
@@ -424,6 +473,7 @@ function parseDraft(value: unknown): QuestionnaireDraft | null {
 
 	return {
 		...(draft as Omit<QuestionnaireDraft, 'presentationOrder'>),
+		participant,
 		presentationOrder: isPresentationOrder(draft.presentationOrder)
 			? draft.presentationOrder
 			: createQuestionnairePresentationOrder()
@@ -473,6 +523,34 @@ export function writeCompletionPayload(payload: QuestionnaireSubmission): boolea
 	}
 }
 
+export function readQuestionnaireSyncStatus(assessmentId: string): QuestionnaireSyncStatus | null {
+	if (typeof window === 'undefined') return null;
+	try {
+		const parsed = JSON.parse(
+			window.localStorage.getItem(QUESTIONNAIRE_SYNC_STORAGE_KEY) ?? 'null'
+		) as Partial<QuestionnaireSyncStatus> | null;
+		if (
+			!parsed ||
+			parsed.assessmentId !== assessmentId ||
+			(parsed.status !== 'pending' && parsed.status !== 'synced' && parsed.status !== 'error')
+		)
+			return null;
+		return parsed as QuestionnaireSyncStatus;
+	} catch {
+		return null;
+	}
+}
+
+export function writeQuestionnaireSyncStatus(status: QuestionnaireSyncStatus): boolean {
+	if (typeof window === 'undefined') return false;
+	try {
+		window.localStorage.setItem(QUESTIONNAIRE_SYNC_STORAGE_KEY, JSON.stringify(status));
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 const assessmentIdPattern =
 	/^assessment-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -486,10 +564,17 @@ export function parseCompletionPayload(
 		parsed.version !== 1 ||
 		parsed.completed !== true ||
 		!parsed.answers ||
+		!parsed.participant ||
 		!Array.isArray(parsed.careerInterests) ||
 		typeof parsed.completedAt !== 'string' ||
 		typeof parsed.startedAt !== 'string'
 	)
+		return null;
+	const participant = normalizeParticipantDetails(parsed.participant as ParticipantDetails);
+	if (!isValidParticipantDetails(participant)) return null;
+	const startedAt = Date.parse(parsed.startedAt);
+	const completedAt = Date.parse(parsed.completedAt);
+	if (!Number.isFinite(startedAt) || !Number.isFinite(completedAt) || completedAt < startedAt)
 		return null;
 	if (
 		parsed.careerInterests.length < 1 ||
@@ -516,6 +601,7 @@ export function parseCompletionPayload(
 		assessmentId,
 		completedAt: parsed.completedAt,
 		startedAt: parsed.startedAt,
+		participant,
 		careerInterests: [...parsed.careerInterests],
 		answers: { ...answers },
 		scores: scoreAnswers(answers)

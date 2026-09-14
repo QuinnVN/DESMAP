@@ -36,6 +36,7 @@ function questionnaire(interests: string[] = ['science-research']): Questionnair
 			desmapQuestions.map((question) => [question.id, question.options[0].letter])
 		),
 		careerInterests: interests,
+		participant: { name: 'Nguyen Van A', email: 'student@example.com' },
 		startedAt: '2026-09-12T08:00:00.000Z',
 		completedAt: '2026-09-12T08:30:00.000Z'
 	});

@@ -31,3 +31,11 @@ _Avoid_: Fine DESMAP score, stage score
 **Fine DESMAP score**:
 One of the 35 lower-level questionnaire scores retained for the future final assessment. It is not sent to the initial-assessment API.
 _Avoid_: Grouped DESMAP score, initial-assessment dimension
+
+**Participant**:
+A person who provides a name and email address and completes one DESMAP initial assessment. Each normalized email address identifies at most one participant assessment.
+_Avoid_: User, account, respondent
+
+**Participant details**:
+The participant's required name and normalized email address, saved with the questionnaire draft and completed assessment.
+_Avoid_: Profile, account details, contact record

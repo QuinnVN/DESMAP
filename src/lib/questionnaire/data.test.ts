@@ -15,6 +15,7 @@ function completedRecord() {
 			desmapQuestions.map((question) => [question.id, question.options[0].letter])
 		),
 		careerInterests: ['science-research'],
+		participant: { name: 'Nguyen Van A', email: 'Student@Example.com ' },
 		startedAt: '2026-09-12T08:00:00.000Z',
 		completedAt: '2026-09-12T08:30:00.000Z'
 	});
@@ -28,6 +29,7 @@ describe('completed questionnaire identity', () => {
 	it('keeps an existing identifier and all score levels', () => {
 		const parsed = parseCompletionPayload(completedRecord());
 		expect(parsed?.assessmentId).toBe(`assessment-${uuid}`);
+		expect(parsed?.participant).toEqual({ name: 'Nguyen Van A', email: 'student@example.com' });
 		expect(Object.keys(parsed?.scores.dimensions ?? {})).toHaveLength(35);
 		expect(Object.keys(parsed?.scores.groups ?? {})).toHaveLength(28);
 		expect(Object.keys(parsed?.scores.stages ?? {})).toHaveLength(6);
@@ -46,6 +48,9 @@ describe('completed questionnaire identity', () => {
 		const record = completedRecord();
 		expect(parseCompletionPayload({ ...record, answers: {} })).toBeNull();
 		expect(parseCompletionPayload({ ...record, careerInterests: ['missing'] })).toBeNull();
+		expect(
+			parseCompletionPayload({ ...record, participant: { name: '', email: 'bad' } })
+		).toBeNull();
 		expect(
 			parseCompletionPayload(
 				{ ...record, assessmentId: 'assessment-not-a-uuid' },

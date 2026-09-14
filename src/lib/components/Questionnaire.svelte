@@ -7,30 +7,40 @@
 	import { fly } from 'svelte/transition';
 	import type {
 		OptionLetter,
+		ParticipantDetails,
 		QuestionnaireAnswers,
 		QuestionnaireDraft,
 		QuestionnairePresentationOrder,
+		QuestionnaireSubmission,
 		StageId
 	} from '$lib/questionnaire';
 	import {
 		buildCompletionPayload,
 		careerInterestOptions,
+		checkEmailAvailability,
 		clearSavedQuestionnaire,
 		createQuestionnairePresentationOrder,
 		getStageById,
+		isValidParticipantDetails,
+		normalizeParticipantDetails,
 		optionsInPresentationOrder,
+		QUESTIONNAIRE_COMPLETION_STORAGE_KEY,
 		questionnaireStages,
 		questionsInPresentationOrder,
+		readCompletionPayload,
 		readSavedQuestionnaire,
 		totalQuestionCount,
 		writeCompletionPayload,
+		writeQuestionnaireSyncStatus,
 		writeSavedQuestionnaire
 	} from '$lib/questionnaire';
 
-	type Mode = 'career' | 'questions' | 'review';
+	type Mode = 'participant' | 'career' | 'questions' | 'review';
 
 	let hydrated = $state(false);
-	let mode = $state<Mode>('career');
+	let mode = $state<Mode>('participant');
+	let participant = $state<ParticipantDetails>({ name: '', email: '' });
+	let checkingEmail = $state(false);
 	let currentIndex = $state(0);
 	let selectedCareerInterests = $state<string[]>([]);
 	let answers = $state<QuestionnaireAnswers>({});
@@ -40,6 +50,7 @@
 	let presentationOrder = $state<QuestionnairePresentationOrder | null>(null);
 	let transitionsReady = $state(false);
 	let animateCareerHandoff = $state(false);
+	let completedAssessment = $state<QuestionnaireSubmission | null>(null);
 
 	let orderedQuestions = $derived(
 		presentationOrder ? questionsInPresentationOrder(presentationOrder) : []
@@ -59,12 +70,32 @@
 	const optionLabels: OptionLetter[] = ['A', 'B', 'C'];
 	const careerHandoffDuration = 250;
 
+	function lockCompletedAssessment(): boolean {
+		const completed = readCompletionPayload();
+		if (!completed) return false;
+		completedAssessment = completed;
+		clearSavedQuestionnaire();
+		return true;
+	}
+
 	onMount(() => {
+		function handleStorage(event: StorageEvent) {
+			if (event.key !== QUESTIONNAIRE_COMPLETION_STORAGE_KEY) return;
+			lockCompletedAssessment();
+		}
+
+		window.addEventListener('storage', handleStorage);
+		if (lockCompletedAssessment()) {
+			hydrated = true;
+			return () => window.removeEventListener('storage', handleStorage);
+		}
+
 		const saved = readSavedQuestionnaire();
 		presentationOrder = saved?.presentationOrder ?? createQuestionnairePresentationOrder();
 		startedAt = saved?.startedAt ?? new Date().toISOString();
 		if (saved) {
 			writeSavedQuestionnaire(saved);
+			participant = { ...saved.participant };
 			selectedCareerInterests = [...saved.careerInterests];
 			answers = { ...saved.answers };
 			const firstUnanswered = orderedQuestions.findIndex((question) => !saved.answers[question.id]);
@@ -83,6 +114,7 @@
 		}
 		hydrated = true;
 		void enableTransitions();
+		return () => window.removeEventListener('storage', handleStorage);
 	});
 
 	async function enableTransitions() {
@@ -109,11 +141,36 @@
 			currentIndex: nextIndex,
 			startedAt,
 			updatedAt: new Date().toISOString(),
+			participant: { ...participant },
 			careerInterests: [...selectedCareerInterests],
 			answers: { ...answers },
 			presentationOrder
 		};
 		if (writeSavedQuestionnaire(draft)) statusMessage = 'Đã lưu tiến trình trên thiết bị này';
+	}
+
+	async function continueFromParticipant() {
+		if (checkingEmail) return;
+		const normalized = normalizeParticipantDetails(participant);
+		if (!isValidParticipantDetails(normalized)) {
+			errorMessage = 'Hãy nhập họ tên và địa chỉ email hợp lệ.';
+			return;
+		}
+		checkingEmail = true;
+		errorMessage = '';
+		try {
+			if (!(await checkEmailAvailability(normalized.email))) {
+				errorMessage = 'Email này đã hoàn thành một bài đánh giá.';
+				return;
+			}
+			participant = normalized;
+			mode = 'career';
+			persistDraft('career', 0);
+		} catch (error) {
+			errorMessage = error instanceof Error ? error.message : 'Không thể kiểm tra địa chỉ email.';
+		} finally {
+			checkingEmail = false;
+		}
 	}
 
 	function toggleCareerInterest(id: string) {
@@ -209,7 +266,7 @@
 
 	/** A stage is reachable only after every earlier question has an explicit answer. */
 	function canVisitStage(stageId: StageId): boolean {
-		if (mode === 'career') return false;
+		if (mode === 'participant' || mode === 'career') return false;
 		const first = stageStartIndex(stageId);
 		return (
 			first >= 0 &&
@@ -218,6 +275,11 @@
 	}
 
 	function submitAssessment() {
+		if (lockCompletedAssessment()) {
+			errorMessage = '';
+			return;
+		}
+
 		if (unansweredQuestions.length > 0) {
 			const firstUnanswered = orderedQuestions.findIndex((question) => !answers[question.id]);
 			if (firstUnanswered >= 0) {
@@ -232,6 +294,7 @@
 		const payload = buildCompletionPayload({
 			answers,
 			careerInterests: selectedCareerInterests,
+			participant,
 			startedAt
 		});
 		if (!writeCompletionPayload(payload)) {
@@ -240,7 +303,9 @@
 			persistDraft('review', currentIndex);
 			return;
 		}
+		writeQuestionnaireSyncStatus({ assessmentId: payload.assessmentId, status: 'pending' });
 		clearSavedQuestionnaire();
+		completedAssessment = payload;
 		void goto(resolve('/evaluation'));
 	}
 </script>
@@ -252,14 +317,49 @@
 	>
 		Đang tải bài đánh giá…
 	</div>
+{:else if completedAssessment}
+	<div
+		class="grid min-h-dvh place-items-center bg-[radial-gradient(circle_at_78%_16%,rgb(37_99_235_/.1),transparent_32rem),#030303] p-[clamp(.9rem,1.8vw,2rem)] font-sans text-[#f6f7fb]"
+	>
+		<section
+			class="w-full max-w-[44rem] rounded-[1.55rem] border-2 border-blue bg-[linear-gradient(145deg,rgb(11_19_34_/.98),rgb(5_10_20_/.98))] p-[clamp(1.5rem,5vw,4rem)] text-center shadow-[0_1.5rem_5rem_rgb(0_0_0_/.28)]"
+			aria-labelledby="completed-title"
+		>
+			<span
+				class="mx-auto grid size-16 place-items-center rounded-full border-2 border-lime bg-lime/10 text-lime"
+				aria-hidden="true"
+			>
+				<Check class="size-8" />
+			</span>
+			<p class="mt-7 mb-0 text-[.7rem] font-bold tracking-[.18em] text-lime uppercase">
+				BẢNG CÂU HỎI ĐÃ ĐÓNG
+			</p>
+			<h1
+				class="mt-3 mb-0 text-[clamp(2.25rem,6vw,4.5rem)] leading-[.96] font-[750] tracking-[-.055em]"
+				id="completed-title"
+			>
+				Bạn đã hoàn tất bảng câu hỏi
+			</h1>
+			<p class="mx-auto mt-6 mb-0 max-w-[34rem] text-[1rem] leading-[1.6] text-muted">
+				Câu trả lời đã được lưu trong trình duyệt này. Bạn không thể thực hiện một bảng câu hỏi mới
+				khi kết quả này còn được lưu.
+			</p>
+			<a
+				class="mt-8 inline-flex min-h-[3.35rem] items-center justify-center gap-3 rounded-xl bg-lime px-6 py-3 text-[.9rem] font-extrabold text-[#090d11] no-underline transition-[transform,filter] duration-180 hover:-translate-y-0.5 hover:brightness-[1.07] focus-visible:-translate-y-0.5 focus-visible:brightness-[1.07] focus-visible:outline-none"
+				href={resolve('/evaluation')}
+			>
+				Xem kết quả của bạn <ArrowRight class="size-[1em]" aria-hidden="true" />
+			</a>
+		</section>
+	</div>
 {:else}
 	<div
 		class="min-h-dvh bg-[radial-gradient(circle_at_78%_16%,rgb(37_99_235_/.1),transparent_32rem),#030303] p-[clamp(.9rem,1.8vw,2rem)] font-sans text-[#f6f7fb] max-[560px]:p-3"
 	>
 		<div
-			class={`mx-auto grid min-h-[calc(100dvh_-_clamp(1.8rem,3.6vw,4rem))] w-full max-w-[108rem] transition-[grid-template-columns,gap] duration-250 ease-out max-[850px]:grid-cols-1 ${mode === 'career' ? 'grid-cols-[0_minmax(0,1fr)] gap-0 max-[850px]:grid-cols-1' : 'grid-cols-[4.5rem_minmax(0,1fr)] gap-[clamp(.75rem,1.6vw,1.75rem)]'}`}
+			class={`mx-auto grid min-h-[calc(100dvh_-_clamp(1.8rem,3.6vw,4rem))] w-full max-w-[108rem] transition-[grid-template-columns,gap] duration-250 ease-out max-[850px]:grid-cols-1 ${mode === 'participant' || mode === 'career' ? 'grid-cols-[0_minmax(0,1fr)] gap-0 max-[850px]:grid-cols-1' : 'grid-cols-[4.5rem_minmax(0,1fr)] gap-[clamp(.75rem,1.6vw,1.75rem)]'}`}
 		>
-			{#if mode !== 'career'}
+			{#if mode === 'questions' || mode === 'review'}
 				<aside
 					class="relative flex flex-col items-center justify-center gap-[1.15rem] pt-[4.5rem] pb-4 max-[850px]:flex-row max-[850px]:justify-start max-[850px]:gap-[.7rem] max-[850px]:overflow-x-auto max-[850px]:pt-[.3rem]"
 					aria-label="Các giai đoạn đánh giá DESMAP"
@@ -291,7 +391,77 @@
 			{/if}
 
 			<main class="col-start-2 grid min-w-0 grid-rows-[minmax(0,1fr)_auto] max-[850px]:col-start-1">
-				{#if mode === 'career'}
+				{#if mode === 'participant'}
+					<section
+						class="col-start-1 row-start-1 flex min-h-[min(69vh,50rem)] flex-col rounded-[1.55rem] border-2 border-blue bg-[linear-gradient(145deg,rgb(11_19_34_/.98),rgb(5_10_20_/.98))] p-[clamp(1.4rem,4vw,4.3rem)] shadow-[0_1.5rem_5rem_rgb(0_0_0_/.28)] max-[850px]:min-h-0 max-[560px]:rounded-2xl max-[560px]:p-[1.15rem]"
+						aria-labelledby="participant-title"
+					>
+						<div class="text-right text-[.7rem] font-medium tracking-[.18em] text-muted">
+							BƯỚC 01 / 05
+						</div>
+						<p class="m-0 mt-[1.8rem] text-[.7rem] font-bold tracking-[.18em] text-lime">
+							THÔNG TIN NGƯỜI THAM GIA
+						</p>
+						<h1
+							class="m-0 mt-4 max-w-[48rem] text-[clamp(2.1rem,5.2vw,5rem)] leading-[.98] font-[750] tracking-[-.055em]"
+							id="participant-title"
+						>
+							Hãy bắt đầu với<br /><span class="text-lime">thông tin của bạn.</span>
+						</h1>
+						<p class="mt-5 max-w-[42rem] text-[1rem] leading-[1.6] text-muted">
+							Thông tin này được lưu trên thiết bị và gửi cùng kết quả đánh giá. Mỗi email chỉ có
+							thể hoàn thành một bài đánh giá.
+						</p>
+
+						<form
+							class="mt-9 grid max-w-[42rem] gap-6"
+							onsubmit={(event) => {
+								event.preventDefault();
+								void continueFromParticipant();
+							}}
+						>
+							<label class="grid gap-2 text-[.85rem] font-bold" for="participant-name">
+								Họ và tên
+								<input
+									class="min-h-14 rounded-xl border border-blue bg-[#030303]/55 px-4 text-base font-normal text-[#f6f7fb] outline-none focus:border-lime"
+									id="participant-name"
+									name="name"
+									type="text"
+									autocomplete="name"
+									maxlength="100"
+									required
+									bind:value={participant.name}
+								/>
+							</label>
+							<label class="grid gap-2 text-[.85rem] font-bold" for="participant-email">
+								Email
+								<input
+									class="min-h-14 rounded-xl border border-blue bg-[#030303]/55 px-4 text-base font-normal text-[#f6f7fb] outline-none focus:border-lime"
+									id="participant-email"
+									name="email"
+									type="email"
+									autocomplete="email"
+									maxlength="254"
+									required
+									bind:value={participant.email}
+								/>
+							</label>
+							{#if errorMessage}
+								<p class="m-0 border border-[#f5ba66] bg-[#181106] p-4 text-[#d9c8ad]" role="alert">
+									{errorMessage}
+								</p>
+							{/if}
+							<button
+								class="inline-flex min-h-[3.35rem] w-fit cursor-pointer items-center justify-center gap-3 rounded-xl border-0 bg-lime px-[1.55rem] py-[.8rem] text-[.9rem] font-extrabold text-[#090d11] disabled:cursor-wait disabled:opacity-60"
+								type="submit"
+								disabled={checkingEmail}
+							>
+								{checkingEmail ? 'Đang kiểm tra email…' : 'Tiếp tục'}
+								<ArrowRight class="size-[1em]" aria-hidden="true" />
+							</button>
+						</form>
+					</section>
+				{:else if mode === 'career'}
 					<section
 						class="col-start-1 row-start-1 flex min-h-[min(69vh,50rem)] flex-col rounded-[1.55rem] border-2 border-blue bg-[linear-gradient(145deg,rgb(11_19_34_/.98),rgb(5_10_20_/.98))] p-[clamp(1.4rem,4vw,4.3rem)] shadow-[0_1.5rem_5rem_rgb(0_0_0_/.28)] max-[850px]:min-h-0 max-[560px]:rounded-2xl max-[560px]:p-[1.15rem] min-[1100px]:grid min-[1100px]:min-h-0 min-[1100px]:grid-cols-[minmax(0,1.08fr)_minmax(22rem,.92fr)] min-[1100px]:grid-rows-[auto_auto_minmax(0,1fr)_auto] min-[1100px]:gap-x-[clamp(2rem,4vw,5rem)] min-[1100px]:gap-y-[clamp(.75rem,1.5vh,1.15rem)] min-[1100px]:[grid-template-areas:'label_kicker'_'title_intro'_'interests_interests'_'selection_selection']"
 						aria-labelledby="career-title"
@@ -302,7 +472,7 @@
 						<div
 							class="text-right text-[.7rem] font-medium tracking-[.18em] text-muted min-[1100px]:[grid-area:kicker]"
 						>
-							BƯỚC 01 / 04
+							BƯỚC 02 / 05
 						</div>
 						<p
 							class="m-0 mt-[1.8rem] text-[.7rem] font-bold tracking-[.18em] text-lime min-[1100px]:m-0 min-[1100px]:[grid-area:label]"
@@ -355,6 +525,16 @@
 						<div
 							class="mt-[2.6rem] flex items-center justify-between gap-4 max-[560px]:flex-wrap max-[560px]:items-stretch min-[1100px]:m-0 min-[1100px]:border-t min-[1100px]:border-line min-[1100px]:pt-4 min-[1100px]:[grid-area:selection]"
 						>
+							<button
+								class="cursor-pointer border-0 bg-transparent text-[.9rem] text-[#f6f7fb] hover:text-lime focus-visible:text-lime focus-visible:outline-none"
+								type="button"
+								onclick={() => {
+									errorMessage = '';
+									mode = 'participant';
+								}}
+							>
+								<ArrowLeft class="inline size-4" aria-hidden="true" /> Thông tin của bạn
+							</button>
 							<span
 								class="flex items-center gap-[.55rem] text-[1.45rem] text-lime max-[560px]:order-1"
 								aria-live="polite"
@@ -483,7 +663,7 @@
 						aria-labelledby="review-title"
 					>
 						<div class="text-right text-[.7rem] font-medium tracking-[.18em] text-muted">
-							BƯỚC 03 / 04
+							BƯỚC 04 / 05
 						</div>
 						<p class="m-0 mt-[1.8rem] text-[.7rem] font-bold tracking-[.18em] text-lime">
 							XEM LẠI CÁC TÍN HIỆU

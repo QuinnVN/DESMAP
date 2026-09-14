@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/private';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import {
 	calculateInitialAssessment,
@@ -6,8 +7,6 @@ import {
 	validateInitialAssessmentResponse
 } from '$lib/assessment';
 import { getInitialAssessmentMode } from '$lib/server/initial-assessment-mode';
-
-const BACKEND_URL = 'http://127.0.0.1:8000/api/ai/initial-career-assessment';
 
 export const POST: RequestHandler = async ({ request, fetch }) => {
 	let body: unknown;
@@ -22,9 +21,12 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 	if (getInitialAssessmentMode() === 'weighted') {
 		return json(calculateInitialAssessment(body));
 	}
+	if (!env.AI_BACKEND_URL) {
+		return json({ error: 'Dịch vụ đánh giá chưa được cấu hình.' }, { status: 503 });
+	}
 
 	try {
-		const upstream = await fetch(BACKEND_URL, {
+		const upstream = await fetch(env.AI_BACKEND_URL, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify(body)

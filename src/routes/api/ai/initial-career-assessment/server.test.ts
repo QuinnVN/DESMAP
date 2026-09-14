@@ -1,9 +1,13 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildInitialAssessmentRequest, calculateInitialAssessment } from '$lib/assessment';
 import { buildCompletionPayload, desmapQuestions } from '$lib/questionnaire';
 
 const mode = vi.hoisted(() => vi.fn(() => 'ai' as 'ai' | 'weighted'));
+const privateEnv = vi.hoisted(() => ({
+	AI_BACKEND_URL: 'http://127.0.0.1:8000/api/ai/initial-career-assessment'
+}));
+vi.mock('$env/dynamic/private', () => ({ env: privateEnv }));
 vi.mock('$lib/server/initial-assessment-mode', () => ({ getInitialAssessmentMode: mode }));
 
 import { POST } from './+server';
@@ -14,6 +18,7 @@ const payload = buildCompletionPayload({
 		desmapQuestions.map((question) => [question.id, question.options[0].letter])
 	),
 	careerInterests: ['science-research'],
+	participant: { name: 'Nguyen Van A', email: 'student@example.com' },
 	startedAt: '2026-09-12T08:00:00.000Z'
 });
 const requestBody = buildInitialAssessmentRequest(payload);
@@ -38,6 +43,10 @@ function event(body: string, fetcher: typeof fetch): RequestEvent {
 }
 
 describe('initial assessment proxy', () => {
+	beforeEach(() => {
+		privateEnv.AI_BACKEND_URL = 'http://127.0.0.1:8000/api/ai/initial-career-assessment';
+	});
+
 	afterEach(() => {
 		mode.mockReturnValue('ai');
 	});
@@ -86,6 +95,18 @@ describe('initial assessment proxy', () => {
 
 		expect(response.status).toBe(200);
 		expect(fetcher).toHaveBeenCalledOnce();
+	});
+
+	it('returns a safe error when the AI backend is not configured', async () => {
+		privateEnv.AI_BACKEND_URL = '';
+		const fetcher = vi.fn<typeof fetch>();
+		const response = await POST(event(JSON.stringify(requestBody), fetcher));
+
+		expect(response.status).toBe(503);
+		expect(await response.json()).toEqual({
+			error: 'Dịch vụ đánh giá chưa được cấu hình.'
+		});
+		expect(fetcher).not.toHaveBeenCalled();
 	});
 
 	it('turns an invalid successful backend response into a safe 502', async () => {

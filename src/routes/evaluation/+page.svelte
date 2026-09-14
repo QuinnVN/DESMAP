@@ -14,7 +14,13 @@
 		type AssessmentErrorKind,
 		type InitialAssessmentResponse
 	} from '$lib/assessment';
-	import { readCompletionPayload, type QuestionnaireSubmission } from '$lib/questionnaire';
+	import {
+		readCompletionPayload,
+		readQuestionnaireSyncStatus,
+		uploadQuestionnaireSubmission,
+		type QuestionnaireSubmission,
+		type QuestionnaireSyncStatus
+	} from '$lib/questionnaire';
 
 	let { data }: PageProps = $props();
 
@@ -27,6 +33,8 @@
 	let copied = $state(false);
 	let notice = $state('');
 	let requestInFlight = $state(false);
+	let syncStatus = $state<QuestionnaireSyncStatus | null>(null);
+	let syncInFlight = $state(false);
 	const target = $derived(
 		rankedResults[0]
 			? experiences.find((experience) => experience.slug === rankedResults[0].career_id)
@@ -60,10 +68,22 @@
 		}
 	}
 
+	async function syncSubmission() {
+		if (!payload || syncInFlight) return;
+		syncInFlight = true;
+		syncStatus = { assessmentId: payload.assessmentId, status: 'pending' };
+		syncStatus = await uploadQuestionnaireSubmission(payload);
+		syncInFlight = false;
+	}
+
 	onMount(() => {
 		payload = readCompletionPayload();
 		if (!payload) viewState = 'empty';
-		else void loadAssessment();
+		else {
+			syncStatus = readQuestionnaireSyncStatus(payload.assessmentId);
+			void loadAssessment();
+			if (!syncStatus || syncStatus.status === 'pending') void syncSubmission();
+		}
 	});
 
 	function showNotice(message: string) {
@@ -131,6 +151,32 @@
 				nghị nghề nghiệp hay kết luận cuối cùng.
 			</p>
 		</section>
+
+		{#if syncStatus?.status === 'pending'}
+			<p class="sr-only" aria-live="polite" role="status">Đang đồng bộ kết quả lên máy chủ.</p>
+		{:else if syncStatus?.status === 'error'}
+			<section
+				class="mt-8 border border-[#f5ba66] bg-[#181106] p-8"
+				aria-live="assertive"
+				role="alert"
+			>
+				<h2 class="mt-0">Chưa thể đồng bộ kết quả</h2>
+				<p class="text-[#d9c8ad]">
+					{syncStatus.message ?? 'Không thể gửi kết quả lên máy chủ.'} Bảng câu hỏi của bạn vẫn được lưu
+					trên thiết bị.
+				</p>
+				{#if syncStatus.recoverable}
+					<button
+						class="inline-flex cursor-pointer items-center gap-2 border border-lime bg-lime px-5 py-3 font-bold text-[#061006] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lime disabled:cursor-wait disabled:opacity-60"
+						type="button"
+						onclick={() => void syncSubmission()}
+						disabled={syncInFlight}
+					>
+						<RefreshCw class="size-4" aria-hidden="true" /> Thử lại
+					</button>
+				{/if}
+			</section>
+		{/if}
 
 		{#if viewState === 'empty'}
 			<section class="mt-8 border border-blue bg-[#071020] p-8" aria-live="polite">
