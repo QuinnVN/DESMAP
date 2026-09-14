@@ -6328,6 +6328,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e988983f96fe1dd48800bcdfc82f23e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1275748376 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2911287098455277564, guid: 5b6e372e6bf45044bba8fe062d262f1e, type: 3}
+  m_PrefabInstance: {fileID: 1275748370}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1406302148
 GameObject:
   m_ObjectHideFlags: 0
@@ -7533,12 +7538,14 @@ MonoBehaviour:
   patientPresenter: {fileID: 1579598720}
   notebookInteractable: {fileID: 2137023256}
   notebookUI: {fileID: 374597933}
+  locomotionRoot: {fileID: 1275748376}
   moveProviderRoot: {fileID: 1275748374}
+  gravityProviderRoot: {fileID: 2066702448}
   jumpProviderRoot: {fileID: 1275748371}
   rightRayLineVisual: {fileID: 1275748375}
   preparationDuration: 10
   roundDuration: 300
-  startAutomatically: 0
+  startAutomatically: 1
   dialogueFallbackDuration: 4
   patientTransitionDelay: 1
   pointsPerCorrectInfo: 1
@@ -10673,6 +10680,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2065327472}
   m_CullTransparentMesh: 1
+--- !u!1 &2066702448 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3099384988167443082, guid: 5b6e372e6bf45044bba8fe062d262f1e, type: 3}
+  m_PrefabInstance: {fileID: 1275748370}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2074952996
 GameObject:
   m_ObjectHideFlags: 0

@@ -497,28 +497,26 @@ namespace NCKH.VR.Lawyer.Tests
                     controller.GetComponentInChildren<LawyerClueLinkSystem>(true);
                 LawyerCluePin[] pins = controller.GetComponentsInChildren<LawyerCluePin>(false);
                 Assert.That(linkSystem, Is.Not.Null);
-                Assert.That(pins.Length, Is.GreaterThanOrEqualTo(8));
+                Assert.That(pins.Length, Is.GreaterThanOrEqualTo(4));
                 Assert.That(controller.Session.ClueLinks, Is.Empty);
 
-                LawyerCluePin exit = FindPin(pins, "clue-01");
-                LawyerCluePin charger = FindPin(pins, "clue-09");
-                LawyerCluePin clearHallway = FindPin(pins, "clue-11");
-                LawyerCluePin nam = FindPin(pins, "clue-15");
-                LawyerCluePin origin = FindPin(pins, "clue-04");
-                LawyerCluePin matchingCharger = FindPin(pins, "clue-10");
+                LawyerCluePin first = FindPin(pins, "clue-08");
+                LawyerCluePin second = FindPin(pins, "clue-12");
+                LawyerCluePin third = FindPin(pins, "clue-17");
+                LawyerCluePin fourth = FindPin(pins, "clue-23");
 
                 testRayObject = new GameObject("Test Pinch Ray");
                 XRRayInteractor testRay = testRayObject.AddComponent<XRRayInteractor>();
                 LawyerLinkAttemptResult lastAttempt = LawyerLinkAttemptResult.Invalid;
                 linkSystem.LinkAttempted += result => lastAttempt = result;
 
-                linkSystem.BeginLink(exit, testRay);
-                linkSystem.CompleteLink(exit, clearHallway.AnchorPosition);
+                linkSystem.BeginLink(first, testRay);
+                linkSystem.CompleteLink(first, third.AnchorPosition);
                 Assert.That(lastAttempt, Is.EqualTo(LawyerLinkAttemptResult.Incorrect));
                 Assert.That(controller.Session.ClueLinks, Is.Empty);
 
-                linkSystem.BeginLink(exit, testRay);
-                linkSystem.CompleteLink(exit, charger.AnchorPosition);
+                linkSystem.BeginLink(first, testRay);
+                linkSystem.CompleteLink(first, second.AnchorPosition);
                 Assert.That(lastAttempt, Is.EqualTo(LawyerLinkAttemptResult.Added));
                 Assert.That(controller.Session.ClueLinks, Has.Count.EqualTo(1));
                 for (int frame = 0; frame < 5; frame++)
@@ -529,12 +527,12 @@ namespace NCKH.VR.Lawyer.Tests
                 Assert.That(controller.Session.ClueLinks, Is.Empty);
                 Assert.That(linkSystem.TerminalLinkCount, Is.EqualTo(1));
 
-                linkSystem.BeginLink(charger, testRay);
-                linkSystem.CompleteLink(charger, exit.AnchorPosition);
-                linkSystem.BeginLink(clearHallway, testRay);
-                linkSystem.CompleteLink(clearHallway, nam.AnchorPosition);
-                linkSystem.BeginLink(origin, testRay);
-                linkSystem.CompleteLink(origin, matchingCharger.AnchorPosition);
+                linkSystem.BeginLink(second, testRay);
+                linkSystem.CompleteLink(second, first.AnchorPosition);
+                linkSystem.BeginLink(third, testRay);
+                linkSystem.CompleteLink(third, fourth.AnchorPosition);
+                linkSystem.BeginLink(second, testRay);
+                linkSystem.CompleteLink(second, third.AnchorPosition);
                 Assert.That(controller.Session.Phase, Is.EqualTo(LawyerSessionPhase.Resolved));
                 Assert.That(controller.Session.ClueLinks, Has.Count.EqualTo(3));
                 SetPrivateField(controller, "truthDisplayDuration", 5f);
@@ -542,15 +540,17 @@ namespace NCKH.VR.Lawyer.Tests
                 for (int frame = 0; frame < 60; frame++)
                 {
                     finalCards = controller.GetComponentsInChildren<LawyerBoardClue>(false);
-                    if (finalCards.Length == 3)
+                    if (finalCards.Length == 7)
                         break;
                     yield return null;
                 }
-                Assert.That(finalCards, Has.Length.EqualTo(3));
+                Assert.That(finalCards, Has.Length.EqualTo(7));
+                int reasoningCardCount = 0;
                 for (int index = 0; index < finalCards.Length; index++)
                 {
-                    Assert.That(finalCards[index].IsReasoningCard, Is.True,
-                        $"Thẻ cuối không phải thẻ suy luận: {finalCards[index].name}");
+                    if (!finalCards[index].IsReasoningCard)
+                        continue;
+                    reasoningCardCount++;
                     BoxCollider diamond = finalCards[index].transform
                         .Find("Diamond Collider")?.GetComponent<BoxCollider>();
                     Assert.That(diamond, Is.Not.Null);
@@ -564,6 +564,7 @@ namespace NCKH.VR.Lawyer.Tests
                             $"Thẻ suy luận bị tràn chữ: {finalCards[index].CardId}");
                     }
                 }
+                Assert.That(reasoningCardCount, Is.EqualTo(3));
 
                 Transform brief = Camera.main.transform.Find(
                     "Lawyer Finale Canvas/Evidence Result Overlay/Result Body");
@@ -626,9 +627,12 @@ namespace NCKH.VR.Lawyer.Tests
                 session.ResetCase(session.CaseDefinition);
                 session.MarkBoardOpened();
                 Assert.That(session.TryBeginInterview(), Is.True);
-                Assert.That(session.TryAskMain("main-outlet", out _), Is.True);
-                Assert.That(session.TryAskFollowUp("main-outlet", "outlet-other-device", out _), Is.True);
-                Assert.That(session.TryAskMain("main-return", out _), Is.True);
+                Assert.That(session.TryAskMain("w1-hurry", out _), Is.True);
+                Assert.That(session.TryAskMain("w2-items", out _), Is.True);
+                Assert.That(session.TryAskMain("w3-forgotten", out _), Is.True);
+                Assert.That(session.TryAskMain("w4-window", out _), Is.True);
+                interview.SendMessage("CompleteInterview");
+                yield return null;
 
                 rightController = InputSystem.AddDevice<XRSimulatedController>();
                 InputSystem.SetDeviceUsage(rightController, CommonUsages.RightHand);
@@ -650,7 +654,7 @@ namespace NCKH.VR.Lawyer.Tests
 
                 Button continueButton = result.Find("Continue Response").GetComponent<Button>();
                 Assert.That(continueButton.GetComponentInChildren<TMP_Text>(true).text,
-                    Is.EqualTo("Tiếp tục hỏi"));
+                    Is.EqualTo("Phỏng vấn lại"));
                 Assert.That(continueButton.interactable, Is.True);
                 continueButton.onClick.Invoke();
                 yield return null;
@@ -661,13 +665,11 @@ namespace NCKH.VR.Lawyer.Tests
                     Is.EqualTo(LawyerBoardController.CourtroomScenePath));
                 Assert.That(LawyerGameSession.Instance.Phase,
                     Is.EqualTo(LawyerSessionPhase.DefendantInterview));
-                Assert.That(LawyerGameSession.Instance.MainQuestionsAsked, Is.EqualTo(2));
-                Assert.That(LawyerGameSession.Instance.MainQuestionsRemaining, Is.Zero);
-                Assert.That(LawyerGameSession.Instance.PendingKeyQuestionId,
-                    Is.EqualTo("main-outlet"));
+                Assert.That(LawyerGameSession.Instance.MainQuestionsAsked, Is.Zero);
+                Assert.That(LawyerGameSession.Instance.MainQuestionsRemaining, Is.EqualTo(4));
+                Assert.That(LawyerGameSession.Instance.InterviewRestartCount, Is.EqualTo(1));
                 Assert.That(LawyerGameSession.Instance.ClueLinks, Is.Empty);
-                Assert.That(LawyerGameSession.Instance.UnlockedClueIds,
-                    Does.Contain("clue-09"));
+                Assert.That(LawyerGameSession.Instance.UnlockedClueIds, Has.Count.EqualTo(6));
             }
             finally
             {
@@ -677,7 +679,7 @@ namespace NCKH.VR.Lawyer.Tests
         }
 
         [UnityTest]
-        public IEnumerator CloseBoardActionWithSufficientEvidenceLoadsOfficeBoard()
+        public IEnumerator CloseBoardActionCannotSkipCompletedInterviewResponse()
         {
             XRSimulatedController rightController = null;
             try
@@ -699,14 +701,11 @@ namespace NCKH.VR.Lawyer.Tests
                 QueueSecondaryButton(rightController, true);
                 QueueSecondaryButton(rightController, false);
 
-                float timeout = Time.realtimeSinceStartup + 60f;
-                while (SceneManager.GetActiveScene().path != LawyerInterviewController.OfficeScenePath
-                    && Time.realtimeSinceStartup < timeout)
-                    yield return null;
+                yield return null;
                 Assert.That(SceneManager.GetActiveScene().path,
-                    Is.EqualTo(LawyerInterviewController.OfficeScenePath));
+                    Is.EqualTo(LawyerBoardController.CourtroomScenePath));
                 Assert.That(LawyerGameSession.Instance.Phase,
-                    Is.EqualTo(LawyerSessionPhase.EvidenceBoard));
+                    Is.EqualTo(LawyerSessionPhase.DefendantInterview));
             }
             finally
             {
@@ -733,38 +732,15 @@ namespace NCKH.VR.Lawyer.Tests
             InvokePrivate(interview, "AskMain", 1);
             interview.AdvanceResponse();
             yield return null;
-            InvokePrivate(interview, "AskMain", 3);
-            interview.AdvanceResponse();
-            yield return null;
-            InvokePrivate(interview, "AskMain", 4);
+            InvokePrivate(interview, "AskMain", 0);
             interview.AdvanceResponse();
             yield return null;
             InvokePrivate(interview, "AskMain", 0);
             interview.AdvanceResponse();
             yield return null;
-            for (int followIndex = 0; followIndex < 3; followIndex++)
-            {
-                InvokePrivate(interview, "AskFollowUp", followIndex);
-                interview.AdvanceResponse();
-                yield return null;
-                if (followIndex < 2)
-                {
-                    InvokePrivate(interview, "AskMain", 0);
-                    Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.DefendantInterview));
-                }
-            }
-
-            InvokePrivate(interview, "AskMain", 2);
+            InvokePrivate(interview, "AskMain", 1);
             interview.AdvanceResponse();
             yield return null;
-            for (int followIndex = 0; followIndex < 3; followIndex++)
-            {
-                InvokePrivate(interview, "AskFollowUp", followIndex);
-                interview.AdvanceResponse();
-                yield return null;
-                if (followIndex < 2)
-                    InvokePrivate(interview, "AskMain", 2);
-            }
 
             float timeout = Time.realtimeSinceStartup + 60f;
             while (SceneManager.GetActiveScene().path != LawyerInterviewController.OfficeScenePath
@@ -813,14 +789,10 @@ namespace NCKH.VR.Lawyer.Tests
 
         private static void AskSuccessfulInterviewQuestions(LawyerGameSession session)
         {
-            Assert.That(session.TryAskMain("main-outlet", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-charger", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-other-device", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-warning", out _), Is.True);
-            Assert.That(session.TryAskMain("main-other-person", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-other-person", "other-person-action", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-other-person", "other-person-purpose", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-other-person", "other-person-blame", out _), Is.True);
+            Assert.That(session.TryAskMain("w1-door", out _), Is.True);
+            Assert.That(session.TryAskMain("w2-other", out _), Is.True);
+            Assert.That(session.TryAskMain("w3-description", out _), Is.True);
+            Assert.That(session.TryAskMain("w4-smell", out _), Is.True);
         }
 
         private static LawyerCluePin FindPin(LawyerCluePin[] pins, string clueId)

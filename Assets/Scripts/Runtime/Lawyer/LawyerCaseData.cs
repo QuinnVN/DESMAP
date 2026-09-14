@@ -15,6 +15,13 @@ namespace NCKH.VR.Lawyer
         Noise
     }
 
+    public enum LawyerClueStrength
+    {
+        Strong,
+        Weak,
+        Noise
+    }
+
     [Serializable]
     public sealed class LawyerClueDefinition
     {
@@ -55,6 +62,23 @@ namespace NCKH.VR.Lawyer
     }
 
     [Serializable]
+    public sealed class LawyerEvidenceChainSlot
+    {
+        [SerializeField] private List<string> eligibleClueIds = new List<string>();
+
+        public IReadOnlyList<string> EligibleClueIds => eligibleClueIds;
+
+        public LawyerEvidenceChainSlot(IEnumerable<string> clueIds)
+        {
+            eligibleClueIds = clueIds != null
+                ? new List<string>(clueIds)
+                : new List<string>();
+        }
+
+        public bool Accepts(string clueId) => eligibleClueIds.Contains(clueId);
+    }
+
+    [Serializable]
     public sealed class LawyerReasoningCardDefinition
     {
         [SerializeField] private string id = string.Empty;
@@ -92,11 +116,14 @@ namespace NCKH.VR.Lawyer
         [SerializeField, TextArea(3, 8)] private string insufficientEvidenceMessage = string.Empty;
         [SerializeField] private List<LawyerReasoningCardDefinition> reasoningCards =
             new List<LawyerReasoningCardDefinition>();
+        [SerializeField] private List<LawyerEvidenceChainSlot> evidenceChainSlots =
+            new List<LawyerEvidenceChainSlot>();
 
         public IReadOnlyList<LawyerRequiredClueLink> RequiredLinks => requiredLinks;
         public string TruthConclusion => truthConclusion;
         public string InsufficientEvidenceMessage => insufficientEvidenceMessage;
         public IReadOnlyList<LawyerReasoningCardDefinition> ReasoningCards => reasoningCards;
+        public IReadOnlyList<LawyerEvidenceChainSlot> EvidenceChainSlots => evidenceChainSlots;
 
         public LawyerCaseResolution(
             IEnumerable<LawyerRequiredClueLink> links,
@@ -121,6 +148,18 @@ namespace NCKH.VR.Lawyer
             reasoningCards = cards != null
                 ? new List<LawyerReasoningCardDefinition>(cards)
                 : new List<LawyerReasoningCardDefinition>();
+        }
+
+        public LawyerCaseResolution(
+            IEnumerable<LawyerEvidenceChainSlot> chainSlots,
+            string conclusion,
+            string insufficientMessage,
+            IEnumerable<LawyerReasoningCardDefinition> cards)
+            : this((IEnumerable<LawyerRequiredClueLink>)null, conclusion, insufficientMessage, cards)
+        {
+            evidenceChainSlots = chainSlots != null
+                ? new List<LawyerEvidenceChainSlot>(chainSlots)
+                : new List<LawyerEvidenceChainSlot>();
         }
 
         public bool Contains(LawyerClueLink link)
@@ -200,12 +239,14 @@ namespace NCKH.VR.Lawyer
         [SerializeField] private string id = string.Empty;
         [SerializeField, TextArea(2, 5)] private string prompt = string.Empty;
         [SerializeField] private bool keyQuestion;
+        [SerializeField] private LawyerClueStrength strength = LawyerClueStrength.Weak;
         [SerializeField] private LawyerTestimony response = new LawyerTestimony(string.Empty, null, null);
         [SerializeField] private List<LawyerFollowUpQuestion> followUps = new List<LawyerFollowUpQuestion>();
 
         public string Id => id;
         public string Prompt => prompt;
         public bool IsKeyQuestion => keyQuestion;
+        public LawyerClueStrength Strength => strength;
         public LawyerTestimony Response => response;
         public IReadOnlyList<LawyerFollowUpQuestion> FollowUps => followUps;
 
@@ -219,10 +260,25 @@ namespace NCKH.VR.Lawyer
             this.id = id ?? string.Empty;
             this.prompt = prompt ?? string.Empty;
             this.keyQuestion = keyQuestion;
+            strength = keyQuestion ? LawyerClueStrength.Strong : LawyerClueStrength.Weak;
             this.response = response ?? new LawyerTestimony(string.Empty, null, null);
             this.followUps = followUps != null
                 ? new List<LawyerFollowUpQuestion>(followUps)
                 : new List<LawyerFollowUpQuestion>();
+        }
+
+        public LawyerInterviewQuestion(
+            string id,
+            string prompt,
+            LawyerClueStrength clueStrength,
+            LawyerTestimony response)
+        {
+            this.id = id ?? string.Empty;
+            this.prompt = prompt ?? string.Empty;
+            keyQuestion = clueStrength == LawyerClueStrength.Strong;
+            strength = clueStrength;
+            this.response = response ?? new LawyerTestimony(string.Empty, null, null);
+            followUps = new List<LawyerFollowUpQuestion>();
         }
 
         public LawyerFollowUpQuestion GetFollowUp(string followUpId)
@@ -235,6 +291,31 @@ namespace NCKH.VR.Lawyer
             }
 
             return null;
+        }
+    }
+
+    [Serializable]
+    public sealed class LawyerInterviewWave
+    {
+        [SerializeField] private string id = string.Empty;
+        [SerializeField] private string title = string.Empty;
+        [SerializeField] private List<LawyerInterviewQuestion> questions =
+            new List<LawyerInterviewQuestion>();
+
+        public string Id => id;
+        public string Title => title;
+        public IReadOnlyList<LawyerInterviewQuestion> Questions => questions;
+
+        public LawyerInterviewWave(
+            string id,
+            string title,
+            IEnumerable<LawyerInterviewQuestion> configuredQuestions)
+        {
+            this.id = id ?? string.Empty;
+            this.title = title ?? string.Empty;
+            questions = configuredQuestions != null
+                ? new List<LawyerInterviewQuestion>(configuredQuestions)
+                : new List<LawyerInterviewQuestion>();
         }
     }
 

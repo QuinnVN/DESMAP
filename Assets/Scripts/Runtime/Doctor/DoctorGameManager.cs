@@ -25,7 +25,9 @@ namespace NCKH.VR.Doctor
         [SerializeField] private DoctorPatientPresenter patientPresenter;
         [SerializeField] private DoctorNotebookInteractable notebookInteractable;
         [SerializeField] private DoctorNotebookUI notebookUI;
+        [SerializeField] private GameObject locomotionRoot;
         [SerializeField] private GameObject moveProviderRoot;
+        [SerializeField] private GameObject gravityProviderRoot;
         [SerializeField] private GameObject jumpProviderRoot;
         [SerializeField] private XRInteractorLineVisual rightRayLineVisual;
 
@@ -56,7 +58,9 @@ namespace NCKH.VR.Doctor
         private float stateCountdown;
         private float preparationRemaining;
         private bool moveWasActive;
+        private bool gravityWasActive;
         private bool jumpWasActive;
+        private bool locomotionWasActive;
         private bool locomotionStateCaptured;
 
         public event Action<int> RoundEnded;
@@ -102,7 +106,7 @@ namespace NCKH.VR.Doctor
             }
 
             SetNotebookInteractionEnabled(false);
-            RestoreTranslationProviders();
+            RestoreLocomotion();
         }
 
         private IEnumerator Start()
@@ -150,7 +154,7 @@ namespace NCKH.VR.Doctor
 
         public void StartRound()
         {
-            CaptureAndDisableTranslationProviders();
+            CaptureAndDisableLocomotion();
             Score = 0;
             RemainingRoundTime = Mathf.Max(0f, roundDuration);
             preparationRemaining = Mathf.Max(0f, preparationDuration);
@@ -182,6 +186,7 @@ namespace NCKH.VR.Doctor
 
         private void BeginTimedRound()
         {
+            EnableTurningOnly();
             RemainingRoundTime = Mathf.Max(0f, roundDuration);
             notebookUI?.ShowRunning();
             notebookUI?.SetRoundTime(RemainingRoundTime);
@@ -396,15 +401,37 @@ namespace NCKH.VR.Doctor
                 (caseQueue[0], caseQueue[1]) = (caseQueue[1], caseQueue[0]);
         }
 
-        private void CaptureAndDisableTranslationProviders()
+        private void CaptureAndDisableLocomotion()
         {
             if (!locomotionStateCaptured)
             {
+                locomotionWasActive = locomotionRoot != null && locomotionRoot.activeSelf;
                 moveWasActive = moveProviderRoot != null && moveProviderRoot.activeSelf;
+                gravityWasActive = gravityProviderRoot != null && gravityProviderRoot.activeSelf;
                 jumpWasActive = jumpProviderRoot != null && jumpProviderRoot.activeSelf;
                 locomotionStateCaptured = true;
             }
+
+            if (locomotionRoot != null)
+            {
+                locomotionRoot.SetActive(false);
+                return;
+            }
+
             moveProviderRoot?.SetActive(false);
+            gravityProviderRoot?.SetActive(false);
+            jumpProviderRoot?.SetActive(false);
+        }
+
+        private void EnableTurningOnly()
+        {
+            if (!locomotionStateCaptured)
+                return;
+
+            if (locomotionRoot != null)
+                locomotionRoot.SetActive(locomotionWasActive);
+            moveProviderRoot?.SetActive(false);
+            gravityProviderRoot?.SetActive(false);
             jumpProviderRoot?.SetActive(false);
         }
 
@@ -415,12 +442,17 @@ namespace NCKH.VR.Doctor
                 rightRayLineVisual.enabled = enabled;
         }
 
-        private void RestoreTranslationProviders()
+        private void RestoreLocomotion()
         {
             if (!locomotionStateCaptured)
                 return;
+
+            if (locomotionRoot != null)
+                locomotionRoot.SetActive(locomotionWasActive);
             if (moveProviderRoot != null)
                 moveProviderRoot.SetActive(moveWasActive);
+            if (gravityProviderRoot != null)
+                gravityProviderRoot.SetActive(gravityWasActive);
             if (jumpProviderRoot != null)
                 jumpProviderRoot.SetActive(jumpWasActive);
             locomotionStateCaptured = false;

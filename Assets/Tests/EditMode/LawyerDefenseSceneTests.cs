@@ -60,7 +60,7 @@ namespace NCKH.VR.Lawyer.Tests
                 Assert.That(serialized.FindProperty("preparationDuration").floatValue,
                     Is.EqualTo(5f).Within(0.001f));
                 Assert.That(serialized.FindProperty("recordingDuration").floatValue,
-                    Is.EqualTo(30f).Within(0.001f));
+                    Is.EqualTo(60f).Within(0.001f));
                 Assert.That(serialized.FindProperty("uploadAttempts").intValue,
                     Is.EqualTo(5));
 

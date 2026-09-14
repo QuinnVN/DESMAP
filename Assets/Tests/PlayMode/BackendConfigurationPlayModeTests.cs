@@ -162,6 +162,73 @@ namespace NCKH.VR.GameControl.Tests
         }
 
         [UnityTest]
+        public IEnumerator ClinicShowsWaitingHudWhileIdle()
+        {
+            bool previousIgnore = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
+            try
+            {
+                yield return LoadScene(ClinicScenePath);
+
+                ClinicGameManager clinic = Object.FindAnyObjectByType<ClinicGameManager>();
+                ClinicRoundHud clinicHud = Object.FindAnyObjectByType<ClinicRoundHud>();
+                Assert.That(clinic, Is.Not.Null);
+                Assert.That(clinic.RoundState, Is.EqualTo(ClinicRoundState.Idle));
+                Assert.That(clinicHud, Is.Not.Null);
+                TMP_Text clinicWaitingLabel = GetPrivateField<TMP_Text>(
+                    clinicHud,
+                    "preparationCountdownText");
+                Assert.That(clinicWaitingLabel.gameObject.activeInHierarchy, Is.True);
+                Assert.That(clinicWaitingLabel.text, Is.EqualTo("ĐANG CHỜ BẮT ĐẦU"));
+
+            }
+            finally
+            {
+                LogAssert.ignoreFailingMessages = previousIgnore;
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator DoctorPreparationLocksThenEnablesTurningOnly()
+        {
+            bool previousIgnore = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
+            try
+            {
+                yield return LoadScene(DoctorScenePath);
+
+                DoctorGameManager doctor = Object.FindAnyObjectByType<DoctorGameManager>();
+                Assert.That(doctor, Is.Not.Null);
+                for (int frame = 0; frame < 5 && doctor.State == DoctorGameState.Idle; frame++)
+                    yield return null;
+
+                Assert.That(doctor.State, Is.EqualTo(DoctorGameState.Preparing));
+                GameObject locomotion = GetPrivateField<GameObject>(doctor, "locomotionRoot");
+                Assert.That(locomotion.name, Is.EqualTo("Locomotion"));
+                Assert.That(locomotion.activeSelf, Is.False);
+
+                GameObject move = locomotion.transform.Find("Move").gameObject;
+                GameObject turn = locomotion.transform.Find("Turn").gameObject;
+                GameObject gravity = locomotion.transform.Find("Gravity").gameObject;
+                GameObject jump = locomotion.transform.Find("Jump").gameObject;
+
+                SetPrivateField(doctor, "preparationRemaining", 0f);
+                yield return null;
+
+                Assert.That(doctor.State, Is.EqualTo(DoctorGameState.Listening));
+                Assert.That(locomotion.activeSelf, Is.True);
+                Assert.That(move.activeSelf, Is.False);
+                Assert.That(turn.activeSelf, Is.True);
+                Assert.That(gravity.activeSelf, Is.False);
+                Assert.That(jump.activeSelf, Is.False);
+            }
+            finally
+            {
+                LogAssert.ignoreFailingMessages = previousIgnore;
+            }
+        }
+
+        [UnityTest]
         public IEnumerator ResetRejectsStandbyAndInactiveSpecificScene()
         {
             yield return LoadStandby();
@@ -293,6 +360,26 @@ namespace NCKH.VR.GameControl.Tests
             InputAction action = field.GetValue(view) as InputAction;
             Assert.That(action, Is.Not.Null);
             return action;
+        }
+
+        private static T GetPrivateField<T>(object target, string fieldName) where T : class
+        {
+            FieldInfo field = target.GetType().GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(field, Is.Not.Null);
+            T value = field.GetValue(target) as T;
+            Assert.That(value, Is.Not.Null);
+            return value;
+        }
+
+        private static void SetPrivateField(object target, string fieldName, object value)
+        {
+            FieldInfo field = target.GetType().GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(field, Is.Not.Null);
+            field.SetValue(target, value);
         }
 
         private static void SetFaceButtons(

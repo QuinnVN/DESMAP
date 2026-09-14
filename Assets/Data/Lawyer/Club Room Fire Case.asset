@@ -13,135 +13,508 @@ MonoBehaviour:
   m_Name: Club Room Fire Case
   m_EditorClassIdentifier: NCKH.Lawyer::NCKH.VR.Lawyer.LawyerCaseDefinition
   caseId: club-room-fire
-  caseTitle: VỤ CHÁY PHÒNG CLB
-  caseSummary: "Khoảng 16:20, một vụ cháy xảy ra tại phòng CLB của trường. Đám cháy bắt đầu gần ổ cắm điện bên bàn làm việc. Lan nói đã thấy Minh rời đi khi một thiết bị vẫn còn cắm điện; Minh khẳng định mình đã rút bộ sạc."
-  investigationObjective: "Thu thập thông tin, kiểm tra lời khai và mâu thuẫn, chọn chứng cứ có giá trị, rồi xây dựng lập luận bảo vệ Minh."
+  caseTitle: "V\u1EE4 CH\xC1Y PH\xD2NG CLB"
+  caseSummary: "Kho\u1EA3ng 16:20, m\u1ED9t v\u1EE5 ch\xE1y x\u1EA3y ra t\u1EA1i
+    ph\xF2ng CLB c\u1EE7a tr\u01B0\u1EDDng. \u0110\xE1m ch\xE1y b\u1EAFt \u0111\u1EA7u
+    g\u1EA7n \u1ED5 c\u1EAFm \u0111i\u1EC7n b\xEAn b\xE0n l\xE0m vi\u1EC7c. Lan n\xF3i
+    \u0111\xE3 th\u1EA5y Minh r\u1EDDi \u0111i khi m\u1ED9t thi\u1EBFt b\u1ECB v\u1EABn
+    c\xF2n c\u1EAFm \u0111i\u1EC7n; Minh kh\u1EB3ng \u0111\u1ECBnh m\xECnh \u0111\xE3
+    r\xFAt b\u1ED9 s\u1EA1c."
+  investigationObjective: "Thu th\u1EADp th\xF4ng tin, ki\u1EC3m tra l\u1EDDi khai
+    v\xE0 m\xE2u thu\u1EABn, ch\u1ECDn ch\u1EE9ng c\u1EE9 c\xF3 gi\xE1 tr\u1ECB,
+    r\u1ED3i x\xE2y d\u1EF1ng l\u1EADp lu\u1EADn b\u1EA3o v\u1EC7 Minh."
   timeline:
-  - "16:00 — Minh vào phòng CLB."
-  - "16:03 — Minh sử dụng ổ điện gần bàn làm việc."
-  - "16:05 — Minh rời phòng."
-  - "16:08–16:15 — Nam ở trong phòng CLB."
-  - "16:12 — Minh quay lại hành lang nhưng không vào phòng."
-  - "16:20 — Hệ thống báo cháy kích hoạt."
+  - "16:00 \u2014 Minh v\xE0o ph\xF2ng CLB."
+  - "16:03 \u2014 Minh s\u1EED d\u1EE5ng \u1ED5 \u0111i\u1EC7n g\u1EA7n b\xE0n l\xE0m
+    vi\u1EC7c."
+  - "16:05 \u2014 Minh r\u1EDDi ph\xF2ng."
+  - "16:12 \u2014 Minh quay l\u1EA1i h\xE0nh lang."
+  - "16:20 \u2014 H\u1EC7 th\u1ED1ng b\xE1o ch\xE1y k\xEDch ho\u1EA1t."
   witnesses:
-  - "Lan — khai thấy thiết bị vẫn còn cắm điện."
-  - "Minh — khẳng định đã rút bộ sạc trước khi rời đi."
-  - "Nam — vào phòng sau Minh và khai chỉ vào lấy balo."
-  - "Hai học sinh hành lang — cung cấp thông tin về khói và mùi khét."
+  - "Lan \u2014 khai th\u1EA5y thi\u1EBFt b\u1ECB v\u1EABn c\xF2n c\u1EAFm \u0111i\u1EC7n."
+  - "Minh \u2014 kh\u1EB3ng \u0111\u1ECBnh \u0111\xE3 r\xFAt b\u1ED9 s\u1EA1c tr\u01B0\u1EDBc
+    khi r\u1EDDi \u0111i."
   caseDetails:
-  - "Điểm khởi phát nằm gần ổ cắm điện bên bàn làm việc."
-  - "Chưa xác định thiết bị cụ thể gây ra sự cố."
-  - "Nội quy yêu cầu rút thiết bị điện cá nhân trước khi rời phòng."
+  - "B\xE1o c\xE1o ban \u0111\u1EA7u ch\u1EC9 khoanh v\xF9ng khu v\u1EF1c \u1ED5
+    c\u1EAFm; k\u1EBFt lu\u1EADn gi\xE1m \u0111\u1ECBnh cu\u1ED1i c\xF9ng c\xF3 th\u1EC3
+    thay th\u1EBF nh\u1EADn \u0111\u1ECBnh s\u01A1 b\u1ED9 n\xE0y."
   clues:
-  - {id: clue-01, title: Camera hành lang, description: "16:00: Minh vào phòng CLB. 16:05: Minh rời khỏi phòng. Camera không ghi lại được bên trong phòng.", category: 0}
-  - {id: clue-02, title: Camera trong phòng, description: "16:03: Minh sử dụng ổ điện gần bàn làm việc, cũng là khu vực sau đó được xác định là nơi đám cháy bắt đầu.", category: 0}
-  - {id: clue-03, title: Lời khai của Lan, description: "Trước khi Minh rời đi, tôi thấy một thiết bị vẫn còn được cắm ở ổ điện.", category: 1}
-  - {id: clue-04, title: Báo cáo hiện trường ban đầu, description: "Đám cháy có khả năng bắt đầu từ khu vực ổ cắm điện gần bàn làm việc, nhưng chưa xác định chính xác thiết bị nào gây ra sự cố.", category: 2}
-  - {id: clue-05, title: Lời khai của Minh, description: "Em có sạc laptop ở đó, nhưng em đã rút sạc trước khi rời đi.", category: 4}
-  - {id: clue-06, title: Thời điểm báo cháy, description: "16:20: Hệ thống báo cháy được kích hoạt. Minh đã rời phòng 15 phút trước đó.", category: 0}
-  - {id: clue-07, title: Vi phạm trước đây, description: "Hai tuần trước, Minh từng bị nhắc nhở vì tự ý sử dụng thiết bị điện. Chi tiết này không chứng minh Minh gây ra vụ cháy lần này.", category: 6}
-  - {id: clue-08, title: Nội quy phòng CLB, description: "Học sinh phải rút thiết bị điện cá nhân trước khi rời khỏi phòng.", category: 2}
-  - {id: clue-09, title: Camera cửa phòng, description: "16:05: Minh rời phòng với laptop và bộ sạc trên tay.", category: 0}
-  - {id: clue-10, title: Camera góc khác, description: "Dây sạc Minh cầm khi rời đi giống thiết bị được Minh sử dụng lúc 16:03.", category: 5}
-  - {id: clue-11, title: Nhân chứng hành lang, description: "Một học sinh đi ngang qua phòng lúc 16:07 và không phát hiện khói hoặc mùi khét.", category: 1}
-  - {id: clue-12, title: Camera hành lang lúc 16:12, description: "16:12: Minh xuất hiện trở lại trước phòng CLB.", category: 0}
-  - {id: clue-13, title: Camera cửa lúc 16:12, description: "Minh đứng ngoài cửa khoảng 20 giây rồi rời đi. Không ghi nhận Minh bước vào phòng.", category: 5}
-  - {id: clue-14, title: Lời khai học sinh khác, description: "Một học sinh khác cũng báo ngửi thấy mùi khét khoảng 16:13.", category: 1}
-  - {id: clue-15, title: Camera ghi nhận Nam, description: "16:08: Nam vào phòng. 16:15: Nam rời phòng. Có người khác ở trong phòng sau khi Minh rời đi và trước khi đám cháy được phát hiện.", category: 0}
-  - {id: clue-16, title: Lời khai của Nam, description: "Nam khai chỉ vào lấy balo rồi đi ngay, nhưng camera cho thấy Nam ở trong phòng khoảng 7 phút.", category: 5}
-  - {id: clue-17, title: Vị trí của Lan, description: "Lan đứng ngoài cửa, cách bàn làm việc một khoảng và bị một chiếc tủ che một phần tầm nhìn.", category: 1}
-  - {id: clue-18, title: Timeline camera hoàn chỉnh, description: "16:00 Minh vào; 16:05 Minh rời; 16:08 người khác vào; 16:12 Minh quay lại hành lang nhưng không vào; 16:15 người kia rời; 16:20 báo cháy.", category: 0}
-  startingClueIds: [clue-01, clue-02, clue-03, clue-04, clue-05, clue-06, clue-07, clue-08]
+  - id: clue-01
+    title: "Camera h\xE0nh lang"
+    description: "16:00: Minh v\xE0o ph\xF2ng CLB. 16:05: Minh r\u1EDDi kh\u1ECFi
+      ph\xF2ng. Camera kh\xF4ng ghi l\u1EA1i \u0111\u01B0\u1EE3c b\xEAn trong ph\xF2ng."
+    category: 0
+  - id: clue-02
+    title: "Camera trong ph\xF2ng"
+    description: "16:03: Minh \u0111\u01B0\u1EE3c ghi nh\u1EADn \u0111ang s\u1EED
+      d\u1EE5ng \u1ED5 \u0111i\u1EC7n g\u1EA7n b\xE0n l\xE0m vi\u1EC7c, c\u0169ng
+      l\xE0 khu v\u1EF1c sau \u0111\xF3 \u0111\u01B0\u1EE3c x\xE1c \u0111\u1ECBnh
+      l\xE0 n\u01A1i \u0111\xE1m ch\xE1y b\u1EAFt \u0111\u1EA7u."
+    category: 0
+  - id: clue-03
+    title: "L\u1EDDi khai c\u1EE7a Lan"
+    description: "Tr\u01B0\u1EDBc khi Minh r\u1EDDi \u0111i, t\xF4i th\u1EA5y m\u1ED9t
+      thi\u1EBFt b\u1ECB v\u1EABn c\xF2n \u0111\u01B0\u1EE3c c\u1EAFm \u1EDF \u1ED5
+      \u0111i\u1EC7n."
+    category: 1
+  - id: clue-04
+    title: "B\xE1o c\xE1o hi\u1EC7n tr\u01B0\u1EDDng ban \u0111\u1EA7u"
+    description: "\u0110\xE1m ch\xE1y c\xF3 kh\u1EA3 n\u0103ng b\u1EAFt \u0111\u1EA7u
+      t\u1EEB khu v\u1EF1c \u1ED5 c\u1EAFm \u0111i\u1EC7n g\u1EA7n b\xE0n l\xE0m
+      vi\u1EC7c, nh\u01B0ng ch\u01B0a x\xE1c \u0111\u1ECBnh ch\xEDnh x\xE1c thi\u1EBFt
+      b\u1ECB n\xE0o g\xE2y ra s\u1EF1 c\u1ED1."
+    category: 2
+  - id: clue-05
+    title: "L\u1EDDi khai c\u1EE7a Minh"
+    description: "Em c\xF3 s\u1EA1c laptop \u1EDF \u0111\xF3, nh\u01B0ng em \u0111\xE3
+      r\xFAt s\u1EA1c tr\u01B0\u1EDBc khi r\u1EDDi \u0111i."
+    category: 4
+  - id: clue-06
+    title: "Th\u1EDDi \u0111i\u1EC3m b\xE1o ch\xE1y"
+    description: "16:20: H\u1EC7 th\u1ED1ng b\xE1o ch\xE1y c\u1EE7a tr\u01B0\u1EDDng
+      \u0111\u01B0\u1EE3c k\xEDch ho\u1EA1t. Minh \u0111\xE3 r\u1EDDi ph\xF2ng 15
+      ph\xFAt tr\u01B0\u1EDBc \u0111\xF3."
+    category: 0
+  - id: clue-07
+    title: "Camera h\xE0nh lang 16:05"
+    description: "Camera cho th\u1EA5y Minh r\u1EDDi ph\xF2ng v\u1EDBi laptop tr\xEAn
+      tay."
+    category: 0
+  - id: clue-08
+    title: "Ki\u1EC3m tra c\u1EEDa ph\xF2ng"
+    description: "Kh\xF4ng c\xF3 d\u1EA5u hi\u1EC7u c\u1EEDa t\u1EEBng b\u1ECB kh\xF3a
+      trong kho\u1EA3ng th\u1EDDi gian x\u1EA3y ra v\u1EE5 vi\u1EC7c."
+    category: 2
+  - id: clue-09
+    title: "Camera c\u1EA7u thang 16:07"
+    description: "Khi Minh m\u1EDF balo, m\u1ED9t d\xE2y s\u1EA1c m\xE0u tr\u1EAFng
+      \u0111\u01B0\u1EE3c nh\xECn th\u1EA5y b\xEAn trong."
+    category: 0
+  - id: clue-10
+    title: "Tin nh\u1EAFn 16:04"
+    description: "Minh nh\u1EAFn cho b\u1EA1n: \u201CT xu\u1ED1ng li\u1EC1n \u0111\xE2y.\u201D"
+    category: 6
+  - id: clue-11
+    title: "Camera h\xE0nh lang"
+    description: "Minh r\u1EDDi ph\xF2ng l\xFAc 16:05:18."
+    category: 0
+  - id: clue-12
+    title: "Camera h\xE0nh lang 16:08"
+    description: "M\u1ED9t h\u1ECDc sinh kh\xE1c \u0111i v\xE0o khu v\u1EF1c ph\xF2ng
+      CLB l\xFAc 16:08."
+    category: 0
+  - id: clue-13
+    title: "Camera h\xE0nh lang 16:12"
+    description: "Minh \u0111\u1EE9ng tr\u01B0\u1EDBc c\u1EEDa kho\u1EA3ng 20 gi\xE2y
+      r\u1ED3i r\u1EDDi \u0111i, kh\xF4ng b\u01B0\u1EDBc v\xE0o ph\xF2ng."
+    category: 0
+  - id: clue-14
+    title: "D\u1EEF li\u1EC7u c\u1EA3m bi\u1EBFn kh\xF3i"
+    description: "N\u1ED3ng \u0111\u1ED9 kh\xF3i b\u1EAFt \u0111\u1EA7u t\u0103ng
+      r\xF5 t\u1EEB kho\u1EA3ng 16:13."
+    category: 2
+  - id: clue-15
+    title: "Camera h\xE0nh lang"
+    description: "Camera x\xE1c nh\u1EADn Minh v\u1EABn mang balo l\xFAc quay l\u1EA1i."
+    category: 6
+  - id: clue-16
+    title: Camera timeline
+    description: "Minh \u0111\u1EE9ng tr\u01B0\u1EDBc c\u1EEDa t\u1EEB 16:12:31 \u0111\u1EBFn
+      16:12:52."
+    category: 0
+  - id: clue-17
+    title: "V\u1EADt ch\u1EE9ng t\u1EA1i hi\u1EC7n tr\u01B0\u1EDDng"
+    description: "C\u1EE7 s\u1EA1c c\xF2n c\u1EAFm t\u1EA1i \u1ED5 \u0111i\u1EC7n
+      sau v\u1EE5 ch\xE1y c\xF3 m\xE0u \u0111en."
+    category: 5
+  - id: clue-18
+    title: "Camera c\u1EA7u thang 16:07"
+    description: "Trong balo c\xF3 m\u1ED9t c\u1EE7 s\u1EA1c v\xE0 d\xE2y m\xE0u
+      tr\u1EAFng."
+    category: 0
+  - id: clue-19
+    title: "\u1EA2nh hi\u1EC7n tr\u01B0\u1EDDng"
+    description: "M\u1ED9t c\u1EE7 s\u1EA1c kh\xE1c \u0111\u01B0\u1EE3c t\xECm th\u1EA5y
+      t\u1EA1i \u1ED5 c\u1EAFm v\xE0 kh\xF4ng kh\u1EDBp v\u1EDBi s\u1EA1c c\u1EE7a
+      Minh."
+    category: 5
+  - id: clue-20
+    title: "Danh s\xE1ch \u0111\u1ED3 th\u1EA5t l\u1EA1c CLB"
+    description: "Tr\u01B0\u1EDBc v\u1EE5 vi\u1EC7c \u0111\xE3 c\xF3 nhi\u1EC1u thi\u1EBFt
+      b\u1ECB \u0111i\u1EC7n c\xE1 nh\xE2n b\u1ECB b\u1ECF qu\xEAn trong ph\xF2ng."
+    category: 2
+  - id: clue-21
+    title: "S\u01A1 \u0111\u1ED3 v\u1ECB tr\xED c\u1EE7a Lan"
+    description: "T\u1EEB v\u1ECB tr\xED Lan \u0111\u1EE9ng, m\u1ED9t ph\u1EA7n \u1ED5
+      \u0111i\u1EC7n b\u1ECB c\u1EA1nh b\xE0n v\xE0 ch\u1ED3ng gi\u1EA5y che khu\u1EA5t."
+    category: 1
+  - id: clue-22
+    title: "\u1EA2nh hi\u1EC7n tr\u01B0\u1EDDng"
+    description: "S\u1ECDt r\xE1c ch\u1EE9a nhi\u1EC1u gi\u1EA5y v\xE0 n\u1EB1m g\u1EA7n
+      khu v\u1EF1c ch\xE1y m\u1EA1nh."
+    category: 2
+  - id: clue-23
+    title: "B\xE1o c\xE1o gi\xE1m \u0111\u1ECBnh ch\xE1y"
+    description: "D\u1EA5u ch\xE1y s\u1EDBm nh\u1EA5t \u0111\u01B0\u1EE3c ph\xE1t
+      hi\u1EC7n \u1EDF ph\u1EA7n gi\u1EA5y trong s\u1ECDt r\xE1c."
+    category: 5
+  - id: clue-24
+    title: "Gi\xE1m \u0111\u1ECBnh \u1ED5 \u0111i\u1EC7n"
+    description: "D\xE2y \u0111i\u1EC7n b\u1ECB h\u01B0 h\u1ECFng do nhi\u1EC7t t\xE1c
+      \u0111\u1ED9ng t\u1EEB b\xEAn ngo\xE0i tr\u01B0\u1EDBc khi x\u1EA3y ra ch\u1EADp
+      \u0111i\u1EC7n."
+    category: 5
+  - id: clue-25
+    title: "\u1EA2nh hi\u1EC7n tr\u01B0\u1EDDng sau ch\xE1y"
+    description: "Trong s\u1ECDt ch\u1EC9 x\xE1c \u0111\u1ECBnh \u0111\u01B0\u1EE3c
+      gi\u1EA5y ch\xE1y, ch\u01B0a t\xECm th\u1EA5y v\u1EADt g\xE2y ch\xE1y c\u1EE5
+      th\u1EC3."
+    category: 6
+  - id: clue-26
+    title: "Ki\u1EC3m tra hi\u1EC7n tr\u01B0\u1EDDng"
+    description: "M\u1ED9t c\u1EEDa s\u1ED5 \u0111\u01B0\u1EE3c ph\xE1t hi\u1EC7n
+      m\u1EDF kho\u1EA3ng 10 cm."
+    category: 6
+  startingClueIds:
+  - clue-01
+  - clue-02
+  - clue-03
+  - clue-04
+  - clue-05
+  - clue-06
   defendantName: MINH
-  mainQuestionLimit: 2
-  questions:
-  - id: main-outlet
-    prompt: "Bạn đã làm gì với ổ điện trước khi rời phòng?"
-    keyQuestion: 1
-    response: {transcript: "Em sạc laptop vài phút. Trước khi đi, em rút sạc rồi bỏ cả laptop và bộ sạc vào balo.", audioClip: {fileID: 0}, revealedClueIds: [clue-09]}
-    followUps:
-    - id: outlet-charger
-      prompt: "Bạn có chắc đó là bộ sạc đã cắm vào ổ điện không?"
-      response: {transcript: "Có, em chỉ mang theo một bộ sạc.", audioClip: {fileID: 0}, revealedClueIds: [clue-10]}
-    - id: outlet-other-device
-      prompt: "Ngoài laptop, bạn có cắm thiết bị nào khác không?"
-      response: {transcript: "Không.", audioClip: {fileID: 0}, revealedClueIds: []}
-    - id: outlet-warning
-      prompt: "Khi bạn rời đi, có dấu hiệu bất thường nào không?"
-      response: {transcript: "Không. Em không thấy khói hay ngửi thấy mùi khét.", audioClip: {fileID: 0}, revealedClueIds: [clue-11]}
-  - id: main-return
-    prompt: "Sau khi rời phòng lúc 16:05, bạn đi đâu?"
-    keyQuestion: 0
-    response: {transcript: "Em xuống sân. Khoảng vài phút sau em quay lại vì nhớ ra mình để quên balo.", audioClip: {fileID: 0}, revealedClueIds: [clue-12]}
-    followUps:
-    - id: return-omission
-      prompt: "Tại sao ban đầu bạn không nói mình quay lại?"
-      response: {transcript: "Vì em không vào trong nên em nghĩ nó không liên quan.", audioClip: {fileID: 0}, revealedClueIds: []}
-    - id: return-entry
-      prompt: "Bạn có vào phòng lần thứ hai không?"
-      response: {transcript: "Không.", audioClip: {fileID: 0}, revealedClueIds: [clue-13]}
-    - id: return-warning
-      prompt: "Bạn có nhận thấy điều gì bất thường khi quay lại không?"
-      response: {transcript: "Em nhớ có mùi hơi khét.", audioClip: {fileID: 0}, revealedClueIds: [clue-14]}
-  - id: main-other-person
-    prompt: "Sau khi bạn rời đi, bạn có biết ai khác vào phòng không?"
-    keyQuestion: 1
-    response: {transcript: "Em không chắc. Nhưng lúc xuống cầu thang em có thấy Nam đi về phía phòng CLB.", audioClip: {fileID: 0}, revealedClueIds: [clue-15]}
-    followUps:
-    - id: other-person-action
-      prompt: "Bạn có thấy Nam làm gì trong phòng không?"
-      response: {transcript: "Không.", audioClip: {fileID: 0}, revealedClueIds: []}
-    - id: other-person-purpose
-      prompt: "Bạn có biết Nam vào đó để làm gì không?"
-      response: {transcript: "Không.", audioClip: {fileID: 0}, revealedClueIds: [clue-16]}
-    - id: other-person-blame
-      prompt: "Bạn có nghĩ Nam gây ra vụ cháy không?"
-      response: {transcript: "Em không biết.", audioClip: {fileID: 0}, revealedClueIds: []}
-  - id: main-lan-observation
-    prompt: "Bạn nghĩ tại sao Lan nói bạn để thiết bị cắm lại?"
-    keyQuestion: 0
-    response: {transcript: "Em không biết. Có thể Lan nhìn nhầm vì từ chỗ Lan đứng không nhìn rõ ổ điện.", audioClip: {fileID: 0}, revealedClueIds: [clue-17]}
-    followUps:
-    - id: lan-direct-view
-      prompt: "Lan có nhìn trực tiếp vào ổ điện không?"
-      response: {transcript: "Em không biết.", audioClip: {fileID: 0}, revealedClueIds: []}
-    - id: lan-laptop-view
-      prompt: "Lan có thể nhìn thấy laptop của bạn không?"
-      response: {transcript: "Có thể thấy bàn, nhưng em không nghĩ nhìn rõ ổ cắm.", audioClip: {fileID: 0}, revealedClueIds: []}
-    - id: lan-conflict
-      prompt: "Bạn và Lan có mâu thuẫn gì không?"
-      response: {transcript: "Không.", audioClip: {fileID: 0}, revealedClueIds: []}
-  - id: main-full-timeline
-    prompt: "Hãy kể lại toàn bộ những gì bạn làm từ 16:00 đến 16:20."
-    keyQuestion: 0
-    response: {transcript: "16:00 em vào phòng. Em sạc laptop một lúc. Khoảng 16:05 em rút sạc rồi rời đi. Sau đó em xuống sân. Khoảng 16:12 em quay lại lấy balo nhưng không vào phòng.", audioClip: {fileID: 0}, revealedClueIds: [clue-18]}
-    followUps:
-    - id: timeline-belongings
-      prompt: "Bạn mang gì theo lúc 16:05?"
-      response: {transcript: "Laptop và bộ sạc.", audioClip: {fileID: 0}, revealedClueIds: []}
-    - id: timeline-bag
-      prompt: "Tại sao bạn không lấy balo khi quay lại?"
-      response: {transcript: "Em thấy cửa đóng nên nghĩ sẽ quay lại sau.", audioClip: {fileID: 0}, revealedClueIds: []}
-    - id: timeline-omission
-      prompt: "Tại sao lời khai đầu tiên không nhắc việc quay lại?"
-      response: {transcript: "Em quên nói vì em không vào phòng.", audioClip: {fileID: 0}, revealedClueIds: []}
+  interviewWaves:
+  - id: wave-1
+    title: "MINH R\u1EDCI PH\xD2NG"
+    questions:
+    - id: w1-laptop
+      prompt: "Khi r\u1EDDi ph\xF2ng, em c\xF3 mang laptop theo kh\xF4ng?"
+      keyQuestion: 0
+      strength: 1
+      response:
+        transcript: "C\xF3, em mang laptop theo."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-07
+      followUps: []
+    - id: w1-door
+      prompt: "C\u1EEDa ph\xF2ng l\xFAc em r\u1EDDi \u0111i c\xF3 kh\xF3a kh\xF4ng?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "Kh\xF4ng, em ch\u1EC9 kh\xE9p c\u1EEDa."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-08
+      followUps: []
+    - id: w1-charger
+      prompt: "Em c\xF3 nh\u1EDB m\xECnh \u0111\xE3 r\xFAt s\u1EA1c khi r\u1EDDi
+        \u0111i ch\u01B0a?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "C\xF3. Em nh\u1EDB \u0111\xE3 r\xFAt v\xE0 b\u1ECF v\xE0o balo."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-09
+      followUps: []
+    - id: w1-hurry
+      prompt: "Em c\xF3 v\u1ED9i khi r\u1EDDi ph\xF2ng kh\xF4ng?"
+      keyQuestion: 0
+      strength: 2
+      response:
+        transcript: "C\xF3, l\xFAc \u0111\xF3 em kh\xE1 v\u1ED9i."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-10
+      followUps: []
+    - id: w1-time
+      prompt: "Em r\u1EDDi ph\xF2ng l\xFAc kho\u1EA3ng m\u1EA5y gi\u1EDD?"
+      keyQuestion: 0
+      strength: 1
+      response:
+        transcript: "Kho\u1EA3ng 16:05."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-11
+      followUps: []
+  - id: wave-2
+    title: "SAU KHI MINH R\u1EDCI PH\xD2NG"
+    questions:
+    - id: w2-other
+      prompt: "Sau khi r\u1EDDi ph\xF2ng, em c\xF3 th\u1EA5y ai \u0111i v\u1EC1 ph\xEDa
+        ph\xF2ng CLB kh\xF4ng?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "C\xF3. Em th\u1EA5y m\u1ED9t b\u1EA1n \u0111i v\u1EC1 ph\xEDa
+          \u0111\xF3."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-12
+      followUps: []
+    - id: w2-return
+      prompt: "Khi quay l\u1EA1i l\xFAc kho\u1EA3ng 16:12, em c\xF3 v\xE0o ph\xF2ng
+        kh\xF4ng?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "Kh\xF4ng. Em ch\u1EC9 \u0111\u1EE9ng ngo\xE0i c\u1EEDa."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-13
+      followUps: []
+    - id: w2-smell
+      prompt: "Khi quay l\u1EA1i, em c\xF3 nh\u1EADn th\u1EA5y \u0111i\u1EC1u g\xEC
+        b\u1EA5t th\u01B0\u1EDDng kh\xF4ng?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "Em ng\u1EEDi th\u1EA5y m\xF9i kh\xE9t nh\u1EB9."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-14
+      followUps: []
+    - id: w2-items
+      prompt: "L\xFAc quay l\u1EA1i, em mang theo nh\u1EEFng g\xEC?"
+      keyQuestion: 0
+      strength: 2
+      response:
+        transcript: "Balo v\xE0 \u0111i\u1EC7n tho\u1EA1i."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-15
+      followUps: []
+    - id: w2-duration
+      prompt: "Em \u0111\u1EE9ng ngo\xE0i c\u1EEDa kho\u1EA3ng bao l\xE2u?"
+      keyQuestion: 0
+      strength: 1
+      response:
+        transcript: "Kho\u1EA3ng 20 gi\xE2y."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-16
+      followUps: []
+  - id: wave-3
+    title: "KI\u1EC2M TRA B\u1ED8 S\u1EA0C"
+    questions:
+    - id: w3-description
+      prompt: "B\u1ED9 s\u1EA1c c\u1EE7a em c\xF3 \u0111\u1EB7c \u0111i\u1EC3m g\xEC?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "C\u1EE7 s\u1EA1c v\xE0 d\xE2y \u0111\u1EC1u m\xE0u tr\u1EAFng."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-17
+      followUps: []
+    - id: w3-saw
+      prompt: "Sau khi r\u1EDDi ph\xF2ng, em c\xF3 nh\xECn th\u1EA5y b\u1ED9 s\u1EA1c
+        c\u1EE7a m\xECnh n\u1EEFa kh\xF4ng?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "C\xF3. L\xFAc m\u1EDF balo em th\u1EA5y n\xF3 \u1EDF trong ng\u0103n
+          c\xF9ng laptop."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-18
+      followUps: []
+    - id: w3-other-device
+      prompt: "Khi em r\u1EDDi \u0111i, tr\xEAn \u1ED5 \u0111i\u1EC7n c\xF2n thi\u1EBFt
+        b\u1ECB n\xE0o kh\xE1c kh\xF4ng?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "C\xF3 m\u1ED9t c\u1EE7 s\u1EA1c kh\xE1c \u1EDF \u1ED5 b\xEAn
+          c\u1EA1nh."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-19
+      followUps: []
+    - id: w3-forgotten
+      prompt: "C\xF3 th\u01B0\u1EDDng xuy\xEAn c\xF3 ng\u01B0\u1EDDi \u0111\u1EC3
+        qu\xEAn \u0111\u1ED3 \u0111i\u1EC7n trong ph\xF2ng kh\xF4ng?"
+      keyQuestion: 0
+      strength: 1
+      response:
+        transcript: "C\xF3, th\u1EC9nh tho\u1EA3ng m\u1ECDi ng\u01B0\u1EDDi \u0111\u1EC3
+          qu\xEAn \u0111\u1ED3."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-20
+      followUps: []
+    - id: w3-lan
+      prompt: "Theo em, Lan c\xF3 nh\xECn r\xF5 \u1ED5 \u0111i\u1EC7n kh\xF4ng?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "Em kh\xF4ng ch\u1EAFc v\xEC em kh\xF4ng \u0111\u1EE9ng \u1EDF
+          v\u1ECB tr\xED c\u1EE7a Lan."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-21
+      followUps: []
+  - id: wave-4
+    title: "NGU\u1ED2N G\u1ED0C \u0110\xC1M CH\xC1Y"
+    questions:
+    - id: w4-bin
+      prompt: "Tr\u01B0\u1EDBc khi r\u1EDDi \u0111i, trong s\u1ECDt r\xE1c g\u1EA7n
+        b\xE0n c\xF3 g\xEC?"
+      keyQuestion: 0
+      strength: 1
+      response:
+        transcript: "C\xF3 kh\xE1 nhi\u1EC1u gi\u1EA5y nh\xE1p v\xE0 t\xE0i li\u1EC7u."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-22
+      followUps: []
+    - id: w4-smell
+      prompt: "Khi quay l\u1EA1i, em th\u1EA5y m\xF9i kh\xE9t gi\u1ED1ng g\xEC?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "Em th\u1EA5y gi\u1ED1ng m\xF9i gi\u1EA5y ch\xE1y."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-23
+      followUps: []
+    - id: w4-outlet
+      prompt: "Tr\u01B0\u1EDBc khi r\u1EDDi \u0111i, \u1ED5 \u0111i\u1EC7n c\xF3
+        g\xEC b\u1EA5t th\u01B0\u1EDDng kh\xF4ng?"
+      keyQuestion: 1
+      strength: 0
+      response:
+        transcript: "Kh\xF4ng. Em kh\xF4ng th\u1EA5y kh\xF3i, l\u1EEDa hay tia \u0111i\u1EC7n."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-24
+      followUps: []
+    - id: w4-object
+      prompt: "Em c\xF3 th\u1EA5y v\u1EADt g\xEC l\u1EA1 g\u1EA7n s\u1ECDt r\xE1c
+        kh\xF4ng?"
+      keyQuestion: 0
+      strength: 2
+      response:
+        transcript: "Kh\xF4ng, em kh\xF4ng \u0111\u1EC3 \xFD."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-25
+      followUps: []
+    - id: w4-window
+      prompt: "L\xFAc \u0111\xF3 c\u1EEDa s\u1ED5 c\xF3 m\u1EDF kh\xF4ng?"
+      keyQuestion: 0
+      strength: 2
+      response:
+        transcript: "C\xF3 m\u1ED9t c\u1EEDa s\u1ED5 m\u1EDF h\xE9."
+        audioClip: {fileID: 0}
+        revealedClueIds:
+        - clue-26
+      followUps: []
+  sampleAnswers:
+  - "Minh kh\xF4ng ph\u1EA3i ng\u01B0\u1EDDi duy nh\u1EA5t c\xF3 th\u1EC3 ti\u1EBFp
+    c\u1EADn ph\xF2ng CLB sau 16:05, v\xEC c\u1EEDa kh\xF4ng kh\xF3a v\xE0 camera
+    ghi nh\u1EADn c\xF3 ng\u01B0\u1EDDi kh\xE1c \u0111i v\u1EC1 ph\xEDa ph\xF2ng
+    sau khi Minh r\u1EDDi \u0111i. Khi Minh quay l\u1EA1i l\xFAc 16:12, camera c\u0169ng
+    x\xE1c nh\u1EADn Minh kh\xF4ng b\u01B0\u1EDBc v\xE0o ph\xF2ng. Ngo\xE0i ra, b\u1ED9
+    s\u1EA1c c\xF2n l\u1EA1i t\u1EA1i hi\u1EC7n tr\u01B0\u1EDDng kh\xF4ng tr\xF9ng
+    \u0111\u1EB7c \u0111i\u1EC3m v\u1EDBi b\u1ED9 s\u1EA1c c\u1EE7a Minh. Quan tr\u1ECDng
+    nh\u1EA5t, gi\xE1m \u0111\u1ECBnh cho th\u1EA5y \u0111i\u1EC3m ph\xE1t ch\xE1y
+    n\u1EB1m \u1EDF s\u1ECDt gi\u1EA5y v\xE0 hi\u1EC7n t\u01B0\u1EE3ng ch\u1EADp
+    \u0111i\u1EC7n x\u1EA3y ra sau khi \u0111\xE1m ch\xE1y \u0111\xE3 b\u1EAFt \u0111\u1EA7u.
+    V\xEC v\u1EADy, ch\u01B0a c\xF3 c\u01A1 s\u1EDF \u0111\u1EC3 k\u1EBFt lu\u1EADn
+    b\u1ED9 s\u1EA1c c\u1EE7a Minh g\xE2y ra v\u1EE5 ch\xE1y."
+  - "D\xF9 Minh t\u1EEBng s\u1EED d\u1EE5ng \u1ED5 \u0111i\u1EC7n tr\u01B0\u1EDBc
+    v\u1EE5 ch\xE1y, \u0111i\u1EC1u \u0111\xF3 kh\xF4ng c\xF3 ngh\u0129a thi\u1EBFt
+    b\u1ECB c\u1EE7a Minh l\xE0 nguy\xEAn nh\xE2n. Gi\xE1m \u0111\u1ECBnh cho th\u1EA5y
+    \u0111i\u1EC3m ph\xE1t ch\xE1y ban \u0111\u1EA7u n\u1EB1m \u1EDF s\u1ECDt gi\u1EA5y,
+    kh\xF4ng ph\u1EA3i \u1ED5 \u0111i\u1EC7n, v\xE0 hi\u1EC7n t\u01B0\u1EE3ng ch\u1EADp
+    \u0111i\u1EC7n ch\u1EC9 x\u1EA3y ra sau khi nhi\u1EC7t t\u1EEB \u0111\xE1m ch\xE1y
+    t\xE1c \u0111\u1ED9ng v\xE0o d\xE2y \u0111i\u1EC7n. Minh c\u0169ng khai \u0111\xE3
+    mang b\u1ED9 s\u1EA1c theo, ph\xF9 h\u1EE3p v\u1EDBi h\xECnh \u1EA3nh camera
+    ghi nh\u1EADn d\xE2y s\u1EA1c trong balo. V\xEC v\u1EADy, gi\u1EA3 thuy\u1EBFt
+    cho r\u1EB1ng b\u1ED9 s\u1EA1c c\u1EE7a Minh g\xE2y ch\xE1y kh\xF4ng ph\xF9 h\u1EE3p
+    v\u1EDBi c\xE1c b\u1EB1ng ch\u1EE9ng hi\u1EC7n c\xF3."
+  - "Minh r\u1EDDi ph\xF2ng l\xFAc 16:05 v\xE0 \u0111\u1EBFn kho\u1EA3ng 16:12 m\u1EDBi
+    quay l\u1EA1i. Camera cho th\u1EA5y khi quay l\u1EA1i, Minh ch\u1EC9 \u0111\u1EE9ng
+    ngo\xE0i c\u1EEDa v\xE0 kh\xF4ng b\u01B0\u1EDBc v\xE0o ph\xF2ng. Trong kho\u1EA3ng
+    th\u1EDDi gian Minh v\u1EAFng m\u1EB7t, v\u1EABn c\xF3 ng\u01B0\u1EDDi kh\xE1c
+    ti\u1EBFp c\u1EADn khu v\u1EF1c ph\xF2ng CLB. M\xF9i kh\xE9t v\xE0 d\u1EA5u hi\u1EC7u
+    kh\xF3i ch\u1EC9 xu\u1EA5t hi\u1EC7n r\xF5 sau \u0111\xF3. V\xEC v\u1EADy, c\xF3
+    m\u1ED9t kho\u1EA3ng th\u1EDDi gian \u0111\u1EE7 l\u1EDBn \u0111\u1EC3 s\u1EF1
+    c\u1ED1 x\u1EA3y ra khi Minh kh\xF4ng c\xF3 m\u1EB7t trong ph\xF2ng, n\xEAn kh\xF4ng
+    th\u1EC3 ch\u1EC9 d\u1EF1a v\xE0o vi\u1EC7c Minh t\u1EEBng d\xF9ng \u1ED5 \u0111i\u1EC7n
+    \u0111\u1EC3 quy tr\xE1ch nhi\u1EC7m cho Minh."
+  - "L\u1EDDi khai c\u1EE7a Lan r\u1EB1ng c\xF2n m\u1ED9t thi\u1EBFt b\u1ECB c\u1EAFm
+    \u1EDF \u1ED5 \u0111i\u1EC7n ch\u01B0a \u0111\u1EE7 \u0111\u1EC3 x\xE1c \u0111\u1ECBnh
+    \u0111\xF3 l\xE0 b\u1ED9 s\u1EA1c c\u1EE7a Minh. T\u1EEB v\u1ECB tr\xED c\u1EE7a
+    Lan, \u1ED5 \u0111i\u1EC7n b\u1ECB che m\u1ED9t ph\u1EA7n v\xE0 c\xF4 kh\xF4ng
+    th\u1EC3 quan s\xE1t r\xF5 thi\u1EBFt b\u1ECB. Trong khi \u0111\xF3, b\u1ED9
+    s\u1EA1c \u0111\u01B0\u1EE3c t\xECm th\u1EA5y t\u1EA1i hi\u1EC7n tr\u01B0\u1EDDng
+    c\xF3 m\xE0u \u0111en, c\xF2n b\u1ED9 s\u1EA1c c\u1EE7a Minh m\xE0u tr\u1EAFng.
+    Camera c\u0169ng ghi nh\u1EADn v\u1EADt gi\u1ED1ng d\xE2y s\u1EA1c tr\u1EAFng
+    trong balo Minh sau khi r\u1EDDi ph\xF2ng. V\xEC v\u1EADy, l\u1EDDi khai c\u1EE7a
+    Lan kh\xF4ng \u0111\u1EE7 m\u1EA1nh \u0111\u1EC3 ch\u1EE9ng minh Minh \u0111\xE3
+    b\u1ECF l\u1EA1i b\u1ED9 s\u1EA1c."
+  - "C\xF3 ba l\xFD do ch\xEDnh \u0111\u1EC3 kh\xF4ng th\u1EC3 k\u1EBFt lu\u1EADn
+    Minh g\xE2y ra v\u1EE5 ch\xE1y. Th\u1EE9 nh\u1EA5t, Minh \u0111\xE3 r\u1EDDi
+    ph\xF2ng tr\u01B0\u1EDBc khi \u0111\xE1m ch\xE1y ph\xE1t tri\u1EC3n v\xE0 camera
+    x\xE1c nh\u1EADn Minh kh\xF4ng v\xE0o l\u1EA1i khi quay v\u1EC1. Th\u1EE9 hai,
+    ng\u01B0\u1EDDi kh\xE1c v\u1EABn c\xF3 kh\u1EA3 n\u0103ng ti\u1EBFp c\u1EADn
+    c\u0103n ph\xF2ng trong th\u1EDDi gian Minh v\u1EAFng m\u1EB7t. Th\u1EE9 ba,
+    b\u1EB1ng ch\u1EE9ng v\u1EADt l\xFD kh\xF4ng \u1EE7ng h\u1ED9 gi\u1EA3 thuy\u1EBFt
+    b\u1ED9 s\u1EA1c g\xE2y ch\xE1y: \u0111i\u1EC3m ph\xE1t ch\xE1y n\u1EB1m \u1EDF
+    s\u1ECDt gi\u1EA5y v\xE0 ch\u1EADp \u0111i\u1EC7n x\u1EA3y ra sau khi l\u1EEDa
+    \u0111\xE3 xu\u1EA5t hi\u1EC7n. Do \u0111\xF3, ch\u1EE9ng c\u1EE9 hi\u1EC7n t\u1EA1i
+    kh\xF4ng ch\u1EC9 thi\u1EBFu \u0111\u1EC3 bu\u1ED9c tr\xE1ch nhi\u1EC7m cho Minh
+    m\xE0 c\xF2n cho th\u1EA5y m\u1ED9t nguy\xEAn nh\xE2n kh\xE1c c\xF3 kh\u1EA3
+    n\u0103ng h\u1EE3p l\xFD h\u01A1n."
+  mainQuestionLimit: 1
+  questions: []
   resolution:
-    requiredLinks:
-    - {firstClueId: clue-01, secondClueId: clue-09}
-    - {firstClueId: clue-11, secondClueId: clue-15}
-    - {firstClueId: clue-04, secondClueId: clue-10}
-    truthConclusion: "Camera cho thấy Minh đã rời phòng 15 phút trước khi báo cháy kích hoạt; lời khai của Lan và Minh mâu thuẫn trực tiếp; báo cáo hiện trường chưa xác định bộ sạc của Minh là nguyên nhân. Vì vậy, chứng cứ hiện tại chưa đủ để kết luận Minh gây ra vụ cháy."
-    insufficientEvidenceMessage: "Bạn chưa có đủ chứng cứ để xây dựng lập luận bảo vệ Minh. Hãy kiểm tra các mốc thời gian, độ tin cậy của lời khai và nguyên nhân chưa được xác định."
+    requiredLinks: []
+    truthConclusion: "Ch\u1EE9ng c\u1EE9 hi\u1EC7n c\xF3 kh\xF4ng \u0111\u1EE7 \u0111\u1EC3
+      k\u1EBFt lu\u1EADn Minh g\xE2y ra v\u1EE5 ch\xE1y; chu\u1ED7i th\u1EDDi gian,
+      v\u1EADt ch\u1EE9ng v\xE0 gi\xE1m \u0111\u1ECBnh \u0111\u1EC1u t\u1EA1o ra
+      nghi v\u1EA5n h\u1EE3p l\xFD v\u1EC1 nguy\xEAn nh\xE2n kh\xE1c."
+    insufficientEvidenceMessage: "B\u1EA1n c\u1EA7n b\u1ED1n manh m\u1ED1i kh\xF4ng
+      nhi\u1EC5u, g\u1ED3m \xEDt nh\u1EA5t ba manh m\u1ED1i m\u1EA1nh. H\xE3y ph\u1ECFng
+      v\u1EA5n l\u1EA1i v\xE0 ch\u1ECDn c\xE2u h\u1ECFi c\xF3 gi\xE1 tr\u1ECB ch\u1EE9ng
+      minh cao h\u01A1n."
     reasoningCards:
-    - id: reasoning-time-gap
-      title: Mang bộ sạc rời phòng
-      description: "Camera ghi nhận Minh rời phòng lúc 16:05 cùng laptop và bộ sạc."
-      requiredLinks: [{firstClueId: clue-01, secondClueId: clue-09}]
-    - id: reasoning-conflicting-testimony
-      title: Người khác tiếp cận hiện trường
-      description: "Lúc 16:07 chưa có dấu hiệu cháy rõ ràng; sau đó Nam vào phòng từ 16:08 đến 16:15."
-      requiredLinks: [{firstClueId: clue-11, secondClueId: clue-15}]
-    - id: reasoning-unknown-cause
-      title: Chưa xác định nguyên nhân
-      description: "Báo cáo chưa xác định thiết bị gây cháy, trong khi camera cho thấy Minh mang bộ sạc rời đi."
-      requiredLinks: [{firstClueId: clue-04, secondClueId: clue-10}]
+    - id: reasoning-1
+      title: "C\u01A1 h\u1ED9i ti\u1EBFp c\u1EADn"
+      description: "\u0110\u1ED1i chi\u1EBFu vi\u1EC7c Minh r\u1EDDi ph\xF2ng v\u1EDBi
+        nh\u1EEFng g\xEC x\u1EA3y ra sau \u0111\xF3."
+      requiredLinks: []
+    - id: reasoning-2
+      title: "V\u1EADt ch\u1EE9ng b\u1ED9 s\u1EA1c"
+      description: "\u0110\u1ED1i chi\u1EBFu timeline v\u1EDBi v\u1EADt ch\u1EE9ng
+        v\xE0 l\u1EDDi khai v\u1EC1 b\u1ED9 s\u1EA1c."
+      requiredLinks: []
+    - id: reasoning-3
+      title: "Nguy\xEAn nh\xE2n \u0111\xE1m ch\xE1y"
+      description: "\u0110\u1ED1i chi\u1EBFu v\u1EADt ch\u1EE9ng v\u1EDBi k\u1EBFt
+        lu\u1EADn gi\xE1m \u0111\u1ECBnh ch\xE1y."
+      requiredLinks: []
+    evidenceChainSlots:
+    - eligibleClueIds:
+      - clue-07
+      - clue-08
+      - clue-09
+      - clue-11
+    - eligibleClueIds:
+      - clue-12
+      - clue-13
+      - clue-14
+      - clue-16
+    - eligibleClueIds:
+      - clue-17
+      - clue-18
+      - clue-19
+      - clue-20
+      - clue-21
+    - eligibleClueIds:
+      - clue-22
+      - clue-23
+      - clue-24

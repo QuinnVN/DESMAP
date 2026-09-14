@@ -4,6 +4,62 @@ Practice scenarios in which the player performs tasks from a profession.
 
 ## Language
 
+### Shared results
+
+**Game result**:
+A durable outcome from one meaningful unit of a simulation, such as a patient, case, round, closing defense, persuasion attempt, or completed customer session. Routine gameplay telemetry is not a game result.
+_Avoid_: Telemetry event, activity log
+
+**Result unit**:
+The game-specific scope evaluated by one game result. Its type distinguishes values that must not be compared directly, such as a clinic patient score and a sales persuasion percentage.
+_Avoid_: Event, generic score
+
+### Lawyer
+
+**Interview wave**:
+One of four consecutive stages in the defendant interview. Each wave presents several authored questions, and the player permanently chooses one question for that interview attempt.
+_Avoid_: Follow-up group, round
+
+**Interview restart**:
+The player's choice to repeat all four interview waves after reaching the insufficient-evidence outcome. It retains the initial clues but clears interview choices, interview-unlocked clues, and evidence-board progress.
+_Avoid_: Scene reload, technical retry
+
+**Strong clue**:
+An authored clue that counts toward the evidence required to continue from the interview to the evidence board.
+_Avoid_: High score, guaranteed proof
+
+**Weak clue**:
+An authored clue that offers limited support. One weak clue may accompany three strong clues without blocking progress to the evidence board.
+_Avoid_: Medium evidence
+
+**Noise clue**:
+An authored clue that does not help establish the defense. A chosen noise clue makes the interview evidence insufficient.
+_Avoid_: Weak clue, misleading proof
+
+**Clue**:
+A case fact available to the player from the initial brief or a chosen interview question.
+_Avoid_: Evidence, proof
+
+**Evidence link**:
+A relationship the player creates between two clues on the evidence board. The player may create links in any action order, while the completed set represents an authored logical order.
+_Avoid_: Clue selection, question order
+
+**Evidence chain**:
+The case-authored logical sequence represented by a completed set of evidence links. Its ordering is defined by clue content and configuration, not by visible numbers or the order in which the player creates links.
+_Avoid_: Link order, numbered cards
+
+**Defense conclusion**:
+The case's authored conclusion shown to the player before and during the closing defense. The player is expected to explain and support it, not discover a different conclusion.
+_Avoid_: Player verdict, hidden answer
+
+**Closing defense**:
+The player's spoken explanation of the defense conclusion using the evidence and reasoning established during the case.
+_Avoid_: Recording, final answer
+
+**Defense assessment**:
+A backend evaluation of how well the closing defense uses the provided evidence, connects it logically, stays faithful to the defense conclusion, and communicates the argument clearly.
+_Avoid_: Verdict, case solution
+
 ### Sales
 
 **Recommended shoe**:

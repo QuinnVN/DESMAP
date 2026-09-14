@@ -1,11 +1,13 @@
 # NCKH VR
 
-NCKH VR is a Unity 6 virtual-reality training project with two backend-controlled gameplay scenes:
+NCKH VR is a Unity 6 virtual-reality training project with backend-controlled gameplay scenes:
 
 - `clinic` — emergency clinic gameplay in `Assets/Scenes/Doctor/Game 1.unity`
 - `doctor` — patient interview and note-classification gameplay in `Assets/Scenes/Doctor/Game 2.unity`
+- `lawyer` — four-wave client interview, evidence-chain board, and recorded closing defense
+- `sale` — customer interview and sales-persuasion gameplay
 
-The application always launches into `Assets/Scenes/Standby.unity`. A persistent controller receives commands from a separate backend over WebSocket, loads the requested scene, and starts, restarts, or stops its round. Gameplay scenes do not start automatically.
+The application always launches into `Assets/Scenes/Standby.unity`. A persistent controller receives commands from a separate backend over WebSocket, loads the requested scene, and starts, restarts, or stops its round. Gameplay scenes do not start automatically. A loaded gameplay scene displays `ĐANG CHỜ BẮT ĐẦU` until it receives `start_scene`.
 
 ## Requirements
 
@@ -58,7 +60,7 @@ Select **Game Controller** in the Standby scene and configure these serialized f
 | Request Timeout | 10 seconds | Timeout for HTTP requests and the WebSocket handshake |
 | Disconnect Grace | 10 seconds | Continuous outage before an active round is stopped |
 | Maximum Reconnect Delay | 10 seconds | Cap for exponential reconnect backoff |
-| Scene Catalog | `standby`, `clinic`, `doctor` | Case-insensitive API ID to Unity scene-path mapping |
+| Scene Catalog | `standby`, `clinic`, `doctor`, `lawyer`, `sale` | Case-insensitive API ID to Unity scene-path mapping |
 
 An empty or invalid backend URL or route, duplicate scene ID, or incomplete catalog entry disables networking and displays a configuration error in Standby. Route values may include or omit the leading slash. WebSocket URLs automatically use `ws://` for an HTTP base URL and `wss://` for HTTPS.
 
@@ -217,6 +219,14 @@ Doctor events:
 - `doctor.card_placement_changed`, `doctor.case_submitted`
 
 Doctor telemetry uses case asset names, question/card IDs, categories, and scores. It does not transmit dialogue transcripts or other player-facing free text.
+
+Lawyer flow:
+
+- The player chooses one of five questions in each of four waves. A choice is permanent for that interview attempt and unlocks one authored clue.
+- The evidence gate accepts four strong clues or three strong plus one weak clue. Noise clues fail the gate and show `CHƯA ĐỦ CHỨNG CỨ` with `Phỏng vấn lại`.
+- Restarting the interview retains the six initial clues and round ID, clears interview and board progress, and increments `interviewRestartCount`.
+- The evidence board accepts the three adjacent links in the configured four-clue chain in any interaction order, while assessment data keeps the configured wave order.
+- The 60-second closing defense sends the ordered evidence, reasoning cards, five positive sample answers, and restart count through `lawyer.defense_recording`. Unity polls the gameplay-safe Lawyer status endpoint and shows only processing, retry, or completion state.
 
 ## Backend responsibilities
 

@@ -1,3 +1,5 @@
+# **LUẬT SƯ \- MINI MISSION 1: “BUILD YOUR CASE”**
+
 ## **1\. CASE \- VỤ CHÁY PHÒNG CLB**
 
 Khoảng **16:20**, một vụ cháy xảy ra tại **phòng CLB của trường**, khiến khu vực phải sơ tán và nhiều thiết bị bị hư hỏng.
@@ -18,7 +20,7 @@ Bạn là luật sư bảo vệ Minh.
 
 > **Thu thập thông tin → đặt câu hỏi → kiểm tra lời khai → tìm mâu thuẫn → chọn bằng chứng có giá trị → xây dựng lập luận bảo vệ thân chủ.**
 
-# **2\. 8 MANH MỐI BAN ĐẦU**
+# **2\. 6 MANH MỐI BAN ĐẦU**
 
 ### **Clue 01 \- Camera hành lang**
 
@@ -55,273 +57,266 @@ Tuy nhiên, chưa xác định chính xác **thiết bị nào** gây ra sự c�
 
 Minh đã rời phòng **15 phút trước đó**.
 
-### **Clue 07 \- Vi phạm trước đây**
-
-> Hai tuần trước, Minh từng bị giáo viên nhắc nhở vì tự ý sử dụng thiết bị điện trong phòng CLB.
-
-⚠️ Có thể khiến người chơi hình thành **bias**, nhưng không chứng minh Minh gây ra vụ cháy lần này.
-
-### **Clue 08 \- Nội quy phòng CLB**
-
-> Học sinh phải rút thiết bị điện cá nhân trước khi rời khỏi phòng.
-
-→ Nếu lời khai của Lan chính xác, Minh đã vi phạm quy định này.
-
 # **3\. PHỎNG VẤN MINH**
 
-Người chơi chỉ được chọn **2 trong 5 câu hỏi chính**.
+# **ĐỢT 1 — MINH RỜI PHÒNG**
 
-Mỗi câu hỏi có follow-up khác nhau và có thể mở thêm evidence.
+### **1\. Khi rời phòng, em có mang laptop theo không?**
 
-## **CÂU HỎI 1**
+**→ “Có, em mang laptop theo.”**
 
-### **“Bạn đã làm gì với ổ điện trước khi rời phòng?”**
+**🔓 Clue: Xác nhận từ phía điều tra: Camera hành lang 16:05**  
+**Camera cho thấy Minh rời phòng với laptop trên tay.**
 
-Minh:
+**🟡 Yếu — chứng minh laptop đã rời phòng, nhưng chưa chứng minh bộ sạc cũng được mang theo.**
 
-> “Em sạc laptop vài phút. Trước khi đi, em rút sạc rồi bỏ cả laptop và bộ sạc vào balo.”
+---
 
-### **Mở thêm**
+### **2\. Cửa phòng lúc em rời đi có khóa không?**
 
-**Clue 09 \- Camera cửa phòng**
+**→ “Không, em chỉ khép cửa.”**
 
-> 16:05: Minh rời phòng với **laptop và bộ sạc trên tay**.
+**🔓 Clue: Kiểm tra cửa phòng**  
+**Xác nhận từ khám nghiệm hiện trường: Không có dấu hiệu cửa từng bị khóa trong khoảng thời gian xảy ra vụ việc.**
 
-### **Follow-up**
+**🟢 Mạnh — người khác vẫn có thể vào phòng sau khi Minh rời đi.**
 
-**A. “Bạn có chắc đó là bộ sạc đã cắm vào ổ điện không?”**
+---
 
-> “Có, em chỉ mang theo một bộ sạc.”
+### **3\. Em có nhớ mình đã rút sạc khi rời đi chưa?**
 
-Mở:
+**→ “Có. Em nhớ đã rút và bỏ vào balo.”**
 
-**Clue 10 \- Camera góc khác**
+**🔓 Clue: Xác nhận từ bên điều tra hiện trường: Camera cầu thang 16:07**  
+**Khi Minh mở balo, một dây sạc màu trắng được nhìn thấy bên trong.**
 
-> Hình ảnh cho thấy dây sạc Minh cầm khi rời đi giống thiết bị được Minh sử dụng lúc 16:03.
+**🟢 Mạnh — có bằng chứng hỗ trợ việc Minh đã mang sạc theo.**
 
-**B. “Ngoài laptop, bạn có cắm thiết bị nào khác không?”**
+---
 
-> “Không.”
+### **4\. Em có vội khi rời phòng không?**
 
-→ Không có clue mới.
+**→ “Có, lúc đó em khá vội.”**
 
-**C. “Khi bạn rời đi, có dấu hiệu bất thường nào không?”**
+**🔓 Clue: Tin nhắn 16:04**  
+**Tin nhắn trong điện thoại Minh: Minh nhắn cho bạn: “T xuống liền đây.”**
 
-> “Không. Em không thấy khói hay ngửi thấy mùi khét.”
+**🔴 Nhiễu — chỉ xác nhận Minh đang vội, không chứng minh Minh có để quên sạc hay gây cháy.**
 
-Mở:
+---
 
-**Clue 11 \- Nhân chứng hành lang**
+### **5\. Em rời phòng lúc khoảng mấy giờ?**
 
-> Một học sinh đi ngang qua phòng lúc **16:07** và không phát hiện khói hoặc mùi khét.
+**→ “Khoảng 16:05.”**
 
-# **4\. CÂU HỎI 2**
+**🔓 Clue: Xác Camera hành lang**  
+**Minh rời phòng lúc 16:05:18.**
 
-### **“Sau khi rời phòng lúc 16:05, bạn đi đâu?”**
+**🟡 Yếu — xác nhận timeline nhưng không giúp nhiều trong việc xác định nguyên nhân cháy.**
 
-Minh:
+---
 
-> “Em xuống sân. Khoảng vài phút sau em quay lại vì nhớ ra mình để quên balo.”
+# **ĐỢT 2 — SAU KHI MINH RỜI PHÒNG**
 
-⚠️ Lời khai ban đầu của Minh **không nhắc đến việc quay lại**.
+### **1\. Sau khi rời phòng, em có thấy ai đi về phía phòng CLB không?**
 
-### **Mở thêm**
+**→ “Có. Em thấy một bạn đi về phía đó.”**
 
-**Clue 12 \- Camera hành lang**
+**🔓 Clue: Camera hành lang 16:08**  
+**Một học sinh khác đi vào khu vực phòng CLB lúc 16:08.**
 
-> **16:12:** Minh xuất hiện trở lại trước phòng CLB.
+**🟢 Mạnh — có người khác tiếp cận hiện trường sau khi Minh rời đi.**
 
-### **Follow-up**
+---
 
-**A. “Tại sao ban đầu bạn không nói mình quay lại?”**
+### **2\. Khi quay lại lúc khoảng 16:12, em có vào phòng không?**
 
-> “Vì em không vào trong nên em nghĩ nó không liên quan.”
+**→ “Không. Em chỉ đứng ngoài cửa.”**
 
-**B. “Bạn có vào phòng lần thứ hai không?”**
+**🔓 Clue: Camera hành lang 16:12**  
+**Camera cho thấy Minh đứng trước cửa khoảng 20 giây rồi rời đi, không bước vào phòng.**
 
-> “Không.”
+**🟢 Mạnh — Minh không quay lại tác động vào hiện trường.**
 
-Mở:
+---
 
-**Clue 13 \- Camera cửa**
+### **3\. Khi quay lại, em có nhận thấy điều gì bất thường không?**
 
-> Minh đứng ngoài cửa khoảng 20 giây rồi rời đi.  
->  **Không ghi nhận Minh bước vào phòng.**
+**→ “Em ngửi thấy mùi khét nhẹ.”**
 
-**C. “Bạn có nhận thấy điều gì bất thường khi quay lại không?”**
+**🔓 Clue: Dữ liệu cảm biến khói**  
+**Nồng độ khói bắt đầu tăng rõ từ khoảng 16:13.**
 
-> “Em nhớ có mùi hơi khét.”
+**🟢 Mạnh — thời điểm đám cháy phát triển xảy ra sau khi Minh đã rời phòng.**
 
-Mở:
+---
 
-**Clue 14 \- Lời khai học sinh khác**
+### **4\. Lúc quay lại, em mang theo những gì?**
 
-> Một học sinh khác cũng báo ngửi thấy **mùi khét khoảng 16:13**.
+**→ “Balo và điện thoại.”**
 
-→ Minh đã khai thiếu một chi tiết, nhưng điều đó **không trực tiếp chứng minh Minh gây cháy**.
+**🔓 Clue: Camera hành lang**  
+**Camera xác nhận Minh vẫn mang balo lúc quay lại.**
 
-# **5\. CÂU HỎI 3**
+**🔴 Nhiễu — không cho biết bên trong balo có gì và không giúp xác định nguyên nhân cháy.**
 
-### **“Sau khi bạn rời đi, bạn có biết ai khác vào phòng không?”**
+---
 
-Minh:
+### **5\. Em đứng ngoài cửa khoảng bao lâu?**
 
-> “Em không chắc. Nhưng lúc xuống cầu thang em có thấy Nam đi về phía phòng CLB.”
+**→ “Khoảng 20 giây.”**
 
-💥 **Lần đầu Nam xuất hiện trong case.**
+**🔓 Clue: Camera timeline**  
+**Minh đứng trước cửa từ 16:12:31 đến 16:12:52.**
 
-### **Mở thêm**
+**🟡 Yếu — củng cố timeline nhưng không trực tiếp giải thích nguyên nhân vụ cháy.**
 
-**Clue 15 \- Camera hành lang**
+---
 
-> **16:08:** Nam vào phòng CLB.  
->  **16:15:** Nam rời phòng.
+# **ĐỢT 3 — KIỂM TRA BỘ SẠC**
 
-→ Có một người khác ở trong phòng **sau khi Minh rời đi và trước khi đám cháy được phát hiện**.
+### **1\. Bộ sạc của em có đặc điểm gì?**
 
-### **Follow-up**
+**→ “Củ sạc và dây đều màu trắng.”**
 
-**A. “Bạn có thấy Nam làm gì trong phòng không?”**
+**🔓 Clue: Vật chứng tại hiện trường**  
+**Củ sạc còn cắm tại ổ điện sau vụ cháy có màu đen.**
 
-> “Không.”
+**🟢 Mạnh — củ sạc tại hiện trường không khớp với mô tả sạc của Minh.**
 
-→ Không có evidence mới.
+---
 
-**B. “Bạn có biết Nam vào đó để làm gì không?”**
+### **2\. Sau khi rời phòng, em có nhìn thấy bộ sạc của mình nữa không?**
 
-> “Không.”
+**→ “Có. Lúc mở balo em thấy nó ở trong ngăn cùng laptop.”**
 
-Mở:
+**🔓 Clue: Camera cầu thang 16:07**  
+**Hình ảnh cho thấy trong balo có một củ sạc và dây màu trắng.**
 
-**Clue 16 \- Lời khai của Nam**
+**🟢 Mạnh — trực tiếp hỗ trợ việc bộ sạc của Minh đã rời khỏi phòng.**
 
-> “Tôi chỉ vào lấy balo rồi đi ngay.”
+---
 
-⚠️ Nhưng camera cho thấy Nam ở trong phòng khoảng **7 phút**.
+### **3\. Khi em rời đi, trên ổ điện còn thiết bị nào khác không?**
 
-**C. “Bạn có nghĩ Nam gây ra vụ cháy không?”**
+**→ “Có một củ sạc khác ở ổ bên cạnh.”**
 
-Minh:
+**🔓 Clue: Ảnh hiện trường**  
+**Một củ sạc khác được tìm thấy tại ổ cắm và không khớp với sạc của Minh.**
 
-> “Em không biết.”
+**🟢 Mạnh — thiết bị Lan nhìn thấy vẫn cắm điện có thể là thiết bị khác.**
 
-→ Đây là **bẫy reasoning**.
+---
 
-Người chơi không được suy ra:
+### **4\. Có thường xuyên có người để quên đồ điện trong phòng không?**
 
-> Nam vào phòng → Nam gây cháy.
+**→ “Có, thỉnh thoảng mọi người để quên đồ.”**
 
-Evidence chỉ chứng minh **có người khác tiếp cận hiện trường sau Minh**.
+**🔓 Clue: Danh sách đồ thất lạc CLB**  
+**Trước vụ việc đã có nhiều thiết bị điện cá nhân bị bỏ quên trong phòng.**
 
-# **6\. CÂU HỎI 4**
+**🟡 Yếu — cho thấy thiết bị còn lại không nhất thiết thuộc Minh, nhưng không xác định được của ai.**
 
-### **“Bạn nghĩ tại sao Lan nói bạn để thiết bị cắm lại?”**
+---
 
-Minh:
+### **5\. Theo em, Lan có nhìn rõ ổ điện không?**
 
-> “Em không biết. Có thể Lan nhìn nhầm vì từ chỗ Lan đứng không nhìn rõ ổ điện.”
+**→ “Em không chắc vì em không đứng ở vị trí của Lan.”**
 
-### **Mở thêm**
+**🔓 Clue: Sơ đồ vị trí của Lan**  
+**Từ vị trí Lan đứng, một phần ổ điện bị cạnh bàn và chồng giấy che khuất.**
 
-**Clue 17 \- Vị trí của Lan**
+**🟢 Mạnh — làm giảm độ chắc chắn của lời khai rằng Lan nhìn thấy chính xác bộ sạc của Minh.**
 
-Camera xác nhận lúc Minh chuẩn bị rời đi, Lan đứng ở **ngoài cửa phòng**, cách bàn làm việc một khoảng và bị một chiếc tủ che một phần tầm nhìn.
+---
 
-### **Follow-up**
+# **ĐỢT 4 — NGUỒN GỐC ĐÁM CHÁY**
 
-**A. “Lan có nhìn trực tiếp vào ổ điện không?”**
+### **1\. Trước khi rời đi, trong sọt rác gần bàn có gì?**
 
-> “Em không biết.”
+**→ “Có khá nhiều giấy nháp và tài liệu.”**
 
-**B. “Lan có thể nhìn thấy laptop của bạn không?”**
+**🔓 Clue: Ảnh hiện trường**  
+**Sọt rác chứa nhiều giấy và nằm gần khu vực cháy mạnh.**
 
-> “Có thể thấy bàn, nhưng em không nghĩ nhìn rõ ổ cắm.”
+**🟡 Yếu — cho thấy có vật liệu dễ cháy gần đó nhưng chưa xác định được nguồn cháy.**
 
-**C. “Bạn và Lan có mâu thuẫn gì không?”**
+---
 
-> “Không.”
+### **2\. Khi quay lại, em thấy mùi khét giống gì?**
 
-→ Không có motive để cho rằng Lan cố tình nói dối.
+**→ “Em thấy giống mùi giấy cháy.”**
 
-**Điểm quan trọng:** Người chơi nên lập luận rằng **lời khai của Lan có thể không chính xác**, chứ không phải *“Lan nói dối”*.
+**🔓 Clue: Báo cáo giám định cháy**  
+**Dấu cháy sớm nhất được phát hiện ở phần giấy trong sọt rác.**
 
-# **7\. CÂU HỎI 5**
+**🟢 Mạnh — cho thấy đám cháy có khả năng bắt đầu ở khu vực giấy thay vì ổ điện.**
 
-### **“Hãy kể lại toàn bộ những gì bạn làm từ 16:00 đến 16:20.”**
+---
 
-Minh:
+### **3\. Trước khi rời đi, ổ điện có gì bất thường không?**
 
-> “16:00 em vào phòng. Em sạc laptop một lúc. Khoảng 16:05 em rút sạc rồi rời đi. Sau đó em xuống sân. Khoảng 16:12 em quay lại lấy balo nhưng không vào phòng.”
+**→ “Không. Em không thấy khói, lửa hay tia điện.”**
 
-### **Mở thêm**
+**🔓 Clue: Giám định ổ điện**  
+**Dây điện bị hư hỏng do nhiệt tác động từ bên ngoài trước khi xảy ra chập điện.**
 
-**Clue 18 \- Timeline camera hoàn chỉnh**
+**🟢 Mạnh — chập điện có khả năng là hậu quả của đám cháy chứ không phải nguyên nhân ban đầu.**
 
-> **16:00** \- Minh vào phòng.  
->  **16:05** \- Minh rời phòng.  
->  **16:08** \- Một người khác vào phòng.  
->  **16:12** \- Minh quay lại hành lang nhưng không vào phòng.  
->  **16:15** \- Người kia rời phòng.  
->  **16:20** \- Báo cháy kích hoạt.
+---
 
-### **Follow-up**
+### **4\. Em có thấy vật gì lạ gần sọt rác không?**
 
-**A. “Bạn mang gì theo lúc 16:05?”**
+**→ “Không, em không để ý.”**
 
-> “Laptop và bộ sạc.”
+**🔓 Clue: Ảnh hiện trường sau cháy**  
+**Trong sọt chỉ xác định được giấy cháy, chưa tìm thấy vật gây cháy cụ thể.**
 
-→ Đối chiếu camera.
+**🔴 Nhiễu — không cung cấp thêm thông tin đủ để xác định nguyên nhân cháy.**
 
-**B. “Tại sao bạn không lấy balo khi quay lại?”**
+---
 
-> “Em thấy cửa đóng nên nghĩ sẽ quay lại sau.”
+### **5\. Lúc đó cửa sổ có mở không?**
 
-**C. “Tại sao lời khai đầu tiên không nhắc việc quay lại?”**
+**→ “Có một cửa sổ mở hé.”**
 
-> “Em quên nói vì em không vào phòng.”
+**🔓 Clue: Kiểm tra hiện trường**  
+**Một cửa sổ được phát hiện mở khoảng 10 cm.**
 
-→ **Credibility của Minh bị giảm**, nhưng không chứng minh causation.
+**🔴 Nhiễu — có thể ảnh hưởng đến việc lửa lan nhưng không giúp xác định Minh có gây cháy hay không.**
 
-# **8\. FINAL EVIDENCE BOARD**
+# **4\. FINAL EVIDENCE BOARD**
 
-Sau quá trình phỏng vấn, người chơi được yêu cầu:
+Sau bốn đợt hỏi, trò chơi kiểm tra bốn manh mối mà người chơi đã mở khóa, theo thứ tự đợt 1 → đợt 2 → đợt 3 → đợt 4.
 
-> **“Bạn chỉ được chọn 5 bằng chứng để đưa vào hồ sơ bảo vệ Minh.”**
+* Bốn manh mối mạnh: đủ chứng cứ.
+* Ba manh mối mạnh và một manh mối yếu: đủ chứng cứ.
+* Có manh mối nhiễu, hoặc có ít hơn ba manh mối mạnh: hiện giao diện **CHƯA ĐỦ CHỨNG CỨ** và cho phép **Phỏng vấn lại**.
 
-### **🟢 Evidence mạnh**
+Khi phỏng vấn lại, trò chơi giữ sáu manh mối ban đầu nhưng xóa lựa chọn phỏng vấn, manh mối mở khóa từ phỏng vấn, liên kết và tiến độ trên bảng. Số lần phỏng vấn lại được ghi trong cùng lượt chơi và gửi kèm bài bào chữa. Từ lần phỏng vấn lại thứ tư trở đi, backend áp dụng một lần mức trừ 50% tổng điểm.
 
-* Camera xác nhận Minh rời phòng lúc **16:05**.  
-* Camera cho thấy Minh mang **laptop và bộ sạc** khi rời đi.  
-* **16:07** chưa có dấu hiệu cháy rõ ràng.  
-* Có **người khác vào phòng từ 16:08–16:15**.  
-* Camera xác nhận Minh **không vào phòng** khi quay lại lúc 16:12.  
-* Báo cáo chưa xác định **bộ sạc của Minh** là nguyên nhân gây cháy.  
-* Vị trí của Lan khiến cô **không quan sát rõ ổ điện**.
+Khi đủ chứng cứ, bốn thẻ được giữ nguyên vị trí người chơi đặt. Người chơi nối ba cặp kề nhau trong chuỗi logic; thứ tự thao tác nối không bắt buộc, nhưng dữ liệu kết quả luôn được lưu theo thứ tự logic đã cấu hình.
 
-### **🟡 Evidence trung bình**
+# **5\. BÀI BÀO CHỮA MẪU CHO BACKEND**
 
-* Minh nói mình đã rút sạc.  
-* Lan nói Minh để thiết bị cắm lại.  
-* Minh quay lại hành lang lúc 16:12.  
-* Có mùi khét khoảng 16:13.  
-* Lời khai của Nam không hoàn toàn khớp camera.  
-* Nội quy yêu cầu học sinh rút thiết bị trước khi rời đi.
+> ### **Mẫu 1 — Chặt chẽ nhất**
 
-### **🔴 Evidence gây nhiễu**
+Minh không phải người duy nhất có thể tiếp cận phòng CLB sau 16:05, vì cửa không khóa và camera ghi nhận có người khác đi về phía phòng sau khi Minh rời đi. Khi Minh quay lại lúc 16:12, camera cũng xác nhận Minh không bước vào phòng. Ngoài ra, bộ sạc còn lại tại hiện trường không trùng đặc điểm với bộ sạc của Minh. Quan trọng nhất, giám định cho thấy điểm phát cháy nằm ở sọt giấy và hiện tượng chập điện xảy ra sau khi đám cháy đã bắt đầu. Vì vậy, chưa có cơ sở để kết luận bộ sạc của Minh gây ra vụ cháy.
 
-* Minh từng bị nhắc nhở vì sử dụng thiết bị điện.  
-* Minh từng vi phạm nội quy.  
-* Minh khai thiếu việc mình quay lại.  
-* Minh thấy Nam đi về phía phòng.  
-* Nam ở trong phòng 7 phút.  
-* Minh cho rằng Lan có thể nhìn nhầm.
+> ### **Mẫu 2 — Tập trung bác bỏ nguyên nhân điện**
 
-# **9\. FINAL ARGUMENT**
+Dù Minh từng sử dụng ổ điện trước vụ cháy, điều đó không có nghĩa thiết bị của Minh là nguyên nhân. Giám định cho thấy điểm phát cháy ban đầu nằm ở sọt giấy, không phải ổ điện, và hiện tượng chập điện chỉ xảy ra sau khi nhiệt từ đám cháy tác động vào dây điện. Minh cũng khai đã mang bộ sạc theo, phù hợp với hình ảnh camera ghi nhận dây sạc trong balo. Vì vậy, giả thuyết cho rằng bộ sạc của Minh gây cháy không phù hợp với các bằng chứng hiện có.
 
-Người chơi chọn **5 evidence**, sau đó có **60 giây**:
+> ### **Mẫu 3 — Tập trung vào timeline**
 
-> **“Dựa trên những bằng chứng đã lựa chọn, hãy trình bày lập luận để bảo vệ Minh.”**
+Minh rời phòng lúc 16:05 và đến khoảng 16:12 mới quay lại. Camera cho thấy khi quay lại, Minh chỉ đứng ngoài cửa và không bước vào phòng. Trong khoảng thời gian Minh vắng mặt, vẫn có người khác tiếp cận khu vực phòng CLB. Mùi khét và dấu hiệu khói chỉ xuất hiện rõ sau đó. Vì vậy, có một khoảng thời gian đủ lớn để sự cố xảy ra khi Minh không có mặt trong phòng, nên không thể chỉ dựa vào việc Minh từng dùng ổ điện để quy trách nhiệm cho Minh.
 
-### **Ví dụ lập luận tốt**
+> ### **Mẫu 4 — Tập trung phản bác lời khai của Lan**
 
-> “Mặc dù Minh đã sử dụng ổ điện trước vụ cháy, camera cho thấy Minh rời phòng lúc 16:05 cùng laptop và bộ sạc. Lời khai của Lan cũng chưa đủ đáng tin cậy vì vị trí của Lan không cho phép cô quan sát rõ ổ điện. Sau khi Minh rời đi, vẫn có người khác tiếp cận căn phòng trước khi đám cháy được phát hiện. Quan trọng nhất, báo cáo hiện trường chưa xác định bộ sạc của Minh là nguyên nhân gây cháy. Vì vậy, những bằng chứng hiện tại **chưa đủ để kết luận Minh gây ra vụ cháy**.”
+Lời khai của Lan rằng còn một thiết bị cắm ở ổ điện chưa đủ để xác định đó là bộ sạc của Minh. Từ vị trí của Lan, ổ điện bị che một phần và cô không thể quan sát rõ thiết bị. Trong khi đó, bộ sạc được tìm thấy tại hiện trường có màu đen, còn bộ sạc của Minh màu trắng. Camera cũng ghi nhận vật giống dây sạc trắng trong balo Minh sau khi rời phòng. Vì vậy, lời khai của Lan không đủ mạnh để chứng minh Minh đã bỏ lại bộ sạc.
+
+> ### **Mẫu 5 — Kiểu “luật sư” mạnh nhất**
+
+Có ba lý do chính để không thể kết luận Minh gây ra vụ cháy. Thứ nhất, Minh đã rời phòng trước khi đám cháy phát triển và camera xác nhận Minh không vào lại khi quay về. Thứ hai, người khác vẫn có khả năng tiếp cận căn phòng trong thời gian Minh vắng mặt. Thứ ba, bằng chứng vật lý không ủng hộ giả thuyết bộ sạc gây cháy: điểm phát cháy nằm ở sọt giấy và chập điện xảy ra sau khi lửa đã xuất hiện. Do đó, chứng cứ hiện tại không chỉ thiếu để buộc trách nhiệm cho Minh mà còn cho thấy một nguyên nhân khác có khả năng hợp lý hơn.
+
+> 

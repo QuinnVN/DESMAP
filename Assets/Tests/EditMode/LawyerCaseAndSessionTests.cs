@@ -29,253 +29,129 @@ namespace NCKH.VR.Lawyer.Tests
         }
 
         [Test]
-        public void ClubRoomFireCaseMatchesRequiredQuestionShape()
+        public void ClubRoomFireCaseHasFourWavesAndBackendSamples()
         {
             List<string> errors = new List<string>();
             caseDefinition.GetValidationErrors(errors);
             Assert.That(errors, Is.Empty, string.Join("\n", errors));
-            Assert.That(caseDefinition.Questions, Has.Count.EqualTo(5));
-            Assert.That(caseDefinition.MainQuestionLimit, Is.EqualTo(2));
-
-            int keyCount = 0;
-            for (int index = 0; index < caseDefinition.Questions.Count; index++)
-            {
-                LawyerInterviewQuestion question = caseDefinition.Questions[index];
-                if (question.IsKeyQuestion)
-                    keyCount++;
-                Assert.That(question.FollowUps, Has.Count.EqualTo(3));
-            }
-            Assert.That(keyCount, Is.EqualTo(2));
-            Assert.That(caseDefinition.Clues, Has.Count.EqualTo(18));
-            Assert.That(caseDefinition.StartingClueIds, Has.Count.EqualTo(8));
-            Assert.That(caseDefinition.Resolution, Is.Not.Null);
-            Assert.That(caseDefinition.Resolution.RequiredLinks, Has.Count.EqualTo(3));
+            Assert.That(caseDefinition.InterviewWaves, Has.Count.EqualTo(4));
+            for (int index = 0; index < caseDefinition.InterviewWaves.Count; index++)
+                Assert.That(caseDefinition.InterviewWaves[index].Questions, Has.Count.EqualTo(5));
+            Assert.That(caseDefinition.StartingClueIds, Has.Count.EqualTo(6));
+            Assert.That(caseDefinition.Clues, Has.Count.EqualTo(26));
+            Assert.That(caseDefinition.Resolution.EvidenceChainSlots, Has.Count.EqualTo(4));
             Assert.That(caseDefinition.Resolution.ReasoningCards, Has.Count.EqualTo(3));
-            Assert.That(caseDefinition.Resolution.TruthConclusion,
-                Does.Contain("chưa đủ để kết luận Minh"));
+            Assert.That(caseDefinition.SampleAnswers, Has.Count.EqualTo(5));
         }
 
         [Test]
-        public void ReasoningCardsUnlockPerChainAndCompletionWaitsForAllCards()
+        public void OneQuestionPerWaveAdvancesPermanently()
         {
-            CompleteSuccessfulInterview();
-            Assert.That(session.TryAddEvidenceLink(
-                    "clue-01", "clue-09"),
-                Is.EqualTo(LawyerLinkAttemptResult.Added));
-            Assert.That(session.UnlockedReasoningCardIds, Has.Count.EqualTo(1));
-            Assert.That(session.AllReasoningCardsUnlocked, Is.False);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.EvidenceBoard));
-
-            Assert.That(session.TryAddEvidenceLink(
-                    "clue-11", "clue-15"),
-                Is.EqualTo(LawyerLinkAttemptResult.Added));
-            Assert.That(session.TryAddEvidenceLink(
-                    "clue-04", "clue-10"),
-                Is.EqualTo(LawyerLinkAttemptResult.Solved));
-            Assert.That(session.UnlockedReasoningCardIds, Has.Count.EqualTo(3));
-            Assert.That(session.AllReasoningCardsUnlocked, Is.True);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.Resolved));
-        }
-
-        [Test]
-        public void InterviewRequiresBoardAndAllowsOnlyTwoMainQuestions()
-        {
-            Assert.That(session.TryBeginInterview(), Is.False);
-            session.MarkBoardOpened();
-            Assert.That(session.TryBeginInterview(), Is.True);
-
-            Assert.That(session.TryAskMain("main-return", out _), Is.True);
-            Assert.That(session.TryAskMain("main-return", out _), Is.False);
-            Assert.That(session.TryAskMain("main-lan-observation", out _), Is.True);
-            Assert.That(session.MainQuestionsRemaining, Is.Zero);
-            Assert.That(session.TryAskMain("main-full-timeline", out _), Is.False);
-            Assert.That(session.TryAskMain("main-outlet", out _), Is.False);
-            Assert.That(session.TryAskMain("main-other-person", out _), Is.False);
-            Assert.That(session.FollowUpQuestionsRemaining, Is.EqualTo(6));
-            Assert.That(session.CanCompleteInterview, Is.False);
-        }
-
-        [Test]
-        public void KeyQuestionAllowsAllFollowUpsWithoutBlockingOtherMainQuestions()
-        {
-            session.MarkBoardOpened();
-            session.TryBeginInterview();
-            Assert.That(session.TryAskMain("main-outlet", out LawyerInterviewQuestion question), Is.True);
-            Assert.That(question.IsKeyQuestion, Is.True);
-            Assert.That(session.PendingKeyQuestionId, Is.EqualTo("main-outlet"));
-            Assert.That(session.TryAskMain("main-other-person", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-charger", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-other-device", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-warning", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-charger", out _), Is.False);
-            Assert.That(session.PendingKeyQuestionId, Is.EqualTo("main-other-person"));
-        }
-
-        [Test]
-        public void RequiredLinksRejectIncorrectPairsAndResolveExactlyOnce()
-        {
-            CompleteSuccessfulInterview();
+            BeginInterview();
+            Assert.That(session.CurrentWaveIndex, Is.Zero);
+            Assert.That(session.TryAskMain("w2-other", out _), Is.False);
+            Assert.That(session.TryAskMain("w1-door", out _), Is.True);
+            Assert.That(session.CurrentWaveIndex, Is.EqualTo(1));
+            Assert.That(session.TryAskMain("w1-charger", out _), Is.False);
+            Assert.That(session.TryAskMain("w2-other", out _), Is.True);
+            Assert.That(session.TryAskMain("w3-description", out _), Is.True);
+            Assert.That(session.TryAskMain("w4-smell", out _), Is.True);
+            Assert.That(session.CanCompleteInterview, Is.True);
             Assert.That(session.EvaluateEvidenceAvailability(), Is.True);
-            Assert.That(session.TryAddEvidenceLink("clue-01", "clue-03"),
-                Is.EqualTo(LawyerLinkAttemptResult.Incorrect));
-            Assert.That(session.ClueLinks, Is.Empty);
+        }
 
-            Assert.That(session.TryAddEvidenceLink(
-                    "clue-09", "clue-01"),
-                Is.EqualTo(LawyerLinkAttemptResult.Added));
-            Assert.That(session.TryAddEvidenceLink(
-                    "clue-01", "clue-09"),
-                Is.EqualTo(LawyerLinkAttemptResult.Duplicate));
-            Assert.That(session.TryAddEvidenceLink(
-                    "clue-11", "clue-15"),
-                Is.EqualTo(LawyerLinkAttemptResult.Added));
-            Assert.That(session.TryAddEvidenceLink("clue-04", "clue-10"),
-                Is.EqualTo(LawyerLinkAttemptResult.Solved));
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.Resolved));
-            Assert.That(session.ClueLinks, Has.Count.EqualTo(3));
-            Assert.That(session.TryAddEvidenceLink("clue-01", "clue-09"),
-                Is.EqualTo(LawyerLinkAttemptResult.Invalid));
-            Assert.That(session.TryUndoLastLink(out _), Is.False);
+        [Test]
+        public void ThreeStrongAndOneWeakPassesButNoiseFails()
+        {
+            BeginInterview();
+            Ask("w1-laptop", "w2-other", "w3-description", "w4-smell");
+            Assert.That(session.EvaluateEvidenceAvailability(), Is.True);
 
             session.ResetCase(caseDefinition);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.CaseBrief));
+            BeginInterview();
+            Ask("w1-door", "w2-other", "w3-description", "w4-window");
+            Assert.That(session.EvaluateEvidenceAvailability(), Is.False);
+            Assert.That(session.TryCompleteInterview(), Is.False);
+        }
+
+        [Test]
+        public void InterviewRestartKeepsRoundAndInitialCluesButClearsAttemptProgress()
+        {
+            BeginInterview();
+            string roundId = session.RoundId;
+            Ask("w1-hurry", "w2-items", "w3-forgotten", "w4-window");
+            Assert.That(session.UnlockedClueIds, Does.Contain("clue-10"));
+            Assert.That(session.TryRestartInterview(), Is.True);
+            Assert.That(session.RoundId, Is.EqualTo(roundId));
+            Assert.That(session.InterviewRestartCount, Is.EqualTo(1));
+            Assert.That(session.CurrentWaveIndex, Is.Zero);
+            Assert.That(session.UnlockedClueIds, Has.Count.EqualTo(6));
+            Assert.That(session.UnlockedClueIds, Does.Not.Contain("clue-10"));
             Assert.That(session.ClueLinks, Is.Empty);
         }
 
         [Test]
-        public void DefensePhasesRequireResolutionAndCompleteInOrder()
+        public void DynamicChainAcceptsAnyActionOrderAndSerializesWaveOrder()
         {
-            Assert.That(session.TryBeginDefense(), Is.False);
             CompleteSuccessfulInterview();
-            Assert.That(session.TryAddEvidenceLink(
-                "clue-01", "clue-09"),
+            CollectionAssert.AreEqual(new[] { "clue-08", "clue-12", "clue-17", "clue-23" },
+                session.GetOrderedEvidenceClueIds());
+            Assert.That(session.TryAddEvidenceLink("clue-08", "clue-17"),
+                Is.EqualTo(LawyerLinkAttemptResult.Incorrect));
+            Assert.That(session.TryAddEvidenceLink("clue-17", "clue-23"),
                 Is.EqualTo(LawyerLinkAttemptResult.Added));
-            Assert.That(session.TryAddEvidenceLink(
-                "clue-11", "clue-15"),
+            Assert.That(session.TryAddEvidenceLink("clue-08", "clue-12"),
                 Is.EqualTo(LawyerLinkAttemptResult.Added));
-            Assert.That(session.TryAddEvidenceLink("clue-04", "clue-10"),
+            Assert.That(session.TryAddEvidenceLink("clue-12", "clue-17"),
                 Is.EqualTo(LawyerLinkAttemptResult.Solved));
-
-            string roundId = session.RoundId;
-            Assert.That(roundId, Is.Not.Empty);
-            Assert.That(session.TryBeginDefense(), Is.True);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.DefensePreparation));
-            Assert.That(session.TryBeginDefenseUpload(), Is.False);
-            Assert.That(session.TryBeginDefenseRecording(), Is.True);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.DefenseRecording));
-            Assert.That(session.TryBeginDefenseUpload(), Is.True);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.DefenseUploading));
-            Assert.That(session.TryCompleteDefense(), Is.True);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.Completed));
-            Assert.That(session.RoundId, Is.EqualTo(roundId));
-            Assert.That(session.TryCompleteDefense(), Is.False);
+            Assert.That(session.AllReasoningCardsUnlocked, Is.True);
         }
 
         [Test]
-        public void InterruptedRecordingCanReturnToPreparation()
+        public void AssessmentContextContainsOnlyOrderedSelectedEvidence()
         {
             CompleteSuccessfulInterview();
-            session.TryAddEvidenceLink("clue-01", "clue-09");
-            session.TryAddEvidenceLink("clue-11", "clue-15");
-            session.TryAddEvidenceLink("clue-04", "clue-10");
-            session.TryBeginDefense();
-            session.TryBeginDefenseRecording();
-
-            Assert.That(session.TryReturnToDefensePreparation(), Is.True);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.DefensePreparation));
-            Assert.That(session.TryReturnToDefensePreparation(), Is.False);
+            string json = LawyerAssessmentContextPayload.BuildJson(caseDefinition, session);
+            Assert.That(json, Does.Contain("\"evidenceId\":\"clue-08\""));
+            Assert.That(json.IndexOf("clue-08"), Is.LessThan(json.IndexOf("clue-12")));
+            Assert.That(json.IndexOf("clue-12"), Is.LessThan(json.IndexOf("clue-17")));
+            Assert.That(json.IndexOf("clue-17"), Is.LessThan(json.IndexOf("clue-23")));
+            Assert.That(json, Does.Not.Contain("clue-01"));
+            Assert.That(json, Does.Contain("\"sampleAnswers\""));
         }
 
         [Test]
-        public void MissingInterviewEvidenceKeepsInterviewOpen()
+        public void DefensePhasesCompleteInOrderAndKeepRound()
+        {
+            CompleteSuccessfulInterview();
+            session.TryAddEvidenceLink("clue-08", "clue-12");
+            session.TryAddEvidenceLink("clue-12", "clue-17");
+            session.TryAddEvidenceLink("clue-17", "clue-23");
+            string roundId = session.RoundId;
+            Assert.That(session.TryBeginDefense(), Is.True);
+            Assert.That(session.TryBeginDefenseRecording(), Is.True);
+            Assert.That(session.TryBeginDefenseUpload(), Is.True);
+            Assert.That(session.TryCompleteDefense(), Is.True);
+            Assert.That(session.RoundId, Is.EqualTo(roundId));
+        }
+
+        private void BeginInterview()
         {
             session.MarkBoardOpened();
             Assert.That(session.TryBeginInterview(), Is.True);
-            Assert.That(session.TryAskMain("main-outlet", out _), Is.True);
-            Assert.That(session.TryCompleteInterview(), Is.False);
-            Assert.That(session.EvaluateEvidenceAvailability(), Is.False);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.DefendantInterview));
-            Assert.That(session.TryProceedToEvidenceBoard(), Is.False);
-            Assert.That(session.TryAddEvidenceLink("clue-01", "clue-03"),
-                Is.EqualTo(LawyerLinkAttemptResult.Invalid));
-        }
-
-        [Test]
-        public void SufficientInterviewEvidenceCanProceedBeforeAllQuestions()
-        {
-            session.MarkBoardOpened();
-            Assert.That(session.TryBeginInterview(), Is.True);
-            Assert.That(session.TryAskMain("main-outlet", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-charger", out _), Is.True);
-            Assert.That(session.TryAskFollowUp("main-outlet", "outlet-warning", out _), Is.True);
-            Assert.That(session.TryAskMain("main-other-person", out _), Is.True);
-            Assert.That(session.EvaluateEvidenceAvailability(), Is.True);
-            Assert.That(session.TryProceedToEvidenceBoard(), Is.True);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.EvidenceBoard));
-            Assert.That(session.TryAskMain("main-return", out _), Is.False);
-        }
-
-        [Test]
-        public void ResolutionValidationRejectsInvalidDuplicateAndMissingClues()
-        {
-            LawyerCaseDefinition invalid = ScriptableObject.CreateInstance<LawyerCaseDefinition>();
-            try
-            {
-                invalid.ConfigureInEditor(
-                    caseDefinition.CaseId,
-                    caseDefinition.CaseTitle,
-                    caseDefinition.CaseSummary,
-                    caseDefinition.InvestigationObjective,
-                    caseDefinition.Timeline,
-                    caseDefinition.Witnesses,
-                    caseDefinition.CaseDetails,
-                    caseDefinition.Clues,
-                    caseDefinition.StartingClueIds,
-                    caseDefinition.DefendantName,
-                    caseDefinition.Questions,
-                    new LawyerCaseResolution(
-                        new[]
-                        {
-                            new LawyerRequiredClueLink("clue-01", "clue-06"),
-                            new LawyerRequiredClueLink("clue-06", "clue-01"),
-                            new LawyerRequiredClueLink("clue-01", "clue-01"),
-                            new LawyerRequiredClueLink("clue-01", "missing")
-                        },
-                        "Kết luận mẫu.",
-                        "Thông báo thiếu chứng cứ mẫu."));
-                List<string> errors = new List<string>();
-                invalid.GetValidationErrors(errors);
-                Assert.That(errors, Has.Some.Contains("bị trùng"));
-                Assert.That(errors, Has.Some.Contains("không hợp lệ"));
-                Assert.That(errors, Has.Some.Contains("không tồn tại"));
-            }
-            finally
-            {
-                Object.DestroyImmediate(invalid);
-            }
         }
 
         private void CompleteSuccessfulInterview()
         {
-            session.MarkBoardOpened();
-            Assert.That(session.TryBeginInterview(), Is.True);
-            int asked = 0;
-            for (int questionIndex = 0; questionIndex < caseDefinition.Questions.Count; questionIndex++)
-            {
-                LawyerInterviewQuestion question = caseDefinition.Questions[questionIndex];
-                if (!question.IsKeyQuestion)
-                    continue;
-                Assert.That(session.TryAskMain(question.Id, out _), Is.True);
-                asked++;
-                for (int followUpIndex = 0; followUpIndex < question.FollowUps.Count; followUpIndex++)
-                {
-                    Assert.That(session.TryAskFollowUp(
-                        question.Id, question.FollowUps[followUpIndex].Id, out _), Is.True);
-                }
-            }
-            Assert.That(asked, Is.EqualTo(caseDefinition.MainQuestionLimit));
+            BeginInterview();
+            Ask("w1-door", "w2-other", "w3-description", "w4-smell");
             Assert.That(session.TryCompleteInterview(), Is.True);
-            Assert.That(session.Phase, Is.EqualTo(LawyerSessionPhase.EvidenceBoard));
+        }
+
+        private void Ask(params string[] ids)
+        {
+            for (int index = 0; index < ids.Length; index++)
+                Assert.That(session.TryAskMain(ids[index], out _), Is.True, ids[index]);
         }
     }
 }

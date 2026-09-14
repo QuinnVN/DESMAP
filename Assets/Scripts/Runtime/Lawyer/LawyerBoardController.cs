@@ -436,12 +436,20 @@ namespace NCKH.VR.Lawyer
                 Destroy(existing);
             }
 
-            bool keepEvidence = !session.AllReasoningCardsUnlocked;
+            bool keepEvidence = true;
             int displayedIndex = 0;
-            int displayedCount = keepEvidence ? session.UnlockedClueIds.Count : 0;
+            IReadOnlyList<string> orderedEvidence = session.GetOrderedEvidenceClueIds();
+            bool showOrderedEvidence = session.Phase >= LawyerSessionPhase.EvidenceBoard
+                && orderedEvidence.Count > 0;
+            int displayedCount = keepEvidence
+                ? (showOrderedEvidence ? orderedEvidence.Count : session.UnlockedClueIds.Count)
+                : 0;
             if (keepEvidence)
             {
-                foreach (string clueId in session.UnlockedClueIds)
+                IEnumerable<string> displayedClues = showOrderedEvidence
+                    ? orderedEvidence
+                    : session.UnlockedClueIds;
+                foreach (string clueId in displayedClues)
                 {
                     LawyerClueDefinition clue = caseDefinition.GetClue(clueId);
                     if (clue == null)
@@ -514,31 +522,21 @@ namespace NCKH.VR.Lawyer
                         break;
                     }
                 }
-                if (reasoning == null || reasoning.RequiredLinks == null
-                    || reasoning.RequiredLinks.Count == 0)
+                if (reasoning == null || session == null
+                    || !session.TryGetEvidenceLinkForReasoning(reasoning.Id, out LawyerClueLink evidenceLink))
                     continue;
 
                 // A chain becomes a physical argument when its final evidence card is
                 // connected to the revealed reasoning card. Keep the link terminal so it
                 // survives undo and card movement while evidence remains on the board.
-                LawyerCluePin evidencePin = null;
-                LawyerClueLink terminalLink = default;
-                for (int linkIndex = reasoning.RequiredLinks.Count - 1; linkIndex >= 0; linkIndex--)
+                LawyerCluePin evidencePin = FindCluePin(evidenceLink.SecondId);
+                string evidenceId = evidenceLink.SecondId;
+                if (evidencePin == null)
                 {
-                    LawyerRequiredClueLink required = reasoning.RequiredLinks[linkIndex];
-                    evidencePin = FindCluePin(required.SecondClueId);
-                    string evidenceId = required.SecondClueId;
-                    if (evidencePin == null)
-                    {
-                        evidencePin = FindCluePin(required.FirstClueId);
-                        evidenceId = required.FirstClueId;
-                    }
-                    if (evidencePin != null)
-                    {
-                        terminalLink = new LawyerClueLink(evidenceId, reasoning.Id);
-                        break;
-                    }
+                    evidencePin = FindCluePin(evidenceLink.FirstId);
+                    evidenceId = evidenceLink.FirstId;
                 }
+                LawyerClueLink terminalLink = new LawyerClueLink(evidenceId, reasoning.Id);
                 LawyerCluePin reasoningPin = FindReasoningPin(reasoning.Id);
                 if (evidencePin != null && reasoningPin != null)
                     linkSystem.AddTerminalLink(terminalLink, evidencePin, reasoningPin);

@@ -282,10 +282,11 @@ namespace NCKH.VR.Lawyer.Editor
             asset.ConfigureInEditor(
                 asset.CaseId, asset.CaseTitle, asset.CaseSummary, asset.InvestigationObjective,
                 asset.Timeline, asset.Witnesses, asset.CaseDetails, asset.Clues,
-                asset.StartingClueIds, asset.DefendantName, asset.Questions,
+                asset.StartingClueIds, asset.DefendantName, asset.InterviewWaves,
                 new LawyerCaseResolution(
                     resolution.RequiredLinks, resolution.TruthConclusion,
-                    resolution.InsufficientEvidenceMessage, cards));
+                    resolution.InsufficientEvidenceMessage, cards),
+                asset.SampleAnswers);
             EditorUtility.SetDirty(asset);
         }
 
@@ -312,7 +313,8 @@ namespace NCKH.VR.Lawyer.Editor
             asset.ConfigureInEditor(
                 asset.CaseId, asset.CaseTitle, asset.CaseSummary, asset.InvestigationObjective,
                 asset.Timeline, asset.Witnesses, asset.CaseDetails, clues,
-                asset.StartingClueIds, asset.DefendantName, asset.Questions, asset.Resolution);
+                asset.StartingClueIds, asset.DefendantName, asset.InterviewWaves,
+                asset.Resolution, asset.SampleAnswers);
             EditorUtility.SetDirty(asset);
         }
 
@@ -509,33 +511,32 @@ namespace NCKH.VR.Lawyer.Editor
                 AssetDatabase.CreateAsset(asset, CasePath);
             }
 
-            List<LawyerInterviewQuestion> questions = new List<LawyerInterviewQuestion>
+            List<LawyerInterviewWave> waves = new List<LawyerInterviewWave>
             {
-                Question("outlet", true, "Bạn đã làm gì với ổ điện trước khi rời phòng?",
-                    "Em sạc laptop vài phút. Trước khi đi, em rút sạc rồi bỏ cả laptop và bộ sạc vào balo.", "clue-09",
-                    FollowUp("outlet-charger", "Bạn có chắc đó là bộ sạc đã cắm vào ổ điện không?", "Có, em chỉ mang theo một bộ sạc.", "clue-10"),
-                    FollowUp("outlet-other-device", "Ngoài laptop, bạn có cắm thiết bị nào khác không?", "Không."),
-                    FollowUp("outlet-warning", "Khi bạn rời đi, có dấu hiệu bất thường nào không?", "Không. Em không thấy khói hay ngửi thấy mùi khét.", "clue-11")),
-                Question("return", false, "Sau khi rời phòng lúc 16:05, bạn đi đâu?",
-                    "Em xuống sân. Khoảng vài phút sau em quay lại vì nhớ ra mình để quên balo.", "clue-12",
-                    FollowUp("return-omission", "Tại sao ban đầu bạn không nói mình quay lại?", "Vì em không vào trong nên em nghĩ nó không liên quan."),
-                    FollowUp("return-entry", "Bạn có vào phòng lần thứ hai không?", "Không.", "clue-13"),
-                    FollowUp("return-warning", "Bạn có nhận thấy điều gì bất thường khi quay lại không?", "Em nhớ có mùi hơi khét.", "clue-14")),
-                Question("other-person", true, "Sau khi bạn rời đi, bạn có biết ai khác vào phòng không?",
-                    "Em không chắc. Nhưng lúc xuống cầu thang em có thấy Nam đi về phía phòng CLB.", "clue-15",
-                    FollowUp("other-person-action", "Bạn có thấy Nam làm gì trong phòng không?", "Không."),
-                    FollowUp("other-person-purpose", "Bạn có biết Nam vào đó để làm gì không?", "Không.", "clue-16"),
-                    FollowUp("other-person-blame", "Bạn có nghĩ Nam gây ra vụ cháy không?", "Em không biết.")),
-                Question("lan-observation", false, "Bạn nghĩ tại sao Lan nói bạn để thiết bị cắm lại?",
-                    "Em không biết. Có thể Lan nhìn nhầm vì từ chỗ Lan đứng không nhìn rõ ổ điện.", "clue-17",
-                    FollowUp("lan-direct-view", "Lan có nhìn trực tiếp vào ổ điện không?", "Em không biết."),
-                    FollowUp("lan-laptop-view", "Lan có thể nhìn thấy laptop của bạn không?", "Có thể thấy bàn, nhưng em không nghĩ nhìn rõ ổ cắm."),
-                    FollowUp("lan-conflict", "Bạn và Lan có mâu thuẫn gì không?", "Không.")),
-                Question("full-timeline", false, "Hãy kể lại toàn bộ những gì bạn làm từ 16:00 đến 16:20.",
-                    "16:00 em vào phòng. Em sạc laptop một lúc. Khoảng 16:05 em rút sạc rồi rời đi. Sau đó em xuống sân. Khoảng 16:12 em quay lại lấy balo nhưng không vào phòng.", "clue-18",
-                    FollowUp("timeline-belongings", "Bạn mang gì theo lúc 16:05?", "Laptop và bộ sạc."),
-                    FollowUp("timeline-bag", "Tại sao bạn không lấy balo khi quay lại?", "Em thấy cửa đóng nên nghĩ sẽ quay lại sau."),
-                    FollowUp("timeline-omission", "Tại sao lời khai đầu tiên không nhắc việc quay lại?", "Em quên nói vì em không vào phòng."))
+                Wave("wave-1", "MINH RỜI PHÒNG",
+                    Question("w1-laptop", LawyerClueStrength.Weak, "Khi rời phòng, em có mang laptop theo không?", "Có, em mang laptop theo.", "clue-07"),
+                    Question("w1-door", LawyerClueStrength.Strong, "Cửa phòng lúc em rời đi có khóa không?", "Không, em chỉ khép cửa.", "clue-08"),
+                    Question("w1-charger", LawyerClueStrength.Strong, "Em có nhớ mình đã rút sạc khi rời đi chưa?", "Có. Em nhớ đã rút và bỏ vào balo.", "clue-09"),
+                    Question("w1-hurry", LawyerClueStrength.Noise, "Em có vội khi rời phòng không?", "Có, lúc đó em khá vội.", "clue-10"),
+                    Question("w1-time", LawyerClueStrength.Weak, "Em rời phòng lúc khoảng mấy giờ?", "Khoảng 16:05.", "clue-11")),
+                Wave("wave-2", "SAU KHI MINH RỜI PHÒNG",
+                    Question("w2-other", LawyerClueStrength.Strong, "Sau khi rời phòng, em có thấy ai đi về phía phòng CLB không?", "Có. Em thấy một bạn đi về phía đó.", "clue-12"),
+                    Question("w2-return", LawyerClueStrength.Strong, "Khi quay lại lúc khoảng 16:12, em có vào phòng không?", "Không. Em chỉ đứng ngoài cửa.", "clue-13"),
+                    Question("w2-smell", LawyerClueStrength.Strong, "Khi quay lại, em có nhận thấy điều gì bất thường không?", "Em ngửi thấy mùi khét nhẹ.", "clue-14"),
+                    Question("w2-items", LawyerClueStrength.Noise, "Lúc quay lại, em mang theo những gì?", "Balo và điện thoại.", "clue-15"),
+                    Question("w2-duration", LawyerClueStrength.Weak, "Em đứng ngoài cửa khoảng bao lâu?", "Khoảng 20 giây.", "clue-16")),
+                Wave("wave-3", "KIỂM TRA BỘ SẠC",
+                    Question("w3-description", LawyerClueStrength.Strong, "Bộ sạc của em có đặc điểm gì?", "Củ sạc và dây đều màu trắng.", "clue-17"),
+                    Question("w3-saw", LawyerClueStrength.Strong, "Sau khi rời phòng, em có nhìn thấy bộ sạc của mình nữa không?", "Có. Lúc mở balo em thấy nó ở trong ngăn cùng laptop.", "clue-18"),
+                    Question("w3-other-device", LawyerClueStrength.Strong, "Khi em rời đi, trên ổ điện còn thiết bị nào khác không?", "Có một củ sạc khác ở ổ bên cạnh.", "clue-19"),
+                    Question("w3-forgotten", LawyerClueStrength.Weak, "Có thường xuyên có người để quên đồ điện trong phòng không?", "Có, thỉnh thoảng mọi người để quên đồ.", "clue-20"),
+                    Question("w3-lan", LawyerClueStrength.Strong, "Theo em, Lan có nhìn rõ ổ điện không?", "Em không chắc vì em không đứng ở vị trí của Lan.", "clue-21")),
+                Wave("wave-4", "NGUỒN GỐC ĐÁM CHÁY",
+                    Question("w4-bin", LawyerClueStrength.Weak, "Trước khi rời đi, trong sọt rác gần bàn có gì?", "Có khá nhiều giấy nháp và tài liệu.", "clue-22"),
+                    Question("w4-smell", LawyerClueStrength.Strong, "Khi quay lại, em thấy mùi khét giống gì?", "Em thấy giống mùi giấy cháy.", "clue-23"),
+                    Question("w4-outlet", LawyerClueStrength.Strong, "Trước khi rời đi, ổ điện có gì bất thường không?", "Không. Em không thấy khói, lửa hay tia điện.", "clue-24"),
+                    Question("w4-object", LawyerClueStrength.Noise, "Em có thấy vật gì lạ gần sọt rác không?", "Không, em không để ý.", "clue-25"),
+                    Question("w4-window", LawyerClueStrength.Noise, "Lúc đó cửa sổ có mở không?", "Có một cửa sổ mở hé.", "clue-26"))
             };
 
             List<LawyerClueDefinition> clues = new List<LawyerClueDefinition>
@@ -546,18 +547,26 @@ namespace NCKH.VR.Lawyer.Editor
                 Clue(4, "Báo cáo hiện trường ban đầu", "Đám cháy có khả năng bắt đầu từ khu vực ổ cắm điện gần bàn làm việc, nhưng chưa xác định chính xác thiết bị nào gây ra sự cố.", LawyerClueCategory.CaseDetail),
                 Clue(5, "Lời khai của Minh", "Em có sạc laptop ở đó, nhưng em đã rút sạc trước khi rời đi.", LawyerClueCategory.Testimony),
                 Clue(6, "Thời điểm báo cháy", "16:20: Hệ thống báo cháy của trường được kích hoạt. Minh đã rời phòng 15 phút trước đó.", LawyerClueCategory.Timeline),
-                Clue(7, "Vi phạm trước đây", "Hai tuần trước, Minh từng bị giáo viên nhắc nhở vì tự ý sử dụng thiết bị điện trong phòng CLB. Chi tiết này không chứng minh Minh gây ra vụ cháy lần này.", LawyerClueCategory.Noise),
-                Clue(8, "Nội quy phòng CLB", "Học sinh phải rút thiết bị điện cá nhân trước khi rời khỏi phòng.", LawyerClueCategory.CaseDetail),
-                Clue(9, "Camera cửa phòng", "16:05: Minh rời phòng với laptop và bộ sạc trên tay.", LawyerClueCategory.Timeline),
-                Clue(10, "Camera góc khác", "Hình ảnh cho thấy dây sạc Minh cầm khi rời đi giống thiết bị được Minh sử dụng lúc 16:03.", LawyerClueCategory.Contradiction),
-                Clue(11, "Nhân chứng hành lang", "Một học sinh đi ngang qua phòng lúc 16:07 và không phát hiện khói hoặc mùi khét.", LawyerClueCategory.Witness),
-                Clue(12, "Camera hành lang lúc 16:12", "16:12: Minh xuất hiện trở lại trước phòng CLB.", LawyerClueCategory.Timeline),
-                Clue(13, "Camera cửa lúc 16:12", "Minh đứng ngoài cửa khoảng 20 giây rồi rời đi. Không ghi nhận Minh bước vào phòng.", LawyerClueCategory.Contradiction),
-                Clue(14, "Lời khai học sinh khác", "Một học sinh khác cũng báo ngửi thấy mùi khét khoảng 16:13.", LawyerClueCategory.Witness),
-                Clue(15, "Camera ghi nhận Nam", "16:08: Nam vào phòng CLB. 16:15: Nam rời phòng. Có một người khác ở trong phòng sau khi Minh rời đi và trước khi đám cháy được phát hiện.", LawyerClueCategory.Timeline),
-                Clue(16, "Lời khai của Nam", "Nam khai: “Tôi chỉ vào lấy balo rồi đi ngay.” Tuy nhiên, camera cho thấy Nam ở trong phòng khoảng 7 phút.", LawyerClueCategory.Contradiction),
-                Clue(17, "Vị trí của Lan", "Camera xác nhận Lan đứng ngoài cửa, cách bàn làm việc một khoảng và bị một chiếc tủ che một phần tầm nhìn.", LawyerClueCategory.Witness),
-                Clue(18, "Timeline camera hoàn chỉnh", "16:00 Minh vào phòng; 16:05 Minh rời phòng; 16:08 một người khác vào; 16:12 Minh quay lại hành lang nhưng không vào phòng; 16:15 người kia rời phòng; 16:20 báo cháy kích hoạt.", LawyerClueCategory.Timeline)
+                Clue(7, "Camera hành lang 16:05", "Camera cho thấy Minh rời phòng với laptop trên tay.", LawyerClueCategory.Timeline),
+                Clue(8, "Kiểm tra cửa phòng", "Không có dấu hiệu cửa từng bị khóa trong khoảng thời gian xảy ra vụ việc.", LawyerClueCategory.CaseDetail),
+                Clue(9, "Camera cầu thang 16:07", "Khi Minh mở balo, một dây sạc màu trắng được nhìn thấy bên trong.", LawyerClueCategory.Timeline),
+                Clue(10, "Tin nhắn 16:04", "Minh nhắn cho bạn: “T xuống liền đây.”", LawyerClueCategory.Noise),
+                Clue(11, "Camera hành lang", "Minh rời phòng lúc 16:05:18.", LawyerClueCategory.Timeline),
+                Clue(12, "Camera hành lang 16:08", "Một học sinh khác đi vào khu vực phòng CLB lúc 16:08.", LawyerClueCategory.Timeline),
+                Clue(13, "Camera hành lang 16:12", "Minh đứng trước cửa khoảng 20 giây rồi rời đi, không bước vào phòng.", LawyerClueCategory.Timeline),
+                Clue(14, "Dữ liệu cảm biến khói", "Nồng độ khói bắt đầu tăng rõ từ khoảng 16:13.", LawyerClueCategory.CaseDetail),
+                Clue(15, "Camera hành lang", "Camera xác nhận Minh vẫn mang balo lúc quay lại.", LawyerClueCategory.Noise),
+                Clue(16, "Camera timeline", "Minh đứng trước cửa từ 16:12:31 đến 16:12:52.", LawyerClueCategory.Timeline),
+                Clue(17, "Vật chứng tại hiện trường", "Củ sạc còn cắm tại ổ điện sau vụ cháy có màu đen.", LawyerClueCategory.Contradiction),
+                Clue(18, "Camera cầu thang 16:07", "Trong balo có một củ sạc và dây màu trắng.", LawyerClueCategory.Timeline),
+                Clue(19, "Ảnh hiện trường", "Một củ sạc khác được tìm thấy tại ổ cắm và không khớp với sạc của Minh.", LawyerClueCategory.Contradiction),
+                Clue(20, "Danh sách đồ thất lạc CLB", "Trước vụ việc đã có nhiều thiết bị điện cá nhân bị bỏ quên trong phòng.", LawyerClueCategory.CaseDetail),
+                Clue(21, "Sơ đồ vị trí của Lan", "Từ vị trí Lan đứng, một phần ổ điện bị cạnh bàn và chồng giấy che khuất.", LawyerClueCategory.Witness),
+                Clue(22, "Ảnh hiện trường", "Sọt rác chứa nhiều giấy và nằm gần khu vực cháy mạnh.", LawyerClueCategory.CaseDetail),
+                Clue(23, "Báo cáo giám định cháy", "Dấu cháy sớm nhất được phát hiện ở phần giấy trong sọt rác.", LawyerClueCategory.Contradiction),
+                Clue(24, "Giám định ổ điện", "Dây điện bị hư hỏng do nhiệt tác động từ bên ngoài trước khi xảy ra chập điện.", LawyerClueCategory.Contradiction),
+                Clue(25, "Ảnh hiện trường sau cháy", "Trong sọt chỉ xác định được giấy cháy, chưa tìm thấy vật gây cháy cụ thể.", LawyerClueCategory.Noise),
+                Clue(26, "Kiểm tra hiện trường", "Một cửa sổ được phát hiện mở khoảng 10 cm.", LawyerClueCategory.Noise)
             };
 
             asset.ConfigureInEditor(
@@ -565,40 +574,37 @@ namespace NCKH.VR.Lawyer.Editor
                 "VỤ CHÁY PHÒNG CLB",
                 "Khoảng 16:20, một vụ cháy xảy ra tại phòng CLB của trường. Đám cháy bắt đầu gần ổ cắm điện bên bàn làm việc. Lan nói đã thấy Minh rời đi khi một thiết bị vẫn còn cắm điện; Minh khẳng định mình đã rút bộ sạc.",
                 "Thu thập thông tin, kiểm tra lời khai và mâu thuẫn, chọn chứng cứ có giá trị, rồi xây dựng lập luận bảo vệ Minh.",
-                new[] { "16:00 — Minh vào phòng CLB.", "16:03 — Minh sử dụng ổ điện gần bàn làm việc.", "16:05 — Minh rời phòng.", "16:08–16:15 — Nam ở trong phòng CLB.", "16:12 — Minh quay lại hành lang nhưng không vào phòng.", "16:20 — Hệ thống báo cháy kích hoạt." },
-                new[] { "Lan — khai thấy thiết bị vẫn còn cắm điện.", "Minh — khẳng định đã rút bộ sạc trước khi rời đi.", "Nam — vào phòng sau Minh và khai chỉ vào lấy balo.", "Hai học sinh hành lang — cung cấp thông tin về khói và mùi khét." },
-                new[] { "Điểm khởi phát nằm gần ổ cắm điện bên bàn làm việc.", "Chưa xác định thiết bị cụ thể gây ra sự cố.", "Nội quy yêu cầu rút thiết bị điện cá nhân trước khi rời phòng." },
+                new[] { "16:00 — Minh vào phòng CLB.", "16:03 — Minh sử dụng ổ điện gần bàn làm việc.", "16:05 — Minh rời phòng.", "16:12 — Minh quay lại hành lang.", "16:20 — Hệ thống báo cháy kích hoạt." },
+                new[] { "Lan — khai thấy thiết bị vẫn còn cắm điện.", "Minh — khẳng định đã rút bộ sạc trước khi rời đi." },
+                new[] { "Báo cáo ban đầu chỉ khoanh vùng khu vực ổ cắm; kết luận giám định cuối cùng có thể thay thế nhận định sơ bộ này." },
                 clues,
-                new[] { "clue-01", "clue-02", "clue-03", "clue-04", "clue-05", "clue-06", "clue-07", "clue-08" },
+                new[] { "clue-01", "clue-02", "clue-03", "clue-04", "clue-05", "clue-06" },
                 "MINH",
-                questions,
+                waves,
                 new LawyerCaseResolution(
                     new[]
                     {
-                        new LawyerRequiredClueLink("clue-01", "clue-09"),
-                        new LawyerRequiredClueLink("clue-11", "clue-15"),
-                        new LawyerRequiredClueLink("clue-04", "clue-10")
+                        new LawyerEvidenceChainSlot(new[] { "clue-07", "clue-08", "clue-09", "clue-11" }),
+                        new LawyerEvidenceChainSlot(new[] { "clue-12", "clue-13", "clue-14", "clue-16" }),
+                        new LawyerEvidenceChainSlot(new[] { "clue-17", "clue-18", "clue-19", "clue-20", "clue-21" }),
+                        new LawyerEvidenceChainSlot(new[] { "clue-22", "clue-23", "clue-24" })
                     },
-                    "Camera cho thấy Minh đã rời phòng 15 phút trước khi báo cháy kích hoạt; lời khai của Lan và Minh mâu thuẫn trực tiếp; báo cáo hiện trường chưa xác định bộ sạc của Minh là nguyên nhân. Vì vậy, chứng cứ hiện tại chưa đủ để kết luận Minh gây ra vụ cháy.",
-                    "Bạn chưa có đủ chứng cứ để xây dựng lập luận bảo vệ Minh. Hãy kiểm tra các mốc thời gian, độ tin cậy của lời khai và nguyên nhân chưa được xác định.",
+                    "Chứng cứ hiện có không đủ để kết luận Minh gây ra vụ cháy; chuỗi thời gian, vật chứng và giám định đều tạo ra nghi vấn hợp lý về nguyên nhân khác.",
+                    "Bạn cần bốn manh mối không nhiễu, gồm ít nhất ba manh mối mạnh. Hãy phỏng vấn lại và chọn câu hỏi có giá trị chứng minh cao hơn.",
                     new[]
                     {
-                        new LawyerReasoningCardDefinition(
-                            "reasoning-time-gap",
-                            "Mang bộ sạc rời phòng",
-                            "Camera ghi nhận Minh rời phòng lúc 16:05 cùng laptop và bộ sạc.",
-                            new[] { new LawyerRequiredClueLink("clue-01", "clue-09") }),
-                        new LawyerReasoningCardDefinition(
-                            "reasoning-conflicting-testimony",
-                            "Người khác tiếp cận hiện trường",
-                            "Lúc 16:07 chưa có dấu hiệu cháy rõ ràng; sau đó Nam vào phòng từ 16:08 đến 16:15.",
-                            new[] { new LawyerRequiredClueLink("clue-11", "clue-15") }),
-                        new LawyerReasoningCardDefinition(
-                            "reasoning-unknown-cause",
-                            "Chưa xác định nguyên nhân",
-                            "Báo cáo chưa xác định thiết bị gây cháy, trong khi camera cho thấy Minh mang bộ sạc rời đi.",
-                            new[] { new LawyerRequiredClueLink("clue-04", "clue-10") })
-                    }));
+                        new LawyerReasoningCardDefinition("reasoning-1", "Cơ hội tiếp cận", "Đối chiếu việc Minh rời phòng với những gì xảy ra sau đó.", null),
+                        new LawyerReasoningCardDefinition("reasoning-2", "Vật chứng bộ sạc", "Đối chiếu timeline với vật chứng và lời khai về bộ sạc.", null),
+                        new LawyerReasoningCardDefinition("reasoning-3", "Nguyên nhân đám cháy", "Đối chiếu vật chứng với kết luận giám định cháy.", null)
+                    }),
+                new[]
+                {
+                    "Minh không phải người duy nhất có thể tiếp cận phòng CLB sau 16:05, vì cửa không khóa và camera ghi nhận có người khác đi về phía phòng sau khi Minh rời đi. Khi Minh quay lại lúc 16:12, camera cũng xác nhận Minh không bước vào phòng. Ngoài ra, bộ sạc còn lại tại hiện trường không trùng đặc điểm với bộ sạc của Minh. Quan trọng nhất, giám định cho thấy điểm phát cháy nằm ở sọt giấy và hiện tượng chập điện xảy ra sau khi đám cháy đã bắt đầu. Vì vậy, chưa có cơ sở để kết luận bộ sạc của Minh gây ra vụ cháy.",
+                    "Dù Minh từng sử dụng ổ điện trước vụ cháy, điều đó không có nghĩa thiết bị của Minh là nguyên nhân. Giám định cho thấy điểm phát cháy ban đầu nằm ở sọt giấy, không phải ổ điện, và hiện tượng chập điện chỉ xảy ra sau khi nhiệt từ đám cháy tác động vào dây điện. Minh cũng khai đã mang bộ sạc theo, phù hợp với hình ảnh camera ghi nhận dây sạc trong balo. Vì vậy, giả thuyết cho rằng bộ sạc của Minh gây cháy không phù hợp với các bằng chứng hiện có.",
+                    "Minh rời phòng lúc 16:05 và đến khoảng 16:12 mới quay lại. Camera cho thấy khi quay lại, Minh chỉ đứng ngoài cửa và không bước vào phòng. Trong khoảng thời gian Minh vắng mặt, vẫn có người khác tiếp cận khu vực phòng CLB. Mùi khét và dấu hiệu khói chỉ xuất hiện rõ sau đó. Vì vậy, có một khoảng thời gian đủ lớn để sự cố xảy ra khi Minh không có mặt trong phòng, nên không thể chỉ dựa vào việc Minh từng dùng ổ điện để quy trách nhiệm cho Minh.",
+                    "Lời khai của Lan rằng còn một thiết bị cắm ở ổ điện chưa đủ để xác định đó là bộ sạc của Minh. Từ vị trí của Lan, ổ điện bị che một phần và cô không thể quan sát rõ thiết bị. Trong khi đó, bộ sạc được tìm thấy tại hiện trường có màu đen, còn bộ sạc của Minh màu trắng. Camera cũng ghi nhận vật giống dây sạc trắng trong balo Minh sau khi rời phòng. Vì vậy, lời khai của Lan không đủ mạnh để chứng minh Minh đã bỏ lại bộ sạc.",
+                    "Có ba lý do chính để không thể kết luận Minh gây ra vụ cháy. Thứ nhất, Minh đã rời phòng trước khi đám cháy phát triển và camera xác nhận Minh không vào lại khi quay về. Thứ hai, người khác vẫn có khả năng tiếp cận căn phòng trong thời gian Minh vắng mặt. Thứ ba, bằng chứng vật lý không ủng hộ giả thuyết bộ sạc gây cháy: điểm phát cháy nằm ở sọt giấy và chập điện xảy ra sau khi lửa đã xuất hiện. Do đó, chứng cứ hiện tại không chỉ thiếu để buộc trách nhiệm cho Minh mà còn cho thấy một nguyên nhân khác có khả năng hợp lý hơn."
+                });
             EditorUtility.SetDirty(asset);
             return asset;
         }
@@ -607,21 +613,14 @@ namespace NCKH.VR.Lawyer.Editor
             int number, string title, string description, LawyerClueCategory category)
             => new LawyerClueDefinition($"clue-{number:00}", title, description, category);
 
-        private static LawyerInterviewQuestion Question(
-            string id, bool keyQuestion, string prompt, string response, string revealedClueId,
-            params LawyerFollowUpQuestion[] followUps)
-            => new LawyerInterviewQuestion(
-                $"main-{id}", prompt, keyQuestion,
-                new LawyerTestimony(response, null,
-                    string.IsNullOrEmpty(revealedClueId) ? null : new[] { revealedClueId }),
-                followUps);
+        private static LawyerInterviewWave Wave(
+            string id, string title, params LawyerInterviewQuestion[] questions)
+            => new LawyerInterviewWave(id, title, questions);
 
-        private static LawyerFollowUpQuestion FollowUp(
-            string id, string prompt, string response, string revealedClueId = null)
-            => new LawyerFollowUpQuestion(
-                id, prompt,
-                new LawyerTestimony(response, null,
-                    string.IsNullOrEmpty(revealedClueId) ? null : new[] { revealedClueId }));
+        private static LawyerInterviewQuestion Question(
+            string id, LawyerClueStrength strength, string prompt, string response, string revealedClueId)
+            => new LawyerInterviewQuestion(id, prompt, strength,
+                new LawyerTestimony(response, null, new[] { revealedClueId }));
 
         private static LawyerBoardClue CreateCluePrefab(
             Material cardMaterial,

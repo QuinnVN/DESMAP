@@ -232,7 +232,7 @@ namespace NCKH.VR.GameControl.Tests
         }
 
         [Test]
-        public void GameplayScenesUseRemoteAdaptersAndDoNotAutoStart()
+        public void DoctorGameplayScenesUseRemoteAdaptersAndAutoStart()
         {
             WithScene(ClinicScenePath, scene =>
             {
@@ -241,7 +241,17 @@ namespace NCKH.VR.GameControl.Tests
                 ClinicRemoteSceneAdapter adapter = manager.GetComponent<ClinicRemoteSceneAdapter>();
                 Assert.That(adapter, Is.Not.Null);
                 Assert.That(adapter.SceneId, Is.EqualTo("clinic"));
-                Assert.That(new SerializedObject(manager).FindProperty("startAutomatically").boolValue, Is.False);
+                SerializedObject serializedManager = new SerializedObject(manager);
+                Assert.That(serializedManager.FindProperty("startAutomatically").boolValue, Is.True);
+                ClinicRoundHud hud = FindComponent<ClinicRoundHud>(scene);
+                Assert.That(hud, Is.Not.Null);
+                GameObject locomotion = new SerializedObject(hud)
+                    .FindProperty("locomotionRoot").objectReferenceValue as GameObject;
+                Assert.That(locomotion, Is.Not.Null);
+                Assert.That(locomotion.name, Is.EqualTo("Locomotion"));
+                Assert.That(locomotion.transform.Find("Move").gameObject.activeSelf, Is.True);
+                Assert.That(locomotion.transform.Find("Turn").gameObject.activeSelf, Is.True);
+                Assert.That(locomotion.transform.Find("Jump").gameObject.activeSelf, Is.False);
             });
 
             WithScene(DoctorScenePath, scene =>
@@ -251,7 +261,18 @@ namespace NCKH.VR.GameControl.Tests
                 DoctorRemoteSceneAdapter adapter = manager.GetComponent<DoctorRemoteSceneAdapter>();
                 Assert.That(adapter, Is.Not.Null);
                 Assert.That(adapter.SceneId, Is.EqualTo("doctor"));
-                Assert.That(new SerializedObject(manager).FindProperty("startAutomatically").boolValue, Is.False);
+                SerializedObject serializedManager = new SerializedObject(manager);
+                Assert.That(serializedManager.FindProperty("startAutomatically").boolValue, Is.True);
+                GameObject locomotion = serializedManager.FindProperty("locomotionRoot")
+                    .objectReferenceValue as GameObject;
+                Assert.That(locomotion, Is.Not.Null);
+                Assert.That(locomotion.name, Is.EqualTo("Locomotion"));
+                Assert.That(serializedManager.FindProperty("moveProviderRoot")
+                    .objectReferenceValue.name, Is.EqualTo("Move"));
+                Assert.That(serializedManager.FindProperty("gravityProviderRoot")
+                    .objectReferenceValue.name, Is.EqualTo("Gravity"));
+                Assert.That(serializedManager.FindProperty("jumpProviderRoot")
+                    .objectReferenceValue.name, Is.EqualTo("Jump"));
             });
 
             WithScene(LawyerOfficeScenePath, scene =>
@@ -267,6 +288,48 @@ namespace NCKH.VR.GameControl.Tests
                 Assert.That(adapter, Is.Not.Null);
                 Assert.That(adapter.SceneId, Is.EqualTo("lawyer"));
             });
+        }
+
+        [Test]
+        public void DoctorGameStartCommandsAcceptAlreadyStartingRounds()
+        {
+            GameObject doctorRoot = new GameObject("Doctor start command test");
+            GameObject clinicRoot = new GameObject("Clinic start command test");
+            try
+            {
+                DoctorGameManager doctorManager = doctorRoot.AddComponent<DoctorGameManager>();
+                DoctorRemoteSceneAdapter doctorAdapter = doctorRoot.AddComponent<DoctorRemoteSceneAdapter>();
+                SerializedObject serializedDoctorAdapter = new SerializedObject(doctorAdapter);
+                serializedDoctorAdapter.FindProperty("gameManager").objectReferenceValue = doctorManager;
+                serializedDoctorAdapter.ApplyModifiedPropertiesWithoutUndo();
+
+                Assert.That(doctorAdapter.TryStart(out string firstDoctorError), Is.True);
+                Assert.That(firstDoctorError, Is.Empty);
+                Assert.That(doctorManager.State, Is.EqualTo(DoctorGameState.Preparing));
+
+                Assert.That(doctorAdapter.TryStart(out string repeatedDoctorError), Is.True);
+                Assert.That(repeatedDoctorError, Is.Empty);
+                Assert.That(doctorManager.State, Is.EqualTo(DoctorGameState.Preparing));
+
+                ClinicGameManager clinicManager = clinicRoot.AddComponent<ClinicGameManager>();
+                ClinicRemoteSceneAdapter clinicAdapter = clinicRoot.AddComponent<ClinicRemoteSceneAdapter>();
+                SerializedObject serializedClinicAdapter = new SerializedObject(clinicAdapter);
+                serializedClinicAdapter.FindProperty("gameManager").objectReferenceValue = clinicManager;
+                serializedClinicAdapter.ApplyModifiedPropertiesWithoutUndo();
+
+                Assert.That(clinicAdapter.TryStart(out string firstClinicError), Is.True);
+                Assert.That(firstClinicError, Is.Empty);
+                Assert.That(clinicManager.RoundState, Is.EqualTo(ClinicRoundState.Preparing));
+
+                Assert.That(clinicAdapter.TryStart(out string repeatedClinicError), Is.True);
+                Assert.That(repeatedClinicError, Is.Empty);
+                Assert.That(clinicManager.RoundState, Is.EqualTo(ClinicRoundState.Preparing));
+            }
+            finally
+            {
+                Object.DestroyImmediate(doctorRoot);
+                Object.DestroyImmediate(clinicRoot);
+            }
         }
 
         [Test]

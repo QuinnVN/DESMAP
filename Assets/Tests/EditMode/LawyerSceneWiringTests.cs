@@ -158,7 +158,9 @@ namespace NCKH.VR.Lawyer.Tests
                 Assert.That(evidenceSurfaceObject, Is.Not.Null);
                 Assert.That(visual, Is.Not.Null);
                 Assert.That(collider, Is.Not.Null);
-                Assert.That(board.GetComponentsInChildren<Canvas>(true), Is.Empty);
+                Canvas[] boardCanvases = board.GetComponentsInChildren<Canvas>(true);
+                Assert.That(boardCanvases, Has.Length.EqualTo(1));
+                Assert.That(boardCanvases[0].name, Is.EqualTo("Board Toast Canvas"));
                 Transform finaleHud = camera.transform.Find("Lawyer Finale Canvas");
                 Assert.That(finaleHud, Is.Not.Null);
                 Assert.That(finaleHud.GetComponent<Canvas>().renderMode,
@@ -455,7 +457,7 @@ namespace NCKH.VR.Lawyer.Tests
                 Assert.That(defenseSerialized.FindProperty("preparationDuration").floatValue,
                     Is.EqualTo(5f).Within(0.001f));
                 Assert.That(defenseSerialized.FindProperty("recordingDuration").floatValue,
-                    Is.EqualTo(30f).Within(0.001f));
+                    Is.EqualTo(60f).Within(0.001f));
                 Assert.That(defenseSerialized.FindProperty("uploadAttempts").intValue,
                     Is.EqualTo(5));
                 Assert.That(Find(scene, "Lawyer Defense Canvas").activeSelf, Is.False);
