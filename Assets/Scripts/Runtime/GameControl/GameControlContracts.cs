@@ -118,6 +118,8 @@ namespace NCKH.VR.GameControl
         public string type;
         public string sceneId;
         public string issuedAtUtc;
+        public string participantName;
+        public string participantSessionId;
     }
 
     [Serializable]
@@ -131,6 +133,8 @@ namespace NCKH.VR.GameControl
         public string appliedAtUtc;
         public string errorCode;
         public string errorMessage;
+        public string participantName;
+        public string participantSessionId;
     }
 
     [Serializable]
@@ -158,6 +162,45 @@ namespace NCKH.VR.GameControl
         public int scoreTotal;
         public int interviewRestartCount;
         public string assessmentContextJson;
+        public string participantName;
+        public string participantSessionId;
+        public string runId;
+        public string fragmentId;
+        public string text;
+        public string patientName;
+        public string selectedQuestionsJson;
+        public string notesJson;
+        public string actionableAtUtc;
+        public string resolvedAtUtc;
+        public float resolutionDurationSeconds;
+        public string roundStartedAtUtc;
+        public string roundCompletedAtUtc;
+        public string caseSubmittedAtUtc;
+        public string trustState;
+        public bool emotionalHandling;
+        public bool causeIdentification;
+        public bool solutionSuitability;
+        public bool trustRebuilding;
+        public string completionReason;
+        public string transcript;
+        public string customerReply;
+        public string objective;
+        public string selectedShoeId;
+        public string bestFitShoeId;
+        public string feedback;
+        public int score;
+        public string recordingAtUtc;
+        public string assessmentCompletedAtUtc;
+        public int acceptedTurnCount;
+        public int silenceCount;
+        public int correctCount;
+        public int incorrectCount;
+        public int unassignedCount;
+        public int essentialCorrectCount;
+        public int essentialIncorrectCount;
+        public int essentialUnassignedCount;
+        public string categorizationAccuracyPercent;
+        public string essentialCategorizationAccuracyPercent;
         public float remainingTime;
         public AudioTelemetryData audio;
     }
@@ -199,6 +242,22 @@ namespace NCKH.VR.GameControl
         public string sceneId;
         public string phase;
         public string eventType;
+        public string participantName;
+        public string participantSessionId;
+        public string runId;
+        public GameplayTelemetryData payload;
+    }
+
+    [Serializable]
+    public sealed class ResultFragmentDto
+    {
+        public string fragmentId;
+        public string runId;
+        public string participantName;
+        public string participantSessionId;
+        public string gameId;
+        public string fragmentType;
+        public string occurredAtUtc;
         public GameplayTelemetryData payload;
     }
 
@@ -211,6 +270,9 @@ namespace NCKH.VR.GameControl
         public const string ResetSceneCommand = "reset_scene";
         public const string HealthRoute = "/api/health";
         public const string TelemetryRoute = "/api/telemetry";
+        public const string ResultFragmentRoute = "/api/results/fragments";
+        public const string AssignParticipantCommand = "assign_participant";
+        public const string ClearParticipantCommand = "clear_participant";
         public const string ControlWebSocketRoute = "/ws/ctrl";
         public const string TtsWebSocketRoute = "/ws/tts";
         public const string SttWebSocketRoute = "/ws/stt";

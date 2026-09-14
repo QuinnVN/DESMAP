@@ -170,6 +170,15 @@ namespace NCKH.VR.Sales
 
         private GameplayTelemetryData CurrentData()
         {
+            string selected = string.Empty;
+            string bestFit = string.Empty;
+            if (part1 != null && part1.data != null && part1.SelectedIndex >= 0
+                && part1.SelectedIndex < part1.data.shoes.Length)
+            {
+                selected = part1.data.shoes[part1.SelectedIndex].label;
+                for (int i = 0; i < part1.data.shoes.Length; i++)
+                    if (part1.data.shoes[i].bestFit) bestFit = part1.data.shoes[i].label;
+            }
             return new GameplayTelemetryData
             {
                 salesSessionId = salesSessionId,
@@ -177,7 +186,11 @@ namespace NCKH.VR.Sales
                 caseId = part2 != null && part2.scenario != null
                     && part2.scenario.customerProfile != null
                     ? part2.scenario.customerProfile.name : "Lan",
-                category = Phase.ToString()
+                category = Phase.ToString(),
+                selectedShoeId = selected,
+                bestFitShoeId = bestFit,
+                fragmentId = !string.IsNullOrWhiteSpace(part1AttemptId)
+                    ? salesSessionId + ":part1:" + part1AttemptId : string.Empty
             };
         }
     }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals;
+using NCKH.VR.GameControl;
 
 namespace NCKH.VR.Doctor
 {
@@ -112,7 +113,9 @@ namespace NCKH.VR.Doctor
         private IEnumerator Start()
         {
             yield return null;
-            if (startAutomatically && State == DoctorGameState.Idle)
+            if (startAutomatically && State == DoctorGameState.Idle
+                && GameController.Instance != null
+                && GameController.Instance.HasAcknowledgedParticipant)
                 StartRound();
         }
 

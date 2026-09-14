@@ -45,6 +45,9 @@ namespace NCKH.VR.GameControl.Tests
         {
             Assert.That(GameControlApi.HealthRoute, Is.EqualTo("/api/health"));
             Assert.That(GameControlApi.TelemetryRoute, Is.EqualTo("/api/telemetry"));
+            Assert.That(GameControlApi.ResultFragmentRoute, Is.EqualTo("/api/results/fragments"));
+            Assert.That(GameControlApi.AssignParticipantCommand, Is.EqualTo("assign_participant"));
+            Assert.That(GameControlApi.ClearParticipantCommand, Is.EqualTo("clear_participant"));
             Assert.That(GameControlApi.ControlWebSocketRoute, Is.EqualTo("/ws/ctrl"));
             Assert.That(GameControlApi.TtsWebSocketRoute, Is.EqualTo("/ws/tts"));
             Assert.That(GameControlApi.SttWebSocketRoute, Is.EqualTo("/ws/stt"));
@@ -86,6 +89,37 @@ namespace NCKH.VR.GameControl.Tests
             Assert.That(restored.sequence, Is.EqualTo(command.sequence));
             Assert.That(restored.type, Is.EqualTo(command.type));
             Assert.That(restored.sceneId, Is.EqualTo(command.sceneId));
+        }
+
+        [Test]
+        public void ParticipantCommandAndResultFragmentRoundTripIdentity()
+        {
+            RemoteCommandDto command = new RemoteCommandDto
+            {
+                commandId = "participant-1",
+                type = GameControlApi.AssignParticipantCommand,
+                participantName = "  Nguyễn   An  ",
+                participantSessionId = "session-1"
+            };
+            RemoteCommandDto restored = JsonUtility.FromJson<RemoteCommandDto>(JsonUtility.ToJson(command));
+            Assert.That(restored.type, Is.EqualTo(GameControlApi.AssignParticipantCommand));
+            Assert.That(restored.participantName, Is.EqualTo(command.participantName));
+            Assert.That(restored.participantSessionId, Is.EqualTo(command.participantSessionId));
+
+            ResultFragmentDto fragment = new ResultFragmentDto
+            {
+                fragmentId = "run:patient:1",
+                runId = "run-1",
+                participantName = "Nguyễn An",
+                participantSessionId = "session-1",
+                gameId = "clinic",
+                fragmentType = "clinic.patient_resolved",
+                payload = new GameplayTelemetryData { resolutionDurationSeconds = 2.5f }
+            };
+            ResultFragmentDto fragmentCopy = JsonUtility.FromJson<ResultFragmentDto>(JsonUtility.ToJson(fragment));
+            Assert.That(fragmentCopy.fragmentId, Is.EqualTo(fragment.fragmentId));
+            Assert.That(fragmentCopy.participantSessionId, Is.EqualTo(fragment.participantSessionId));
+            Assert.That(fragmentCopy.payload.resolutionDurationSeconds, Is.EqualTo(2.5f));
         }
 
         [Test]
