@@ -7,10 +7,10 @@
 	let { showBack = false } = $props<{ showBack?: boolean }>();
 	let menuOpen = $state(false);
 	const links = [
-		{ label: 'Về chúng tôi', href: '/#about' },
-		{ label: 'Cách hoạt động', href: '/#how-it-works' },
-		{ label: 'Thư viện nghề nghiệp', href: '/experiences' },
-		{ label: 'Hồ sơ của tôi', href: '/evaluation' }
+		{ label: 'Về chúng tôi', href: resolve('/#about') },
+		{ label: 'Cách hoạt động', href: resolve('/#how-it-works') },
+		{ label: 'Thư viện nghề nghiệp', href: resolve('/experiences') },
+		{ label: 'Hồ sơ của tôi', href: resolve('/evaluation') }
 	];
 
 	function closeMenu() {
@@ -44,7 +44,7 @@
 		{:else}
 			<a
 				class="hidden min-h-[3.15rem] min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 py-[.85rem] font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase no-underline transition hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem] min-[761px]:inline-flex"
-				href="/questionnaire"
+				href={resolve('/start')}
 				>Bắt đầu ngay <span class="text-[1.1em]" aria-hidden="true"
 					><ArrowUpRight class="size-[1em]" /></span
 				></a
@@ -100,7 +100,7 @@
 					{:else}
 						<a
 							class="mt-8 inline-flex min-h-[3.15rem] w-full items-center justify-between gap-[.85rem] rounded-lg border border-transparent bg-lime px-[1.35rem] py-3 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-[#050505] uppercase no-underline shadow-[0_0_1.2rem_rgb(188_255_99_/.15)] transition hover:-translate-y-0.5 hover:bg-[#d2ff96] hover:shadow-[0_0_1.6rem_rgb(188_255_99_/.32)]"
-							href="/questionnaire"
+							href={resolve('/start')}
 							onclick={closeMenu}
 							>Bắt đầu ngay
 							<span class="text-[1.1em]" aria-hidden="true"

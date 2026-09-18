@@ -1,9 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
 	buildCompletionPayload,
 	createAssessmentId,
 	desmapQuestions,
-	parseCompletionPayload
+	parseCompletionPayload,
+	readCompletionPayload,
+	writeCompletionPayload
 } from './data';
 
 const uuid = '123e4567-e89b-42d3-a456-426614174000';
@@ -22,6 +24,8 @@ function completedRecord() {
 }
 
 describe('completed questionnaire identity', () => {
+	afterEach(() => vi.unstubAllGlobals());
+
 	it('creates a schema-safe assessment identifier', () => {
 		expect(createAssessmentId(() => uuid)).toBe(`assessment-${uuid}`);
 	});
@@ -57,5 +61,19 @@ describe('completed questionnaire identity', () => {
 				() => `assessment-${uuid}`
 			)
 		).toBeNull();
+	});
+
+	it('preserves a restored MongoDB submission for the evaluation page', () => {
+		const values = new Map<string, string>();
+		vi.stubGlobal('window', {
+			sessionStorage: {
+				getItem: (key: string) => values.get(key) ?? null,
+				setItem: (key: string, value: string) => values.set(key, value)
+			}
+		});
+
+		const submission = completedRecord();
+		expect(writeCompletionPayload(submission)).toBe(true);
+		expect(readCompletionPayload()).toEqual(submission);
 	});
 });

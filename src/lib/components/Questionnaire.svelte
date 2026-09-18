@@ -17,12 +17,9 @@
 	import {
 		buildCompletionPayload,
 		careerInterestOptions,
-		checkEmailAvailability,
 		clearSavedQuestionnaire,
 		createQuestionnairePresentationOrder,
 		getStageById,
-		isValidParticipantDetails,
-		normalizeParticipantDetails,
 		optionsInPresentationOrder,
 		QUESTIONNAIRE_COMPLETION_STORAGE_KEY,
 		questionnaireStages,
@@ -35,17 +32,15 @@
 		writeSavedQuestionnaire
 	} from '$lib/questionnaire';
 
-	type Mode = 'participant' | 'career' | 'questions' | 'review';
+	type Mode = 'career' | 'questions' | 'review';
 
 	let hydrated = $state(false);
-	let mode = $state<Mode>('participant');
+	let mode = $state<Mode>('career');
 	let participant = $state<ParticipantDetails>({ name: '', email: '' });
-	let checkingEmail = $state(false);
 	let currentIndex = $state(0);
 	let selectedCareerInterests = $state<string[]>([]);
 	let answers = $state<QuestionnaireAnswers>({});
 	let startedAt = $state('');
-	let statusMessage = $state('');
 	let errorMessage = $state('');
 	let presentationOrder = $state<QuestionnairePresentationOrder | null>(null);
 	let transitionsReady = $state(false);
@@ -91,6 +86,10 @@
 		}
 
 		const saved = readSavedQuestionnaire();
+		if (!saved) {
+			void goto(resolve('/start'));
+			return () => window.removeEventListener('storage', handleStorage);
+		}
 		presentationOrder = saved?.presentationOrder ?? createQuestionnairePresentationOrder();
 		startedAt = saved?.startedAt ?? new Date().toISOString();
 		if (saved) {
@@ -101,16 +100,18 @@
 			const firstUnanswered = orderedQuestions.findIndex((question) => !saved.answers[question.id]);
 			const complete = firstUnanswered === -1;
 			mode =
-				saved.step === 'career' && Object.keys(saved.answers).length > 0
+				(saved.step === 'career' || saved.step === 'participant') &&
+				Object.keys(saved.answers).length > 0
 					? 'questions'
 					: saved.step === 'review' && !complete
 						? 'questions'
-						: saved.step;
+						: saved.step === 'participant'
+							? 'career'
+							: saved.step;
 			currentIndex =
 				mode === 'questions' && firstUnanswered >= 0
 					? firstUnanswered
 					: Math.min(Math.max(saved.currentIndex, 0), totalQuestionCount - 1);
-			statusMessage = 'Tiến trình đã lưu của bạn đã sẵn sàng.';
 		}
 		hydrated = true;
 		void enableTransitions();
@@ -146,31 +147,7 @@
 			answers: { ...answers },
 			presentationOrder
 		};
-		if (writeSavedQuestionnaire(draft)) statusMessage = 'Đã lưu tiến trình trên thiết bị này';
-	}
-
-	async function continueFromParticipant() {
-		if (checkingEmail) return;
-		const normalized = normalizeParticipantDetails(participant);
-		if (!isValidParticipantDetails(normalized)) {
-			errorMessage = 'Hãy nhập họ tên và địa chỉ email hợp lệ.';
-			return;
-		}
-		checkingEmail = true;
-		errorMessage = '';
-		try {
-			if (!(await checkEmailAvailability(normalized.email))) {
-				errorMessage = 'Email này đã hoàn thành một bài đánh giá.';
-				return;
-			}
-			participant = normalized;
-			mode = 'career';
-			persistDraft('career', 0);
-		} catch (error) {
-			errorMessage = error instanceof Error ? error.message : 'Không thể kiểm tra địa chỉ email.';
-		} finally {
-			checkingEmail = false;
-		}
+		writeSavedQuestionnaire(draft);
 	}
 
 	function toggleCareerInterest(id: string) {
@@ -266,7 +243,7 @@
 
 	/** A stage is reachable only after every earlier question has an explicit answer. */
 	function canVisitStage(stageId: StageId): boolean {
-		if (mode === 'participant' || mode === 'career') return false;
+		if (mode === 'career') return false;
 		const first = stageStartIndex(stageId);
 		return (
 			first >= 0 &&
@@ -357,7 +334,7 @@
 		class="min-h-dvh bg-[radial-gradient(circle_at_78%_16%,rgb(37_99_235_/.1),transparent_32rem),#030303] p-[clamp(.9rem,1.8vw,2rem)] font-sans text-[#f6f7fb] max-[560px]:p-3"
 	>
 		<div
-			class={`mx-auto grid min-h-[calc(100dvh_-_clamp(1.8rem,3.6vw,4rem))] w-full max-w-[108rem] transition-[grid-template-columns,gap] duration-250 ease-out max-[850px]:grid-cols-1 ${mode === 'participant' || mode === 'career' ? 'grid-cols-[0_minmax(0,1fr)] gap-0 max-[850px]:grid-cols-1' : 'grid-cols-[4.5rem_minmax(0,1fr)] gap-[clamp(.75rem,1.6vw,1.75rem)]'}`}
+			class={`mx-auto grid min-h-[calc(100dvh_-_clamp(1.8rem,3.6vw,4rem))] w-full max-w-[108rem] transition-[grid-template-columns,gap] duration-250 ease-out max-[850px]:grid-cols-1 ${mode === 'career' ? 'grid-cols-[0_minmax(0,1fr)] gap-0 max-[850px]:grid-cols-1' : 'grid-cols-[4.5rem_minmax(0,1fr)] gap-[clamp(.75rem,1.6vw,1.75rem)]'}`}
 		>
 			{#if mode === 'questions' || mode === 'review'}
 				<aside
@@ -391,77 +368,7 @@
 			{/if}
 
 			<main class="col-start-2 grid min-w-0 grid-rows-[minmax(0,1fr)_auto] max-[850px]:col-start-1">
-				{#if mode === 'participant'}
-					<section
-						class="col-start-1 row-start-1 flex min-h-[min(69vh,50rem)] flex-col rounded-[1.55rem] border-2 border-blue bg-[linear-gradient(145deg,rgb(11_19_34_/.98),rgb(5_10_20_/.98))] p-[clamp(1.4rem,4vw,4.3rem)] shadow-[0_1.5rem_5rem_rgb(0_0_0_/.28)] max-[850px]:min-h-0 max-[560px]:rounded-2xl max-[560px]:p-[1.15rem]"
-						aria-labelledby="participant-title"
-					>
-						<div class="text-right text-[.7rem] font-medium tracking-[.18em] text-muted">
-							BƯỚC 01 / 05
-						</div>
-						<p class="m-0 mt-[1.8rem] text-[.7rem] font-bold tracking-[.18em] text-lime">
-							THÔNG TIN NGƯỜI THAM GIA
-						</p>
-						<h1
-							class="m-0 mt-4 max-w-[48rem] text-[clamp(2.1rem,5.2vw,5rem)] leading-[.98] font-[750] tracking-[-.055em]"
-							id="participant-title"
-						>
-							Hãy bắt đầu với<br /><span class="text-lime">thông tin của bạn.</span>
-						</h1>
-						<p class="mt-5 max-w-[42rem] text-[1rem] leading-[1.6] text-muted">
-							Thông tin này được lưu trên thiết bị và gửi cùng kết quả đánh giá. Mỗi email chỉ có
-							thể hoàn thành một bài đánh giá.
-						</p>
-
-						<form
-							class="mt-9 grid max-w-[42rem] gap-6"
-							onsubmit={(event) => {
-								event.preventDefault();
-								void continueFromParticipant();
-							}}
-						>
-							<label class="grid gap-2 text-[.85rem] font-bold" for="participant-name">
-								Họ và tên
-								<input
-									class="min-h-14 rounded-xl border border-blue bg-[#030303]/55 px-4 text-base font-normal text-[#f6f7fb] outline-none focus:border-lime"
-									id="participant-name"
-									name="name"
-									type="text"
-									autocomplete="name"
-									maxlength="100"
-									required
-									bind:value={participant.name}
-								/>
-							</label>
-							<label class="grid gap-2 text-[.85rem] font-bold" for="participant-email">
-								Email
-								<input
-									class="min-h-14 rounded-xl border border-blue bg-[#030303]/55 px-4 text-base font-normal text-[#f6f7fb] outline-none focus:border-lime"
-									id="participant-email"
-									name="email"
-									type="email"
-									autocomplete="email"
-									maxlength="254"
-									required
-									bind:value={participant.email}
-								/>
-							</label>
-							{#if errorMessage}
-								<p class="m-0 border border-[#f5ba66] bg-[#181106] p-4 text-[#d9c8ad]" role="alert">
-									{errorMessage}
-								</p>
-							{/if}
-							<button
-								class="inline-flex min-h-[3.35rem] w-fit cursor-pointer items-center justify-center gap-3 rounded-xl border-0 bg-lime px-[1.55rem] py-[.8rem] text-[.9rem] font-extrabold text-[#090d11] disabled:cursor-wait disabled:opacity-60"
-								type="submit"
-								disabled={checkingEmail}
-							>
-								{checkingEmail ? 'Đang kiểm tra email…' : 'Tiếp tục'}
-								<ArrowRight class="size-[1em]" aria-hidden="true" />
-							</button>
-						</form>
-					</section>
-				{:else if mode === 'career'}
+				{#if mode === 'career'}
 					<section
 						class="col-start-1 row-start-1 flex min-h-[min(69vh,50rem)] flex-col rounded-[1.55rem] border-2 border-blue bg-[linear-gradient(145deg,rgb(11_19_34_/.98),rgb(5_10_20_/.98))] p-[clamp(1.4rem,4vw,4.3rem)] shadow-[0_1.5rem_5rem_rgb(0_0_0_/.28)] max-[850px]:min-h-0 max-[560px]:rounded-2xl max-[560px]:p-[1.15rem] min-[1100px]:grid min-[1100px]:min-h-0 min-[1100px]:grid-cols-[minmax(0,1.08fr)_minmax(22rem,.92fr)] min-[1100px]:grid-rows-[auto_auto_minmax(0,1fr)_auto] min-[1100px]:gap-x-[clamp(2rem,4vw,5rem)] min-[1100px]:gap-y-[clamp(.75rem,1.5vh,1.15rem)] min-[1100px]:[grid-template-areas:'label_kicker'_'title_intro'_'interests_interests'_'selection_selection']"
 						aria-labelledby="career-title"
@@ -528,10 +435,7 @@
 							<button
 								class="cursor-pointer border-0 bg-transparent text-[.9rem] text-[#f6f7fb] hover:text-lime focus-visible:text-lime focus-visible:outline-none"
 								type="button"
-								onclick={() => {
-									errorMessage = '';
-									mode = 'participant';
-								}}
+								onclick={() => void goto(resolve('/start'))}
 							>
 								<ArrowLeft class="inline size-4" aria-hidden="true" /> Thông tin của bạn
 							</button>

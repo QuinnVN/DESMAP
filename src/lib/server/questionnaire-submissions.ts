@@ -43,6 +43,36 @@ export async function emailHasAssessment(normalizedEmail: string): Promise<boole
 	return Boolean(await collection.findOne({ normalizedEmail }, { projection: { _id: 1 } }));
 }
 
+function normalizeParticipantName(name: string): string {
+	return name.trim().replace(/\s+/g, ' ').toLocaleLowerCase('vi');
+}
+
+export async function findQuestionnaireSubmission(
+	name: string,
+	normalizedEmail: string
+): Promise<QuestionnaireSubmission | null> {
+	const collection = await getCollection();
+	const submission = await collection.findOne({ normalizedEmail });
+	if (
+		!submission ||
+		normalizeParticipantName(submission.participant.name) !== normalizeParticipantName(name)
+	) {
+		return null;
+	}
+
+	return {
+		version: submission.version,
+		completed: submission.completed,
+		assessmentId: submission.assessmentId,
+		startedAt: submission.startedAt,
+		completedAt: submission.completedAt,
+		participant: submission.participant,
+		careerInterests: submission.careerInterests,
+		answers: submission.answers,
+		scores: submission.scores
+	};
+}
+
 export async function saveQuestionnaireSubmission(
 	payload: QuestionnaireSubmission
 ): Promise<'created' | 'updated' | 'conflict'> {

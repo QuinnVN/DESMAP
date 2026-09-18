@@ -484,7 +484,7 @@ function parseDraft(value: unknown): QuestionnaireDraft | null {
 export function readSavedQuestionnaire(): QuestionnaireDraft | null {
 	if (typeof window === 'undefined') return null;
 	try {
-		const raw = window.localStorage.getItem(QUESTIONNAIRE_STORAGE_KEY);
+		const raw = window.sessionStorage.getItem(QUESTIONNAIRE_STORAGE_KEY);
 		if (!raw) return null;
 		const parsed: unknown = JSON.parse(raw);
 		return parseDraft(parsed);
@@ -496,7 +496,7 @@ export function readSavedQuestionnaire(): QuestionnaireDraft | null {
 export function writeSavedQuestionnaire(draft: QuestionnaireDraft): boolean {
 	if (typeof window === 'undefined') return false;
 	try {
-		window.localStorage.setItem(QUESTIONNAIRE_STORAGE_KEY, JSON.stringify(draft));
+		window.sessionStorage.setItem(QUESTIONNAIRE_STORAGE_KEY, JSON.stringify(draft));
 		return true;
 	} catch {
 		return false;
@@ -506,7 +506,7 @@ export function writeSavedQuestionnaire(draft: QuestionnaireDraft): boolean {
 export function clearSavedQuestionnaire(): void {
 	if (typeof window === 'undefined') return;
 	try {
-		window.localStorage.removeItem(QUESTIONNAIRE_STORAGE_KEY);
+		window.sessionStorage.removeItem(QUESTIONNAIRE_STORAGE_KEY);
 	} catch {
 		// Storage can be disabled by privacy settings; completion should still work in memory.
 	}
@@ -516,7 +516,7 @@ export function clearSavedQuestionnaire(): void {
 export function writeCompletionPayload(payload: QuestionnaireSubmission): boolean {
 	if (typeof window === 'undefined') return false;
 	try {
-		window.localStorage.setItem(QUESTIONNAIRE_COMPLETION_STORAGE_KEY, JSON.stringify(payload));
+		window.sessionStorage.setItem(QUESTIONNAIRE_COMPLETION_STORAGE_KEY, JSON.stringify(payload));
 		return true;
 	} catch {
 		return false;
@@ -527,7 +527,7 @@ export function readQuestionnaireSyncStatus(assessmentId: string): Questionnaire
 	if (typeof window === 'undefined') return null;
 	try {
 		const parsed = JSON.parse(
-			window.localStorage.getItem(QUESTIONNAIRE_SYNC_STORAGE_KEY) ?? 'null'
+			window.sessionStorage.getItem(QUESTIONNAIRE_SYNC_STORAGE_KEY) ?? 'null'
 		) as Partial<QuestionnaireSyncStatus> | null;
 		if (
 			!parsed ||
@@ -544,7 +544,7 @@ export function readQuestionnaireSyncStatus(assessmentId: string): Questionnaire
 export function writeQuestionnaireSyncStatus(status: QuestionnaireSyncStatus): boolean {
 	if (typeof window === 'undefined') return false;
 	try {
-		window.localStorage.setItem(QUESTIONNAIRE_SYNC_STORAGE_KEY, JSON.stringify(status));
+		window.sessionStorage.setItem(QUESTIONNAIRE_SYNC_STORAGE_KEY, JSON.stringify(status));
 		return true;
 	} catch {
 		return false;
@@ -611,7 +611,7 @@ export function parseCompletionPayload(
 export function readCompletionPayload(): QuestionnaireSubmission | null {
 	if (typeof window === 'undefined') return null;
 	try {
-		const raw = window.localStorage.getItem(QUESTIONNAIRE_COMPLETION_STORAGE_KEY);
+		const raw = window.sessionStorage.getItem(QUESTIONNAIRE_COMPLETION_STORAGE_KEY);
 		if (!raw) return null;
 		const parsed: unknown = JSON.parse(raw);
 		const payload = parseCompletionPayload(parsed);

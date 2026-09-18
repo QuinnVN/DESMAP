@@ -403,5 +403,5 @@ export async function runInitialAssessment(
 }
 
 export function browserAssessmentStorage(): AssessmentStorage | null {
-	return typeof window === 'undefined' ? null : window.localStorage;
+	return typeof window === 'undefined' ? null : window.sessionStorage;
 }
