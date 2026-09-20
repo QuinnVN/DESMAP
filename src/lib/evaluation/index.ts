@@ -10,8 +10,36 @@ import type {
 	QuestionnaireSubmission,
 	StageId
 } from '$lib/questionnaire';
+import type { DimensionLevelId } from './final-dimension-content';
 
 export type EvaluationStatus = 'completed' | 'sample';
+
+export type FinalAssessment = {
+	version: 1;
+	assessmentId: string;
+	completedAt: string;
+	stageAssessments?: Partial<Record<StageId, string>>;
+	dimensionLevels?: Partial<Record<string, DimensionLevelId>>;
+	careerSuggestions?: FinalCareerSuggestion[];
+};
+
+export type FinalCareerSuggestion = {
+	id: string;
+	name: string;
+	compatibilityPercent: number;
+	description: string;
+};
+
+export type EvaluationPageState = 'initial' | 'final';
+
+export function evaluationPageState(
+	submission: Pick<QuestionnaireSubmission, 'assessmentId'> | null,
+	finalAssessment: Pick<FinalAssessment, 'assessmentId'> | null
+): EvaluationPageState {
+	return submission && finalAssessment?.assessmentId === submission.assessmentId
+		? 'final'
+		: 'initial';
+}
 
 export type ProfileRow = {
 	code: StageId;

@@ -626,3 +626,7 @@ export function readCompletionPayload(): QuestionnaireSubmission | null {
 		return null;
 	}
 }
+
+export function readQuestionnaireSessionRoute(): '/evaluation' | null {
+	return readCompletionPayload() ? '/evaluation' : null;
+}

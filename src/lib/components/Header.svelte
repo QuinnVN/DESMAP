@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { Dialog } from 'bits-ui';
-	import { ArrowLeft, ArrowUpRight, X } from '@lucide/svelte';
+	import { ArrowLeft, ArrowUpRight, Menu, X } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
+	import { onMount } from 'svelte';
 	import BrandMark from './BrandMark.svelte';
 
 	let { showBack = false } = $props<{ showBack?: boolean }>();
 	let menuOpen = $state(false);
+	let isCondensed = $state(false);
 	const links = [
 		{ label: 'Về chúng tôi', href: resolve('/#about') },
 		{ label: 'Cách hoạt động', href: resolve('/#how-it-works') },
@@ -16,13 +18,39 @@
 	function closeMenu() {
 		menuOpen = false;
 	}
+
+	function handleScroll(event: Event) {
+		const nextScrollY = (event.currentTarget as Window).scrollY;
+
+		if (!isCondensed && nextScrollY > 64) {
+			isCondensed = true;
+		} else if (isCondensed && nextScrollY < 8) {
+			isCondensed = false;
+		}
+	}
+
+	onMount(() => {
+		isCondensed = window.scrollY > 64;
+	});
 </script>
 
-<header class="sticky top-0 z-30 border-b border-line bg-[rgb(3_3_3_/.91)] backdrop-blur-[18px]">
+<svelte:window onscroll={handleScroll} />
+
+<header
+	class={[
+		'fixed inset-x-0 top-0 z-30 border-b border-line bg-[rgb(3_3_3_/.91)] backdrop-blur-[18px] transition-shadow duration-300 motion-reduce:transition-none',
+		isCondensed && 'shadow-[0_1rem_2.5rem_rgb(0_0_0_/.32)]'
+	]}
+>
 	<div
-		class="mx-auto flex min-h-[5.15rem] w-[min(100%_-_2rem,90rem)] items-center gap-8 min-[761px]:min-h-26 min-[761px]:w-[min(100%_-_4rem,90rem)]"
+		class={[
+			'mx-auto flex w-[min(100%_-_2rem,90rem)] items-center gap-8 transition-[min-height] duration-300 ease-out motion-reduce:transition-none min-[761px]:w-[min(100%_-_4rem,90rem)]',
+			isCondensed
+				? 'min-h-[4.15rem] min-[761px]:min-h-[4.5rem]'
+				: 'min-h-[5.15rem] min-[761px]:min-h-26'
+		]}
 	>
-		<BrandMark />
+		<BrandMark condensed={isCondensed} />
 		<nav
 			class="mx-auto hidden items-center justify-center gap-[clamp(1.3rem,3vw,4.1rem)] max-[960px]:gap-[1.1rem] min-[761px]:flex"
 			aria-label="Điều hướng chính"
@@ -36,14 +64,20 @@
 		</nav>
 		{#if showBack}
 			<a
-				class="hidden min-h-[3.15rem] min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 py-[.85rem] font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase no-underline transition hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem] min-[761px]:inline-flex"
+				class={[
+					'hidden min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase no-underline transition-[min-height,padding,background-color,color,transform] duration-300 ease-out hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] motion-reduce:transition-none max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem] min-[761px]:inline-flex',
+					isCondensed ? 'min-h-[2.65rem] py-[.65rem]' : 'min-h-[3.15rem] py-[.85rem]'
+				]}
 				href={resolve('/')}
 			>
 				<span class="text-[1.1em]" aria-hidden="true"><ArrowLeft class="size-[1em]" /></span> Quay lại
 			</a>
 		{:else}
 			<a
-				class="hidden min-h-[3.15rem] min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 py-[.85rem] font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase no-underline transition hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem] min-[761px]:inline-flex"
+				class={[
+					'hidden min-w-40 items-center justify-center gap-[.85rem] rounded-full border border-lime px-6 font-mono text-[.7rem] leading-none font-medium tracking-[.04em] text-lime uppercase no-underline transition-[min-height,padding,background-color,color,transform] duration-300 ease-out hover:-translate-y-0.5 hover:bg-lime hover:text-[#050505] motion-reduce:transition-none max-[960px]:min-w-0 max-[960px]:px-[1.1rem] max-[960px]:text-[.71rem] min-[761px]:inline-flex',
+					isCondensed ? 'min-h-[2.65rem] py-[.65rem]' : 'min-h-[3.15rem] py-[.85rem]'
+				]}
 				href={resolve('/start')}
 				>Bắt đầu ngay <span class="text-[1.1em]" aria-hidden="true"
 					><ArrowUpRight class="size-[1em]" /></span
@@ -56,9 +90,7 @@
 				aria-label="Mở menu"
 				aria-expanded={menuOpen}
 			>
-				<span class="mx-auto my-[.28rem] block h-px w-4 bg-current"></span><span
-					class="mx-auto my-[.28rem] block h-px w-4 bg-current"
-				></span>
+				<Menu class="mx-auto size-5" aria-hidden="true" />
 			</Dialog.Trigger>
 			<Dialog.Portal>
 				<Dialog.Overlay class="fixed inset-0 z-50 animate-overlay-in bg-black/76" />
@@ -113,3 +145,5 @@
 		</Dialog.Root>
 	</div>
 </header>
+
+<div class="h-[5.15rem] min-[761px]:h-26" aria-hidden="true"></div>

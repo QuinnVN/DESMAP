@@ -9,7 +9,7 @@ A questionnaire-only comparison between a participant's self-reported DESMAP pro
 _Avoid_: Final assessment, career recommendation
 
 **Final assessment**:
-A future assessment that combines questionnaire data with observed evidence from VR telemetry.
+A completed assessment that combines a participant's questionnaire submission with observed evidence from VR telemetry. It is available only when both records belong to the same assessment.
 _Avoid_: Initial assessment, questionnaire result
 
 **Career interest**:
@@ -31,6 +31,14 @@ _Avoid_: Fine DESMAP score, stage score
 **Fine DESMAP score**:
 One of the 35 lower-level questionnaire scores retained for the future final assessment. It is not sent to the initial-assessment API.
 _Avoid_: Grouped DESMAP score, initial-assessment dimension
+
+**Dimension evaluation level**:
+One of five qualitative interpretations assigned to a grouped DESMAP dimension in the final assessment: not compatible, low compatibility, neutral, fairly compatible, or well compatible. For Desire dimensions, the level describes how strongly the participant values the factor rather than whether the result is good or bad.
+_Avoid_: Fine DESMAP score, career match
+
+**Final career suggestion**:
+One of up to three careers proposed from the completed final assessment. It contains a compatibility percentage and an explanation connecting the participant's DESMAP results and observed evidence to the career.
+_Avoid_: Career interest, career candidate, initial career match
 
 **Participant**:
 A person who provides a name and email address and completes one DESMAP initial assessment. Each normalized email address identifies at most one participant assessment.

@@ -4,9 +4,12 @@
 	import type { PageProps } from './$types';
 	import { ArrowRight, Download, RefreshCw } from '@lucide/svelte';
 	import GroupedDesmapProfile from '$lib/components/GroupedDesmapProfile.svelte';
+	import FinalCareerSuggestions from '$lib/components/FinalCareerSuggestions.svelte';
+	import FinalDimensionDetails from '$lib/components/FinalDimensionDetails.svelte';
+	import FinalDesmapRadar from '$lib/components/FinalDesmapRadar.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import InitialMatchPanel from '$lib/components/InitialMatchPanel.svelte';
-	import { experiences } from '$lib/evaluation';
+	import { evaluationPageState, experiences, type FinalAssessment } from '$lib/evaluation';
 	import {
 		browserAssessmentStorage,
 		InitialAssessmentError,
@@ -35,11 +38,61 @@
 	let requestInFlight = $state(false);
 	let syncStatus = $state<QuestionnaireSyncStatus | null>(null);
 	let syncInFlight = $state(false);
+	type FinalSection = 'overview' | 'dimensions' | 'careers';
+	let expandedFinalSections = $state<Record<FinalSection, boolean>>({
+		overview: false,
+		dimensions: false,
+		careers: true
+	});
+	let finalAssessment = $derived(
+		data.finalAssessment ??
+			(data.previewFinal && payload ? createPreviewFinalAssessment(payload) : null)
+	);
+	let pageState = $derived(evaluationPageState(payload, finalAssessment));
 	const target = $derived(
 		rankedResults[0]
 			? experiences.find((experience) => experience.slug === rankedResults[0].career_id)
 			: null
 	);
+
+	function createPreviewFinalAssessment(submission: QuestionnaireSubmission): FinalAssessment {
+		return {
+			version: 1,
+			assessmentId: submission.assessmentId,
+			completedAt: submission.completedAt,
+			stageAssessments: {
+				D: 'Nhận định mẫu của AI về mong muốn nghề nghiệp của bạn sẽ được hiển thị tại đây.',
+				E: 'Nhận định mẫu của AI về chuyên môn và các điểm mạnh của bạn sẽ được hiển thị tại đây.',
+				S: 'Nhận định mẫu của AI về cách bạn phối hợp với người khác sẽ được hiển thị tại đây.',
+				M: 'Nhận định mẫu của AI về cách bạn phân tích và ra quyết định sẽ được hiển thị tại đây.',
+				A: 'Nhận định mẫu của AI về cách bạn thích ứng với thay đổi sẽ được hiển thị tại đây.',
+				P: 'Nhận định mẫu của AI về phản ứng của bạn khi chịu áp lực sẽ được hiển thị tại đây.'
+			},
+			careerSuggestions: [
+				{
+					id: 'doctor',
+					name: 'Bác sĩ',
+					compatibilityPercent: 86,
+					description:
+						'Nội dung giải thích mẫu của AI về những điểm trong hồ sơ DESMAP phù hợp với công việc bác sĩ sẽ được hiển thị tại đây.'
+				},
+				{
+					id: 'teacher',
+					name: 'Giáo viên',
+					compatibilityPercent: 79,
+					description:
+						'Nội dung giải thích mẫu của AI về cách tư duy, vai trò xã hội và khả năng thích ứng phù hợp với công việc giảng dạy sẽ được hiển thị tại đây.'
+				},
+				{
+					id: 'lawyer',
+					name: 'Luật sư',
+					compatibilityPercent: 73,
+					description:
+						'Nội dung giải thích mẫu của AI về các kỹ năng phân tích và xử lý áp lực phù hợp với công việc luật sư sẽ được hiển thị tại đây.'
+				}
+			]
+		};
+	}
 
 	async function loadAssessment(retry = false) {
 		if (requestInFlight || !payload) return;
@@ -81,7 +134,8 @@
 		if (!payload) viewState = 'empty';
 		else {
 			syncStatus = readQuestionnaireSyncStatus(payload.assessmentId);
-			void loadAssessment();
+			if (evaluationPageState(payload, finalAssessment) === 'final') viewState = 'success';
+			else void loadAssessment();
 			if (!syncStatus || syncStatus.status === 'pending') void syncSubmission();
 		}
 	});
@@ -91,23 +145,29 @@
 		window.setTimeout(() => (notice = ''), 2400);
 	}
 
+	function toggleFinalSection(section: FinalSection) {
+		expandedFinalSections[section] = !expandedFinalSections[section];
+	}
+
 	function saveJson() {
-		if (!payload || !response) return;
-		const data = {
-			format: 'Đối chiếu nghề nghiệp ban đầu DESMAP',
+		if (!payload || (!response && !finalAssessment)) return;
+		const isFinal = evaluationPageState(payload, finalAssessment) === 'final';
+		const exportData = {
+			format: isFinal ? 'Đánh giá cuối cùng DESMAP' : 'Đối chiếu nghề nghiệp ban đầu DESMAP',
 			assessment_id: payload.assessmentId,
 			questionnaire: payload,
-			initial_assessment: response
+			initial_assessment: response,
+			final_assessment: isFinal ? finalAssessment : undefined
 		};
 		const url = URL.createObjectURL(
-			new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+			new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
 		);
 		const link = document.createElement('a');
 		link.href = url;
-		link.download = `desmap-initial-${payload.assessmentId}.json`;
+		link.download = `desmap-${isFinal ? 'final' : 'initial'}-${payload.assessmentId}.json`;
 		link.click();
 		URL.revokeObjectURL(url);
-		showNotice('Đã tải kết quả đối chiếu ban đầu.');
+		showNotice(isFinal ? 'Đã tải đánh giá cuối cùng.' : 'Đã tải kết quả đối chiếu ban đầu.');
 	}
 
 	async function copySummary() {
@@ -126,8 +186,15 @@
 </script>
 
 <svelte:head>
-	<title>Đối chiếu nghề nghiệp ban đầu | DESMAP</title>
-	<meta name="description" content="Đối chiếu ban đầu giữa điểm DESMAP và các nghề bạn chọn." />
+	<title
+		>{pageState === 'final' ? 'Đánh giá cuối cùng' : 'Đối chiếu nghề nghiệp ban đầu'} | DESMAP</title
+	>
+	<meta
+		name="description"
+		content={pageState === 'final'
+			? 'Đánh giá cuối cùng kết hợp hồ sơ DESMAP và bằng chứng quan sát.'
+			: 'Đối chiếu ban đầu giữa điểm DESMAP và các nghề bạn chọn.'}
+	/>
 </svelte:head>
 
 <Header showBack />
@@ -139,16 +206,21 @@
 	>
 		<section class="border-b border-white/14 py-12">
 			<p class="m-0 text-[.68rem] font-[760] tracking-[.16em] text-lime uppercase">
-				02 / ĐỐI CHIẾU NGHỀ NGHIỆP BAN ĐẦU
+				{pageState === 'final' ? '03 / ĐÁNH GIÁ CUỐI CÙNG' : '02 / ĐỐI CHIẾU NGHỀ NGHIỆP BAN ĐẦU'}
 			</p>
 			<h1
 				class="mt-3 mb-4 max-w-[820px] text-[clamp(2.5rem,7vw,5.8rem)] leading-[.92] font-[760] tracking-[-.065em]"
 			>
-				Hồ sơ tự báo cáo
+				{pageState === 'final' ? 'Hồ sơ DESMAP cuối cùng' : 'Hồ sơ tự báo cáo'}
 			</h1>
 			<p class="m-0 max-w-[760px] text-[1.05rem] leading-[1.55] text-[#91a0b4]">
-				Các phần trăm là kết quả đối chiếu tạm thời từ câu trả lời của bạn. Đây không phải khuyến
-				nghị nghề nghiệp hay kết luận cuối cùng.
+				{#if pageState === 'final'}
+					Kết quả này kết hợp câu trả lời trong bảng câu hỏi với bằng chứng quan sát từ trải nghiệm
+					VR.
+				{:else}
+					Các phần trăm là kết quả đối chiếu tạm thời từ câu trả lời của bạn. Đây không phải khuyến
+					nghị nghề nghiệp hay kết luận cuối cùng.
+				{/if}
 			</p>
 		</section>
 
@@ -273,22 +345,53 @@
 					<GroupedDesmapProfile scores={payload.scores} />
 				</div>
 			{/if}
-		{:else if response && payload}
+		{:else if payload && (response || pageState === 'final')}
 			<p class="sr-only" aria-live="polite" role="status">
-				Đã có kết quả đối chiếu cho {rankedResults.length} nghề.
+				{pageState === 'final'
+					? 'Đã có đánh giá cuối cùng.'
+					: `Đã có kết quả đối chiếu cho ${rankedResults.length} nghề.`}
 			</p>
-			<section
-				class="mt-3 grid gap-4 min-[850px]:grid-cols-[1.15fr_.85fr]"
-				aria-label="Kết quả đối chiếu nghề nghiệp ban đầu"
-			>
-				<InitialMatchPanel mode={data.initialAssessmentMode} matches={rankedResults} />
-				<GroupedDesmapProfile scores={payload.scores} />
-			</section>
+			{#if pageState === 'final' && finalAssessment}
+				<div class="mt-3" aria-label="Kết quả đánh giá cuối cùng">
+					<FinalDesmapRadar
+						scores={payload.scores}
+						assessments={finalAssessment.stageAssessments}
+						expanded={expandedFinalSections.overview}
+						ontoggle={() => toggleFinalSection('overview')}
+					/>
+				</div>
+				<FinalDimensionDetails
+					scores={payload.scores}
+					levels={finalAssessment.dimensionLevels}
+					expanded={expandedFinalSections.dimensions}
+					ontoggle={() => toggleFinalSection('dimensions')}
+				/>
+				{#if finalAssessment.careerSuggestions?.length}
+					<FinalCareerSuggestions
+						suggestions={finalAssessment.careerSuggestions}
+						expanded={expandedFinalSections.careers}
+						ontoggle={() => toggleFinalSection('careers')}
+					/>
+				{/if}
+			{:else}
+				<section
+					class="mt-3 grid gap-4 min-[850px]:grid-cols-[1.15fr_.85fr]"
+					aria-label="Kết quả đối chiếu nghề nghiệp ban đầu"
+				>
+					<InitialMatchPanel mode={data.initialAssessmentMode} matches={rankedResults} />
+					<GroupedDesmapProfile scores={payload.scores} />
+				</section>
+			{/if}
 			<section
 				class="mt-4 flex flex-wrap items-center justify-between gap-5 border border-blue bg-[#071020] p-6"
 			>
 				<div>
-					{#if data.initialAssessmentMode === 'ai'}
+					{#if pageState === 'final'}
+						<h2 class="mt-0 mb-1 text-lg font-bold">Đánh giá đã hoàn tất</h2>
+						<p class="m-0 max-w-[34rem] text-[.83rem] text-[#91a0b4]">
+							Bạn có thể xem từng khía cạnh DESMAP trên biểu đồ hoặc lưu toàn bộ kết quả.
+						</p>
+					{:else if data.initialAssessmentMode === 'ai'}
 						<h2 class="mt-0 mb-1 text-lg font-bold">Bước tiếp theo</h2>
 						<p class="m-0 max-w-[34rem] text-[.83rem] text-[#91a0b4]">
 							Bạn có thể xem trải nghiệm của nghề đứng đầu hoặc lưu kết quả này.
@@ -302,7 +405,9 @@
 					{/if}
 				</div>
 				<div class="flex flex-wrap items-center gap-4">
-					{#if target?.status === 'locked'}
+					{#if pageState === 'final'}
+						<!-- The final assessment has no career-experience action. -->
+					{:else if target?.status === 'locked'}
 						<button
 							class="border border-blue px-4 py-3 text-lime disabled:cursor-not-allowed disabled:opacity-70"
 							type="button"
@@ -325,13 +430,15 @@
 					>
 						<Download class="inline size-4" aria-hidden="true" /> Tải JSON
 					</button>
-					<button
-						class="cursor-pointer border-0 bg-transparent text-blue focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lime"
-						type="button"
-						onclick={copySummary}
-					>
-						{copied ? 'Đã sao chép' : 'Sao chép tóm tắt'}
-					</button>
+					{#if pageState === 'initial'}
+						<button
+							class="cursor-pointer border-0 bg-transparent text-blue focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lime"
+							type="button"
+							onclick={copySummary}
+						>
+							{copied ? 'Đã sao chép' : 'Sao chép tóm tắt'}
+						</button>
+					{/if}
 				</div>
 			</section>
 		{/if}

@@ -5,6 +5,7 @@ import {
 	desmapQuestions,
 	parseCompletionPayload,
 	readCompletionPayload,
+	readQuestionnaireSessionRoute,
 	writeCompletionPayload
 } from './data';
 
@@ -75,5 +76,18 @@ describe('completed questionnaire identity', () => {
 		const submission = completedRecord();
 		expect(writeCompletionPayload(submission)).toBe(true);
 		expect(readCompletionPayload()).toEqual(submission);
+	});
+
+	it('keeps a logged-in participant on their evaluation route for the tab session', () => {
+		const values = new Map<string, string>();
+		vi.stubGlobal('window', {
+			sessionStorage: {
+				getItem: (key: string) => values.get(key) ?? null,
+				setItem: (key: string, value: string) => values.set(key, value)
+			}
+		});
+
+		expect(writeCompletionPayload(completedRecord())).toBe(true);
+		expect(readQuestionnaireSessionRoute()).toBe('/evaluation');
 	});
 });

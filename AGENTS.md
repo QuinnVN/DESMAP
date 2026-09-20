@@ -4,6 +4,7 @@
 - **Package Manager**: pnpm
 - **Add-ons**: ai-tools, tailwindcss
 - **Website language**: All user-facing website text must be written in Vietnamese.
+- **Icons**: Prefer `@lucide/svelte` for interface icons when a matching Lucide icon exists.
 
 ---
 

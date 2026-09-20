@@ -14,6 +14,7 @@
 		normalizeParticipantDetails,
 		parseCompletionPayload,
 		readSavedQuestionnaire,
+		readQuestionnaireSessionRoute,
 		writeCompletionPayload,
 		writeSavedQuestionnaire,
 		writeQuestionnaireSyncStatus,
@@ -110,6 +111,11 @@
 			restoreSubmission(form.submission);
 			return;
 		}
+		const sessionRoute = readQuestionnaireSessionRoute();
+		if (sessionRoute) {
+			void goto(resolve(sessionRoute), { replaceState: true });
+			return;
+		}
 		const saved = readSavedQuestionnaire();
 		if (saved) signupParticipant = { ...saved.participant };
 	});
@@ -142,8 +148,7 @@
 		</header>
 
 		<section
-			class="my-auto grid items-center gap-10 py-14 min-[900px]:grid-cols-[1fr_30rem]"
-			in:fly={{ y: 22, duration: prefersReducedMotion.current ? 0 : 460 }}
+			class="start-page-enter my-auto grid items-center gap-10 py-14 min-[900px]:grid-cols-[1fr_30rem]"
 		>
 			<div class="max-w-[38rem]">
 				<p class="m-0 font-mono text-[.7rem] font-bold tracking-[.15em] text-lime uppercase">
@@ -196,138 +201,169 @@
 				</div>
 
 				<div class="overflow-hidden">
-					{#if activeTab === 'signup'}
-						<div
-							class="p-[clamp(1.4rem,5vw,2.5rem)]"
-							id="signup-panel"
-							role="tabpanel"
-							in:fly={{ x: panelOffset, duration: transitionDuration }}
-						>
-							<p class="m-0 font-mono text-[.65rem] font-bold tracking-[.13em] text-blue uppercase">
-								DÀNH CHO NGƯỜI THAM GIA MỚI
-							</p>
-							<h2 class="mt-4 mb-0 text-[2rem] leading-[1.05] font-[720] tracking-[-.04em]">
-								Nhập thông tin để bắt đầu
-							</h2>
-							<form
-								onsubmit={(event) => {
-									event.preventDefault();
-									void startQuestionnaire();
-								}}
+					{#key activeTab}
+						{#if activeTab === 'signup'}
+							<div
+								class="p-[clamp(1.4rem,5vw,2.5rem)]"
+								id="signup-panel"
+								role="tabpanel"
+								in:fly={{ x: panelOffset, duration: transitionDuration }}
 							>
-								<div class="mt-7 grid gap-5">
-									<label class="grid gap-2 text-[.78rem] font-semibold text-text" for="signup-name">
-										Họ và tên
-										<input
-											class="min-h-[3.35rem] rounded-xl border border-blue bg-[#030303]/65 px-4 text-base text-text transition outline-none focus:border-lime focus:ring-2 focus:ring-lime/20"
-											id="signup-name"
-											name="name"
-											type="text"
-											autocomplete="name"
-											maxlength="100"
-											required
-											bind:value={signupParticipant.name}
-										/>
-									</label>
-									<label
-										class="grid gap-2 text-[.78rem] font-semibold text-text"
-										for="signup-email"
-									>
-										Địa chỉ email
-										<input
-											class="min-h-[3.35rem] rounded-xl border border-blue bg-[#030303]/65 px-4 text-base text-text transition outline-none focus:border-lime focus:ring-2 focus:ring-lime/20"
-											id="signup-email"
-											name="email"
-											type="email"
-											autocomplete="email"
-											maxlength="254"
-											required
-											bind:value={signupParticipant.email}
-										/>
-									</label>
-								</div>
-								{#if signupError}
-									<p
-										class="mt-5 border-l-2 border-[#ff7777] bg-[#2a0d12] px-4 py-3 text-[.84rem] leading-[1.5] text-[#ffb4b4]"
-										role="alert"
-									>
-										{signupError}
-									</p>
-								{/if}
-								<button
-									class="mt-7 inline-flex min-h-[3.35rem] w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-0 bg-lime px-6 py-3 text-[.88rem] font-extrabold text-[#090d11] transition hover:-translate-y-0.5 hover:brightness-[1.07] disabled:cursor-wait disabled:opacity-60"
-									type="submit"
-									disabled={checkingEmail}
-								>
-									{checkingEmail ? 'Đang kiểm tra email…' : 'Tiếp tục'}
-									<ArrowRight class="size-5" aria-hidden="true" />
-								</button>
-							</form>
-						</div>
-					{:else}
-						<div
-							id="login-panel"
-							role="tabpanel"
-							in:fly={{ x: panelOffset, duration: transitionDuration }}
-						>
-							<form class="p-[clamp(1.4rem,5vw,2.5rem)]" method="POST" action="?/login">
 								<p
 									class="m-0 font-mono text-[.65rem] font-bold tracking-[.13em] text-blue uppercase"
 								>
-									XEM LẠI KẾT QUẢ
+									DÀNH CHO NGƯỜI THAM GIA MỚI
 								</p>
 								<h2 class="mt-4 mb-0 text-[2rem] leading-[1.05] font-[720] tracking-[-.04em]">
-									Nhập thông tin đã đăng ký
+									Nhập thông tin để bắt đầu
 								</h2>
-								<div class="mt-7 grid gap-5">
-									<label class="grid gap-2 text-[.78rem] font-semibold text-text" for="name">
-										Họ và tên
-										<input
-											class="min-h-[3.35rem] rounded-xl border border-blue bg-[#030303]/65 px-4 text-base text-text transition outline-none placeholder:text-muted/55 focus:border-lime focus:ring-2 focus:ring-lime/20"
-											id="name"
-											name="name"
-											type="text"
-											autocomplete="name"
-											value={form?.success === false ? form.name : ''}
-											required
-										/>
-									</label>
-									<label class="grid gap-2 text-[.78rem] font-semibold text-text" for="email">
-										Địa chỉ email
-										<input
-											class="min-h-[3.35rem] rounded-xl border border-blue bg-[#030303]/65 px-4 text-base text-text transition outline-none placeholder:text-muted/55 focus:border-lime focus:ring-2 focus:ring-lime/20"
-											id="email"
-											name="email"
-											type="email"
-											autocomplete="email"
-											value={form?.success === false ? form.email : ''}
-											required
-										/>
-									</label>
-								</div>
-
-								{#if form?.success === false || restoreError}
-									<p
-										class="mt-5 border-l-2 border-[#ff7777] bg-[#2a0d12] px-4 py-3 text-[.84rem] leading-[1.5] text-[#ffb4b4]"
-										role="alert"
-									>
-										{restoreError || form?.error}
-									</p>
-								{/if}
-
-								<button
-									class="mt-7 inline-flex min-h-[3.35rem] w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-0 bg-lime px-6 py-3 text-[.88rem] font-extrabold text-[#090d11] transition hover:-translate-y-0.5 hover:brightness-[1.07] disabled:cursor-wait disabled:opacity-60"
-									type="submit"
-									disabled={restoring}
+								<form
+									onsubmit={(event) => {
+										event.preventDefault();
+										void startQuestionnaire();
+									}}
 								>
-									<LogIn class="size-4" aria-hidden="true" />
-									{restoring ? 'Đang mở kết quả…' : 'Xem kết quả của tôi'}
-								</button>
-							</form>
-						</div>
-					{/if}
+									<div class="mt-7 grid gap-5">
+										<label
+											class="grid gap-2 text-[.78rem] font-semibold text-text"
+											for="signup-name"
+										>
+											Họ và tên
+											<input
+												class="min-h-[3.35rem] rounded-xl border border-blue bg-[#030303]/65 px-4 text-base text-text transition outline-none focus:border-lime focus:ring-2 focus:ring-lime/20"
+												id="signup-name"
+												name="name"
+												type="text"
+												autocomplete="name"
+												maxlength="100"
+												required
+												bind:value={signupParticipant.name}
+											/>
+										</label>
+										<label
+											class="grid gap-2 text-[.78rem] font-semibold text-text"
+											for="signup-email"
+										>
+											Địa chỉ email
+											<input
+												class="min-h-[3.35rem] rounded-xl border border-blue bg-[#030303]/65 px-4 text-base text-text transition outline-none focus:border-lime focus:ring-2 focus:ring-lime/20"
+												id="signup-email"
+												name="email"
+												type="email"
+												autocomplete="email"
+												maxlength="254"
+												required
+												bind:value={signupParticipant.email}
+											/>
+										</label>
+									</div>
+									{#if signupError}
+										<p
+											class="mt-5 border-l-2 border-[#ff7777] bg-[#2a0d12] px-4 py-3 text-[.84rem] leading-[1.5] text-[#ffb4b4]"
+											role="alert"
+										>
+											{signupError}
+										</p>
+									{/if}
+									<button
+										class="mt-7 inline-flex min-h-[3.35rem] w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-0 bg-lime px-6 py-3 text-[.88rem] font-extrabold text-[#090d11] transition hover:-translate-y-0.5 hover:brightness-[1.07] disabled:cursor-wait disabled:opacity-60"
+										type="submit"
+										disabled={checkingEmail}
+									>
+										{checkingEmail ? 'Đang kiểm tra email…' : 'Tiếp tục'}
+										<ArrowRight class="size-5" aria-hidden="true" />
+									</button>
+								</form>
+							</div>
+						{:else}
+							<div
+								id="login-panel"
+								role="tabpanel"
+								in:fly={{ x: panelOffset, duration: transitionDuration }}
+							>
+								<form class="p-[clamp(1.4rem,5vw,2.5rem)]" method="POST" action="?/login">
+									<p
+										class="m-0 font-mono text-[.65rem] font-bold tracking-[.13em] text-blue uppercase"
+									>
+										XEM LẠI KẾT QUẢ
+									</p>
+									<h2 class="mt-4 mb-0 text-[2rem] leading-[1.05] font-[720] tracking-[-.04em]">
+										Nhập thông tin đã đăng ký
+									</h2>
+									<div class="mt-7 grid gap-5">
+										<label class="grid gap-2 text-[.78rem] font-semibold text-text" for="name">
+											Họ và tên
+											<input
+												class="min-h-[3.35rem] rounded-xl border border-blue bg-[#030303]/65 px-4 text-base text-text transition outline-none placeholder:text-muted/55 focus:border-lime focus:ring-2 focus:ring-lime/20"
+												id="name"
+												name="name"
+												type="text"
+												autocomplete="name"
+												value={form?.success === false ? form.name : ''}
+												required
+											/>
+										</label>
+										<label class="grid gap-2 text-[.78rem] font-semibold text-text" for="email">
+											Địa chỉ email
+											<input
+												class="min-h-[3.35rem] rounded-xl border border-blue bg-[#030303]/65 px-4 text-base text-text transition outline-none placeholder:text-muted/55 focus:border-lime focus:ring-2 focus:ring-lime/20"
+												id="email"
+												name="email"
+												type="email"
+												autocomplete="email"
+												value={form?.success === false ? form.email : ''}
+												required
+											/>
+										</label>
+									</div>
+
+									{#if form?.success === false || restoreError}
+										<p
+											class="mt-5 border-l-2 border-[#ff7777] bg-[#2a0d12] px-4 py-3 text-[.84rem] leading-[1.5] text-[#ffb4b4]"
+											role="alert"
+										>
+											{restoreError || form?.error}
+										</p>
+									{/if}
+
+									<button
+										class="mt-7 inline-flex min-h-[3.35rem] w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-0 bg-lime px-6 py-3 text-[.88rem] font-extrabold text-[#090d11] transition hover:-translate-y-0.5 hover:brightness-[1.07] disabled:cursor-wait disabled:opacity-60"
+										type="submit"
+										disabled={restoring}
+									>
+										<LogIn class="size-4" aria-hidden="true" />
+										{restoring ? 'Đang mở kết quả…' : 'Xem kết quả của tôi'}
+									</button>
+								</form>
+							</div>
+						{/if}
+					{/key}
 				</div>
 			</div>
 		</section>
 	</div>
 </main>
+
+<style>
+	.start-page-enter {
+		animation: start-page-enter 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+
+	@keyframes start-page-enter {
+		from {
+			opacity: 0;
+			transform: translateY(1.375rem);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.start-page-enter {
+			animation: none;
+		}
+	}
+</style>

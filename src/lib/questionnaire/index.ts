@@ -40,6 +40,7 @@ export {
 	questionsInPresentationOrder,
 	parseCompletionPayload,
 	readCompletionPayload,
+	readQuestionnaireSessionRoute,
 	readQuestionnaireSyncStatus,
 	readSavedQuestionnaire,
 	scoreAnswers,
