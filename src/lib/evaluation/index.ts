@@ -20,7 +20,57 @@ export type FinalAssessment = {
 	completedAt: string;
 	stageAssessments?: Partial<Record<StageId, string>>;
 	dimensionLevels?: Partial<Record<string, DimensionLevelId>>;
+	behaviourComparison?: BehaviourComparisonResult;
 	careerSuggestions?: FinalCareerSuggestion[];
+};
+
+export type BehaviourComparisonKind = 'confirmed' | 'emerging' | 'development';
+
+export type BehaviourComparisonFinding = {
+	id: string;
+	kind: BehaviourComparisonKind;
+	title: string;
+	questionnaireResult: string;
+	vrEvidence: string;
+	summary: string;
+};
+
+export type BehaviourComparisonResult = {
+	experienceName: string;
+	isPlaceholder?: boolean;
+	findings: BehaviourComparisonFinding[];
+};
+
+export const placeholderBehaviourComparison: BehaviourComparisonResult = {
+	experienceName: 'Bác sĩ cấp cứu',
+	isPlaceholder: true,
+	findings: [
+		{
+			id: 'analytical-thinking',
+			kind: 'confirmed',
+			title: 'Tư duy phân tích',
+			questionnaireResult: 'Bạn tự đánh giá cao khả năng phân tích thông tin trước khi hành động.',
+			vrEvidence: 'Trong VR, bạn kiểm tra dữ kiện chính trước khi chọn thứ tự ưu tiên.',
+			summary: 'Kết quả VR củng cố điểm mạnh đã thể hiện trong bảng câu hỏi.'
+		},
+		{
+			id: 'adaptability',
+			kind: 'emerging',
+			title: 'Khả năng thích ứng',
+			questionnaireResult: 'Bạn chưa xem đây là một điểm mạnh nổi bật của mình.',
+			vrEvidence: 'Bạn đổi hướng xử lý phù hợp khi tình huống xuất hiện thông tin mới.',
+			summary: 'Đây có thể là năng lực bạn chưa nhận ra đầy đủ qua tự đánh giá.'
+		},
+		{
+			id: 'pressure-prioritisation',
+			kind: 'development',
+			title: 'Ưu tiên khi chịu áp lực',
+			questionnaireResult:
+				'Bạn cho rằng mình duy trì quyết định ổn định khi thời gian bị giới hạn.',
+			vrEvidence: 'Trong nhiệm vụ dồn dập, bạn mất thêm thời gian để chốt việc cần làm trước.',
+			summary: 'Bạn nên luyện cách xác định ưu tiên trước khi xử lý các chi tiết còn lại.'
+		}
+	]
 };
 
 export type FinalCareerSuggestion = {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { evaluationPageState, type FinalAssessment } from './index';
+import { evaluationPageState, placeholderBehaviourComparison, type FinalAssessment } from './index';
 
 const finalAssessment: FinalAssessment = {
 	version: 1,
@@ -20,5 +20,21 @@ describe('evaluation page state', () => {
 		expect(evaluationPageState({ assessmentId: 'assessment-two' }, finalAssessment)).toBe(
 			'initial'
 		);
+	});
+});
+
+describe('placeholder behaviour comparison', () => {
+	it('covers every Test vs Behaviour outcome with both evidence sources', () => {
+		expect(placeholderBehaviourComparison.isPlaceholder).toBe(true);
+		expect(placeholderBehaviourComparison.findings.map((finding) => finding.kind)).toEqual([
+			'confirmed',
+			'emerging',
+			'development'
+		]);
+		for (const finding of placeholderBehaviourComparison.findings) {
+			expect(finding.questionnaireResult).toBeTruthy();
+			expect(finding.vrEvidence).toBeTruthy();
+			expect(finding.summary).toBeTruthy();
+		}
 	});
 });

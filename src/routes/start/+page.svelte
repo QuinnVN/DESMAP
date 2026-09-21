@@ -148,7 +148,7 @@
 		</header>
 
 		<section
-			class="start-page-enter my-auto grid items-center gap-10 py-14 min-[900px]:grid-cols-[1fr_30rem]"
+			class="my-auto grid animate-start-page-enter items-center gap-10 py-14 motion-reduce:animate-none min-[900px]:grid-cols-[1fr_30rem]"
 		>
 			<div class="max-w-[38rem]">
 				<p class="m-0 font-mono text-[.7rem] font-bold tracking-[.15em] text-lime uppercase">
@@ -174,8 +174,7 @@
 					aria-label="Chọn cách bắt đầu"
 				>
 					<span
-						class="pointer-events-none absolute top-1 bottom-1 left-1 w-[calc(50%_-_.25rem)] rounded-lg bg-lime shadow-[0_0_1.2rem_rgb(188_255_99_/.18)] transition-transform duration-300 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none"
-						class:translate-x-full={activeTab === 'login'}
+						class={`pointer-events-none absolute top-1 bottom-1 left-1 w-[calc(50%_-_.25rem)] rounded-lg bg-lime shadow-[0_0_1.2rem_rgb(188_255_99_/.18)] transition-transform duration-300 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none ${activeTab === 'login' ? 'translate-x-full' : ''}`}
 						aria-hidden="true"
 					></span>
 					<button
@@ -343,27 +342,3 @@
 		</section>
 	</div>
 </main>
-
-<style>
-	.start-page-enter {
-		animation: start-page-enter 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
-	}
-
-	@keyframes start-page-enter {
-		from {
-			opacity: 0;
-			transform: translateY(1.375rem);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.start-page-enter {
-			animation: none;
-		}
-	}
-</style>

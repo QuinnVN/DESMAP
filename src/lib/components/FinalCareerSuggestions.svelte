@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ChevronDown } from '@lucide/svelte';
+	import { ChevronDown, Compass, Sparkles } from '@lucide/svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { FinalCareerSuggestion } from '$lib/evaluation';
@@ -14,28 +14,44 @@
 		ontoggle?: () => void;
 	} = $props();
 	let visibleSuggestions = $derived(suggestions.slice(0, 3));
-
-	function compatibility(percent: number): number {
-		return Math.min(100, Math.max(0, Math.round(percent)));
-	}
+	let primarySuggestion = $derived(visibleSuggestions[0]);
+	let otherSuggestions = $derived(visibleSuggestions.slice(1));
 </script>
 
-<section class="career-suggestions" aria-labelledby="career-suggestions-heading">
+<section
+	class="mt-4 overflow-hidden border border-blue/75 bg-[#050b18] shadow-[0_1.5rem_5rem_rgb(4_10_24_/.7)]"
+	aria-labelledby="career-suggestions-heading"
+>
 	<button
-		class="career-suggestions__header"
+		class="relative isolate flex w-full cursor-pointer items-start justify-between gap-8 overflow-hidden border-0 bg-[radial-gradient(circle_at_88%_0%,rgb(188_255_99_/.16),transparent_28%),linear-gradient(105deg,#071020_0%,#071020_58%,#0c1830_100%)] p-[clamp(1.4rem,3vw,2rem)] text-left font-[inherit] text-inherit before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:bg-lime focus-visible:outline-2 focus-visible:-outline-offset-[.45rem] focus-visible:outline-lime"
 		type="button"
 		aria-expanded={expanded}
 		aria-controls="career-suggestions-content"
 		onclick={ontoggle}
 	>
 		<div>
-			<h2 id="career-suggestions-heading">Nghề nghiệp phù hợp</h2>
-			<p>Gợi ý của AI dựa trên kết quả DESMAP và bằng chứng quan sát trong trải nghiệm.</p>
+			<div class="flex items-center gap-3">
+				<span
+					class="grid size-8 place-items-center border border-blue/60 bg-blue/15 text-[#78a0ff]"
+					aria-hidden="true"
+				>
+					<Sparkles size={16} strokeWidth={2.2} />
+				</span>
+				<h2 class="m-0 text-[clamp(1.35rem,3vw,1.8rem)]" id="career-suggestions-heading">
+					Gợi ý nghề nghiệp
+				</h2>
+			</div>
+			<p class="mt-2 mb-0 text-[.85rem] leading-6 text-[#91a0b4]">
+				AI đối chiếu toàn bộ kết quả DESMAP với hành vi quan sát được trong trải nghiệm VR.
+			</p>
 		</div>
-		<span class="career-suggestions__status">
-			<span class="career-suggestions__limit">Tối đa 3 nghề</span>
+		<span class="flex flex-none items-center gap-[.8rem]">
+			<span
+				class="flex-none border border-lime/45 bg-lime/8 px-[.75rem] py-[.5rem] text-[.68rem] font-[760] tracking-[.04em] text-lime uppercase max-[520px]:hidden"
+				>1 ưu tiên · 2 tham khảo</span
+			>
 			<ChevronDown
-				class={`accordion-icon ${expanded ? 'accordion-icon--expanded' : ''}`}
+				class={`text-lime transition-transform duration-[160ms] motion-reduce:transition-none ${expanded ? 'rotate-180' : ''}`}
 				size={20}
 				strokeWidth={2.25}
 				aria-hidden="true"
@@ -48,189 +64,98 @@
 			id="career-suggestions-content"
 			transition:slide={{ duration: prefersReducedMotion.current ? 0 : 220 }}
 		>
-			<ol class="career-suggestions__list">
-				{#each visibleSuggestions as suggestion, index (suggestion.id)}
-					{@const percent = compatibility(suggestion.compatibilityPercent)}
-					<li class="career-suggestion">
-						<p class="career-suggestion__index">{String(index + 1).padStart(2, '0')}</p>
-						<div class="career-suggestion__identity">
-							<h3>{suggestion.name}</h3>
-							<div
-								class="career-suggestion__track"
-								role="img"
-								aria-label={`${suggestion.name}: tương thích ${percent}%`}
+			<div class="border-t border-white/14">
+				{#if primarySuggestion}
+					<article
+						class="grid min-[820px]:grid-cols-[minmax(17rem,.72fr)_minmax(25rem,1.28fr)]"
+						aria-labelledby={`primary-career-${primarySuggestion.id}`}
+					>
+						<div
+							class="relative isolate min-h-[20rem] overflow-hidden border-b border-blue/35 bg-[radial-gradient(circle_at_18%_8%,rgb(37_99_235_/.2),transparent_32%),linear-gradient(145deg,#0d1930_0%,#091323_58%,#071020_100%)] p-[clamp(1.5rem,4vw,3rem)] text-white min-[820px]:border-r min-[820px]:border-b-0"
+						>
+							<span
+								class="pointer-events-none absolute -right-3 -bottom-10 -z-10 font-mono text-[clamp(9rem,18vw,15rem)] leading-none font-[800] tracking-[-.12em] text-blue/18"
+								aria-hidden="true">01</span
 							>
-								<span style:width={`${percent}%`}></span>
+							<p
+								class="m-0 inline-flex items-center gap-2 border border-lime/35 bg-lime/6 px-3 py-2 text-[.65rem] font-[760] tracking-[.13em] text-lime uppercase"
+							>
+								<Sparkles size={13} strokeWidth={2.4} aria-hidden="true" />
+								Phù hợp nhất với hồ sơ của bạn
+							</p>
+							<h3
+								class="mt-[clamp(3.5rem,8vw,6rem)] mb-0 max-w-[8ch] text-[clamp(2.8rem,7vw,5.5rem)] leading-[.9] font-[780] tracking-[-.065em]"
+								id={`primary-career-${primarySuggestion.id}`}
+							>
+								{primarySuggestion.name}
+							</h3>
+						</div>
+						<div
+							class="relative bg-[radial-gradient(circle_at_100%_0%,rgb(188_255_99_/.09),transparent_30%),#0d1625] p-[clamp(1.6rem,4vw,3.25rem)] text-[#dce5f0] before:absolute before:top-[2.2rem] before:-left-3 before:hidden before:size-6 before:rotate-45 before:border-b before:border-l before:border-blue/35 before:bg-[#0d1625] min-[820px]:before:block"
+						>
+							<p
+								class="m-0 font-mono text-[.68rem] font-[700] tracking-[.12em] text-lime uppercase"
+							>
+								Vì sao đây là lựa chọn hàng đầu
+							</p>
+							<div class="mt-5 h-px w-16 bg-lime/35" aria-hidden="true"></div>
+							<p
+								class="mt-5 mb-0 text-[clamp(.92rem,1.4vw,1.04rem)] leading-[1.8] font-[560] whitespace-pre-line"
+							>
+								{primarySuggestion.description}
+							</p>
+						</div>
+					</article>
+				{/if}
+
+				{#if otherSuggestions.length > 0}
+					<section
+						class="border-t border-white/14 bg-[radial-gradient(circle_at_50%_120%,rgb(37_99_235_/.1),transparent_48%),#050b18] p-[clamp(1.5rem,4vw,3rem)]"
+						aria-labelledby="other-careers-heading"
+					>
+						<div class="mb-7 flex items-end justify-between gap-4">
+							<div class="flex items-start gap-4">
+								<span
+									class="mt-1 grid size-9 flex-none place-items-center border border-blue/70 bg-blue/15 text-[#6f9bff]"
+									aria-hidden="true"
+								>
+									<Compass size={18} strokeWidth={2.1} />
+								</span>
+								<div>
+									<p class="m-0 text-[.65rem] font-[760] tracking-[.14em] text-[#6f9bff] uppercase">
+										Hướng tham khảo
+									</p>
+									<h3 class="mt-2 mb-0 text-[clamp(1.15rem,2vw,1.5rem)]" id="other-careers-heading">
+										Hai nghề cũng phù hợp
+									</h3>
+								</div>
 							</div>
 						</div>
-						<p class="career-suggestion__percent">{percent}%</p>
-						<p class="career-suggestion__description">{suggestion.description}</p>
-					</li>
-				{/each}
-			</ol>
-
-			<p class="career-suggestions__note">
-				Các tỷ lệ này là gợi ý để bạn cân nhắc và trải nghiệm thêm, không phải kết luận cố định về
-				nghề nghiệp.
-			</p>
+						<ol class="m-0 grid list-none gap-4 p-0 min-[700px]:grid-cols-2">
+							{#each otherSuggestions as suggestion, index (suggestion.id)}
+								<li
+									class={[
+										'relative isolate min-h-44 overflow-hidden border p-[clamp(1.2rem,3vw,2rem)] before:absolute before:top-0 before:left-0 before:h-1 before:w-full',
+										index === 0
+											? 'border-blue/45 bg-[linear-gradient(135deg,rgb(37_99_235_/.1),rgb(7_16_32_/.98)_58%)] before:bg-blue'
+											: 'border-lime/35 bg-[linear-gradient(135deg,rgb(188_255_99_/.06),rgb(7_16_32_/.98)_58%)] before:bg-lime'
+									]}
+								>
+									<p class="m-0 font-mono text-[.72rem] font-[700] text-[#6f9bff]">
+										{String(index + 2).padStart(2, '0')}
+									</p>
+									<h4 class="mt-5 mb-0 text-[clamp(1.35rem,2.5vw,1.8rem)] tracking-[-.025em]">
+										{suggestion.name}
+									</h4>
+									<p class="mt-3 mb-0 max-w-[48rem] text-[.84rem] leading-[1.65] text-[#b9c6d8]">
+										{suggestion.description}
+									</p>
+								</li>
+							{/each}
+						</ol>
+					</section>
+				{/if}
+			</div>
 		</div>
 	{/if}
 </section>
-
-<style>
-	.career-suggestions {
-		margin-top: 1rem;
-		border: 1px solid var(--color-blue);
-		background: radial-gradient(circle at 90% 8%, rgb(188 255 99 / 8%), transparent 30%), #071020;
-	}
-
-	.career-suggestions__header {
-		display: flex;
-		width: 100%;
-		cursor: pointer;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 2rem;
-		border: 0;
-		background: transparent;
-		padding: clamp(1.4rem, 3vw, 2rem);
-		color: inherit;
-		font: inherit;
-		text-align: left;
-	}
-
-	.career-suggestions__header:focus-visible {
-		outline: 2px solid var(--color-lime);
-		outline-offset: -0.45rem;
-	}
-
-	.career-suggestions__header h2 {
-		margin: 0;
-		font-size: clamp(1.35rem, 3vw, 1.8rem);
-	}
-
-	.career-suggestions__header p {
-		margin: 0.5rem 0 0;
-		color: #91a0b4;
-		font-size: 0.85rem;
-		line-height: 1.5;
-	}
-
-	.career-suggestions__limit {
-		flex: none;
-		border: 1px solid rgb(188 255 99 / 45%);
-		padding: 0.45rem 0.65rem;
-		color: var(--color-lime);
-		font-size: 0.7rem;
-	}
-
-	.career-suggestions__status {
-		display: flex;
-		flex: none;
-		align-items: center;
-		gap: 0.8rem;
-	}
-
-	:global(.accordion-icon) {
-		color: var(--color-lime);
-		transition: transform 160ms ease;
-	}
-
-	:global(.accordion-icon--expanded) {
-		transform: rotate(180deg);
-	}
-
-	.career-suggestions__list {
-		margin: 0;
-		padding: 0;
-		border-top: 1px solid rgb(255 255 255 / 14%);
-		list-style: none;
-	}
-
-	.career-suggestion {
-		display: grid;
-		grid-template-columns: 2.5rem minmax(12rem, 0.7fr) 5rem minmax(18rem, 1.3fr);
-		align-items: center;
-		gap: clamp(1rem, 3vw, 2.5rem);
-		padding: clamp(1.4rem, 3vw, 2rem);
-		border-bottom: 1px solid rgb(255 255 255 / 14%);
-	}
-
-	.career-suggestion:last-child {
-		border-bottom: 0;
-	}
-
-	.career-suggestion__index {
-		margin: 0;
-		color: #637188;
-		font-size: 0.72rem;
-	}
-
-	.career-suggestion__identity h3 {
-		margin: 0;
-		font-size: clamp(1.1rem, 2vw, 1.45rem);
-	}
-
-	.career-suggestion__track {
-		height: 0.3rem;
-		margin-top: 0.85rem;
-		background: rgb(37 99 235 / 28%);
-	}
-
-	.career-suggestion__track span {
-		display: block;
-		height: 100%;
-		background: var(--color-lime);
-	}
-
-	.career-suggestion__percent {
-		margin: 0;
-		color: var(--color-lime);
-		font-size: clamp(1.7rem, 4vw, 2.6rem);
-		font-weight: 750;
-		letter-spacing: -0.05em;
-	}
-
-	.career-suggestion__description {
-		margin: 0;
-		color: #c5cfdd;
-		font-size: 0.86rem;
-		line-height: 1.65;
-	}
-
-	.career-suggestions__note {
-		margin: 0;
-		border-top: 1px solid rgb(255 255 255 / 14%);
-		padding: 1rem clamp(1.4rem, 3vw, 2rem);
-		color: #77869a;
-		font-size: 0.72rem;
-		line-height: 1.5;
-	}
-
-	@media (max-width: 820px) {
-		.career-suggestion {
-			grid-template-columns: 2.5rem minmax(0, 1fr) auto;
-		}
-
-		.career-suggestion__description {
-			grid-column: 2 / -1;
-		}
-	}
-
-	@media (max-width: 520px) {
-		.career-suggestions__limit {
-			display: none;
-		}
-
-		.career-suggestion {
-			grid-template-columns: 2rem minmax(0, 1fr) auto;
-			gap: 0.8rem;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		:global(.accordion-icon) {
-			transition: none;
-		}
-	}
-</style>

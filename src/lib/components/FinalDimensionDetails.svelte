@@ -86,22 +86,28 @@
 	}
 </script>
 
-<section class="dimension-details" aria-labelledby="dimension-details-heading">
+<section class="mt-4 border border-blue bg-[#071020]" aria-labelledby="dimension-details-heading">
 	<button
-		class="dimension-details__header"
+		class="flex w-full cursor-pointer items-start justify-between gap-8 border-0 bg-transparent p-[clamp(1.4rem,3vw,2rem)] text-left font-[inherit] text-inherit focus-visible:outline-2 focus-visible:-outline-offset-[.45rem] focus-visible:outline-lime"
 		type="button"
 		aria-expanded={expanded}
 		aria-controls="dimension-details-content"
 		onclick={ontoggle}
 	>
 		<div>
-			<h2 id="dimension-details-heading">Chi tiết từng khía cạnh</h2>
-			<p>Mỗi thanh thể hiện mức đánh giá của một khía cạnh và phần diễn giải tương ứng.</p>
+			<h2 class="m-0 text-[clamp(1.35rem,3vw,1.8rem)]" id="dimension-details-heading">
+				Chi tiết từng khía cạnh
+			</h2>
+			<p class="mt-2 mb-0 text-[.85rem] leading-6 text-[#91a0b4]">
+				Mỗi thanh thể hiện mức đánh giá của một khía cạnh và phần diễn giải tương ứng.
+			</p>
 		</div>
-		<span class="dimension-details__status">
-			<span class="dimension-details__count">28 khía cạnh</span>
+		<span class="flex flex-none items-center gap-[.8rem]">
+			<span class="m-0 flex-none border border-blue/60 px-[.65rem] py-[.45rem] max-[520px]:hidden"
+				>28 khía cạnh</span
+			>
 			<ChevronDown
-				class={`accordion-icon ${expanded ? 'accordion-icon--expanded' : ''}`}
+				class={`text-lime transition-transform duration-[160ms] motion-reduce:transition-none ${expanded ? 'rotate-180' : ''}`}
 				size={20}
 				strokeWidth={2.25}
 				aria-hidden="true"
@@ -114,59 +120,82 @@
 			id="dimension-details-content"
 			transition:slide={{ duration: prefersReducedMotion.current ? 0 : 220 }}
 		>
-			<nav class="stage-tabs" aria-label="Chọn nhóm DESMAP">
+			<nav
+				class="grid grid-cols-6 border-y border-white/14 max-[760px]:grid-cols-3"
+				aria-label="Chọn nhóm DESMAP"
+			>
 				{#each stages as stage (stage)}
 					<button
 						type="button"
-						class:stage-tabs__button--active={selectedStage === stage}
-						class="stage-tabs__button"
+						class={`flex min-w-0 cursor-pointer items-baseline gap-[.55rem] border-0 border-r border-white/14 bg-transparent px-4 py-[.9rem] text-left text-[#91a0b4] last:border-r-0 hover:bg-lime/8 hover:text-lime focus-visible:relative focus-visible:bg-lime/8 focus-visible:text-lime focus-visible:outline-2 focus-visible:-outline-offset-3 focus-visible:outline-lime max-[520px]:px-[.7rem] max-[760px]:[&:nth-child(-n+3)]:border-b max-[760px]:[&:nth-child(3)]:border-r-0 ${selectedStage === stage ? 'bg-lime/8 text-lime' : ''}`}
 						aria-pressed={selectedStage === stage}
 						onclick={() => (selectedStage = stage)}
 					>
-						<span>{stage}</span>
-						<small>{stageNames[stage]}</small>
+						<span class="text-[1.1rem] font-extrabold">{stage}</span>
+						<small
+							class="overflow-hidden text-[.68rem] text-ellipsis whitespace-nowrap max-[520px]:hidden"
+							>{stageNames[stage]}</small
+						>
 					</button>
 				{/each}
 			</nav>
 
-			<div class="stage-introduction">
+			<div
+				class="grid grid-cols-[minmax(0,1fr)_minmax(18rem,.8fr)] items-end gap-8 p-[clamp(1.4rem,3vw,2rem)] max-[760px]:grid-cols-1"
+			>
 				<div>
-					<p class="stage-introduction__letter">{selectedStage}</p>
-					<h3>{stageNames[selectedStage]}</h3>
-					<p>{getStageById(selectedStage).subtitle}</p>
+					<p class="mt-0 mb-[.6rem] text-[2.6rem] leading-none font-[350] text-lime">
+						{selectedStage}
+					</p>
+					<h3 class="m-0 text-[1.1rem]">{stageNames[selectedStage]}</h3>
+					<p class="mt-[.45rem] mb-0 text-[.82rem] text-[#91a0b4]">
+						{getStageById(selectedStage).subtitle}
+					</p>
 				</div>
-				<p class="stage-introduction__note">{stageNotes[selectedStage]}</p>
+				<p class="m-0 border-l border-lime/55 pl-4 text-[.78rem] leading-[1.55] text-[#b8c4d4]">
+					{stageNotes[selectedStage]}
+				</p>
 			</div>
 
-			<div class="dimension-list">
+			<div class="border-t border-white/14">
 				{#each dimensions as dimension (dimension.id)}
 					{@const level = levelFor(dimension.id)}
-					<article class="dimension-card">
-						<div class="dimension-card__title">
-							<p>{dimension.id}</p>
+					<article class="border-b border-white/14 p-[clamp(1.4rem,3vw,2rem)] last:border-b-0">
+						<div
+							class="grid grid-cols-[3rem_minmax(0,1fr)_auto] items-start gap-4 max-[760px]:grid-cols-[2.5rem_minmax(0,1fr)]"
+						>
+							<p class="m-0 text-[1.15rem] font-extrabold text-lime">{dimension.id}</p>
 							<div>
-								<h4>{dimension.name}</h4>
-								{#if dimension.description}<p>{dimension.description}</p>{/if}
+								<h4 class="m-0 text-base">{dimension.name}</h4>
+								{#if dimension.description}
+									<p class="mt-[.35rem] mb-0 text-[.78rem] text-[#91a0b4]">
+										{dimension.description}
+									</p>
+								{/if}
 							</div>
-							<strong>{dimensionLevelLabels[level]}</strong>
+							<strong
+								class="text-right text-[.82rem] text-lime max-[760px]:col-start-2 max-[760px]:text-left"
+								>{dimensionLevelLabels[level]}</strong
+							>
 						</div>
 
 						<div
-							class="level-scale"
+							class="mt-5 grid grid-cols-5 gap-[.3rem]"
 							role="img"
 							aria-label={`${dimension.id}: ${dimensionLevelLabels[level]}`}
 						>
 							{#each dimensionLevelIds as scaleLevel (scaleLevel)}
 								<div
-									class:level-scale__segment--active={scaleLevel === level}
-									class="level-scale__segment"
+									class={`relative min-h-[2.35rem] border-t-[.42rem] pt-[.55rem] text-[.62rem] leading-tight max-[520px]:min-h-[.6rem] max-[520px]:pt-0 ${scaleLevel === level ? "border-lime text-[#f7f9fb] before:absolute before:top-[-.69rem] before:left-1/2 before:size-[.55rem] before:-translate-x-1/2 before:rounded-full before:bg-lime before:shadow-[0_0_.75rem_rgb(188_255_99_/.45)] before:content-['']" : 'border-blue/35 text-[#66758a]'}`}
 								>
-									<span>{dimensionLevelLabels[scaleLevel]}</span>
+									<span class="max-[520px]:hidden">{dimensionLevelLabels[scaleLevel]}</span>
 								</div>
 							{/each}
 						</div>
 
-						<div class="dimension-card__explanation">
+						<div
+							class="mt-5 w-full text-[.88rem] leading-[1.7] text-[#c5cfdd] [&>p]:m-0 [&>p+p]:mt-[.9rem] [&>p+ul]:mt-[.3rem] [&>ul]:m-0 [&>ul]:list-outside [&>ul]:list-disc [&>ul]:pl-6 [&>ul+p]:mt-[.9rem] [&>ul>li]:pl-[.15rem] [&>ul>li+li]:mt-[.12rem]"
+						>
 							{#each explanationBlocks(dimension.levelContent[level]) as block, blockIndex (`${block.type}-${blockIndex}`)}
 								{#if block.type === 'paragraph'}
 									<p>{block.text}</p>
@@ -185,321 +214,3 @@
 		</div>
 	{/if}
 </section>
-
-<style>
-	.dimension-details {
-		margin-top: 1rem;
-		border: 1px solid var(--color-blue);
-		background: #071020;
-	}
-
-	.dimension-details__header {
-		display: flex;
-		width: 100%;
-		cursor: pointer;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 2rem;
-		border: 0;
-		background: transparent;
-		padding: clamp(1.4rem, 3vw, 2rem);
-		color: inherit;
-		font: inherit;
-		text-align: left;
-	}
-
-	.dimension-details__header:focus-visible {
-		outline: 2px solid var(--color-lime);
-		outline-offset: -0.45rem;
-	}
-
-	.dimension-details__header h2 {
-		margin: 0;
-		font-size: clamp(1.35rem, 3vw, 1.8rem);
-	}
-
-	.dimension-details__header p {
-		margin: 0.5rem 0 0;
-		color: #91a0b4;
-		font-size: 0.85rem;
-		line-height: 1.5;
-	}
-
-	.dimension-details__count {
-		flex: none;
-		margin: 0;
-		border: 1px solid rgb(37 99 235 / 60%);
-		padding: 0.45rem 0.65rem;
-	}
-
-	.dimension-details__status {
-		display: flex;
-		flex: none;
-		align-items: center;
-		gap: 0.8rem;
-	}
-
-	:global(.accordion-icon) {
-		color: var(--color-lime);
-		transition: transform 160ms ease;
-	}
-
-	:global(.accordion-icon--expanded) {
-		transform: rotate(180deg);
-	}
-
-	.stage-tabs {
-		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		border-block: 1px solid rgb(255 255 255 / 14%);
-	}
-
-	.stage-tabs__button {
-		display: flex;
-		min-width: 0;
-		cursor: pointer;
-		align-items: baseline;
-		gap: 0.55rem;
-		border: 0;
-		border-right: 1px solid rgb(255 255 255 / 14%);
-		background: transparent;
-		padding: 0.9rem 1rem;
-		color: #91a0b4;
-		text-align: left;
-	}
-
-	.stage-tabs__button:last-child {
-		border-right: 0;
-	}
-
-	.stage-tabs__button span {
-		font-size: 1.1rem;
-		font-weight: 800;
-	}
-
-	.stage-tabs__button small {
-		overflow: hidden;
-		font-size: 0.68rem;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.stage-tabs__button:hover,
-	.stage-tabs__button:focus-visible,
-	.stage-tabs__button--active {
-		background: rgb(188 255 99 / 8%);
-		color: var(--color-lime);
-	}
-
-	.stage-tabs__button:focus-visible {
-		position: relative;
-		outline: 2px solid var(--color-lime);
-		outline-offset: -3px;
-	}
-
-	.stage-introduction {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.8fr);
-		align-items: end;
-		gap: 2rem;
-		padding: clamp(1.4rem, 3vw, 2rem);
-	}
-
-	.stage-introduction__letter {
-		margin: 0 0 0.6rem;
-		color: var(--color-lime);
-		font-size: 2.6rem;
-		font-weight: 350;
-		line-height: 1;
-	}
-
-	.stage-introduction h3 {
-		margin: 0;
-		font-size: 1.1rem;
-	}
-
-	.stage-introduction div > p:last-child {
-		margin: 0.45rem 0 0;
-		color: #91a0b4;
-		font-size: 0.82rem;
-	}
-
-	.stage-introduction__note {
-		margin: 0;
-		border-left: 1px solid rgb(188 255 99 / 55%);
-		padding-left: 1rem;
-		color: #b8c4d4;
-		font-size: 0.78rem;
-		line-height: 1.55;
-	}
-
-	.dimension-list {
-		border-top: 1px solid rgb(255 255 255 / 14%);
-	}
-
-	.dimension-card {
-		padding: clamp(1.4rem, 3vw, 2rem);
-		border-bottom: 1px solid rgb(255 255 255 / 14%);
-	}
-
-	.dimension-card:last-child {
-		border-bottom: 0;
-	}
-
-	.dimension-card__title {
-		display: grid;
-		grid-template-columns: 3rem minmax(0, 1fr) auto;
-		align-items: start;
-		gap: 1rem;
-	}
-
-	.dimension-card__title > p {
-		margin: 0;
-		color: var(--color-lime);
-		font-size: 1.15rem;
-		font-weight: 800;
-	}
-
-	.dimension-card__title h4 {
-		margin: 0;
-		font-size: 1rem;
-	}
-
-	.dimension-card__title div p {
-		margin: 0.35rem 0 0;
-		color: #91a0b4;
-		font-size: 0.78rem;
-	}
-
-	.dimension-card__title strong {
-		color: var(--color-lime);
-		font-size: 0.82rem;
-		text-align: right;
-	}
-
-	.level-scale {
-		display: grid;
-		grid-template-columns: repeat(5, 1fr);
-		gap: 0.3rem;
-		margin-top: 1.25rem;
-	}
-
-	.level-scale__segment {
-		position: relative;
-		min-height: 2.35rem;
-		border-top: 0.42rem solid rgb(37 99 235 / 35%);
-		padding-top: 0.55rem;
-		color: #66758a;
-		font-size: 0.62rem;
-		line-height: 1.25;
-	}
-
-	.level-scale__segment--active {
-		border-color: var(--color-lime);
-		color: #f7f9fb;
-	}
-
-	.level-scale__segment--active::before {
-		position: absolute;
-		top: -0.69rem;
-		left: 50%;
-		width: 0.55rem;
-		height: 0.55rem;
-		content: '';
-		transform: translateX(-50%);
-		border-radius: 50%;
-		background: var(--color-lime);
-		box-shadow: 0 0 0.75rem rgb(188 255 99 / 45%);
-	}
-
-	.dimension-card__explanation {
-		width: 100%;
-		margin: 1.25rem 0 0;
-		color: #c5cfdd;
-		font-size: 0.88rem;
-		line-height: 1.7;
-	}
-
-	.dimension-card__explanation p {
-		margin: 0;
-	}
-
-	.dimension-card__explanation p + p,
-	.dimension-card__explanation ul + p {
-		margin-top: 0.9rem;
-	}
-
-	.dimension-card__explanation p + ul {
-		margin-top: 0.3rem;
-	}
-
-	.dimension-card__explanation ul {
-		margin: 0;
-		padding-left: 1.5rem;
-		list-style: disc outside;
-	}
-
-	.dimension-card__explanation li {
-		padding-left: 0.15rem;
-	}
-
-	.dimension-card__explanation li + li {
-		margin-top: 0.12rem;
-	}
-
-	@media (max-width: 760px) {
-		.stage-tabs {
-			grid-template-columns: repeat(3, 1fr);
-		}
-
-		.stage-tabs__button:nth-child(3) {
-			border-right: 0;
-		}
-
-		.stage-tabs__button:nth-child(-n + 3) {
-			border-bottom: 1px solid rgb(255 255 255 / 14%);
-		}
-
-		.stage-introduction {
-			grid-template-columns: 1fr;
-		}
-
-		.dimension-card__title {
-			grid-template-columns: 2.5rem minmax(0, 1fr);
-		}
-
-		.dimension-card__title strong {
-			grid-column: 2;
-			text-align: left;
-		}
-	}
-
-	@media (max-width: 520px) {
-		.dimension-details__count {
-			display: none;
-		}
-
-		.level-scale__segment span {
-			display: none;
-		}
-
-		.level-scale__segment {
-			min-height: 0.6rem;
-			padding-top: 0;
-		}
-
-		.stage-tabs__button {
-			padding-inline: 0.7rem;
-		}
-
-		.stage-tabs__button small {
-			display: none;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		:global(.accordion-icon) {
-			transition: none;
-		}
-	}
-</style>

@@ -20,50 +20,72 @@
 		id: StageId;
 		name: string;
 		assessment: string;
+		strength: string;
+		weakness: string;
+		labelPosition: string;
 	};
 
 	const stages: RadarStage[] = [
 		{
 			id: 'D',
 			name: 'Mong muốn',
+			labelPosition: 'top-[8.889%] left-1/2',
 			assessment:
-				'Nội dung đánh giá của AI về mong muốn nghề nghiệp của bạn sẽ được hiển thị tại đây.'
+				'Nội dung đánh giá của AI về mong muốn nghề nghiệp của bạn sẽ được hiển thị tại đây.',
+			strength: 'Bạn nhận biết khá rõ điều mình thật sự coi trọng trong công việc.',
+			weakness: 'Bạn cần làm rõ thứ tự ưu tiên khi nhiều mục tiêu xuất hiện cùng lúc.'
 		},
 		{
 			id: 'E',
 			name: 'Chuyên môn',
+			labelPosition: 'top-[29.444%] left-[85.603%]',
 			assessment:
-				'Nội dung đánh giá của AI về chuyên môn và các điểm mạnh của bạn sẽ được hiển thị tại đây.'
+				'Nội dung đánh giá của AI về chuyên môn và các điểm mạnh của bạn sẽ được hiển thị tại đây.',
+			strength: 'Bạn có khả năng học và vận dụng kiến thức vào nhiệm vụ thực tế.',
+			weakness:
+				'Bạn cần phát triển chiều sâu chuyên môn ở các nhiệm vụ phức tạp hoặc chưa quen thuộc.'
 		},
 		{
 			id: 'S',
 			name: 'Vai trò xã hội',
+			labelPosition: 'top-[70.556%] left-[85.603%]',
 			assessment:
-				'Nội dung đánh giá của AI về cách bạn phối hợp với người khác sẽ được hiển thị tại đây.'
+				'Nội dung đánh giá của AI về cách bạn phối hợp với người khác sẽ được hiển thị tại đây.',
+			strength: 'Bạn biết lắng nghe và giữ nhịp phối hợp với những người xung quanh.',
+			weakness:
+				'Bạn cần chủ động nói rõ quan điểm khi nhóm có bất đồng hoặc thiếu người ra quyết định.'
 		},
 		{
 			id: 'M',
 			name: 'Tư duy',
+			labelPosition: 'top-[91.111%] left-1/2',
 			assessment:
-				'Nội dung đánh giá của AI về cách bạn phân tích và ra quyết định sẽ được hiển thị tại đây.'
+				'Nội dung đánh giá của AI về cách bạn phân tích và ra quyết định sẽ được hiển thị tại đây.',
+			strength: 'Bạn phân tích có trình tự và thường dựa trên dữ kiện.',
+			weakness: 'Bạn cần luyện ra quyết định sớm hơn khi không thể thu thập đầy đủ thông tin.'
 		},
 		{
 			id: 'A',
 			name: 'Khả năng thích ứng',
+			labelPosition: 'top-[70.556%] left-[14.397%]',
 			assessment:
-				'Nội dung đánh giá của AI về cách bạn thích ứng với thay đổi sẽ được hiển thị tại đây.'
+				'Nội dung đánh giá của AI về cách bạn thích ứng với thay đổi sẽ được hiển thị tại đây.',
+			strength: 'Bạn có thể điều chỉnh cách làm khi bối cảnh thay đổi.',
+			weakness: 'Bạn cần thêm thời gian làm quen khi nhiều yếu tố mới xuất hiện cùng lúc.'
 		},
 		{
 			id: 'P',
 			name: 'Phản ứng với áp lực',
+			labelPosition: 'top-[29.444%] left-[14.397%]',
 			assessment:
-				'Nội dung đánh giá của AI về phản ứng của bạn khi chịu áp lực sẽ được hiển thị tại đây.'
+				'Nội dung đánh giá của AI về phản ứng của bạn khi chịu áp lực sẽ được hiển thị tại đây.',
+			strength: 'Bạn duy trì được sự tập trung trong điều kiện áp lực vừa phải.',
+			weakness: 'Bạn cần chuẩn bị cách ưu tiên và xin hỗ trợ khi nhiều vấn đề xảy ra cùng lúc.'
 		}
 	];
 
 	const center = 180;
 	const chartRadius = 108;
-	const labelRadius = 148;
 	const gridLevels = [0.25, 0.5, 0.75, 1];
 
 	let selectedId = $state<StageId>('D');
@@ -96,32 +118,37 @@
 		return stages.map((_, index) => point(index, scale)).join(' ');
 	}
 
-	function labelPosition(index: number): string {
-		const position = coordinates(index, labelRadius);
-		return `left: ${(position.x / 360) * 100}%; top: ${(position.y / 360) * 100}%;`;
-	}
-
 	function selectStage(id: StageId) {
 		selectedId = id;
 	}
 </script>
 
-<section class="radar-card" aria-labelledby="final-radar-heading">
+<section
+	class="border border-blue p-[clamp(1.25rem,3vw,1.75rem)] final-radar-gradient"
+	aria-labelledby="final-radar-heading"
+>
 	<button
-		class="radar-card__heading"
+		class="flex w-full cursor-pointer items-start justify-between gap-4 border-0 bg-transparent p-0 text-left font-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-[.45rem] focus-visible:outline-lime max-[420px]:flex-col"
 		type="button"
 		aria-expanded={expanded}
 		aria-controls="final-radar-content"
 		onclick={ontoggle}
 	>
 		<div>
-			<h2 id="final-radar-heading">Đánh giá cuối cùng</h2>
-			<p>Chọn một chữ trên biểu đồ để xem nhận định tương ứng.</p>
+			<h2 class="m-0 text-[clamp(1.35rem,3vw,1.8rem)]" id="final-radar-heading">
+				Đánh giá cuối cùng
+			</h2>
+			<p class="mt-[.45rem] mb-0 text-[.83rem] leading-6 text-[#91a0b4]">
+				Chọn một chữ trên biểu đồ để xem nhận định tương ứng.
+			</p>
 		</div>
-		<span class="radar-card__status">
-			<span class="preview-label">Bản xem trước</span>
+		<span class="flex flex-none items-center gap-[.8rem]">
+			<span
+				class="flex-none border border-lime/45 px-[.55rem] py-[.35rem] text-[.68rem] font-bold text-lime"
+				>Bản xem trước</span
+			>
 			<ChevronDown
-				class={`accordion-icon ${expanded ? 'accordion-icon--expanded' : ''}`}
+				class={`text-lime transition-transform duration-[160ms] motion-reduce:transition-none ${expanded ? 'rotate-180' : ''}`}
 				size={20}
 				strokeWidth={2.25}
 				aria-hidden="true"
@@ -131,13 +158,15 @@
 
 	{#if expanded}
 		<div
-			class="radar-card__content"
+			class="grid min-h-[27rem] grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)] items-start gap-[clamp(2rem,4vw,4rem)] py-7 max-[760px]:grid-cols-1 max-[760px]:gap-4 max-[420px]:min-h-[23rem]"
 			id="final-radar-content"
 			transition:slide={{ duration: prefersReducedMotion.current ? 0 : 220 }}
 		>
-			<div class="chart-wrap">
+			<div
+				class="relative ml-[clamp(0rem,2vw,1.5rem)] aspect-square w-[min(100%,22rem)] justify-self-start max-[760px]:ml-0 max-[760px]:justify-self-center"
+			>
 				<svg
-					class="radar"
+					class="block size-full overflow-visible"
 					viewBox="0 0 360 360"
 					role="img"
 					aria-labelledby="radar-title radar-description"
@@ -148,325 +177,121 @@
 					</desc>
 
 					{#each gridLevels as level (level)}
-						<polygon class="radar__grid" points={polygon(level)} />
+						<polygon
+							class="fill-none stroke-[rgb(89_137_203_/.3)] stroke-1 [vector-effect:non-scaling-stroke]"
+							points={polygon(level)}
+						/>
 					{/each}
 					{#each stages as stage, index (stage.id)}
 						{@const axisEnd = coordinates(index, chartRadius)}
-						<line class="radar__axis" x1={center} y1={center} x2={axisEnd.x} y2={axisEnd.y} />
+						<line
+							class="stroke-[rgb(89_137_203_/.2)] stroke-1 [vector-effect:non-scaling-stroke]"
+							x1={center}
+							y1={center}
+							x2={axisEnd.x}
+							y2={axisEnd.y}
+						/>
 					{/each}
 
-					<polygon class="radar__score" points={scorePoints} />
+					<polygon
+						class="fill-lime/14 stroke-lime stroke-2 [stroke-linejoin:round] [vector-effect:non-scaling-stroke]"
+						points={scorePoints}
+					/>
 					{#each stages as stage, index (stage.id)}
 						{@const scorePoint = coordinates(
 							index,
 							chartRadius * (scores.stages[stage.id].percent / 100)
 						)}
-						<circle class="radar__point" cx={scorePoint.x} cy={scorePoint.y} r="4.5" />
+						<circle
+							class="fill-[#071020] stroke-lime stroke-2 [vector-effect:non-scaling-stroke]"
+							cx={scorePoint.x}
+							cy={scorePoint.y}
+							r="4.5"
+						/>
 					{/each}
 				</svg>
 
-				<div class="radar-labels" aria-label="Các khía cạnh DESMAP">
-					{#each stages as stage, index (stage.id)}
+				<div class="absolute inset-0" aria-label="Các khía cạnh DESMAP">
+					{#each stages as stage (stage.id)}
 						<button
-							class:radar-label--active={selectedId === stage.id}
-							class="radar-label"
-							style={labelPosition(index)}
+							class={`absolute grid min-h-11 min-w-11 -translate-1/2 cursor-pointer place-content-center rounded-full border bg-[#071020] leading-none transition-[border-color,color,box-shadow] duration-[160ms] motion-reduce:transition-none max-[420px]:min-h-10 max-[420px]:min-w-10 ${stage.labelPosition} ${selectedId === stage.id ? 'border-lime text-lime shadow-[0_0_1rem_rgb(188_255_99_/.24)]' : 'border-blue text-[#f7f9fb] shadow-[0_0_0_0_rgb(188_255_99_/.0)] hover:border-lime hover:text-lime hover:shadow-[0_0_1rem_rgb(188_255_99_/.24)]'} focus-visible:border-lime focus-visible:text-lime focus-visible:shadow-[0_0_1rem_rgb(188_255_99_/.24)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-lime`}
 							type="button"
 							aria-pressed={selectedId === stage.id}
 							aria-label={`${stage.id}, ${stage.name}. ${selectedId === stage.id ? 'Đang xem nhận định' : 'Xem nhận định'}`}
 							onclick={() => selectStage(stage.id)}
 						>
-							<span>{stage.id}</span>
+							<span class="text-base font-extrabold">{stage.id}</span>
 						</button>
 					{/each}
 				</div>
 			</div>
 
 			{#if selectedStage}
-				<aside class="assessment" aria-live="polite" aria-labelledby="assessment-heading">
-					<p class="assessment__letter" aria-hidden="true">{selectedStage.id}</p>
-					<p class="assessment__name">{selectedStage.name}</p>
-					<h3 id="assessment-heading">Nhận định của AI</h3>
-					<p class="assessment__copy">{selectedStage.assessment}</p>
-					<div class="assessment__score">
-						<span>Điểm từ đánh giá ban đầu</span>
-						<strong>{scores.stages[selectedStage.id].percent}%</strong>
+				<aside
+					class="relative w-full max-w-[54rem] justify-self-stretch border-l border-lime/55 py-1 pr-0 pl-[clamp(1.15rem,3vw,2rem)] max-[760px]:justify-self-stretch max-[760px]:border-t max-[760px]:border-l-0 max-[760px]:pt-6 max-[760px]:pr-0 max-[760px]:pb-0 max-[760px]:pl-0"
+					aria-live="polite"
+					aria-labelledby="assessment-heading"
+				>
+					<div class="mb-7 flex items-center gap-4">
+						<p
+							class="m-0 grid size-12 flex-none place-items-center border border-lime/55 text-[2rem] leading-none font-semibold text-lime"
+							aria-hidden="true"
+						>
+							{selectedStage.id}
+						</p>
+						<div>
+							<p class="m-0 text-[.66rem] font-bold tracking-[.14em] text-[#77869a] uppercase">
+								Khía cạnh DESMAP
+							</p>
+							<h3 class="mt-1 mb-0 text-[clamp(1.15rem,2vw,1.45rem)]" id="assessment-heading">
+								{selectedStage.name}
+							</h3>
+						</div>
+					</div>
+					<p class="mb-2 text-[.7rem] font-bold tracking-[.12em] text-[#91a0b4] uppercase">
+						Nhận định tổng hợp
+					</p>
+					<p
+						class="m-0 max-w-[76ch] text-[.94rem] leading-[1.75] whitespace-pre-line text-[#d4dce7]"
+					>
+						{selectedStage.assessment}
+					</p>
+					<div class="mt-7 grid grid-cols-2 border-t border-white/14 pt-5 max-[520px]:grid-cols-1">
+						<section
+							class="pr-6 max-[520px]:pr-0 max-[520px]:pb-5"
+							aria-labelledby="strength-heading"
+						>
+							<h4
+								class="m-0 text-[.7rem] font-bold tracking-[.12em] text-lime uppercase"
+								id="strength-heading"
+							>
+								Điểm mạnh
+							</h4>
+							<p class="mt-2 mb-0 text-[.82rem] leading-[1.65] text-[#aeb9c8]">
+								{selectedStage.strength}
+							</p>
+						</section>
+						<section
+							class="border-l border-white/14 pl-6 max-[520px]:border-t max-[520px]:border-l-0 max-[520px]:pt-5 max-[520px]:pl-0"
+							aria-labelledby="weakness-heading"
+						>
+							<h4
+								class="m-0 text-[.7rem] font-bold tracking-[.12em] text-[#f5ba66] uppercase"
+								id="weakness-heading"
+							>
+								Điểm cần phát triển
+							</h4>
+							<p class="mt-2 mb-0 text-[.82rem] leading-[1.65] text-[#aeb9c8]">
+								{selectedStage.weakness}
+							</p>
+						</section>
 					</div>
 				</aside>
 			{/if}
 		</div>
 
-		<p class="radar-card__note">
+		<p class="m-0 border-t border-white/14 pt-4 text-[.72rem] leading-6 text-[#77869a]">
 			Biểu đồ hiện dùng điểm của đánh giá ban đầu. Nhận định của AI đang là nội dung tạm thời.
 		</p>
 	{/if}
 </section>
-
-<style>
-	.radar-card {
-		border: 1px solid var(--color-blue);
-		background: radial-gradient(circle at 32% 48%, rgb(37 99 235 / 12%), transparent 42%), #071020;
-		padding: clamp(1.25rem, 3vw, 1.75rem);
-	}
-
-	.radar-card__heading {
-		display: flex;
-		width: 100%;
-		cursor: pointer;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 1rem;
-		border: 0;
-		background: transparent;
-		padding: 0;
-		color: inherit;
-		font: inherit;
-		text-align: left;
-	}
-
-	.radar-card__heading:focus-visible {
-		outline: 2px solid var(--color-lime);
-		outline-offset: 0.45rem;
-	}
-
-	.radar-card__heading h2 {
-		margin: 0;
-		font-size: clamp(1.35rem, 3vw, 1.8rem);
-	}
-
-	.radar-card__heading p {
-		margin: 0.45rem 0 0;
-		color: #91a0b4;
-		font-size: 0.83rem;
-		line-height: 1.5;
-	}
-
-	.preview-label {
-		flex: none;
-		border: 1px solid rgb(188 255 99 / 45%);
-		padding: 0.35rem 0.55rem;
-		color: var(--color-lime);
-		font-size: 0.68rem;
-		font-weight: 700;
-	}
-
-	.radar-card__status {
-		display: flex;
-		flex: none;
-		align-items: center;
-		gap: 0.8rem;
-	}
-
-	:global(.accordion-icon) {
-		color: var(--color-lime);
-		transition: transform 160ms ease;
-	}
-
-	:global(.accordion-icon--expanded) {
-		transform: rotate(180deg);
-	}
-
-	.radar-card__content {
-		display: grid;
-		grid-template-columns: minmax(18rem, 24rem) minmax(0, 1fr);
-		align-items: center;
-		gap: clamp(2rem, 4vw, 4rem);
-		min-height: 27rem;
-		padding-block: 1.25rem;
-	}
-
-	.chart-wrap {
-		position: relative;
-		width: min(100%, 22rem);
-		aspect-ratio: 1;
-		justify-self: start;
-		margin-left: clamp(0rem, 2vw, 1.5rem);
-	}
-
-	.radar {
-		display: block;
-		width: 100%;
-		height: 100%;
-		overflow: visible;
-	}
-
-	.radar__grid,
-	.radar__axis {
-		fill: none;
-		stroke: rgb(89 137 203 / 30%);
-		stroke-width: 1;
-		vector-effect: non-scaling-stroke;
-	}
-
-	.radar__axis {
-		stroke: rgb(89 137 203 / 20%);
-	}
-
-	.radar__score {
-		fill: rgb(188 255 99 / 14%);
-		stroke: var(--color-lime);
-		stroke-width: 2;
-		stroke-linejoin: round;
-		vector-effect: non-scaling-stroke;
-	}
-
-	.radar__point {
-		fill: #071020;
-		stroke: var(--color-lime);
-		stroke-width: 2;
-		vector-effect: non-scaling-stroke;
-	}
-
-	.radar-labels {
-		position: absolute;
-		inset: 0;
-	}
-
-	.radar-label {
-		position: absolute;
-		display: grid;
-		min-width: 2.8rem;
-		min-height: 2.8rem;
-		cursor: pointer;
-		place-content: center;
-		transform: translate(-50%, -50%);
-		border: 1px solid var(--color-blue);
-		border-radius: 50%;
-		background: #071020;
-		color: #f7f9fb;
-		line-height: 1;
-		box-shadow: 0 0 0 0 rgb(188 255 99 / 0%);
-		transition:
-			border-color 160ms ease,
-			color 160ms ease,
-			box-shadow 160ms ease;
-	}
-
-	.radar-label:hover,
-	.radar-label:focus-visible,
-	.radar-label--active {
-		border-color: var(--color-lime);
-		color: var(--color-lime);
-		box-shadow: 0 0 1rem rgb(188 255 99 / 24%);
-	}
-
-	.radar-label:focus-visible {
-		outline: 2px solid var(--color-lime);
-		outline-offset: 3px;
-	}
-
-	.radar-label span {
-		font-size: 1rem;
-		font-weight: 800;
-	}
-
-	.assessment {
-		position: relative;
-		align-self: center;
-		justify-self: stretch;
-		width: 100%;
-		border-left: 1px solid rgb(188 255 99 / 55%);
-		padding: 1rem 0 1rem clamp(1.15rem, 3vw, 2rem);
-	}
-
-	.assessment__letter {
-		margin: 0;
-		color: var(--color-lime);
-		font-size: clamp(3.5rem, 7vw, 5.5rem);
-		font-weight: 350;
-		line-height: 0.9;
-		letter-spacing: -0.08em;
-	}
-
-	.assessment__name {
-		margin: 0.65rem 2.5rem 1.75rem 0;
-		color: #91a0b4;
-		font-size: 0.82rem;
-	}
-
-	.assessment h3 {
-		margin: 0 0 0.7rem;
-		font-size: 1rem;
-	}
-
-	.assessment__copy {
-		margin: 0;
-		color: #c5cfdd;
-		font-size: 0.9rem;
-		line-height: 1.65;
-	}
-
-	.assessment__score {
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
-		gap: 1rem;
-		margin-top: 1.5rem;
-		border-top: 1px solid rgb(255 255 255 / 14%);
-		padding-top: 1rem;
-	}
-
-	.assessment__score span {
-		max-width: 10rem;
-		color: #91a0b4;
-		font-size: 0.7rem;
-		line-height: 1.4;
-	}
-
-	.assessment__score strong {
-		color: var(--color-lime);
-		font-size: 1.5rem;
-	}
-
-	.radar-card__note {
-		margin: 0;
-		border-top: 1px solid rgb(255 255 255 / 14%);
-		padding-top: 1rem;
-		color: #77869a;
-		font-size: 0.72rem;
-		line-height: 1.5;
-	}
-
-	@media (max-width: 760px) {
-		.radar-card__content {
-			grid-template-columns: 1fr;
-			gap: 1rem;
-		}
-
-		.chart-wrap {
-			justify-self: center;
-			margin-left: 0;
-		}
-
-		.assessment {
-			justify-self: stretch;
-			width: 100%;
-			border-top: 1px solid rgb(188 255 99 / 55%);
-			border-left: 0;
-			padding: 1.5rem 0 0;
-		}
-	}
-
-	@media (max-width: 420px) {
-		.radar-card__heading {
-			align-items: flex-start;
-			flex-direction: column;
-		}
-
-		.radar-card__content {
-			min-height: 23rem;
-		}
-
-		.radar-label {
-			min-width: 2.5rem;
-			min-height: 2.5rem;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.radar-label,
-		:global(.accordion-icon) {
-			transition: none;
-		}
-	}
-</style>

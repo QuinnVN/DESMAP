@@ -5,6 +5,7 @@
 - **Add-ons**: ai-tools, tailwindcss
 - **Website language**: All user-facing website text must be written in Vietnamese.
 - **Icons**: Prefer `@lucide/svelte` for interface icons when a matching Lucide icon exists.
+- **Styling**: Prefer Tailwind utility classes for project-owned UI styling. Keep global CSS limited to Tailwind theme tokens, keyframes, and base rules that cannot live cleanly in component markup. Do not add component-scoped `<style>` blocks or static inline styles when Tailwind can express the same styling.
 
 ---
 

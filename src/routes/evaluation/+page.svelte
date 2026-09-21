@@ -3,13 +3,19 @@
 	import { resolve } from '$app/paths';
 	import type { PageProps } from './$types';
 	import { ArrowRight, Download, RefreshCw } from '@lucide/svelte';
+	import FinalBehaviourComparison from '$lib/components/FinalBehaviourComparison.svelte';
 	import GroupedDesmapProfile from '$lib/components/GroupedDesmapProfile.svelte';
 	import FinalCareerSuggestions from '$lib/components/FinalCareerSuggestions.svelte';
 	import FinalDimensionDetails from '$lib/components/FinalDimensionDetails.svelte';
 	import FinalDesmapRadar from '$lib/components/FinalDesmapRadar.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import InitialMatchPanel from '$lib/components/InitialMatchPanel.svelte';
-	import { evaluationPageState, experiences, type FinalAssessment } from '$lib/evaluation';
+	import {
+		evaluationPageState,
+		experiences,
+		placeholderBehaviourComparison,
+		type FinalAssessment
+	} from '$lib/evaluation';
 	import {
 		browserAssessmentStorage,
 		InitialAssessmentError,
@@ -38,9 +44,10 @@
 	let requestInFlight = $state(false);
 	let syncStatus = $state<QuestionnaireSyncStatus | null>(null);
 	let syncInFlight = $state(false);
-	type FinalSection = 'overview' | 'dimensions' | 'careers';
+	type FinalSection = 'overview' | 'comparison' | 'dimensions' | 'careers';
 	let expandedFinalSections = $state<Record<FinalSection, boolean>>({
 		overview: false,
+		comparison: true,
 		dimensions: false,
 		careers: true
 	});
@@ -61,7 +68,7 @@
 			assessmentId: submission.assessmentId,
 			completedAt: submission.completedAt,
 			stageAssessments: {
-				D: 'Nhận định mẫu của AI về mong muốn nghề nghiệp của bạn sẽ được hiển thị tại đây.',
+				D: 'Dữ liệu phân tích cho thấy bạn quan tâm đến công việc có mục tiêu rõ ràng, tạo ra kết quả có thể nhìn thấy và cho phép bạn hiểu ý nghĩa của phần việc mình đảm nhận. Bạn có xu hướng gắn bó tốt hơn khi biết vì sao nhiệm vụ quan trọng và nó đóng góp thế nào vào kết quả chung.\n\nKhi phải chọn giữa nhiều hướng đi, bạn nên so sánh từng lựa chọn với các giá trị mình coi trọng, thay vì chỉ dựa vào cảm hứng nhất thời. Cách này sẽ giúp bạn nhận ra môi trường phù hợp và tránh theo đuổi một vai trò hấp dẫn bề ngoài nhưng không đáp ứng nhu cầu lâu dài.',
 				E: 'Nhận định mẫu của AI về chuyên môn và các điểm mạnh của bạn sẽ được hiển thị tại đây.',
 				S: 'Nhận định mẫu của AI về cách bạn phối hợp với người khác sẽ được hiển thị tại đây.',
 				M: 'Nhận định mẫu của AI về cách bạn phân tích và ra quyết định sẽ được hiển thị tại đây.',
@@ -74,21 +81,21 @@
 					name: 'Bác sĩ',
 					compatibilityPercent: 86,
 					description:
-						'Nội dung giải thích mẫu của AI về những điểm trong hồ sơ DESMAP phù hợp với công việc bác sĩ sẽ được hiển thị tại đây.'
+						'Đây là hướng phù hợp nhất khi đối chiếu kết quả tự đánh giá với hành vi của bạn trong VR. Hồ sơ DESMAP cho thấy bạn có xu hướng phân tích thông tin trước khi hành động, còn trong trải nghiệm bạn đã kiểm tra các dữ kiện chính trước khi chọn thứ tự ưu tiên. Cách làm này hỗ trợ việc đánh giá tình huống và đưa ra quyết định có căn cứ trong công việc y khoa.\n\nBạn vẫn cần rèn khả năng chốt ưu tiên khi thời gian bị giới hạn. Hãy bắt đầu bằng các bài tập tình huống ngắn, xác định việc quan trọng nhất trước, sau đó xin phản hồi về quyết định của mình.'
 				},
 				{
 					id: 'teacher',
 					name: 'Giáo viên',
 					compatibilityPercent: 79,
 					description:
-						'Nội dung giải thích mẫu của AI về cách tư duy, vai trò xã hội và khả năng thích ứng phù hợp với công việc giảng dạy sẽ được hiển thị tại đây.'
+						'Khả năng giải thích vấn đề và điều chỉnh cách xử lý theo thông tin mới cũng phù hợp với công việc giảng dạy.'
 				},
 				{
 					id: 'lawyer',
 					name: 'Luật sư',
 					compatibilityPercent: 73,
 					description:
-						'Nội dung giải thích mẫu của AI về các kỹ năng phân tích và xử lý áp lực phù hợp với công việc luật sư sẽ được hiển thị tại đây.'
+						'Tư duy phân tích và thói quen kiểm tra dữ kiện là nền tảng phù hợp để bạn tiếp tục khám phá ngành luật.'
 				}
 			]
 		};
@@ -198,12 +205,8 @@
 </svelte:head>
 
 <Header showBack />
-<main
-	class="min-h-dvh bg-[radial-gradient(circle_at_82%_8%,rgb(37_99_235_/.15),transparent_27%),var(--color-bg)] py-[clamp(2.2rem,5vw,5rem)] pb-16 text-[#f7f9fb]"
->
-	<div
-		class="mx-auto w-[min(1100px,calc(100%_-_3rem))] max-[640px]:w-[min(1100px,calc(100%_-_1.4rem))]"
-	>
+<main class="min-h-dvh py-[clamp(2.2rem,5vw,5rem)] pb-16 text-[#f7f9fb] evaluation-page-gradient">
+	<div class="mx-auto w-[min(90rem,calc(100%_-_4rem))] max-[640px]:w-[calc(100%_-_1.4rem)]">
 		<section class="border-b border-white/14 py-12">
 			<p class="m-0 text-[.68rem] font-[760] tracking-[.16em] text-lime uppercase">
 				{pageState === 'final' ? '03 / ĐÁNH GIÁ CUỐI CÙNG' : '02 / ĐỐI CHIẾU NGHỀ NGHIỆP BAN ĐẦU'}
@@ -271,18 +274,31 @@
 
 					<div class="mt-3 grid gap-4 min-[850px]:grid-cols-[1.15fr_.85fr]">
 						<div class="border border-blue bg-[#071020] p-6" aria-hidden="true">
-							<span class="skeleton block h-7 w-52 max-w-full"></span>
-							<span class="skeleton mt-3 block h-3 w-[78%]"></span>
+							<span
+								class="relative block h-7 w-52 max-w-full overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+							></span>
+							<span
+								class="relative mt-3 block h-3 w-[78%] overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+							></span>
 							{#each { length: 5 }, index}
 								<div
 									class="grid grid-cols-[1.6rem_minmax(7rem,auto)_1fr_3rem] items-center gap-2 border-b border-white/14 py-4 max-[560px]:grid-cols-[1.5rem_1fr_3rem]"
 								>
-									<span class="skeleton block size-5 rounded-full"></span>
-									<span class="skeleton block h-4 w-28 max-w-full"></span>
+									<span
+										class="relative block size-5 overflow-hidden rounded-full bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+									></span>
+									<span
+										class="relative block h-4 w-28 max-w-full overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+									></span>
 									<span class="h-2 bg-blue/20 max-[560px]:col-span-3">
-										<span class="skeleton block h-full" style:width={`${82 - index * 9}%`}></span>
+										<span
+											class="relative block h-full overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+											style:width={`${82 - index * 9}%`}
+										></span>
 									</span>
-									<span class="skeleton block h-5 w-10 justify-self-end"></span>
+									<span
+										class="relative block h-5 w-10 justify-self-end overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+									></span>
 								</div>
 							{/each}
 						</div>
@@ -291,13 +307,21 @@
 							<GroupedDesmapProfile scores={payload.scores} />
 						{:else}
 							<div class="border border-blue bg-[#071020] p-6" aria-hidden="true">
-								<span class="skeleton block h-7 w-40"></span>
-								<span class="skeleton mt-3 block h-3 w-[68%]"></span>
+								<span
+									class="relative block h-7 w-40 overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+								></span>
+								<span
+									class="relative mt-3 block h-3 w-[68%] overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+								></span>
 								{#each { length: 6 }, index}
 									<div class="flex items-center justify-between border-b border-white/14 py-3">
-										<span class="skeleton block h-4" style:width={`${42 + (index % 3) * 8}%`}
+										<span
+											class="relative block h-4 overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+											style:width={`${42 + (index % 3) * 8}%`}
 										></span>
-										<span class="skeleton block h-5 w-10"></span>
+										<span
+											class="relative block h-5 w-10 overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+										></span>
 									</div>
 								{/each}
 							</div>
@@ -309,12 +333,20 @@
 						aria-hidden="true"
 					>
 						<div class="min-w-[min(100%,22rem)] flex-1">
-							<span class="skeleton block h-7 w-40"></span>
-							<span class="skeleton mt-3 block h-3 w-[min(100%,30rem)]"></span>
+							<span
+								class="relative block h-7 w-40 overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+							></span>
+							<span
+								class="relative mt-3 block h-3 w-[min(100%,30rem)] overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+							></span>
 						</div>
 						<div class="flex items-center gap-4">
-							<span class="skeleton block h-11 w-36"></span>
-							<span class="skeleton block h-4 w-20"></span>
+							<span
+								class="relative block h-11 w-36 overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+							></span>
+							<span
+								class="relative block h-4 w-20 overflow-hidden bg-blue/18 after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-scan after:bg-[linear-gradient(100deg,transparent_20%,rgb(188_255_99_/.18)_48%,transparent_76%)] after:content-[''] motion-reduce:after:translate-x-0 motion-reduce:after:animate-none motion-reduce:after:opacity-35"
+							></span>
 						</div>
 					</div>
 				</div>
@@ -360,6 +392,11 @@
 						ontoggle={() => toggleFinalSection('overview')}
 					/>
 				</div>
+				<FinalBehaviourComparison
+					comparison={finalAssessment.behaviourComparison ?? placeholderBehaviourComparison}
+					expanded={expandedFinalSections.comparison}
+					ontoggle={() => toggleFinalSection('comparison')}
+				/>
 				<FinalDimensionDetails
 					scores={payload.scores}
 					levels={finalAssessment.dimensionLevels}
@@ -453,39 +490,3 @@
 		{/if}
 	</div>
 </main>
-
-<style>
-	.skeleton {
-		position: relative;
-		overflow: hidden;
-		background: rgb(37 99 235 / 18%);
-	}
-
-	.skeleton::after {
-		position: absolute;
-		inset: 0;
-		content: '';
-		background: linear-gradient(
-			100deg,
-			transparent 20%,
-			rgb(188 255 99 / 18%) 48%,
-			transparent 76%
-		);
-		transform: translateX(-110%);
-		animation: skeleton-scan 1.55s ease-in-out infinite;
-	}
-
-	@keyframes skeleton-scan {
-		to {
-			transform: translateX(110%);
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.skeleton::after {
-			animation: none;
-			transform: none;
-			opacity: 0.35;
-		}
-	}
-</style>
