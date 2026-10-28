@@ -5,7 +5,7 @@ Monorepo gồm ba dự án được nhập bằng `git subtree add` và giữ đ
 | Thư mục | Dự án | Dependency và công cụ |
 | --- | --- | --- |
 | `web/` | SvelteKit và TypeScript | Node.js 24.x, pnpm 12.4.1; giữ nguyên `package.json`, `.npmrc`, `pnpm-workspace.yaml` và `pnpm-lock.yaml` |
-| `ai/` | Backend Python và FastAPI | Python 3.14; giữ nguyên các phiên bản trong `requirements.txt`, dùng `.venv` riêng |
+| `ai/` | Backend Python và FastAPI | Python 3.14; giữ nguyên `requirements.txt`, thêm `requirements.lock.txt` cho 47 package trong môi trường nguồn |
 | `vr/` | Unity VR | Unity 6000.5.4f1; giữ nguyên `Assets/`, file `.meta`, `Packages/` và `ProjectSettings/` |
 
 Chạy lệnh từ thư mục gốc repo, trừ khi có hướng dẫn chuyển thư mục. Dependency JavaScript nằm trong `web/`; không có pnpm workspace hoặc `package.json` ở gốc. Backend Python dùng `ai/requirements.txt` độc lập với pnpm. Các dependency của Unity được quản lý bằng Unity Package Manager.
@@ -19,9 +19,11 @@ pnpm --dir .\web dev
 
 ```powershell
 pnpm --dir .\web check
-pnpm --dir .\web test
+pnpm --dir .\web exec vitest run src
 pnpm --dir .\web build
 ```
+
+`pnpm --dir .\web test` còn chạy script tái hiện lỗi tại `.scratch/mongodb-schema-repro.test.ts`; script này cần `MONGODB_URI` và hiện làm lệnh test mặc định thất bại. Lệnh `vitest run src` ở trên chỉ chạy 74 unit test của ứng dụng. Mã nguồn và script test gốc được giữ nguyên.
 
 Giữ cả hai tài liệu YAML trong lockfile pnpm hiện có. Không đổi lockfile bằng trình đọc chỉ hỗ trợ một tài liệu YAML. Cấu hình `.npmrc` của Web yêu cầu đúng Node.js 24.x; `packageManager` chọn pnpm 12.4.1.
 
@@ -29,12 +31,14 @@ Nếu cần tạo cấu hình mới, sao chép `web/.env.example` thành `web/.e
 
 ## AI
 
+`requirements.lock.txt` tham chiếu nguyên bản `requirements.txt` và bổ sung 20 dependency gián tiếp lấy từ môi trường AI gốc. Snapshot này dành cho Windows x64 và Python 3.14, giữ đúng 47 phiên bản runtime đã cài ở repo nguồn.
+
 Tạo môi trường mới, không sao chép `.venv` từ đường dẫn cũ:
 
 ```powershell
 Set-Location .\ai
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.lock.txt
 .\.venv\Scripts\python.exe -m app.main
 ```
 
