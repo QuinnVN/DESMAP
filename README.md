@@ -117,8 +117,7 @@ flowchart LR
 DESMAP/
 ├── web/      Ứng dụng web SvelteKit (bảng hỏi, kết quả)
 ├── ai/       Backend FastAPI, CLI đánh giá cuối, dữ liệu danh mục nghề
-├── vr/       Dự án Unity VR
-└── docs/     Hồ sơ nhập repo và làm sạch lịch sử
+└── vr/       Dự án Unity VR
 ```
 
 Mỗi thư mục con có `README.md`, `CONTEXT.md` (thuật ngữ miền) và tài liệu chi tiết riêng.
@@ -190,7 +189,7 @@ Sinh đánh giá cuối từ dữ liệu MongoDB (`--dry-run` để xem trước
 
 Mở `vr/` bằng Unity 6000.5.4f1 sau khi khôi phục asset bên thứ ba. Các asset này nằm trên máy tại `vr/Assets/ThirdParty/`, được ignore cùng `.meta` của thư mục cha. Danh sách thư mục và GUID nằm trong `vr/ThirdPartyAssets.json`.
 
-Ví dụ khôi phục từ bản backup cục bộ trước khi làm sạch:
+Ví dụ khôi phục từ một bản sao asset cục bộ:
 
 ```powershell
 .\vr\Restore-ThirdParty.ps1 -Source "<thư mục backup>\vr\Assets"
@@ -219,18 +218,6 @@ NativeWebSocket giữ nguyên trong `vr/Assets/WebSocket/` và `vr/Assets/packag
 3. Chạy Web (`pnpm --dir .\web dev`), người tham gia làm bảng hỏi.
 4. Mở ứng dụng VR. Khi Unity đã kết nối, dùng `set_game <scene>` trong console để bắt đầu từng mô phỏng.
 5. Chạy `generate_final_evaluation.py` để tạo đánh giá cuối.
-
-## Lịch sử và bản sao dự phòng
-
-Monorepo được tạo từ ba repo bằng `git subtree` (không squash). Lịch sử sau đó được làm sạch bằng `git filter-repo` để loại asset bên thứ ba, output QA và Git LFS.
-
-Ba repo gốc vẫn giữ nguyên tại `<repo NCKH Web>`, `<repo NCKH AI>` và `<repo NCKH VR>`.
-
-Bản sao trước khi làm sạch: `<thư mục backup>`. Bản này chứa working copy, Git/LFS và `all-refs.bundle`. Mọi branch/tag trong monorepo đã được lọc; SHA commit trước khi lọc chỉ còn dùng để tra cứu trong backup.
-
-Khi đồng bộ tiếp từ repo gốc, hãy lọc bản xuất nguồn theo cùng chính sách trước khi dùng subtree. Pull trực tiếp lịch sử chưa lọc sẽ đưa lại asset bị loại và pointer LFS cũ vào monorepo.
-
-Thông tin gốc nằm trong [sources.json](docs/migration/sources.json). [Báo cáo nhập repo ban đầu](docs/migration/verification.md) là snapshot trước lần làm sạch này. Kết quả kiểm tra lần làm sạch được ghi tại [public-cleanup.md](docs/migration/public-cleanup.md). Các test Unity đã chạy đầy đủ và còn lỗi scene/gameplay, xem báo cáo để biết chi tiết.
 
 ## Giấy phép dữ liệu
 

@@ -14,7 +14,7 @@ The application always launches into `Assets/Scenes/Standby.unity`. A persistent
 Restore `Assets/ThirdParty/` before opening this project or running its tests. This ignored folder contains imported art, audio, TextMesh Pro resources, Unity templates, and XRI samples. Its folders retain their original `.meta` GUIDs; `ThirdPartyAssets.json` records the layout.
 
 ```powershell
-.\Restore-ThirdParty.ps1 -Source "<thư mục backup>\vr\Assets"
+.\Restore-ThirdParty.ps1 -Source "<backup>\Assets"
 ```
 
 The source can be an old `Assets/` directory or an existing `Assets/ThirdParty/` directory. The restore script validates folder GUIDs and keeps `.meta` files. Unity creates the new parent folder metadata on first import. NativeWebSocket remains tracked at its existing location. Git LFS is no longer used; retained project binaries are regular Git blobs.
