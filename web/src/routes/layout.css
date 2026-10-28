@@ -1,0 +1,117 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+	--color-bg: #030303;
+	--color-surface: #080b12;
+	--color-surface-blue: #060d1d;
+	--color-lime: #bcff63;
+	--color-blue: #2563eb;
+	--color-text: #f5f6f8;
+	--color-muted: #a7abb5;
+	--color-line: rgb(185 191 204 / 24%);
+	--color-line-strong: rgb(193 201 219 / 50%);
+	--font-sans: 'Manrope', 'Avenir Next', 'Segoe UI', sans-serif;
+	--font-mono: 'Roboto Mono', 'SFMono-Regular', Consolas, monospace;
+	--animate-overlay-in: overlay-in 0.2s ease-out;
+	--animate-menu-in: menu-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	--animate-rise-in: rise-in 0.8s both;
+	--animate-portal-float: portal-float 4.5s ease-in-out infinite;
+	--animate-core-pulse: core-pulse 2.8s ease-in-out infinite;
+	--animate-start-page-enter: start-page-enter 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+	--animate-skeleton-scan: skeleton-scan 1.55s ease-in-out infinite;
+}
+
+@keyframes overlay-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes menu-in {
+	from {
+		opacity: 0;
+		transform: translateY(-1.5rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes rise-in {
+	from {
+		opacity: 0;
+		transform: translateY(1.3rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes portal-float {
+	50% {
+		transform: rotateX(65deg) rotateZ(-17deg) translateY(-0.5rem);
+	}
+}
+
+@keyframes core-pulse {
+	50% {
+		transform: scale(1.04);
+		filter: brightness(1.2);
+	}
+}
+
+@keyframes start-page-enter {
+	from {
+		opacity: 0;
+		transform: translateY(1.375rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes skeleton-scan {
+	to {
+		transform: translateX(110%);
+	}
+}
+
+@utility evaluation-page-gradient {
+	background:
+		radial-gradient(circle at 82% 8%, rgb(37 99 235 / 15%), transparent 27%), var(--color-bg);
+}
+
+@utility final-radar-gradient {
+	background: radial-gradient(circle at 32% 48%, rgb(37 99 235 / 12%), transparent 42%), #071020;
+}
+
+@utility final-careers-gradient {
+	background: radial-gradient(circle at 90% 8%, rgb(188 255 99 / 8%), transparent 30%), #071020;
+}
+
+@layer base {
+	html {
+		@apply scroll-smooth bg-bg motion-reduce:scroll-auto;
+	}
+	body {
+		@apply m-0 min-w-80 bg-bg font-sans text-text antialiased;
+	}
+	button,
+	a {
+		-webkit-tap-highlight-color: transparent;
+	}
+	button:focus-visible,
+	a:focus-visible {
+		@apply outline-2 outline-offset-4 outline-lime;
+	}
+	::selection {
+		@apply bg-lime text-bg;
+	}
+}

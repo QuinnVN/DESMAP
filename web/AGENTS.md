@@ -1,0 +1,44 @@
+## Project Configuration
+
+- **Language**: TypeScript
+- **Package Manager**: pnpm
+- **Add-ons**: ai-tools, tailwindcss
+- **Website language**: All user-facing website text must be written in Vietnamese.
+- **Icons**: Prefer `@lucide/svelte` for interface icons when a matching Lucide icon exists.
+- **Styling**: Prefer Tailwind utility classes for project-owned UI styling. Keep global CSS limited to Tailwind theme tokens, keyframes, and base rules that cannot live cleanly in component markup. Do not add component-scoped `<style>` blocks or static inline styles when Tailwind can express the same styling.
+
+---
+
+You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
+
+## Available Svelte MCP Tools:
+
+### 1. list-sections
+
+Use this FIRST to discover all available documentation sections. Returns a structured list with titles, use_cases, and paths.
+When asked about Svelte or SvelteKit topics, ALWAYS use this tool at the start of the chat to find relevant sections.
+
+### 2. get-documentation
+
+Retrieves full documentation content for specific sections. Accepts single or multiple sections.
+After calling the list-sections tool, you MUST analyze the returned documentation sections (especially the use_cases field) and then use the get-documentation tool to fetch ALL documentation sections that are relevant for the user's task.
+
+### 3. svelte-autofixer
+
+Analyzes Svelte code and returns issues and suggestions.
+You MUST use this tool whenever writing Svelte code before sending it to the user. Keep calling it until no issues or suggestions are returned.
+
+### 4. playground-link
+
+Generates a Svelte Playground link with the provided code.
+After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs are tracked as local Markdown under `.scratch/`. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+This is a single-context repository with a root `CONTEXT.md` and system decisions under `docs/adr/`. See `docs/agents/domain.md`.
