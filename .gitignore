@@ -1,0 +1,32 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# JavaScript dependencies and generated files
+node_modules/
+.pnpm-store/
+.svelte-kit/
+.vercel/
+.netlify/
+.output/
+coverage/
+*.tsbuildinfo
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local editor and operating-system files
+.idea/
+.vs/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
