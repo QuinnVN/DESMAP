@@ -64,4 +64,4 @@ Bản sao trước khi làm sạch: `<thư mục backup>`. Bản này chứa wor
 
 Khi đồng bộ tiếp từ repo gốc, hãy lọc bản xuất nguồn theo cùng chính sách trước khi dùng subtree. Pull trực tiếp lịch sử chưa lọc sẽ đưa lại asset bị loại và pointer LFS cũ vào monorepo.
 
-Thông tin gốc nằm trong [sources.json](docs/migration/sources.json). [Báo cáo nhập repo ban đầu](docs/migration/verification.md) là snapshot trước lần làm sạch này. Kết quả kiểm tra lần làm sạch sẽ được ghi trong `docs/migration/public-cleanup.json`.
+Thông tin gốc nằm trong [sources.json](docs/migration/sources.json). [Báo cáo nhập repo ban đầu](docs/migration/verification.md) là snapshot trước lần làm sạch này. Kết quả kiểm tra lần làm sạch được ghi tại [public-cleanup.md](docs/migration/public-cleanup.md). Các test Unity đã chạy đầy đủ và còn lỗi scene/gameplay, xem báo cáo để biết chi tiết.

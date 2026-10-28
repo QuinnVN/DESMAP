@@ -26,10 +26,10 @@ foreach ($asset in $plan.assets) {
     $folder = $candidates | Where-Object {
         (Test-Path -LiteralPath $_ -PathType $sourceType) -and (Test-Path -LiteralPath ($_ + '.meta'))
     } | Select-Object -First 1
-    if (-not $folder) { throw "Missing source folder and .meta for $($asset.name)." }
+    if (-not $folder) { throw "Missing source asset and .meta for $($asset.name)." }
     $guidLine = Get-Content -LiteralPath ($folder + '.meta') | Where-Object { $_ -match '^guid:' }
     if ($guidLine -ne ('guid: ' + $asset.guid)) {
-        throw "Folder GUID differs from the project manifest: $folder"
+        throw "Asset GUID differs from the project manifest: $folder"
     }
     $destination = [IO.Path]::GetFullPath((Join-Path $targetRoot $newRelative))
     if (-not $destination.StartsWith($targetRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
@@ -41,7 +41,7 @@ foreach ($asset in $plan.assets) {
         Write-Host "Already restored: $($asset.name)"
         continue
     }
-    if ($PSCmdlet.ShouldProcess($destination, 'Restore asset folder with original metadata')) {
+    if ($PSCmdlet.ShouldProcess($destination, 'Restore local asset with original metadata')) {
         New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($destination)) -Force | Out-Null
         if ($isFile) {
             Copy-Item -LiteralPath $folder -Destination $destination
