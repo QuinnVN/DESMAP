@@ -16,7 +16,7 @@ namespace NCKH.VR.Clinic.Editor
         private const string EmergencyClipPath = AnimationFolder + "/Patient Emergency Supine.anim";
         private const string ControllerPath = AnimationFolder + "/Patient Lying.controller";
         private const string FrozenPoseClipPath =
-            "Assets/Kevin Iglesias/Human Animations/Animations/Female/Idles/HumanF@Idle01.fbx";
+            "Assets/ThirdParty/Kevin Iglesias/Human Animations/Animations/Female/Idles/HumanF@Idle01.fbx";
         private const string FrozenPoseClipName = "HumanF@Idle01";
         private const string PrototypeName = "npc_csl_00_character_01f_02";
 
@@ -188,7 +188,7 @@ namespace NCKH.VR.Clinic.Editor
             GameObject[] prefabs = new GameObject[names.Length];
             for (int i = 0; i < names.Length; i++)
             {
-                string path = $"Assets/npc_casual_set_00/Prefabs/{names[i]}.prefab";
+                string path = $"Assets/ThirdParty/npc_casual_set_00/Prefabs/{names[i]}.prefab";
                 prefabs[i] = AssetDatabase.LoadAssetAtPath<GameObject>(path);
                 if (prefabs[i] == null)
                     throw new InvalidOperationException($"Could not load NPC prefab at {path}.");

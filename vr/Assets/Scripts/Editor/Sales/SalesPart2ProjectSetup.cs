@@ -23,11 +23,11 @@ namespace NCKH.VR.Sales.Editor
         public const string ScenarioPath = "Assets/Data/Sales/Sales Part 2 Difficult Customer.asset";
         private const string FontPath = "Assets/Data/Sales/Sales Vietnamese.asset";
         private const string FemaleCustomerPrefabPath =
-            "Assets/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_03.prefab";
+            "Assets/ThirdParty/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_03.prefab";
         private const string WalkClipPath =
-            "Assets/Kevin Iglesias/Human Animations/Animations/Female/Movement/Walk/HumanF@Walk01_Forward.fbx";
+            "Assets/ThirdParty/Kevin Iglesias/Human Animations/Animations/Female/Movement/Walk/HumanF@Walk01_Forward.fbx";
         private const string IdleClipPath =
-            "Assets/Kevin Iglesias/Human Animations/Animations/Female/Idles/HumanF@Idle01.fbx";
+            "Assets/ThirdParty/Kevin Iglesias/Human Animations/Animations/Female/Idles/HumanF@Idle01.fbx";
 
         [MenuItem("NCKH/Sales/Set Up Part 2 Difficult Customer In Store Scene")]
         public static void SetupPart2InOpenSaleScene()

@@ -118,7 +118,7 @@ $quotedArguments = $unityArguments | ForEach-Object {
 $unityProcess = Start-Process `
     -FilePath $UnityPath `
     -ArgumentList ($quotedArguments -join ' ') `
-    -NoNewWindow `
+    -WindowStyle Hidden `
     -Wait `
     -PassThru
 $unityExitCode = $unityProcess.ExitCode

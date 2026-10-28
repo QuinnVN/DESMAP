@@ -100,7 +100,7 @@ namespace NCKH.VR.Clinic.Tests
                 Assert.That(states[0].state.name, Is.EqualTo("Frozen Supine"));
                 Assert.That(states[0].state.transitions, Is.Empty);
                 Assert.That(AssetDatabase.GetAssetPath(states[0].state.motion),
-                    Is.EqualTo("Assets/Kevin Iglesias/Human Animations/Animations/Female/Idles/HumanF@Idle01.fbx"));
+                    Is.EqualTo("Assets/ThirdParty/Kevin Iglesias/Human Animations/Animations/Female/Idles/HumanF@Idle01.fbx"));
 
                 SerializedObject serializedActor = new SerializedObject(actor);
                 Assert.That(serializedActor.FindProperty("appearanceController").objectReferenceValue, Is.SameAs(appearance));

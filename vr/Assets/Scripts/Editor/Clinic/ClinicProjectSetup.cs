@@ -19,7 +19,7 @@ namespace NCKH.VR.Clinic.Editor
         private const string BedPrefabPath = "Assets/Prefabs/Bed.prefab";
         private const string ScenePath = "Assets/Scenes/Main Scene.unity";
         private const string PatientMaterialPath = "Assets/Materials/Patient Fade.mat";
-        private const string DyingSfxPath = "Assets/SFX/dyingsfx.mp3";
+        private const string DyingSfxPath = "Assets/ThirdParty/SFX/dyingsfx.mp3";
 
         [MenuItem("Tools/NCKH VR/Configure Clinic Gameplay")]
         public static void Configure()

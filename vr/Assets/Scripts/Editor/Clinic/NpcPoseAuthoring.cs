@@ -10,7 +10,7 @@ namespace NCKH.VR.Clinic.Editor
     {
         public const string AuthoringRigPath = "Assets/Prefabs/Authoring/NPC Humanoid Pose Rig.prefab";
         private const string SourceModelPath =
-            "Assets/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_01.prefab";
+            "Assets/ThirdParty/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_01.prefab";
 
         [MenuItem("Tools/NCKH VR/NPC/Create Base Humanoid Pose Rig")]
         public static void CreateAuthoringRigInScene()

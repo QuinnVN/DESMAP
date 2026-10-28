@@ -79,14 +79,14 @@ namespace NCKH.VR.Sales.Tests
         public void AuthoredLanResourcesAndFontAreAvailable()
         {
             GameObject femalePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_03.prefab");
+                "Assets/ThirdParty/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_03.prefab");
             TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
                 "Assets/Data/Sales/Sales Vietnamese.asset");
             AnimationClip walk = AssetDatabase.LoadAllAssetsAtPath(
-                "Assets/Kevin Iglesias/Human Animations/Animations/Female/Movement/Walk/HumanF@Walk01_Forward.fbx")
+                "Assets/ThirdParty/Kevin Iglesias/Human Animations/Animations/Female/Movement/Walk/HumanF@Walk01_Forward.fbx")
                 .OfType<AnimationClip>().FirstOrDefault();
             AnimationClip idle = AssetDatabase.LoadAllAssetsAtPath(
-                "Assets/Kevin Iglesias/Human Animations/Animations/Female/Idles/HumanF@Idle01.fbx")
+                "Assets/ThirdParty/Kevin Iglesias/Human Animations/Animations/Female/Idles/HumanF@Idle01.fbx")
                 .OfType<AnimationClip>().FirstOrDefault();
             Assert.That(femalePrefab, Is.Not.Null);
             Assert.That(femalePrefab.GetComponentInChildren<Animator>(true), Is.Not.Null);

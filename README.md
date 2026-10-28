@@ -1,93 +1,67 @@
 # DESMAP
 
-Monorepo gồm ba dự án được nhập bằng `git subtree add` và giữ đầy đủ lịch sử commit, không dùng `--squash`.
+Monorepo gồm `web/`, `ai/` và `vr/`, nhập từ ba repo bằng `git subtree`. Lịch sử sau đó được làm sạch bằng `git filter-repo` để loại asset bên thứ ba, output QA và Git LFS.
 
-| Thư mục | Dự án | Dependency và công cụ |
+| Thư mục | Công cụ | Dependency |
 | --- | --- | --- |
-| `web/` | SvelteKit và TypeScript | Node.js 24.x, pnpm 12.4.1; giữ nguyên `package.json`, `.npmrc`, `pnpm-workspace.yaml` và `pnpm-lock.yaml` |
-| `ai/` | Backend Python và FastAPI | Python 3.14; giữ nguyên `requirements.txt`, thêm `requirements.lock.txt` cho 47 package trong môi trường nguồn |
-| `vr/` | Unity VR | Unity 6000.5.4f1; giữ nguyên `Assets/`, file `.meta`, `Packages/` và `ProjectSettings/` |
-
-Chạy lệnh từ thư mục gốc repo, trừ khi có hướng dẫn chuyển thư mục. Dependency JavaScript nằm trong `web/`; không có pnpm workspace hoặc `package.json` ở gốc. Backend Python dùng `ai/requirements.txt` độc lập với pnpm. Các dependency của Unity được quản lý bằng Unity Package Manager.
+| `web/` | Node.js 24.x, pnpm 12.4.1 | Giữ nguyên package manifest và lockfile pnpm |
+| `ai/` | Python 3.14 | `requirements.lock.txt` giữ đủ 47 phiên bản runtime của môi trường nguồn |
+| `vr/` | Unity 6000.5.4f1 | Unity Package Manager và asset cục bộ trong `Assets/ThirdParty/` |
 
 ## Web
 
 ```powershell
 pnpm --dir .\web install --frozen-lockfile
 pnpm --dir .\web dev
-```
-
-```powershell
 pnpm --dir .\web check
 pnpm --dir .\web exec vitest run src
 pnpm --dir .\web build
 ```
 
-`pnpm --dir .\web test` còn chạy script tái hiện lỗi tại `.scratch/mongodb-schema-repro.test.ts`; script này cần `MONGODB_URI` và hiện làm lệnh test mặc định thất bại. Lệnh `vitest run src` ở trên chỉ chạy 74 unit test của ứng dụng. Mã nguồn và script test gốc được giữ nguyên.
+Web quản lý dependency trong `web/`, không có pnpm workspace ở gốc. Giữ cả hai tài liệu YAML trong lockfile hiện tại. `.env` cục bộ bị ignore. Khi triển khai Web, đặt Root Directory là `web`.
 
-Giữ cả hai tài liệu YAML trong lockfile pnpm hiện có. Không đổi lockfile bằng trình đọc chỉ hỗ trợ một tài liệu YAML. Cấu hình `.npmrc` của Web yêu cầu đúng Node.js 24.x; `packageManager` chọn pnpm 12.4.1.
-
-Nếu cần tạo cấu hình mới, sao chép `web/.env.example` thành `web/.env`. Bản di chuyển đã sao chép `.env` cục bộ; Git bỏ qua file này. Cấu hình Vercel hoặc dịch vụ triển khai Web cần dùng `web` làm Root Directory.
+Lệnh `pnpm --dir web test` còn chạy script tái hiện lỗi trong `.scratch/mongodb-schema-repro.test.ts`, cần `MONGODB_URI`. Lệnh Vitest ở trên chạy bộ unit test ứng dụng trong `src/`.
 
 ## AI
-
-`requirements.lock.txt` tham chiếu nguyên bản `requirements.txt` và bổ sung 20 dependency gián tiếp lấy từ môi trường AI gốc. Snapshot này dành cho Windows x64 và Python 3.14, giữ đúng 47 phiên bản runtime đã cài ở repo nguồn.
-
-Tạo môi trường mới, không sao chép `.venv` từ đường dẫn cũ:
 
 ```powershell
 Set-Location .\ai
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.lock.txt
 .\.venv\Scripts\python.exe -m app.main
-```
-
-Chạy test từ `ai/` bằng runner có chặn HTTP thật và không nạp credential cục bộ:
-
-```powershell
 .\.venv\Scripts\python.exe .\scripts\run_tests.py
 ```
 
-`ai/.env`, `ai/models/` và `ai/recordings/` được sao chép từ bản dự phòng và tiếp tục nằm ngoài Git. `ai/backup/` được giữ trên đĩa nhưng đã bỏ theo dõi. Các file trong `ai/data/`, prompt và mã nguồn vẫn được quản lý trong Git. Xem thêm [hướng dẫn backend](ai/readme.md).
+`requirements.txt` gốc được giữ nguyên; `requirements.lock.txt` bổ sung 20 dependency gián tiếp cho Windows x64/Python 3.14. `.env`, môi trường ảo, model, recording và runtime backup nằm ngoài Git.
 
 ## Unity VR
 
-Mở `vr/` bằng Unity Hub, dùng phiên bản trong `vr/ProjectSettings/ProjectVersion.txt`. Unity sẽ tạo lại `Library/` và các cache cần thiết.
+Mở `vr/` bằng Unity 6000.5.4f1 sau khi khôi phục asset bên thứ ba. Các asset này nằm trên máy tại `vr/Assets/ThirdParty/`, được ignore cùng `.meta` của thư mục cha. Danh sách thư mục và GUID nằm trong `vr/ThirdPartyAssets.json`.
+
+Ví dụ khôi phục từ bản backup cục bộ trước khi làm sạch:
 
 ```powershell
-Set-Location .\vr
-powershell -ExecutionPolicy Bypass -File .\Build.ps1 -Target Validate
+.\vr\Restore-ThirdParty.ps1 -Source "<thư mục backup>\vr\Assets"
 ```
 
-`Library/`, `Temp/`, `Obj/`, `Build/`, `Builds/`, `Logs/`, `UserSettings/`, `Artifacts/`, `TestResults/` và các solution/project C# được sinh tự động đều bị ignore. Nội dung `Artifacts/` đã có trong Git trước đây vẫn còn trong lịch sử và trên đĩa, nhưng đã bỏ theo dõi ở commit hiện tại. File `.meta` và GUID của các asset gốc được giữ nguyên.
-
-Asset nhị phân Unity dùng Git LFS. Toàn bộ kho LFS có sẵn đã được sao chép vào `.git/lfs/objects`; quy tắc LFS gốc vẫn nằm tại `vr/.gitattributes`. Khi clone từ remote trong tương lai:
+Script hỗ trợ nguồn là thư mục `Assets` cũ hoặc thư mục `Assets/ThirdParty` đã gom, chuyển kèm `.meta` và kiểm tra GUID. Xem [hướng dẫn VR](vr/README.md) cho các thao tác Unity.
 
 ```powershell
-git lfs install
-git lfs pull
+.\vr\Build.ps1 -Target Validate
+.\vr\Build.ps1 -Target EditModeTests
+.\vr\Build.ps1 -Target PlayModeTests
 ```
 
-Khi đưa monorepo lên remote lần đầu, cần đẩy cả Git và các object LFS tới remote mới. Repo này hiện chỉ ở máy cục bộ và chưa có remote `origin`.
+NativeWebSocket giữ nguyên trong `vr/Assets/WebSocket/` và `vr/Assets/package.json`. Asset tự tạo, scene, prefab và GUID vẫn được quản lý trong Git. Binary được giữ lại dùng Git thường; clone/push repo này không cần Git LFS.
 
-## Nguồn và lịch sử
+`Library/`, `Temp/`, `Build/`, `Builds/`, `Logs/`, `UserSettings/`, `Artifacts/`, `TestResults/`, screenshot QA và scene `_Recovery/` nằm ngoài Git.
 
-Các repo gốc được giữ nguyên:
+## Lịch sử và bản sao dự phòng
 
-- Web: `<repo NCKH Web>`
-- AI: `<repo NCKH AI>`
-- Unity: `<repo NCKH VR>`
+Ba repo gốc vẫn giữ nguyên tại `<repo NCKH Web>`, `<repo NCKH AI>` và `<repo NCKH VR>`.
 
-Đường dẫn bản sao dự phòng, commit nguồn và danh sách thư mục không sao chép được ghi tại [sources.json](docs/migration/sources.json). Bản dự phòng có cả `.git`, LFS và dữ liệu cục bộ; không chép cache dependency, môi trường ảo hay output build có thể tạo lại. Ba tag `import/web-20261028`, `import/ai-20261028` và `import/vr-20261028` trỏ tới commit nguồn tương ứng.
+Bản sao trước khi làm sạch: `<thư mục backup>`. Bản này chứa working copy, Git/LFS và `all-refs.bundle`. Mọi branch/tag trong monorepo đã được lọc; SHA commit trước khi lọc chỉ còn dùng để tra cứu trong backup.
 
-Để nhập thêm commit từ repo gốc vào monorepo, chạy từ gốc monorepo với working tree sạch:
+Khi đồng bộ tiếp từ repo gốc, hãy lọc bản xuất nguồn theo cùng chính sách trước khi dùng subtree. Pull trực tiếp lịch sử chưa lọc sẽ đưa lại asset bị loại và pointer LFS cũ vào monorepo.
 
-```powershell
-git subtree pull --prefix=web "<repo NCKH Web>" main
-git subtree pull --prefix=ai "<repo NCKH AI>" main
-git subtree pull --prefix=vr "<repo NCKH VR>" main
-```
-
-Các lệnh trên đọc repo nguồn và cập nhật monorepo. Nếu repo nguồn tiếp tục thay đổi các file đã bỏ theo dõi như `Artifacts/` hoặc `backup/`, xử lý xung đột bằng cách giữ chúng ngoài Git tại monorepo.
-
-Kết quả kiểm tra sau khi nhập được ghi tại [báo cáo xác minh](docs/migration/verification.md).
+Thông tin gốc nằm trong [sources.json](docs/migration/sources.json). [Báo cáo nhập repo ban đầu](docs/migration/verification.md) là snapshot trước lần làm sạch này. Kết quả kiểm tra lần làm sạch sẽ được ghi trong `docs/migration/public-cleanup.json`.

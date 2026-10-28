@@ -456,7 +456,7 @@ private static void EnsureRecordingIndicator(SalesMissionController mission)
             int alternativeIndex, bool best, float speed)
             => new SalesShoeData { label = label, price = price, properties = properties, feedback = feedback, objection = objection,
                 comparisonAlternativeIndex = alternativeIndex, bestFit = best, rotationSpeed = speed,
-                prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Shoes store - showroom with footwear/Models/Prefabs/Shoes_" + label + ".prefab") };
+                prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ThirdParty/Shoes store - showroom with footwear/Models/Prefabs/Shoes_" + label + ".prefab") };
 
         private static void AuthorPersuasionData(SalesMissionData data)
         {
@@ -483,7 +483,7 @@ private static void EnsureRecordingIndicator(SalesMissionController mission)
             var result = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
             if (result == null)
             {
-                result = TMP_FontAsset.CreateFontAsset(AssetDatabase.LoadAssetAtPath<Font>("Assets/TextMesh Pro/Fonts/LiberationSans.ttf"));
+                result = TMP_FontAsset.CreateFontAsset(AssetDatabase.LoadAssetAtPath<Font>("Assets/ThirdParty/TextMesh Pro/Fonts/LiberationSans.ttf"));
                 result.name = "Sales Vietnamese";
                 result.atlasPopulationMode = AtlasPopulationMode.Dynamic;
                 AssetDatabase.CreateAsset(result, FontPath);

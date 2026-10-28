@@ -23,12 +23,12 @@ namespace NCKH.VR.Doctor.Editor
         private const string DataFolder = "Assets/Data/Doctor";
         private const string DatabasePath = DataFolder + "/Placeholder Doctor Case Database.asset";
         private const string InputPath = "Assets/Input/Doctor/Doctor Controls.inputactions";
-        private const string XriInputPath = "Assets/Samples/XR Interaction Toolkit/3.5.1/Starter Assets/XRI Default Input Actions.inputactions";
+        private const string XriInputPath = "Assets/ThirdParty/Samples/XR Interaction Toolkit/3.5.1/Starter Assets/XRI Default Input Actions.inputactions";
         private const string InputReferenceFolder = "Assets/Input/Doctor/References";
         private const string MaterialFolder = "Assets/Materials/Doctor";
         private const string UiOverlayMaterialPath = MaterialFolder + "/Doctor UI Overlay.mat";
         private const string TmpOverlayMaterialPath = MaterialFolder + "/Doctor TMP Overlay.mat";
-        private const string MonitorPrefabPath = "Assets/Hospital Equipments/Prefabs/Monitor Variant.prefab";
+        private const string MonitorPrefabPath = "Assets/ThirdParty/Hospital Equipments/Prefabs/Monitor Variant.prefab";
         private const string UiOverlayShaderName = "NCKH/Doctor/UI Overlay";
         private const string HudLayerName = "DoctorHUD";
 

@@ -20,7 +20,7 @@
 - Project-owned scripts currently live directly under `Assets/`.
 - Project scenes live in `Assets/Scenes/`.
 - Project XR assets live in `Assets/XR/` and `Assets/XRI/`.
-- Imported or sample content lives in `Assets/Animated Hands/`, `Assets/Ishikawa1116/`, `Assets/Samples/`, `Assets/TextMesh Pro/`, and `Assets/TutorialInfo/`.
+- Imported assets and samples live under ignored `Assets/ThirdParty/`. Restore them with `Restore-ThirdParty.ps1` before opening Unity or running tests; see `ThirdPartyAssets.json`. Keep NativeWebSocket in its existing tracked location.
 - Editor-only automation belongs in `Assets/Editor/`.
 - New runtime code should normally go under `Assets/Scripts/Runtime/`; new editor code should go under `Assets/Scripts/Editor/` or `Assets/Editor/`.
 - New tests should go under `Assets/Tests/EditMode/` or `Assets/Tests/PlayMode/`, with appropriate assembly definitions.

@@ -264,7 +264,7 @@ namespace NCKH.VR.Lawyer.Editor
 
         private static bool ShouldSkipTexture(string path)
         {
-            return path.StartsWith("Assets/TextMesh Pro/", StringComparison.OrdinalIgnoreCase)
+            return path.StartsWith("Assets/ThirdParty/TextMesh Pro/", StringComparison.OrdinalIgnoreCase)
                 || path.StartsWith("Assets/XR/", StringComparison.OrdinalIgnoreCase)
                 || path.StartsWith("Assets/XRI/", StringComparison.OrdinalIgnoreCase)
                 || IsBakedLightingTexture(path)

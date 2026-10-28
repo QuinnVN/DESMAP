@@ -43,11 +43,11 @@ namespace NCKH.VR.Clinic.Tests
             GameObject instance = InstantiatePrefab("Assets/Prefabs/Casual NPC.prefab");
             NpcAppearanceRandomizer randomizer = instance.GetComponent<NpcAppearanceRandomizer>();
             GameObject modelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_01.prefab");
+                "Assets/ThirdParty/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_01.prefab");
             GameObject hairPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/npc_casual_set_00/Prefabs/npc_haircut_d_01.prefab");
+                "Assets/ThirdParty/npc_casual_set_00/Prefabs/npc_haircut_d_01.prefab");
             Material hairMaterial = AssetDatabase.LoadAssetAtPath<Material>(
-                "Assets/npc_casual_set_00/Materials/mtl_npc_hair_04.mat");
+                "Assets/ThirdParty/npc_casual_set_00/Materials/mtl_npc_hair_04.mat");
             Assert.That(modelPrefab, Is.Not.Null);
             Assert.That(hairPrefab, Is.Not.Null);
             Assert.That(hairMaterial, Is.Not.Null);
