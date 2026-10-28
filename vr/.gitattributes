@@ -26,5 +26,7 @@
 *.prefab text eol=lf merge=unityyamlmerge
 *.unity text eol=lf merge=unityyamlmerge
 
-# Large binary assets use Git LFS.
+# Baked lighting contains binary Unity serialization, not YAML.
+LightingData.asset binary
+*.lighting binary
 

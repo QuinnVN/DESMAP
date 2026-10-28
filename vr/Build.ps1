@@ -99,7 +99,10 @@ if ($AutoRun) {
     $unityArguments += '-autoRunPlayer'
 }
 
-$unityArguments += '-quit'
+# The test runner owns process shutdown. -quit exits before tests start.
+if ($Target -notin @('EditModeTests', 'PlayModeTests')) {
+    $unityArguments += '-quit'
+}
 
 Write-Host "Unity:   $UnityPath"
 Write-Host "Project: $projectRoot"
@@ -125,6 +128,18 @@ $unityExitCode = $unityProcess.ExitCode
 
 if ($unityExitCode -ne 0) {
     throw "Unity exited with code $unityExitCode. See '$logPath'."
+}
+
+if ($resultPath) {
+    if (-not (Test-Path -LiteralPath $resultPath -PathType Leaf)) {
+        throw "Unity exited without producing test results. See '$logPath'."
+    }
+    [xml]$testResults = [IO.File]::ReadAllText($resultPath)
+    $testRun = $testResults.'test-run'
+    if (-not $testRun -or [int]$testRun.total -eq 0 -or $testRun.result -ne 'Passed') {
+        throw "Unity tests did not pass. See '$resultPath' and '$logPath'."
+    }
+    Write-Host "Tests: $($testRun.passed) passed, $($testRun.failed) failed, $($testRun.skipped) skipped."
 }
 
 Write-Host "Completed successfully. Log: $logPath"

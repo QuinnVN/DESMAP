@@ -19,7 +19,7 @@ namespace NCKH.VR.Sales.Editor
     public static class SalesProjectSetup
     {
         public const string DataPath = "Assets/Data/Sales/Placeholder Sales Mission.asset";
-        private const string FontPath = "Assets/Data/Sales/Sales Vietnamese.asset";
+        private const string FontPath = "Assets/ThirdParty/Project Fonts/Sales Vietnamese.asset";
         private const float RetryButtonY = -.77f;
         private static TMP_FontAsset font;
         private static Material panel;

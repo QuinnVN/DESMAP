@@ -21,7 +21,7 @@ namespace NCKH.VR.Sales.Editor
     {
         public const string ScenePath = "Assets/Scenes/Sale/Store.unity";
         public const string ScenarioPath = "Assets/Data/Sales/Sales Part 2 Difficult Customer.asset";
-        private const string FontPath = "Assets/Data/Sales/Sales Vietnamese.asset";
+        private const string FontPath = "Assets/ThirdParty/Project Fonts/Sales Vietnamese.asset";
         private const string FemaleCustomerPrefabPath =
             "Assets/ThirdParty/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_03.prefab";
         private const string WalkClipPath =

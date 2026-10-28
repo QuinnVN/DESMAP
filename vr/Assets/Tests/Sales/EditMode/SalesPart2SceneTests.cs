@@ -81,7 +81,7 @@ namespace NCKH.VR.Sales.Tests
             GameObject femalePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/ThirdParty/npc_casual_set_00/Prefabs/npc_csl_00_character_01f_03.prefab");
             TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
-                "Assets/Data/Sales/Sales Vietnamese.asset");
+                "Assets/ThirdParty/Project Fonts/Sales Vietnamese.asset");
             AnimationClip walk = AssetDatabase.LoadAllAssetsAtPath(
                 "Assets/ThirdParty/Kevin Iglesias/Human Animations/Animations/Female/Movement/Walk/HumanF@Walk01_Forward.fbx")
                 .OfType<AnimationClip>().FirstOrDefault();
