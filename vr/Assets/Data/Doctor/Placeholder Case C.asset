@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: Placeholder Case C
+  m_EditorClassIdentifier: NCKH.Doctor:NCKH.VR.Doctor:DoctorCaseDefinition
+  patientName: Sam Rivera
+  selectionWeight: 1
+  initialDialogue:
+    transcript: Cuối chiều nay cổ họng tôi bắt đầu thắt lại và tôi bị khò khè. Trước khi
+      đến đây, tôi đã sắp xếp lại bàn làm việc.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: c-time
+      text: Khởi phát cuối chiều nay
+      correctCategory: 0
+      essential: 1
+    - id: c-tight
+      text: Thắt cổ họng
+      correctCategory: 2
+      essential: 1
+    - id: c-wheeze
+      text: Khò khè
+      correctCategory: 2
+      essential: 1
+    - id: c-desk
+      text: Sắp xếp lại bàn làm việc
+      correctCategory: 0
+      essential: 0
+  phases:
+  - id: c-exposure-q
+    question: Bạn đã làm gì trước khi triệu chứng xuất hiện?
+    response:
+      transcript: Triệu chứng bắt đầu ngay sau khi tôi dọn một kho chứa đầy bụi.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: c-exposure
+        text: Triệu chứng xuất hiện sau khi tiếp xúc phòng bụi
+        correctCategory: 0
+        essential: 1
+  - id: c-travel-q
+    question: Gần đây bạn có đi xa không?
+    response:
+      transcript: Trong tháng qua tôi không đi ra ngoài khu vực này.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: c-travel
+        text: Không đi xa trong tháng qua
+        correctCategory: 1
+        essential: 1
+  - id: c-symptoms-q
+    question: Bạn còn triệu chứng nào khác không?
+    response:
+      transcript: Tôi bị khó thở nhưng không sốt.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: c-breath
+        text: Khó thở
+        correctCategory: 2
+        essential: 1
+      - id: c-no-fever
+        text: Không sốt
+        correctCategory: 2
+        essential: 1
+  - id: c-history-q
+    question: Bạn có dị ứng hoặc bệnh hô hấp không?
+    response:
+      transcript: Tôi bị dị ứng phấn hoa và từng dùng ống hít khi còn nhỏ.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: c-allergy
+        text: Dị ứng phấn hoa
+        correctCategory: 3
+        essential: 1
+      - id: c-inhaler
+        text: Từng dùng ống hít khi còn nhỏ
+        correctCategory: 3
+        essential: 1

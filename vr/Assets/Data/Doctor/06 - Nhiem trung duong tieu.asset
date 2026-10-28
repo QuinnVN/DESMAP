@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 06 - Nhiem trung duong tieu
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "\u0110\u1EB7ng Ng\u1ECDc Mai"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "T\u1EEB h\xF4m qua t\xF4i ti\u1EC3u bu\u1ED1t, c\u1EE9 mu\u1ED1n
+      \u0111i ti\u1EC3u li\xEAn t\u1EE5c nh\u01B0ng m\u1ED7i l\u1EA7n ch\u1EC9 \u0111\u01B0\u1EE3c
+      r\u1EA5t \xEDt."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: uti-time
+      text: "Kh\u1EDFi ph\xE1t t\u1EEB h\xF4m qua"
+      correctCategory: 0
+      essential: 1
+    - id: uti-dysuria
+      text: "Ti\u1EC3u bu\u1ED1t"
+      correctCategory: 2
+      essential: 1
+    - id: uti-frequency
+      text: "Ti\u1EC3u nhi\u1EC1u l\u1EA7n, l\u01B0\u1EE3ng \xEDt"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: uti-q1
+    question: "N\u01B0\u1EDBc ti\u1EC3u c\xF3 g\xEC kh\xE1c th\u01B0\u1EDDng kh\xF4ng?"
+    response:
+      transcript: "N\u01B0\u1EDBc ti\u1EC3u \u0111\u1EE5c h\u01A1n, m\xF9i n\u1EB7ng
+        v\xE0 c\xF3 l\u1EA7n h\u01A1i h\u1ED3ng."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: uti-urine
+        text: "N\u01B0\u1EDBc ti\u1EC3u \u0111\u1EE5c, m\xF9i n\u1EB7ng, \u0111\xF4i
+          l\xFAc h\u01A1i h\u1ED3ng"
+        correctCategory: 2
+        essential: 1
+  - id: uti-q2
+    question: "Ch\u1ECB c\xF3 s\u1ED1t, r\xE9t run ho\u1EB7c \u0111au v\xF9ng h\xF4ng
+      l\u01B0ng kh\xF4ng?"
+    response:
+      transcript: "T\xF4i kh\xF4ng s\u1ED1t, kh\xF4ng r\xE9t run v\xE0 kh\xF4ng \u0111au
+        h\xF4ng l\u01B0ng."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: uti-no-upper
+        text: "Kh\xF4ng s\u1ED1t, r\xE9t run hay \u0111au h\xF4ng l\u01B0ng"
+        correctCategory: 2
+        essential: 1
+  - id: uti-q3
+    question: "G\u1EA7n \u0111\xE2y ch\u1ECB c\xF3 \u0111i xa ho\u1EB7c ph\u1EA3i
+      nh\u1ECBn ti\u1EC3u l\xE2u kh\xF4ng?"
+    response:
+      transcript: "T\xF4i v\u1EEBa \u0111i xe \u0111\u01B0\u1EDDng d\xE0i v\xE0 \u0111\xE3
+        nh\u1ECBn ti\u1EC3u g\u1EA7n s\xE1u ti\u1EBFng."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: uti-travel
+        text: "\u0110i \u0111\u01B0\u1EDDng d\xE0i v\xE0 nh\u1ECBn ti\u1EC3u g\u1EA7n
+          s\xE1u ti\u1EBFng"
+        correctCategory: 1
+        essential: 1
+  - id: uti-q4
+    question: "Ch\u1ECB t\u1EEBng b\u1ECB nhi\u1EC5m tr\xF9ng \u0111\u01B0\u1EDDng
+      ti\u1EC3u ho\u1EB7c \u0111ang mang thai kh\xF4ng?"
+    response:
+      transcript: "T\xF4i t\u1EEBng b\u1ECB m\u1ED9t l\u1EA7n n\u0103m ngo\xE1i v\xE0
+        hi\u1EC7n kh\xF4ng mang thai."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: uti-history
+        text: "T\u1EEBng nhi\u1EC5m tr\xF9ng \u0111\u01B0\u1EDDng ti\u1EC3u n\u0103m
+          ngo\xE1i"
+        correctCategory: 3
+        essential: 1
+      - id: uti-pregnancy
+        text: "Hi\u1EC7n kh\xF4ng mang thai"
+        correctCategory: 3
+        essential: 1

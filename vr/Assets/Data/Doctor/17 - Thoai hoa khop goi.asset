@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 17 - Thoai hoa khop goi
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "Cao V\u0103n Th\xE0nh"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "Kho\u1EA3ng m\u1ED9t n\u0103m nay \u0111\u1EA7u g\u1ED1i ph\u1EA3i
+      t\xF4i \u0111au \xE2m \u1EC9, nh\u1EA5t l\xE0 khi \u0111i b\u1ED9 l\xE2u ho\u1EB7c
+      l\xEAn c\u1EA7u thang."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: oa-time
+      text: "\u0110au k\xE9o d\xE0i kho\u1EA3ng m\u1ED9t n\u0103m"
+      correctCategory: 0
+      essential: 1
+    - id: oa-knee
+      text: "\u0110au \u0111\u1EA7u g\u1ED1i khi v\u1EADn \u0111\u1ED9ng"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: oa-q1
+    question: "Kh\u1EDBp c\xF3 c\u1EE9ng v\xE0o bu\u1ED5i s\xE1ng ho\u1EB7c s\u01B0ng
+      n\xF3ng \u0111\u1ECF kh\xF4ng?"
+    response:
+      transcript: "S\xE1ng ng\u1EE7 d\u1EADy kh\u1EDBp c\u1EE9ng kho\u1EA3ng m\u01B0\u1EDDi
+        ph\xFAt r\u1ED3i \u0111\u1EE1; kh\u1EDBp kh\xF4ng \u0111\u1ECF v\xE0 ch\u1EC9
+        h\u01A1i s\u01B0ng sau khi \u0111i nhi\u1EC1u."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: oa-stiff
+        text: "C\u1EE9ng kh\u1EDBp bu\u1ED5i s\xE1ng kho\u1EA3ng m\u01B0\u1EDDi ph\xFAt"
+        correctCategory: 2
+        essential: 1
+      - id: oa-swelling
+        text: "Ch\u1EC9 s\u01B0ng nh\u1EB9 sau v\u1EADn \u0111\u1ED9ng, kh\xF4ng
+          \u0111\u1ECF"
+        correctCategory: 2
+        essential: 1
+  - id: oa-q2
+    question: "C\u01A1n \u0111au thay \u0111\u1ED5i th\u1EBF n\xE0o khi ngh\u1EC9
+      ng\u01A1i?"
+    response:
+      transcript: "Ngh\u1EC9 th\xEC \u0111\u1EE1, nh\u01B0ng t\xF4i nghe ti\u1EBFng
+        l\u1EA1o x\u1EA1o khi co du\u1ED7i g\u1ED1i."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: oa-mechanical
+        text: "\u0110au gi\u1EA3m khi ngh\u1EC9 v\xE0 c\xF3 ti\u1EBFng l\u1EA1o x\u1EA1o"
+        correctCategory: 2
+        essential: 1
+  - id: oa-q3
+    question: "B\xE1c c\xF3 ch\u1EA5n th\u01B0\u01A1ng c\u0169 ho\u1EB7c y\u1EBFu
+      t\u1ED1 nguy c\u01A1 n\xE0o kh\xF4ng?"
+    response:
+      transcript: "T\xF4i th\u1EEBa c\xE2n v\xE0 t\u1EEBng ch\u1EA5n th\u01B0\u01A1ng
+        \u0111\u1EA7u g\u1ED1i khi ch\u01A1i b\xF3ng \u0111\xE1 m\u01B0\u1EDDi n\u0103m
+        tr\u01B0\u1EDBc."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: oa-history
+        text: "Th\u1EEBa c\xE2n v\xE0 t\u1EEBng ch\u1EA5n th\u01B0\u01A1ng \u0111\u1EA7u
+          g\u1ED1i"
+        correctCategory: 3
+        essential: 1

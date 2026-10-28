@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: Placeholder Case A
+  m_EditorClassIdentifier: NCKH.Doctor:NCKH.VR.Doctor:DoctorCaseDefinition
+  patientName: Alex Morgan
+  selectionWeight: 1
+  initialDialogue:
+    transcript: Tôi bắt đầu thấy không khỏe từ tối qua sau chuyến đi làm dài như thường lệ.
+      Tôi bị ho khan và sốt nhẹ. Tối qua tôi cũng xem một bộ phim.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: a-time
+      text: Khởi phát từ tối qua
+      correctCategory: 0
+      essential: 1
+    - id: a-cough
+      text: Ho khan
+      correctCategory: 2
+      essential: 1
+    - id: a-fever
+      text: Sốt nhẹ
+      correctCategory: 2
+      essential: 1
+    - id: a-movie
+      text: Xem phim tối qua
+      correctCategory: 0
+      essential: 0
+  phases:
+  - id: a-when
+    question: Bệnh bắt đầu chính xác khi nào?
+    response:
+      transcript: Bệnh bắt đầu khoảng bảy giờ tối, ngay sau bữa tối.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-dinner
+        text: Ăn tối trước khi xuất hiện triệu chứng
+        correctCategory: 0
+        essential: 0
+  - id: a-travel-q
+    question: Gần đây bạn có đi xa không?
+    response:
+      transcript: Gần đây tôi không đi xa, thậm chí không ra khỏi thành phố.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-travel
+        text: Gần đây không đi xa
+        correctCategory: 1
+        essential: 1
+  - id: a-symptoms-q
+    question: Bạn có thể mô tả triệu chứng chi tiết hơn không?
+    response:
+      transcript: Tôi ho khan và chỉ sốt nhẹ. Uống loại trà yêu thích cũng không đỡ.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-tea
+        text: Đã thử uống trà
+        correctCategory: 0
+        essential: 0
+  - id: a-history-q
+    question: Bạn có tiền sử bệnh nào liên quan không?
+    response:
+      transcript: Tôi có tiền sử hen suyễn, nhưng bệnh đã được kiểm soát nhiều năm.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: a-history
+        text: Tiền sử hen suyễn
+        correctCategory: 3
+        essential: 1

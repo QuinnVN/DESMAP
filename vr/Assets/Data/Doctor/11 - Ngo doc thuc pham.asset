@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 11 - Ngo doc thuc pham
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "D\u01B0\u01A1ng Qu\u1ED1c Vi\u1EC7t"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "Kho\u1EA3ng s\xE1u gi\u1EDD sau b\u1EEFa ti\u1EC7c h\u1EA3i s\u1EA3n,
+      t\xF4i bu\u1ED3n n\xF4n, n\xF4n v\xE0 \u0111au b\u1EE5ng d\u1EEF d\u1ED9i."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: food-time
+      text: "Kh\u1EDFi ph\xE1t s\xE1u gi\u1EDD sau b\u1EEFa ti\u1EC7c"
+      correctCategory: 0
+      essential: 1
+    - id: food-nausea
+      text: "Bu\u1ED3n n\xF4n v\xE0 n\xF4n"
+      correctCategory: 2
+      essential: 1
+    - id: food-pain
+      text: "\u0110au b\u1EE5ng d\u1EEF d\u1ED9i"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: food-q1
+    question: "Anh c\xF3 ti\xEAu ch\u1EA3y, s\u1ED1t ho\u1EB7c m\xE1u trong ph\xE2n
+      kh\xF4ng?"
+    response:
+      transcript: "T\xF4i ti\xEAu ch\u1EA3y nhi\u1EC1u l\u1EA7n, h\u01A1i s\u1ED1t
+        nh\u01B0ng kh\xF4ng th\u1EA5y m\xE1u."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: food-diarrhea
+        text: "Ti\xEAu ch\u1EA3y nhi\u1EC1u l\u1EA7n v\xE0 s\u1ED1t nh\u1EB9"
+        correctCategory: 2
+        essential: 1
+      - id: food-no-blood
+        text: "Kh\xF4ng th\u1EA5y m\xE1u trong ph\xE2n"
+        correctCategory: 2
+        essential: 1
+  - id: food-q2
+    question: "Nh\u1EEFng ng\u01B0\u1EDDi \u0103n c\xF9ng c\xF3 b\u1ECB t\u01B0\u01A1ng
+      t\u1EF1 kh\xF4ng?"
+    response:
+      transcript: "Ba ng\u01B0\u1EDDi c\xF9ng \u0103n m\xF3n h\xE0u s\u1ED1ng c\u0169ng
+        n\xF4n v\xE0 ti\xEAu ch\u1EA3y trong \u0111\xEAm."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: food-cluster
+        text: "Nhi\u1EC1u ng\u01B0\u1EDDi \u0103n h\xE0u s\u1ED1ng c\xF9ng m\u1EAFc
+          b\u1EC7nh"
+        correctCategory: 1
+        essential: 1
+  - id: food-q3
+    question: "Anh c\xF3 b\u1EC7nh n\u1EC1n ho\u1EB7c d\u1ECB \u1EE9ng h\u1EA3i s\u1EA3n
+      kh\xF4ng?"
+    response:
+      transcript: "T\xF4i kh\xF4ng d\u1ECB \u1EE9ng h\u1EA3i s\u1EA3n, nh\u01B0ng
+        \u0111ang d\xF9ng thu\u1ED1c gi\u1EA3m acid d\u1EA1 d\xE0y m\u1ED7i ng\xE0y."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: food-history
+        text: "\u0110ang d\xF9ng thu\u1ED1c gi\u1EA3m acid d\u1EA1 d\xE0y"
+        correctCategory: 3
+        essential: 1

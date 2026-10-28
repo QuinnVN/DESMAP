@@ -1,0 +1,320 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace NCKH.VR.GameControl
+{
+    public enum RemoteGamePhase
+    {
+        Standby,
+        Ready,
+        Running,
+        Finished
+    }
+
+    [Serializable]
+    public sealed class RemoteSceneCatalogEntry
+    {
+        [SerializeField] private string id = string.Empty;
+        [SerializeField] private string scenePath = string.Empty;
+
+        public string Id => id?.Trim() ?? string.Empty;
+        public string ScenePath => scenePath?.Trim() ?? string.Empty;
+
+        public RemoteSceneCatalogEntry()
+        {
+        }
+
+        public RemoteSceneCatalogEntry(string id, string scenePath)
+        {
+            this.id = id;
+            this.scenePath = scenePath;
+        }
+    }
+
+    public interface IGameSceneAdapter
+    {
+        string SceneId { get; }
+        RemoteGamePhase Phase { get; }
+        event Action<string, GameplayTelemetryData> TelemetryRaised;
+        bool TryStart(out string errorCode);
+        bool TryRestart(out string errorCode);
+        bool TryStop(out string errorCode);
+    }
+
+    public interface ISceneResetHandler
+    {
+        string SceneId { get; }
+        bool TryResetToInitialState(out string errorCode);
+    }
+
+    public static class SceneResetRegistry
+    {
+        private const string StandbySceneId = "standby";
+        private static readonly HashSet<ISceneResetHandler> Handlers =
+            new HashSet<ISceneResetHandler>();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Handlers.Clear();
+
+        public static void Register(ISceneResetHandler handler)
+        {
+            if (handler != null)
+                Handlers.Add(handler);
+        }
+
+        public static void Unregister(ISceneResetHandler handler)
+        {
+            if (handler != null)
+                Handlers.Remove(handler);
+        }
+
+        public static bool TryReset(string targetSceneId, out string errorCode)
+        {
+            errorCode = string.Empty;
+            string normalizedTarget = targetSceneId?.Trim() ?? string.Empty;
+            bool resetAll = string.Equals(normalizedTarget, GameController.ResetAllTarget,
+                StringComparison.OrdinalIgnoreCase);
+
+            foreach (ISceneResetHandler handler in Handlers)
+            {
+                if (handler == null || string.IsNullOrWhiteSpace(handler.SceneId)
+                    || string.Equals(handler.SceneId, StandbySceneId, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (!resetAll
+                    && !string.Equals(handler.SceneId, normalizedTarget, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (handler.TryResetToInitialState(out errorCode))
+                    continue;
+
+                if (string.IsNullOrWhiteSpace(errorCode))
+                    errorCode = "reset_failed";
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public readonly struct SceneResetResult
+    {
+        public bool Success { get; }
+        public string ErrorCode { get; }
+        public string ErrorMessage { get; }
+
+        public SceneResetResult(bool success, string errorCode, string errorMessage)
+        {
+            Success = success;
+            ErrorCode = errorCode ?? string.Empty;
+            ErrorMessage = errorMessage ?? string.Empty;
+        }
+    }
+
+    [Serializable]
+    public sealed class RemoteCommandDto
+    {
+        public string commandId;
+        public long sequence;
+        public string type;
+        public string sceneId;
+        public string issuedAtUtc;
+        public string participantName;
+        public string participantSessionId;
+    }
+
+    [Serializable]
+    public sealed class RemoteCommandAckDto
+    {
+        public string commandId;
+        public long sequence;
+        public string status;
+        public string sceneId;
+        public string phase;
+        public string appliedAtUtc;
+        public string errorCode;
+        public string errorMessage;
+        public string participantName;
+        public string participantSessionId;
+    }
+
+    [Serializable]
+    public sealed class GameplayTelemetryData
+    {
+        // Shared across Sales Part 1 and Part 2 so recordings, turns, analysis,
+        // retries, and the final outcome can be correlated without a player name.
+        public string salesSessionId;
+        public string roundId;
+        public string caseId;
+        public string questionId;
+        public string cardId;
+        public string category;
+        public string patientId;
+        public string sicknessName;
+        public string resolution;
+        public string commandId;
+        public string commandType;
+        public string commandStatus;
+        public string errorCode;
+        public string errorMessage;
+        public int severity;
+        public int bedIndex = -1;
+        public int scoreDelta;
+        public int scoreTotal;
+        public int interviewRestartCount;
+        public string assessmentContextJson;
+        public string participantName;
+        public string participantSessionId;
+        public string runId;
+        public string fragmentId;
+        public string text;
+        public string patientName;
+        public string selectedQuestionsJson;
+        public string notesJson;
+        public string actionableAtUtc;
+        public string resolvedAtUtc;
+        public float resolutionDurationSeconds;
+        public string roundStartedAtUtc;
+        public string roundCompletedAtUtc;
+        public string caseSubmittedAtUtc;
+        public string trustState;
+        public bool emotionalHandling;
+        public bool causeIdentification;
+        public bool solutionSuitability;
+        public bool trustRebuilding;
+        public string completionReason;
+        public string transcript;
+        public string customerReply;
+        public string objective;
+        public string selectedShoeId;
+        public string bestFitShoeId;
+        public string feedback;
+        public int score;
+        public string recordingAtUtc;
+        public string assessmentCompletedAtUtc;
+        public int acceptedTurnCount;
+        public int silenceCount;
+        public int correctCount;
+        public int incorrectCount;
+        public int unassignedCount;
+        public int essentialCorrectCount;
+        public int essentialIncorrectCount;
+        public int essentialUnassignedCount;
+        public string categorizationAccuracyPercent;
+        public string essentialCategorizationAccuracyPercent;
+        public float remainingTime;
+        public AudioTelemetryData audio;
+    }
+
+    [Serializable]
+    public sealed class AudioTelemetryData
+    {
+        public string fileName;
+        public string mimeType;
+        public string encoding;
+        public int sampleRateHz;
+        public int channels;
+        public float durationSeconds;
+        public bool endedEarly;
+        public string dataBase64;
+    }
+
+    public readonly struct TelemetryDeliveryResult
+    {
+        public bool Success { get; }
+        public long ResponseCode { get; }
+        public string ErrorMessage { get; }
+
+        public TelemetryDeliveryResult(bool success, long responseCode, string errorMessage)
+        {
+            Success = success;
+            ResponseCode = responseCode;
+            ErrorMessage = errorMessage ?? string.Empty;
+        }
+    }
+
+    [Serializable]
+    public sealed class TelemetryEventDto
+    {
+        public int schemaVersion = 1;
+        public string eventId;
+        public string sessionId;
+        public string occurredAtUtc;
+        public string sceneId;
+        public string phase;
+        public string eventType;
+        public string participantName;
+        public string participantSessionId;
+        public string runId;
+        public GameplayTelemetryData payload;
+    }
+
+    [Serializable]
+    public sealed class ResultFragmentDto
+    {
+        public string kind;
+        public string fragmentId;
+        public string runId;
+        public string gameId;
+        public string participantName;
+        public string participantSessionId;
+        public string occurredAtUtc;
+        public string startedAtUtc;
+        public bool complete;
+        public string[] requiredFields;
+        public GameplayTelemetryData data;
+    }
+
+    public static class GameControlApi
+    {
+        public const string LoadSceneCommand = "load_scene";
+        public const string StartSceneCommand = "start_scene";
+        public const string RestartSceneCommand = "restart_scene";
+        public const string StopSceneCommand = "stop_scene";
+        public const string ResetSceneCommand = "reset_scene";
+        public const string HealthRoute = "/api/health";
+        public const string TelemetryRoute = "/api/telemetry";
+        public const string ResultFragmentRoute = "/api/results/fragments";
+        public const string AssignParticipantCommand = "assign_participant";
+        public const string ClearParticipantCommand = "clear_participant";
+        public const string RunStartedFragmentKind = "run.started";
+        public const string RunAbortedFragmentKind = "run.aborted";
+        public const string ControlWebSocketRoute = "/ws/ctrl";
+        public const string TtsWebSocketRoute = "/ws/tts";
+        public const string SttWebSocketRoute = "/ws/stt";
+
+        public static string CombineUrl(string baseUrl, string relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+                return string.Empty;
+
+            return baseUrl.TrimEnd('/') + "/" + (relativePath ?? string.Empty).TrimStart('/');
+        }
+
+        public static string CombineWebSocketUrl(string baseUrl, string relativePath)
+        {
+            string httpUrl = CombineUrl(baseUrl, relativePath);
+            if (!Uri.TryCreate(httpUrl, UriKind.Absolute, out Uri uri))
+                return string.Empty;
+
+            string webSocketScheme;
+            if (uri.Scheme == Uri.UriSchemeHttp)
+                webSocketScheme = "ws";
+            else if (uri.Scheme == Uri.UriSchemeHttps)
+                webSocketScheme = "wss";
+            else
+                return string.Empty;
+
+            UriBuilder builder = new UriBuilder(uri)
+            {
+                Scheme = webSocketScheme,
+                Port = uri.IsDefaultPort ? -1 : uri.Port
+            };
+            return builder.Uri.AbsoluteUri;
+        }
+
+        public static string UtcNow()
+        {
+            return DateTime.UtcNow.ToString("O");
+        }
+    }
+}

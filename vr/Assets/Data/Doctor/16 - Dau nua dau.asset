@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 16 - Dau nua dau
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "T\u1EA1 Minh Ch\xE2u"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "T\u1EEB s\xE1ng t\xF4i \u0111au gi\u1EADt theo nh\u1ECBp \u1EDF
+      n\u1EEDa \u0111\u1EA7u b\xEAn ph\u1EA3i, \xE1nh s\xE1ng v\xE0 ti\u1EBFng \u0111\u1ED9ng
+      l\xE0m \u0111au t\u0103ng l\xEAn."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: mig-time
+      text: "Kh\u1EDFi ph\xE1t t\u1EEB s\xE1ng"
+      correctCategory: 0
+      essential: 1
+    - id: mig-pulse
+      text: "\u0110au gi\u1EADt m\u1ED9t b\xEAn \u0111\u1EA7u"
+      correctCategory: 2
+      essential: 1
+    - id: mig-sensory
+      text: "Nh\u1EA1y v\u1EDBi \xE1nh s\xE1ng v\xE0 ti\u1EBFng \u0111\u1ED9ng"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: mig-q1
+    question: "Tr\u01B0\u1EDBc ho\u1EB7c trong c\u01A1n ch\u1ECB c\xF3 bu\u1ED3n
+      n\xF4n hay r\u1ED1i lo\u1EA1n th\u1ECB gi\xE1c kh\xF4ng?"
+    response:
+      transcript: "T\xF4i bu\u1ED3n n\xF4n v\xE0 tr\u01B0\u1EDBc khi \u0111au th\u1EA5y
+        nh\u1EEFng \u0111\u01B0\u1EDDng s\xE1ng ngo\u1EB1n ngo\xE8o kho\u1EA3ng hai
+        m\u01B0\u01A1i ph\xFAt."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: mig-nausea
+        text: "Bu\u1ED3n n\xF4n"
+        correctCategory: 2
+        essential: 1
+      - id: mig-aura
+        text: "C\xF3 ti\u1EC1n tri\u1EC7u th\u1ECB gi\xE1c kho\u1EA3ng hai m\u01B0\u01A1i
+          ph\xFAt"
+        correctCategory: 2
+        essential: 1
+  - id: mig-q2
+    question: "G\u1EA7n \u0111\xE2y ch\u1ECB c\xF3 thay \u0111\u1ED5i sinh ho\u1EA1t
+      hay \u0111i xa kh\xF4ng?"
+    response:
+      transcript: "T\xF4i v\u1EEBa \u0111i c\xF4ng t\xE1c, ng\u1EE7 r\u1EA5t \xEDt
+        v\xE0 b\u1ECF b\u1EEFa s\xE1ng h\xF4m nay."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: mig-trigger
+        text: "\u0110i c\xF4ng t\xE1c, thi\u1EBFu ng\u1EE7 v\xE0 b\u1ECF b\u1EEFa"
+        correctCategory: 1
+        essential: 1
+  - id: mig-q3
+    question: "Ch\u1ECB t\u1EEBng c\xF3 c\u01A1n t\u01B0\u01A1ng t\u1EF1 ho\u1EB7c
+      c\xF3 d\u1EA5u hi\u1EC7u th\u1EA7n kinh b\u1EA5t th\u01B0\u1EDDng kh\xF4ng?"
+    response:
+      transcript: "T\xF4i \u0111\xE3 c\xF3 v\xE0i c\u01A1n gi\u1ED1ng v\u1EADy; l\u1EA7n
+        n\xE0y kh\xF4ng y\u1EBFu li\u1EC7t, kh\xF4ng m\xE9o mi\u1EC7ng v\xE0 kh\xF4ng
+        n\xF3i kh\xF3."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: mig-history
+        text: "T\u1EEBng c\xF3 nhi\u1EC1u c\u01A1n t\u01B0\u01A1ng t\u1EF1"
+        correctCategory: 3
+        essential: 1
+      - id: mig-no-neuro
+        text: "Kh\xF4ng c\xF3 d\u1EA5u th\u1EA7n kinh khu tr\xFA"
+        correctCategory: 2
+        essential: 1

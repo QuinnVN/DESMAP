@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: Placeholder Case B
+  m_EditorClassIdentifier: NCKH.Doctor:NCKH.VR.Doctor:DoctorCaseDefinition
+  patientName: Jordan Lee
+  selectionWeight: 1
+  initialDialogue:
+    transcript: Tôi bắt đầu đau bụng từ sáng nay. Tôi thấy buồn nôn và đã nôn hai lần.
+      Hôm qua tôi mua một chiếc ô mới.
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: b-time
+      text: Khởi phát sáng nay
+      correctCategory: 0
+      essential: 1
+    - id: b-pain
+      text: Đau bụng
+      correctCategory: 2
+      essential: 1
+    - id: b-nausea
+      text: Buồn nôn
+      correctCategory: 2
+      essential: 1
+    - id: b-vomit
+      text: Đã nôn hai lần
+      correctCategory: 2
+      essential: 1
+    - id: b-umbrella
+      text: Mua một chiếc ô mới
+      correctCategory: 0
+      essential: 0
+  phases:
+  - id: b-when
+    question: Cơn đau bắt đầu khi nào?
+    response:
+      transcript: Cơn đau bắt đầu ngay sau bữa sáng nay.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: b-breakfast
+        text: Ăn sáng trước khi đau
+        correctCategory: 0
+        essential: 0
+  - id: b-travel-q
+    question: Gần đây bạn có đi xa không?
+    response:
+      transcript: Tôi trở về từ chuyến đi biển hai ngày trước và dành phần lớn thời gian
+        để đọc sách.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: b-travel
+        text: Trở về từ chuyến đi biển hai ngày trước
+        correctCategory: 1
+        essential: 1
+      - id: b-reading
+        text: Đọc sách trong chuyến đi
+        correctCategory: 0
+        essential: 0
+  - id: b-symptoms-q
+    question: Bạn còn triệu chứng nào khác không?
+    response:
+      transcript: Không còn triệu chứng nào khác, nhưng tôi mệt vì đã thức khuya.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: b-late
+        text: Đã thức khuya
+        correctCategory: 0
+        essential: 0
+  - id: b-history-q
+    question: Tiền sử bệnh của bạn thế nào?
+    response:
+      transcript: Tôi không có tiền sử bệnh đáng kể và không dùng thuốc thường xuyên.
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: b-history
+        text: Không có tiền sử bệnh đáng kể
+        correctCategory: 3
+        essential: 1

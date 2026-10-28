@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 01 - Cum
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "Nguy\u1EC5n Minh Anh"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "T\u1EEB t\u1ED1i qua t\xF4i \u0111\u1ED9t ng\u1ED9t s\u1ED1t, r\xE9t
+      run, \u0111au nh\u1EE9c to\xE0n th\xE2n v\xE0 ho khan. T\xF4i c\xF2n b\u1ECF
+      l\u1EE1 m\u1ED9t b\u1ED9 phim \u0111ang xem."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: flu-time
+      text: "Kh\u1EDFi ph\xE1t \u0111\u1ED9t ng\u1ED9t t\u1EEB t\u1ED1i qua"
+      correctCategory: 0
+      essential: 1
+    - id: flu-fever
+      text: "S\u1ED1t v\xE0 r\xE9t run"
+      correctCategory: 2
+      essential: 1
+    - id: flu-ache
+      text: "\u0110au nh\u1EE9c to\xE0n th\xE2n"
+      correctCategory: 2
+      essential: 1
+    - id: flu-cough
+      text: Ho khan
+      correctCategory: 2
+      essential: 1
+    - id: flu-movie
+      text: "B\u1ECF l\u1EE1 m\u1ED9t b\u1ED9 phim"
+      correctCategory: 0
+      essential: 0
+  phases:
+  - id: flu-q1
+    question: "C\u01A1n b\u1EC7nh b\u1EAFt \u0111\u1EA7u nhanh hay t\u1EEB t\u1EEB?"
+    response:
+      transcript: "T\xF4i \u0111ang b\xECnh th\u01B0\u1EDDng th\xEC \u0111\u1EBFn
+        t\u1ED1i qua c\xE1c tri\u1EC7u ch\u1EE9ng xu\u1EA5t hi\u1EC7n r\u1EA5t nhanh."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: flu-sudden
+        text: "Tri\u1EC7u ch\u1EE9ng xu\u1EA5t hi\u1EC7n nhanh"
+        correctCategory: 0
+        essential: 1
+  - id: flu-q2
+    question: "Anh c\xF3 ti\u1EBFp x\xFAc v\u1EDBi ng\u01B0\u1EDDi \u0111ang b\u1ECB
+      b\u1EC7nh kh\xF4ng?"
+    response:
+      transcript: "Ba ng\xE0y tr\u01B0\u1EDBc, \u0111\u1ED3ng nghi\u1EC7p ng\u1ED3i
+        c\u1EA1nh t\xF4i c\u0169ng s\u1ED1t v\xE0 ho."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: flu-contact
+        text: "Ti\u1EBFp x\xFAc \u0111\u1ED3ng nghi\u1EC7p s\u1ED1t v\xE0 ho ba ng\xE0y
+          tr\u01B0\u1EDBc"
+        correctCategory: 1
+        essential: 1
+  - id: flu-q3
+    question: "Anh c\xF2n tri\u1EC7u ch\u1EE9ng n\xE0o kh\xE1c kh\xF4ng?"
+    response:
+      transcript: "T\xF4i \u0111au \u0111\u1EA7u, r\u1EA5t m\u1EC7t v\xE0 h\u01A1i
+        \u0111au h\u1ECDng, nh\u01B0ng kh\xF4ng b\u1ECB ti\xEAu ch\u1EA3y."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: flu-headache
+        text: "\u0110au \u0111\u1EA7u, m\u1EC7t v\xE0 \u0111au h\u1ECDng"
+        correctCategory: 2
+        essential: 1
+      - id: flu-no-diarrhea
+        text: "Kh\xF4ng ti\xEAu ch\u1EA3y"
+        correctCategory: 2
+        essential: 1
+  - id: flu-q4
+    question: "Anh c\xF3 b\u1EC7nh n\u1EC1n ho\u1EB7c \u0111\xE3 ti\xEAm ph\xF2ng
+      c\xFAm ch\u01B0a?"
+    response:
+      transcript: "T\xF4i kh\xF4ng c\xF3 b\u1EC7nh n\u1EC1n v\xE0 n\u0103m nay ch\u01B0a
+        ti\xEAm v\u1EAFc-xin c\xFAm."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: flu-history
+        text: "Kh\xF4ng c\xF3 b\u1EC7nh n\u1EC1n"
+        correctCategory: 3
+        essential: 1
+      - id: flu-vaccine
+        text: "Ch\u01B0a ti\xEAm v\u1EAFc-xin c\xFAm n\u0103m nay"
+        correctCategory: 3
+        essential: 1

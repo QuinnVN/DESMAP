@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9fcfdc0faab7e499d085f5d5ebf657, type: 3}
+  m_Name: 10 - Viem da day ruot
+  m_EditorClassIdentifier: NCKH.Doctor::NCKH.VR.Doctor.DoctorCaseDefinition
+  patientName: "Ng\xF4 Thanh Th\u1EA3o"
+  selectionWeight: 1
+  initialDialogue:
+    transcript: "T\u1EEB t\u1ED1i qua t\xF4i \u0111au qu\u1EB7n b\u1EE5ng, n\xF4n
+      hai l\u1EA7n v\xE0 \u0111i ngo\xE0i ph\xE2n l\u1ECFng nhi\u1EC1u l\u1EA7n."
+    audioClip: {fileID: 0}
+    selectableCards:
+    - id: gastro-time
+      text: "Kh\u1EDFi ph\xE1t t\u1EEB t\u1ED1i qua"
+      correctCategory: 0
+      essential: 1
+    - id: gastro-cramp
+      text: "\u0110au qu\u1EB7n b\u1EE5ng"
+      correctCategory: 2
+      essential: 1
+    - id: gastro-vomit
+      text: "N\xF4n v\xE0 ti\xEAu ch\u1EA3y"
+      correctCategory: 2
+      essential: 1
+  phases:
+  - id: gastro-q1
+    question: "Ch\u1ECB c\xF3 s\u1ED1t, c\xF3 m\xE1u trong ph\xE2n hay d\u1EA5u m\u1EA5t
+      n\u01B0\u1EDBc kh\xF4ng?"
+    response:
+      transcript: "T\xF4i s\u1ED1t nh\u1EB9, kh\xF4ng th\u1EA5y m\xE1u nh\u01B0ng
+        mi\u1EC7ng kh\xF4 v\xE0 ti\u1EC3u \xEDt h\u01A1n."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: gastro-fever
+        text: "S\u1ED1t nh\u1EB9, kh\xF4ng c\xF3 m\xE1u trong ph\xE2n"
+        correctCategory: 2
+        essential: 1
+      - id: gastro-dehydration
+        text: "Mi\u1EC7ng kh\xF4 v\xE0 ti\u1EC3u \xEDt"
+        correctCategory: 2
+        essential: 1
+  - id: gastro-q2
+    question: "C\xF3 ai quanh ch\u1ECB b\u1ECB gi\u1ED1ng v\u1EADy ho\u1EB7c ch\u1ECB
+      v\u1EEBa \u0111i \u0111\xE2u kh\xF4ng?"
+    response:
+      transcript: "Hai ng\u01B0\u1EDDi trong nh\xE0 c\u0169ng ti\xEAu ch\u1EA3y sau
+        khi m\u1ED9t ch\xE1u nh\u1ECF \u1EDF tr\u01B0\u1EDDng m\u1EABu gi\xE1o b\u1ECB
+        b\u1EC7nh."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: gastro-contact
+        text: "Nhi\u1EC1u ng\u01B0\u1EDDi trong nh\xE0 c\xF3 tri\u1EC7u ch\u1EE9ng
+          t\u01B0\u01A1ng t\u1EF1"
+        correctCategory: 1
+        essential: 1
+  - id: gastro-q3
+    question: "Ch\u1ECB c\xF3 b\u1EC7nh n\u1EC1n ho\u1EB7c \u0111ang d\xF9ng thu\u1ED1c
+      g\xEC kh\xF4ng?"
+    response:
+      transcript: "T\xF4i kh\xF4ng c\xF3 b\u1EC7nh n\u1EC1n v\xE0 g\u1EA7n \u0111\xE2y
+        kh\xF4ng d\xF9ng kh\xE1ng sinh."
+      audioClip: {fileID: 0}
+      selectableCards:
+      - id: gastro-history
+        text: "Kh\xF4ng b\u1EC7nh n\u1EC1n, kh\xF4ng d\xF9ng kh\xE1ng sinh g\u1EA7n
+          \u0111\xE2y"
+        correctCategory: 3
+        essential: 1
