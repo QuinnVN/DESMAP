@@ -89,3 +89,5 @@ git subtree pull --prefix=vr "<repo NCKH VR>" main
 ```
 
 Các lệnh trên đọc repo nguồn và cập nhật monorepo. Nếu repo nguồn tiếp tục thay đổi các file đã bỏ theo dõi như `Artifacts/` hoặc `backup/`, xử lý xung đột bằng cách giữ chúng ngoài Git tại monorepo.
+
+Kết quả kiểm tra sau khi nhập được ghi tại [báo cáo xác minh](docs/migration/verification.md).
