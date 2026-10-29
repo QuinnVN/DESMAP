@@ -34,7 +34,7 @@ namespace NCKH.VR.Sales
                     return RemoteGamePhase.Finished;
                 if (!started || (part1 != null && part1.enabled && part1.Stage == SalesMissionStage.Waiting))
                     return RemoteGamePhase.Ready;
-                if (part2 != null && part2.IsCompleted)
+                if (part2 != null && part2.IsFinished)
                     return RemoteGamePhase.Finished;
                 if (part1 != null && part1.Stage == SalesMissionStage.Completed
                     && (part2 == null || part2.Stage == SalesPart2Stage.Waiting))

@@ -7,6 +7,8 @@ param(
 
     [string]$Output,
 
+    [string]$TestFilter,
+
     [switch]$Development,
 
     [switch]$ConnectProfiler,
@@ -85,6 +87,10 @@ if (-not [string]::IsNullOrWhiteSpace($Output)) {
         Join-Path $projectRoot $Output
     }
     $unityArguments += @('-buildOutput', $resolvedOutput)
+}
+
+if (-not [string]::IsNullOrWhiteSpace($TestFilter) -and $Target -in @('EditModeTests', 'PlayModeTests')) {
+    $unityArguments += @('-testFilter', $TestFilter)
 }
 
 if ($Development) {

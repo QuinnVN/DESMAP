@@ -11,6 +11,7 @@ from dataclasses import replace
 from typing import Any, Mapping
 
 from app.config import get_settings
+from app.sales_adaptive_reliability import enabled as reliability_enabled
 from app.sales_persuasion import decode_sales_audio, is_silent_wav
 from app.sales_concerns import score_session
 from app.sales_customer_lines import select_customer_line
@@ -35,6 +36,7 @@ TERMINAL_REPLIES = {
 
 def public_fields(state: Mapping) -> dict:
     return {**{name: state.get(name) for name in VERSIONS},
+            **({"terminalError": copy.deepcopy(state["terminalError"])} if state.get("terminalError") else {}),
             "assessmentStatus": state.get("assessmentStatus", "pending"),
             "maxTurns": state.get("maxTurns", 8), "remainingTurns": remaining(state),
             "supplementalTurnGranted": state.get("supplementalTurnGranted", False),
@@ -42,6 +44,40 @@ def public_fields(state: Mapping) -> dict:
             "dialogueTurnCount": state.get("dialogueTurnCount", state.get("evaluableTurnCount", 0)),
             "resolutionAccepted": state.get("resolutionAccepted", False),
             "endingReason": state.get("endingReason")}
+
+
+def unintelligible_session(state: Mapping) -> bool:
+    """No assessable speech in a clarification-enabled session.
+
+    An ordinary, assessable turn can legitimately earn zero. A clear act or
+    violation in a partly unclear utterance still needs its normal assessment.
+    """
+    from app.sales_adaptive_v2 import ADAPTIVE_VERSION, CLARIFICATION_REVISIONS
+    config = state.get("adaptiveDialogue") or {}
+    if (state.get("pipelineMode") != "openrouter" or config.get("version") != ADAPTIVE_VERSION
+            or config.get("dialogueRevision") not in CLARIFICATION_REVISIONS or state.get("evaluableTurnCount", 0)):
+        return False
+    ledger = state.get("evidenceLedger") or []
+    return bool(ledger) and all(
+        (entry.get("clarificationRequested") or entry.get("turnQuality") == "uncertain")
+        and not any(label.get("status") == "true" for label in entry.get("labels", {}).values())
+        for entry in ledger)
+
+
+def fail_unintelligible_session(state: dict, *, completion_id: str, reason: str, final_text: str | None = None) -> None:
+    """End once, without a score, trust verdict, model review or result projection."""
+    from app.sales_returning_customer import _now
+    from app.sales_adaptive_v2 import REPEAT_LIMIT_TEXT
+    state.update(status="finished", assessmentStatus="failed", completionStatus="failed",
+                 completionId=completion_id, completionReason=state.get("endingReason") or reason,
+                 endingReason=state.get("endingReason") or reason, completedAtUtc=_now(),
+                 finalCustomerText=final_text or REPEAT_LIMIT_TEXT,
+                 terminalError={"code": "speech_unintelligible",
+                                "message": "Không thể đánh giá phiên vì lời nói không rõ. "
+                                           "Vui lòng kiểm tra mic và bắt đầu phiên mới."})
+    for key in ("score", "rawScore", "criterionScores", "policyViolationPenalty", "customerRating", "trustState",
+                "emotionalHandling", "causeIdentification", "solutionSuitability", "trustRebuilding", "analysis"):
+        state.pop(key, None)
 
 
 def plan_reply(before: Mapping, state: dict, result: dict, labels: Mapping) -> dict:
@@ -53,12 +89,18 @@ def plan_reply(before: Mapping, state: dict, result: dict, labels: Mapping) -> d
     recalled = confirmed_facts(before, labels)
     asked = [fact for label, fact in (*QUESTION_FACTS, *FACT_QUESTIONS) if yes(label)]
     response_facts = list(dict.fromkeys(answers + [fact for fact in asked if fact in known] + recalled))[:2]
+    from app.sales_adaptive_reliability import enabled as reliability_enabled
+    if reliability_enabled(before):
+        # Recalling a need is scoring evidence, not a request for Lan to recite it.
+        response_facts = list(dict.fromkeys(answers + [fact for fact in asked if fact in known]
+                              + (recalled if yes("confirmationQuestion") else [])))[:2]
     recent = [item.get("customerText", "") for item in before.get("turns", [])[-3:] if item.get("customerText")]
     hostile = bool(before.get("badResponseCount") or result["turnQuality"] == "bad" or state.get("policyViolations"))
     intent, topic, content = "raise_concern", None, []
     if result.get("conversationComplete"):
         intent = "ending"
-        if state.get("assessmentReviewItems") or state.get("assessmentStatus") == "needs-review":
+        if (state.get("assessmentReviewItems") or state.get("assessmentStatus") == "needs-review"
+                or result.get("endingReason") == "clarification_limit"):
             content = ["ending_review"]
         elif result.get("endingReason") == "exchange_accepted":
             content = ["ending_exchange_accepted"]
@@ -83,7 +125,8 @@ def plan_reply(before: Mapping, state: dict, result: dict, labels: Mapping) -> d
         content = ["clarify_refusal"] if topic == "refusal" else []
     elif turn.get("challengeShownNow"):
         intent, content = "trust_challenge", ["trust_challenge"]
-    elif before.get("customerMemory") and (recalled or (yes("confirmationQuestion") and response_facts)):
+    elif before.get("customerMemory") and ((recalled and not reliability_enabled(before))
+                                           or (yes("confirmationQuestion") and response_facts)):
         intent = "confirm_fact"
     elif before.get("customerMemory") and any(yes(label) for label, _ in QUESTION_FACTS):
         intent = "answer_request"
@@ -148,11 +191,16 @@ async def process_turn(session_id, request, *, store, transcriber, classifier=No
         try:
             if not supports_versions(state):
                 raise RuntimeError("pipeline_version_unsupported")
-            adaptive_enabled = state.get("adaptiveDialogue") is not None
-            if adaptive_enabled:
-                from app.sales_adaptive import supported as adaptive_supported
-                if not adaptive_supported(state):
+            # The frozen adaptive version picks its module; a missing or unknown
+            # version is never mapped to the current default.
+            adaptive_module = None
+            if state.get("adaptiveDialogue") is not None:
+                from app.sales_adaptive_versions import module_for
+                adaptive_module = module_for(state)
+                if adaptive_module is None:
                     raise RuntimeError("pipeline_version_unsupported")
+            adaptive_enabled = adaptive_module is not None
+            private_diagnostics = hasattr(adaptive_module, "store_diagnostics")
             path = store._turn_path(session_id, request.turn_id)
             # All-zero PCM is a device/upload failure, never player silence.
             with wave.open(io.BytesIO(audio), "rb") as source:
@@ -222,7 +270,8 @@ async def process_turn(session_id, request, *, store, transcriber, classifier=No
                 checkpoint["classifiedAtUtc"] = _now()
                 await save_checkpoint()
             if "resolvedClassification" not in checkpoint:
-                from app.sales_arbitration import LunaSalesArbitrator, select_arbitration_labels, merge_adjudication
+                from app.sales_arbitration import LunaSalesArbitrator, select_arbitration_labels, merge_adjudication, required_verification_labels
+                required_verification = required_verification_labels(state, normalized_labels(checkpoint["classification"]))
                 selected = select_arbitration_labels(state, normalized_labels(checkpoint["classification"])) if state.get("lunaArbitrationEnabled") else []
                 adjudication = {"labels": {}, "metadata": {"selectedLabels": selected, "skipped": not bool(selected)}}
                 if selected:
@@ -231,6 +280,9 @@ async def process_turn(session_id, request, *, store, transcriber, classifier=No
                     context = {"objective": state["phase"], "knownFacts": state.get("investigationEvidence", []),
                                "unresolvedPromiseTypes": [promise_labels[code] for code in state.get("unresolvedPromises", []) if code in promise_labels],
                                "history": state.get("turns", [])[-3:], **model_context(state)}
+                    if reliability_enabled(state):
+                        from app.sales_adaptive_reliability import REVISION
+                        context["reliabilityRevision"] = REVISION
                     try:
                         if arbitrator is None:
                             arbitrator = LunaSalesArbitrator(settings=replace(get_settings(), sales_luna_timeout_seconds=state["lunaDeadlineSeconds"]))
@@ -244,7 +296,8 @@ async def process_turn(session_id, request, *, store, transcriber, classifier=No
                         retry_error = dict(adjudication.get("metadata") or {}, stage="arbitration")
                         raise RuntimeError("arbitrator_timeout")
                 checkpoint["arbitration"] = adjudication
-                checkpoint["resolvedClassification"] = merge_adjudication(checkpoint["classification"], adjudication)
+                checkpoint["resolvedClassification"] = merge_adjudication(checkpoint["classification"], adjudication,
+                                                                          required=required_verification)
                 checkpoint["arbitratedAtUtc"] = _now()
                 await save_checkpoint()
             labels = normalized_labels(checkpoint["resolvedClassification"])
@@ -264,14 +317,20 @@ async def process_turn(session_id, request, *, store, transcriber, classifier=No
             if adaptive_enabled and "written" not in checkpoint:
                 # One paid model stage. Its record and reply are checkpointed
                 # together, so a retried turn never repeats the request.
-                from app.sales_adaptive import run_adaptive_turn
-                adaptive = await run_adaptive_turn(state, candidate, decision, plan, labels, transcript, responder=responder)
+                extra = {"turn_id": request.turn_id} if private_diagnostics else {}
+                adaptive = await adaptive_module.run_adaptive_turn(state, candidate, decision, plan, labels, transcript,
+                                                                   responder=responder, **extra)
+                if adaptive.get("clarificationState"):
+                    candidate, decision, plan = adaptive["clarificationState"]
+                    checkpoint.update(candidate=candidate, decision=decision, plan=plan)
                 checkpoint.update(adaptive=adaptive["record"], written=adaptive["written"], writtenAtUtc=_now())
+                if private_diagnostics:
+                    # Candidates and guard codes stay private: checkpoint, then session.
+                    checkpoint["adaptiveDiagnostics"] = adaptive["diagnostics"]
                 await save_checkpoint()
             adaptive_record = checkpoint.get("adaptive") if adaptive_enabled else None
             if adaptive_record and adaptive_record.get("softClose"):
-                from app.sales_adaptive import apply_soft_close
-                candidate, decision = apply_soft_close(state, candidate, decision)
+                candidate, decision = adaptive_module.apply_soft_close(state, candidate, decision)
             if "written" not in checkpoint:
                 written = {"customerText": plan["fallbackText"], "metadata": {}, "fallbackUsed": True}
                 writer_started = time.monotonic()
@@ -301,6 +360,9 @@ async def process_turn(session_id, request, *, store, transcriber, classifier=No
                 checkpoint.update(written=written, writtenAtUtc=_now())
                 await save_checkpoint()
             written = checkpoint["written"]
+            if decision.get("conversationComplete") and unintelligible_session(candidate):
+                fail_unintelligible_session(candidate, completion_id=request.turn_id,
+                    reason=decision.get("endingReason") or "speech_unintelligible", final_text=written["customerText"])
             volunteered = remember_volunteered_facts(candidate, (adaptive_record or {}).get("memoryPlan") or plan,
                                                      written["customerText"], request.turn_id)
             rating = decision["turnQuality"] if any(label.get("noul") is not None or label.get("source") == "luna"
@@ -334,12 +396,14 @@ async def process_turn(session_id, request, *, store, transcriber, classifier=No
                 # Copy only gameplay mutations; never restore deleted diagnostics.
                 keys = ("phase", "assessmentStatus", "clarificationCount", "clarificationIssue", "clarificationIssues", "rubricComponents",
                         "objectiveEvidence", "completedObjectives", "unresolvedPromises", "policyViolations",
-                        "evaluableTurnCount", "dialogueTurnCount", "assessmentReviewItems", "supplementalTurnGranted", "endingReason", "status", "challengeShown",
-                        "challengeAnswered", "investigationEvidence", "resolutionAccepted", "customerState", "customerMemory")
+                        "evaluableTurnCount", "dialogueTurnCount", "consecutiveRepeatRequests", "assessmentReviewItems", "supplementalTurnGranted", "endingReason", "status", "challengeShown",
+                        "challengeAnswered", "investigationEvidence", "resolutionAccepted", "customerState", "customerMemory",
+                        "terminalError", "completionStatus", "completionId", "completionReason", "completedAtUtc", "finalCustomerText")
                 for key in keys:
                     if key in candidate:
                         current[key] = copy.deepcopy(candidate[key])
-                if not decision.get("assessmentUncertain", decision["turnQuality"] == "uncertain"):
+                if (not decision.get("clarificationRequested")
+                        and not decision.get("assessmentUncertain", decision["turnQuality"] == "uncertain")):
                     current["acceptedTurnCount"] += 1
                 if decision["turnQuality"] in ("good", "bad"):
                     count = "goodResponseCount" if decision["turnQuality"] == "good" else "badResponseCount"
@@ -351,9 +415,11 @@ async def process_turn(session_id, request, *, store, transcriber, classifier=No
                 current.setdefault("evidenceLedger", []).append(copy.deepcopy(candidate["evidenceLedger"][-1]))
                 if adaptive_record:
                     # Action memory changes only with the committed reply.
-                    from app.sales_adaptive import next_memory
-                    current["adaptiveMemory"] = next_memory(current.get("adaptiveMemory"), adaptive_record,
-                                                            candidate.get("dialogueTurnCount", 0))
+                    current["adaptiveMemory"] = adaptive_module.next_memory(current.get("adaptiveMemory"), adaptive_record,
+                                                                            candidate.get("dialogueTurnCount", 0))
+                    if private_diagnostics and checkpoint.get("adaptiveDiagnostics") is not None:
+                        current["adaptiveDiagnostics"] = adaptive_module.store_diagnostics(
+                            current.get("adaptiveDiagnostics"), request.turn_id, checkpoint["adaptiveDiagnostics"])
                 current.get("turnCheckpoints", {}).pop(request.turn_id, None)
             _, result = await store.finalize_turn(session_id, request.turn_id, result, commit)
             return result
@@ -397,7 +463,7 @@ async def complete(session_id, request, *, store):
         state = await store.get(session_id)
         if state is None:
             raise KeyError("session_not_found")
-        if state.get("completionStatus") == "completed":
+        if state.get("completionStatus") == "completed" or state.get("terminalError"):
             return state
         if not supports_versions(state):
             raise RuntimeError("pipeline_version_unsupported")
@@ -405,8 +471,13 @@ async def complete(session_id, request, *, store):
             raise RuntimeError("diagnostics_deleted")
         if state.get("pendingTurns") or state.get("turnCheckpoints"):
             return state
-        if not state.get("dialogueTurnCount", state.get("acceptedTurnCount", 0)) and state.get("silenceCount", 0) < 2:
+        had_clarification = any(entry.get("clarificationRequested") for entry in state.get("evidenceLedger") or [])
+        if (not state.get("dialogueTurnCount", state.get("acceptedTurnCount", 0))
+                and state.get("silenceCount", 0) < 2 and not had_clarification):
             return state
+        if unintelligible_session(state):
+            fail_unintelligible_session(state, completion_id=request.completion_id, reason=request.reason)
+            return await store.save(state)
         if state.get("status") != "awaitingCompletion":
             state["endingReason"] = "stopped_early"
         if state.get("assessmentReviewItems"):

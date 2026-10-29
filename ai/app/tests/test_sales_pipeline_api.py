@@ -53,6 +53,62 @@ class Writer:
 
 
 class SalesPipelineApiTests(unittest.IsolatedAsyncioTestCase):
+    async def test_unintelligible_frustration_ends_as_error_without_review_or_result_projection(self):
+        from app import sales_adaptive_v2 as adaptive
+        from app.tests.test_sales_adaptive_v2 import V2, ScriptedModel, say
+        state = await self.store.get("v2")
+        state["adaptiveDialogue"] = adaptive.frozen_config(V2)
+        await self.store.save(state)
+        self.stt.text = "Bảy pha nhánh xanh gót, mềm tiếng chín..."
+        model = ScriptedModel(lambda context, call, repair: say("express_frustration", "Chị không hiểu em muốn nói gì."),
+            verifier=lambda data, call: {"verdict": "pass", "codes": [], "salespersonClarity": "unclear"})
+        with patch.object(adaptive, "AdaptiveLanResponder", return_value=model.responder()), \
+                patch("app.sales_review.resolve_review", side_effect=AssertionError("must not review")), \
+                patch.object(main, "project_sales_part2", side_effect=AssertionError("must not project")):
+            for index in range(5):
+                turn = await self.turn(payload=request(f"garbled-{index}").model_dump(by_alias=True))
+                self.assertEqual((turn["dialogueTurnCount"], turn["remainingTurns"]), (0, 8))
+            calls = len(model.order)
+            replay = (await self.client.post("/api/sales/sessions/v2/turns",
+                json=request("garbled-4").model_dump(by_alias=True))).json()
+            self.assertEqual(replay, turn)
+            self.assertEqual(len(model.order), calls)
+            completed = await self.complete()
+            resumed = (await self.client.get("/api/sales/sessions/v2")).json()
+        self.assertEqual(resumed["terminalError"]["code"], "speech_unintelligible")
+        self.assertEqual(completed["completionStatus"], "failed")
+        self.assertIsNone(resumed.get("score"))
+        self.assertNotIn("salespersonClarity", json.dumps(resumed))
+
+    async def test_clarification_only_terminal_error_survives_http_resume_without_projecting_zero(self):
+        from app import sales_adaptive_v2 as adaptive
+        from app.run_results import Participant
+        from app.tests.test_sales_adaptive_v2 import V2, ScriptedModel, say
+        state = await self.store.get("v2")
+        state["adaptiveDialogue"] = adaptive.frozen_config(V2)
+        await self.store.save(state)
+        model = ScriptedModel(lambda context, call, repair:
+                              say("request_repeat", "Chị chưa hiểu câu đó, em nói lại rõ ràng đi."))
+        responder = model.responder()
+        with patch.object(adaptive, "AdaptiveLanResponder", return_value=responder):
+            for index in range(5):
+                turn = await self.turn(payload=request(f"unclear-{index}").model_dump(by_alias=True))
+        self.assertEqual(turn["terminalError"]["code"], "speech_unintelligible")
+        self.assertTrue(turn["conversationComplete"])
+        participant = Participant("Synthetic participant", "synthetic-session")
+        with patch.object(main.participant_manager, "active", participant), \
+                patch.object(main, "project_sales_part2", side_effect=AssertionError("must not project")), \
+                patch("app.sales_review.resolve_review", side_effect=AssertionError("must not review")):
+            completed = await self.complete()
+            resumed = (await self.client.get("/api/sales/sessions/v2")).json()
+        self.assertEqual(completed["completionStatus"], "failed")
+        self.assertEqual(resumed["terminalError"], turn["terminalError"])
+        self.assertTrue(resumed["conversationComplete"])
+        self.assertIsNone(resumed.get("score"))
+        self.assertIsNone(resumed.get("trustState"))
+        rejected = await self.client.post("/api/sales/sessions/v2/turns", json=request("after-error").model_dump(by_alias=True))
+        self.assertEqual(rejected.status_code, 409)
+
     async def test_explicit_part1_customer_link_is_forwarded_and_private_memory_stays_private(self):
         attempt = {"attemptId": "linked-sale", "salesSessionId": "v3", "runId": "run-v2",
                    "customerId": "Lan", "customerNeeds": "Giày nhẹ để chạy bộ mỗi sáng.",
@@ -98,7 +154,7 @@ class SalesPipelineApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(final["resolutionAccepted"])
         self.assertFalse(final["causeIdentification"])
         self.assertFalse(final["trustRebuilding"])
-        self.assertEqual(final["score"], 30)
+        self.assertEqual(final["score"], 60)
         after = await self.client.post("/api/sales/sessions/v2/turns", json=request("after-exchange").model_dump(by_alias=True))
         self.assertEqual(after.status_code, 409)
 
@@ -149,7 +205,7 @@ class SalesPipelineApiTests(unittest.IsolatedAsyncioTestCase):
             final = await self.complete()
             repeated = await self.complete("retry-final")
         self.assertEqual(final["assessmentStatus"], "completed")
-        self.assertEqual(final["score"], 10)
+        self.assertEqual(final["score"], 5)
         self.assertEqual(repeated["completionId"], "final")
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0][0], "Em xin lỗi chị vì đã tư vấn sai")
@@ -695,7 +751,7 @@ class SalesPipelineApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((turn["endingReason"], turn["remainingTurns"]), ("objectives_completed", 3))
         final = await self.complete()
         self.assertEqual((final["score"], final["trustState"], final["resolutionAccepted"]),
-                         (70, "partially_restored", True))
+                         (85, "partially_restored", True))
         self.assertFalse(final["emotionalHandling"])
         self.assertNotIn("acknowledgment", final["rubricComponents"])
     async def test_apology_accumulates_neutral_is_not_bad_repetition_gives_no_points(self):
@@ -706,7 +762,7 @@ class SalesPipelineApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(neutral["playerResponseRating"], "neutral")
         await self.turn("acknowledgment")
         final = await self.complete()
-        self.assertEqual(final["rawScore"], 10)
+        self.assertEqual(final["rawScore"], 5)
         self.assertEqual(final["badResponseCount"], 0)
         self.assertEqual(final["endingReason"], "stopped_early")
         self.assertEqual(final["trustState"], "lost")
@@ -717,7 +773,7 @@ class SalesPipelineApiTests(unittest.IsolatedAsyncioTestCase):
         final = await self.complete()
         self.assertTrue(final["causeIdentification"])
         # Part 1 already told the routine; re-asking earns nothing, recalling it does.
-        self.assertEqual(final["criterionScores"]["adaptabilityAndDeescalation"], 20)
+        self.assertEqual(final["criterionScores"]["adaptabilityAndDeescalation"], 10)
         self.assertNotIn("use_question", final["rubricComponents"])
     async def test_uncertain_or_invalid_label_is_not_penalty_and_needs_review_after_two_clarifications(self):
         for index, value in enumerate((0.5, 2, None)):
@@ -773,7 +829,7 @@ class SalesPipelineApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(turn["activeObjective"], 2)
         self.assertTrue(turn["fallbackUsed"])
         self.assertTrue(turn["customerText"])
-        self.assertEqual((await self.complete())["rawScore"], 20)
+        self.assertEqual((await self.complete())["rawScore"], 15)
     async def test_independent_violations_dedupe_abuse_and_retraction_keeps_event(self):
         turn = await self.turn("acknowledgment", "unauthorizedRefund", "unauthorizedDiscount", "abuse")
         self.assertEqual(set(turn["policyViolations"]), {"unauthorized_refund", "unauthorized_discount", "abusive_language"})
@@ -926,7 +982,7 @@ class SalesPipelineApiTests(unittest.IsolatedAsyncioTestCase):
         state = await self.store.get("shadow")
         self.assertEqual(state["phase"], 1)
         self.assertEqual(state["shadowState"]["phase"], 2)
-        self.assertEqual(state["shadowAssessments"]["turn-1"]["proposedOutcome"]["rawScore"], 20)
+        self.assertEqual(state["shadowAssessments"]["turn-1"]["proposedOutcome"]["rawScore"], 15)
 
     async def test_backend_openrouter_authority_beats_all_client_fragments_and_blocks_pending_run(self):
         from app.run_results import RunResultStore, Participant, project_sales_part2

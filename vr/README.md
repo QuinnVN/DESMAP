@@ -17,7 +17,7 @@ Restore `Assets/ThirdParty/` before opening this project or running its tests. T
 .\Restore-ThirdParty.ps1 -Source "<backup>\Assets"
 ```
 
-The source can be an old `Assets/` directory or an existing `Assets/ThirdParty/` directory. The restore script validates folder GUIDs and keeps `.meta` files. Unity creates the new parent folder metadata on first import. NativeWebSocket remains tracked at its existing location. Git LFS is no longer used; retained project binaries are regular Git blobs.
+The source can be an old `Assets/` directory or an existing `Assets/ThirdParty/` directory. The restore script validates folder GUIDs and keeps `.meta` files. If an asset has moved within the source, the script locates it by GUID and restores nested manifest entries separately to avoid duplicate GUIDs. All sources are checked before copying begins. Unity creates the new parent folder metadata on first import. NativeWebSocket remains tracked at its existing location. Git LFS is no longer used; retained project binaries are regular Git blobs.
 
 ## Requirements
 
@@ -40,6 +40,8 @@ Run the project wrapper from PowerShell. It resolves the required Unity installa
 powershell -ExecutionPolicy Bypass -File .\Build.ps1 -Target Validate
 powershell -ExecutionPolicy Bypass -File .\Build.ps1 -Target EditModeTests
 powershell -ExecutionPolicy Bypass -File .\Build.ps1 -Target PlayModeTests
+# Limit checks to the affected fixture when testing a small change.
+powershell -ExecutionPolicy Bypass -File .\Build.ps1 -Target PlayModeTests -TestFilter "NCKH.VR.Sales.Tests.SalesPart2FlowTests"
 powershell -ExecutionPolicy Bypass -File .\Build.ps1 -Target Windows
 powershell -ExecutionPolicy Bypass -File .\Build.ps1 -Target Android
 ```

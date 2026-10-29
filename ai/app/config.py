@@ -100,13 +100,21 @@ class Settings:
     sales_part1_timeout_seconds: float = 30.0
     sales_openrouter_data_collection: str = "deny"
     sales_openrouter_zdr: bool = False
-    # Opt-in adaptive Lan dialogue (app/sales_adaptive.py). Frozen per session at
-    # creation; the legacy writer keeps its 220-token, reasoning-off request.
+    # Opt-in adaptive Lan dialogue (app/sales_adaptive_versions.py). Frozen per
+    # session at creation; the legacy writer keeps its 220-token, reasoning-off
+    # request. The version applies to new sessions only.
     sales_adaptive_dialogue_enabled: bool = False
+    sales_adaptive_version: str = "lan-adaptive-v2"
     sales_adaptive_reasoning: str = "off"
     sales_adaptive_max_tokens: int = 4096
     sales_adaptive_reasoning_max_tokens: int = 1024
     sales_adaptive_timeout_seconds: float = 45.0
+
+
+def _adaptive_version(value: str) -> str:
+    """``v1``/``v2`` or the full version name; anything else is the v2 default."""
+    value = value.strip().lower()
+    return {"v1": "lan-adaptive-v1", "lan-adaptive-v1": "lan-adaptive-v1"}.get(value, "lan-adaptive-v2")
 
 
 def get_settings() -> Settings:
@@ -207,6 +215,7 @@ def get_settings() -> Settings:
         sales_openrouter_data_collection=("allow" if os.environ.get("SALES_OPENROUTER_DATA_COLLECTION", "deny").strip().lower() == "allow" else "deny"),
         sales_openrouter_zdr=_env_bool("SALES_OPENROUTER_ZDR"),
         sales_adaptive_dialogue_enabled=_env_bool("SALES_ADAPTIVE_DIALOGUE_ENABLED"),
+        sales_adaptive_version=_adaptive_version(os.environ.get("SALES_ADAPTIVE_VERSION", "")),
         sales_adaptive_reasoning=("on" if os.environ.get("SALES_ADAPTIVE_REASONING", "off").strip().lower() == "on" else "off"),
         sales_adaptive_max_tokens=_env_int("SALES_ADAPTIVE_MAX_TOKENS", 4096, minimum=256, maximum=65536),
         sales_adaptive_reasoning_max_tokens=_env_int("SALES_ADAPTIVE_REASONING_MAX_TOKENS", 1024, minimum=0, maximum=32768),

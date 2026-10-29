@@ -128,6 +128,94 @@ namespace NCKH.VR.Sales.Tests
         }
 
         [UnityTest]
+        public IEnumerator ClarificationAtLastTurnKeepsRecordingAndNextAnswerConsumesLastTurn()
+        {
+            controller.maximumAcceptedTurns = 1;
+            SalesPart2TurnResponse clarification = Accepted(1, false, "Chị chưa nghe rõ, em nói lại đi.");
+            clarification.clarificationRequested = true;
+            clarification.acceptedTurnCount = 0;
+            requests.TurnResponses.Enqueue(clarification);
+            requests.TurnResponses.Enqueue(Accepted(1, false, "Chị cần em giải thích rõ hơn."));
+            requests.AnalysisResponses.Enqueue(new SalesPart2AnalysisResponse { trustState = "lost" });
+            controller.BeginPart2("session-clarification", string.Empty);
+            yield return WaitForStage(SalesPart2Stage.Recording);
+
+            controller.HandleAction(-1);
+            yield return WaitForStage(SalesPart2Stage.Recording);
+            Assert.That(controller.AcceptedTurnCount, Is.Zero);
+            Assert.That(requests.AnalysisRequests.Count, Is.Zero);
+            Assert.That(requests.SubmittedTurns.Count, Is.EqualTo(1));
+
+            controller.HandleAction(-1);
+            yield return WaitForStage(SalesPart2Stage.Completed);
+            Assert.That(controller.AcceptedTurnCount, Is.EqualTo(1));
+            Assert.That(requests.AnalysisRequests.Count, Is.EqualTo(1));
+            Assert.That(requests.SubmittedTurns[0].turnId, Is.Not.EqualTo(requests.SubmittedTurns[1].turnId));
+        }
+
+        [UnityTest]
+        public IEnumerator ClarificationOnlyErrorEndsWithoutAssessmentOrRetry()
+        {
+            SalesPart2TurnResponse clarification = Accepted(1, false,
+                "Chị vẫn chưa hiểu rõ lời em nói. Chị dừng trao đổi ở đây đã.", true);
+            clarification.clarificationRequested = true;
+            clarification.acceptedTurnCount = 0;
+            clarification.terminalError = UnintelligibleError();
+            requests.TurnResponses.Enqueue(clarification);
+            controller.BeginPart2("session-clarification-limit", string.Empty);
+            yield return WaitForStage(SalesPart2Stage.Recording);
+
+            controller.HandleAction(-1);
+            yield return WaitForStage(SalesPart2Stage.Failed);
+            Assert.That(controller.AcceptedTurnCount, Is.Zero);
+            Assert.That(requests.AnalysisRequests.Count, Is.Zero);
+            Assert.That(requests.SubmittedTurns.Count, Is.EqualTo(1));
+            Assert.That(controller.TrustState, Is.EqualTo(SalesPart2TrustState.Unknown));
+            Assert.That(controller.statusText.text, Is.EqualTo("PHIÊN ĐÃ KẾT THÚC"));
+            Assert.That(controller.resultText.text, Does.Contain("lời nói không rõ"));
+            controller.RetryCurrentOperation();
+            controller.HandleAction(-1);
+            yield return null;
+            Assert.That(controller.Stage, Is.EqualTo(SalesPart2Stage.Failed));
+            Assert.That(requests.SubmittedTurns.Count, Is.EqualTo(1));
+            Assert.That(requests.AnalysisRequests.Count, Is.Zero);
+        }
+
+        [UnityTest]
+        public IEnumerator UnintelligibleSessionResumeKeepsTerminalErrorWithoutRetry()
+        {
+            requests.SessionState = new SalesPart2SessionStateResponse
+            { sessionId = "unclear-resume", status = "finished", terminalError = UnintelligibleError() };
+            controller.ResumeSession("unclear-resume");
+            yield return WaitForStage(SalesPart2Stage.Failed);
+            controller.RetryCurrentOperation();
+            controller.HandleAction(-1);
+            yield return null;
+            Assert.That(controller.IsFinished, Is.True);
+            Assert.That(controller.IsCompleted, Is.False);
+            Assert.That(requests.SubmittedTurns.Count, Is.Zero);
+            Assert.That(requests.AnalysisRequests.Count, Is.Zero);
+            Assert.That(controller.TrustState, Is.EqualTo(SalesPart2TrustState.Unknown));
+        }
+
+        [UnityTest]
+        public IEnumerator TimeLimitUnintelligibleErrorStopsWithoutTrustVerdict()
+        {
+            controller.activeTimeLimitSeconds = .08f;
+            requests.TurnResponses.Enqueue(Accepted(1, false, "Chị chưa hiểu, em nói lại đi."));
+            requests.AnalysisResponses.Enqueue(new SalesPart2AnalysisResponse { terminalError = UnintelligibleError() });
+            controller.BeginPart2("unclear-time-limit", string.Empty);
+            yield return WaitForStage(SalesPart2Stage.Failed);
+            controller.RetryCurrentOperation();
+            yield return null;
+            Assert.That(requests.AnalysisRequests.Count, Is.EqualTo(1));
+            Assert.That(controller.TrustState, Is.EqualTo(SalesPart2TrustState.Unknown));
+        }
+
+        private static SalesPart2Error UnintelligibleError() => new SalesPart2Error
+        { code = "speech_unintelligible", message = "Không thể đánh giá phiên vì lời nói không rõ." };
+
+        [UnityTest]
         public IEnumerator ActiveDeadlineSubmitsCurrentRecordingThenRequestsFinalAnalysis()
         {
             controller.activeTimeLimitSeconds = .08f;
@@ -364,6 +452,7 @@ namespace NCKH.VR.Sales.Tests
             public readonly List<TurnSnapshot> SubmittedTurns = new List<TurnSnapshot>();
             public readonly List<AnalysisSnapshot> AnalysisRequests = new List<AnalysisSnapshot>();
             public bool HoldTurnRequests;
+            public SalesPart2SessionStateResponse SessionState;
             public int CancelCount { get; private set; }
 
             public IEnumerator StartOrResumeSession(SalesPart2StartSessionRequest request,
@@ -412,7 +501,7 @@ namespace NCKH.VR.Sales.Tests
             public IEnumerator ReadSessionState(SalesPart2SessionStateRequest request,
                 Action<SalesPart2SessionStateResponse> completed)
             {
-                completed(new SalesPart2SessionStateResponse
+                completed(SessionState ?? new SalesPart2SessionStateResponse
                 {
                     success = true,
                     sessionId = request.salesSessionId

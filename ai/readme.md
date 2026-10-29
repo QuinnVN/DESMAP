@@ -177,12 +177,30 @@ ACKs with an unknown command, wrong sequence, invalid status, invalid scene ID, 
 
 All settings are optional. Defaults are local-only and safe for a developer workstation.
 
+Copy `.env.example` to `.env` in `ai/` when setting up a new checkout; preserve an
+existing `.env` and its credentials. The file groups connection settings, the LLM
+provider, Sales feature switches, STT, TTS, local LLM settings, and advanced tuning.
+The backend loads this file automatically. Process environment variables take
+precedence; restart the backend after editing configuration.
+
+For adaptive Sales v2, set `PIPELINE_MODE=openrouter`,
+`SALES_ADAPTIVE_DIALOGUE_ENABLED=true`, and `SALES_ADAPTIVE_VERSION=v2`.
+`SALES_ADAPTIVE_REASONING=off` disables thinking. Selecting a version alone does
+not enable the feature. Start a new Sales session to use the changed configuration;
+existing sessions keep their frozen settings. Rubric versions are selected by code,
+not by another environment flag. See [adaptive dialogue](docs/sales-adaptive-dialogue.md).
+
+STT and TTS remain local services in OpenRouter mode. Install the STT model once
+with `ai setup stt` in the backend console; subsequent startups load it automatically.
+Start Supertonic with `ai start supertonic`. Its URL and quality settings are in the
+TTS section, independently of the local LLM section.
+
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `BACKEND_HOST` | `127.0.0.1` | Bind address; use `0.0.0.0` only when remote Unity access is intentional. |
 | `BACKEND_PORT` | `8000` | FastAPI/uvicorn port. |
 | `BACKEND_API_TOKEN` | unset | Optional shared token for HTTP and control WebSocket authentication. |
-| `RECORDINGS_DIR` | `recordings` | Recording directory; relative paths resolve from the repository root. |
+| `RECORDINGS_DIR` | `recordings` | Private runtime directory; relative paths resolve from the backend root (`ai/`), independently of the working directory. The default is `ai/recordings/` in this monorepo. Absolute paths can point to external private storage. |
 | `MAX_RECORDING_BYTES` | `8388608` | Maximum decoded WAV size, bounded to 1–64 MiB. |
 | `MAX_TELEMETRY_BYTES` | `12582912` | Maximum serialized telemetry object size. |
 | `MAX_TRANSCRIPT_CHARS` | `4000` | Maximum AI transcript length. |

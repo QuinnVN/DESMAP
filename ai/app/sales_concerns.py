@@ -36,9 +36,19 @@ AGREEMENT_CONCERNS = frozenset({1, 2, 3})
 MAX_HINT = 2
 MAX_FACTS_PER_REPLY = 2
 CHALLENGE_LABELS = ("originalSaleResponsibility", "routineMatchExplanation", "fitOrWalkTrial")
+# A remedy built on a fit problem Lan never had. Lan may still accept it, but
+# only with reservations; it lowers satisfaction, never the remedy credit.
+MISMATCH_LABEL = "remedyContradictsFit"
 # Acts that can only help the player. Used by the monotonicity property.
 GOOD_LABELS = tuple(name for name in QUESTION_TEXT if name not in VIOLATIONS and name not in BAD_TURN_LABELS
-                    and name not in ("maintainsUnauthorizedPromise", "repeatedQuestion")) + tuple(RETRACTIONS)
+                    and name not in ("maintainsUnauthorizedPromise", "repeatedQuestion", MISMATCH_LABEL)) + tuple(RETRACTIONS)
+# sales-rubric-v3.3 points. Each criterion totals 50 so consumers keep their scale.
+REMEDY_POINTS = {"acknowledgment": 5, "policy": 20, "lightweight": 15, "trial": 10}
+INVESTIGATION_COMPONENTS = ("open_question", "use_question", "fit_question")
+INVESTIGATION_POINTS = 10
+RESPONSIBILITY_POINTS = 10
+SATISFIED_POINTS, RESERVED_POINTS = 15, 10
+EFFICIENCY_POINTS, EFFICIENT_TURNS, SLOWEST_TURNS = 15, 5, 8
 CONCERN_PARTS = {1: ("problem_question",), 2: ("walking", "fit", "cause"),
                  3: ("offer", "conditions", "lightweight", "trial"), 4: ("responsibility", "explanation", "trial")}
 
@@ -58,7 +68,7 @@ def initial_state() -> dict:
     return {"components": {}, "violations": [], "promises": [], "resolved": [], "ackSeen": False,
             "openQuestionSeen": False, "standingOffer": False, "postChallenge": [], "statedConcern": 1,
             "hintLevels": {str(concern): 0 for concern in CONCERNS}, "ending": None, "dialogueActs": [],
-            "initialFacts": None}
+            "initialFacts": None, "remedyMismatch": False}
 
 
 def _statuses(labels: Any, overrides: Mapping | None) -> dict[str, str]:
@@ -119,6 +129,8 @@ def missing_part(state: Mapping, concern: int | None, facts: Iterable[str]) -> s
             return "walking"
         return "fit" if not facts & {"fit_condition", "lighter_preference"} else "cause"
     if concern == 3:
+        if state.get("receiptPending"):
+            return "receipt"
         if "policy" not in components:
             return "conditions" if state["standingOffer"] else "offer"
         return "lightweight" if "lightweight" not in components else "trial"
@@ -143,7 +155,15 @@ def advance(state: Mapping, entry: Mapping, overrides: Mapping | None = None) ->
         state["initialFacts"] = sorted(facts)
     stated_before = state["statedConcern"]
     promises_before = list(state["promises"])
-    critical = critical_labels(state, status, facts, challenge)
+    from app.sales_adaptive_reliability import REVISION
+    reliable = entry.get("reliabilityRevision") == REVISION
+    unintelligible = reliable and entry.get("speechUnintelligible") and not any(value == "true" for value in status.values())
+    critical = [] if unintelligible else critical_labels(state, status, facts, challenge)
+    if reliable:
+        if yes("receiptRequest") and "receipt_status" not in facts:
+            state["receiptPending"] = True
+        elif "receipt_status" in facts and yes("exchangeConditions"):
+            state["receiptPending"] = False
     events = [code for label, code in VIOLATIONS.items() if yes(label)]
     if yes("abuse"):
         events.append("abusive_language")
@@ -201,6 +221,12 @@ def advance(state: Mapping, entry: Mapping, overrides: Mapping | None = None) ->
                 if yes(name) and name not in state["postChallenge"]:
                     state["postChallenge"].append(name)
         grant("responsibility", safe and yes("originalSaleResponsibility"))
+        # The latest remedy decides; an uncertain mismatch costs nothing.
+        if safe and yes(MISMATCH_LABEL):
+            state["remedyMismatch"] = True
+        elif (safe and status.get(MISMATCH_LABEL) == "false"
+              and (yes("exchangeOffer") or yes("lightweightForWalking"))):
+            state["remedyMismatch"] = False
         if yes("refusesRemedy"):
             state["standingOffer"] = False
         elif safe and yes("exchangeOffer"):
@@ -212,18 +238,18 @@ def advance(state: Mapping, entry: Mapping, overrides: Mapping | None = None) ->
                 resolved.add(1)
             if "cause" in components:
                 resolved.add(2)
-            if {"policy", "lightweight", "trial"} <= set(components):
+            if {"policy", "lightweight", "trial"} <= set(components) and not state.get("receiptPending"):
                 resolved.add(3)
             if challenge and set(CHALLENGE_LABELS) <= set(state["postChallenge"]):
                 resolved.add(4)
         state["resolved"] = sorted(resolved)
         # Facts Lan brought from Part 1 are not investigation in this dialogue.
         learned = facts - set(state["initialFacts"])
-        if (not ending and 1 in resolved_before and learned & COMPLAINT_FACTS and 2 not in resolved
+        if (not ending and not state.get("receiptPending") and 1 in resolved_before and learned & COMPLAINT_FACTS and 2 not in resolved
                 and safe and yes("exchangeConditions") and (yes("exchangeOffer") or offer_before)):
             # Lan can accept an operational remedy before the cause is proven.
             ending = "exchange_accepted"
-        if not ending and AGREEMENT_CONCERNS <= resolved:
+        if not ending and not state.get("receiptPending") and AGREEMENT_CONCERNS <= resolved:
             ending = "objectives_completed"
         quality = "bad" if bad else "good" if new_components or resolved - resolved_before else "neutral"
     answered, repeated = facts_to_answer(status, facts, bad, bool(entry.get("memoryVersion")))
@@ -241,7 +267,7 @@ def advance(state: Mapping, entry: Mapping, overrides: Mapping | None = None) ->
                 state["dialogueActs"].append(act)
                 dialogue_progress.append(act)
     progress = bool(new_components or disclosed or newly_resolved or dialogue_progress)
-    no_progress = (quality in ("good", "neutral") and not progress and not ending
+    no_progress = (not entry.get("clarificationRequested") and quality in ("good", "neutral") and not progress and not ending
                    and stated_before not in state["resolved"])
     hints = state["hintLevels"]
     if no_progress:
@@ -276,16 +302,26 @@ def score_ledger(entries: Sequence[Mapping], overrides: Mapping | None = None, e
         turns.append(turn)
     final_ending = state["ending"] or ending
     components = state["components"]
-    criteria = {"apologyAndPolicyRemedy": sum(10 for key in COMPONENTS[:5] if key in components),
-                "adaptabilityAndDeescalation": sum(10 for key in COMPONENTS[5:] if key in components)}
-    raw = sum(criteria.values())
-    penalty = min(raw, 10 * len(state["violations"]))
-    score = raw - penalty
     resolved = set(state["resolved"])
     forced = final_ending in FORCED_ENDINGS
     accepted = final_ending in ("exchange_accepted", "objectives_completed") and "policy" in components
+    mismatch = bool(state.get("remedyMismatch"))
+    # Lan's acceptance stands for customer satisfaction: full when she agreed
+    # after understanding the cause and the remedy matches her real situation.
+    satisfaction = 0 if not accepted else (
+        SATISFIED_POINTS if final_ending == "objectives_completed" and not mismatch else RESERVED_POINTS)
+    turns_used = sum(1 for entry in entries if not entry.get("clarificationRequested"))
+    efficiency = 0 if not accepted else EFFICIENCY_POINTS * min(
+        SLOWEST_TURNS - EFFICIENT_TURNS, max(0, SLOWEST_TURNS - turns_used)) // (SLOWEST_TURNS - EFFICIENT_TURNS)
+    criteria = {"apologyAndPolicyRemedy": sum(points for key, points in REMEDY_POINTS.items() if key in components),
+                "adaptabilityAndDeescalation": (INVESTIGATION_POINTS * any(key in components for key in INVESTIGATION_COMPONENTS)
+                                                + RESPONSIBILITY_POINTS * ("responsibility" in components)
+                                                + satisfaction + efficiency)}
+    raw = sum(criteria.values())
+    penalty = min(raw, 10 * len(state["violations"]))
+    score = raw - penalty
     restored = (AGREEMENT_CONCERNS <= resolved and "acknowledgment" in components and score >= 70
-                and not state["promises"] and not forced)
+                and not state["promises"] and not forced and not mismatch)
     partial = not forced and not state["promises"] and (3 in resolved or accepted)
     trust = "restored" if restored else "partially_restored" if partial else "lost"
     result = {"criterionScores": criteria, "rawScore": raw, "policyViolationPenalty": penalty, "score": score,
@@ -297,7 +333,7 @@ def score_ledger(entries: Sequence[Mapping], overrides: Mapping | None = None, e
     return {"state": state, "turns": turns, "outcome": result, "endingReason": final_ending,
             "resolutionAccepted": accepted, "rubricComponents": copy.deepcopy(components),
             "policyViolations": copy.deepcopy(state["violations"]), "unresolvedPromises": list(state["promises"]),
-            "resolvedConcerns": sorted(resolved)}
+            "resolvedConcerns": sorted(resolved), "remedyMismatch": mismatch}
 
 
 def review_overrides(session: Mapping) -> dict:

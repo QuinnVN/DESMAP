@@ -60,6 +60,7 @@ namespace NCKH.VR.Sales
     [Serializable]
     public sealed class SalesPart2SessionResponse
     {
+        public SalesPart2Error terminalError;
         public bool success;
         public string sessionId;
         public string salesSessionId;
@@ -74,9 +75,11 @@ namespace NCKH.VR.Sales
     [Serializable]
     public sealed class SalesPart2TurnResponse
     {
+        public SalesPart2Error terminalError;
         public bool success;
         public string status;
         public bool accepted;
+        public bool clarificationRequested;
         public bool silent;
         public bool technicalFailure;
         public bool nonVietnamese;
@@ -120,6 +123,7 @@ namespace NCKH.VR.Sales
     [Serializable]
     public sealed class SalesPart2SessionStateResponse
     {
+        public SalesPart2Error terminalError;
         public string sessionId;
         public string trustState;
         public string status;
@@ -148,6 +152,7 @@ namespace NCKH.VR.Sales
     [Serializable]
     public sealed class SalesPart2AnalysisResponse
     {
+        public SalesPart2Error terminalError;
         public bool success;
         public string trustState;
         public bool emotionalHandling;

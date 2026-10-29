@@ -44,8 +44,8 @@ class ConfigurationTests(unittest.TestCase):
     def test_part2_versions_and_question_mappings(self):
         self.assertEqual((PIPELINE_VERSION, RUBRIC_VERSION, SCENARIO_VERSION,
                           QUESTION_SET_VERSION, PROMPT_VERSION),
-                         ("sales-openrouter-v3.1", "sales-rubric-v3.2", "returning-shoes-v4",
-                          "sales-jev-v6", "lan-writer-v6"))
+                         ("sales-openrouter-v3.1", "sales-rubric-v3.3", "returning-shoes-v4",
+                          "sales-jev-v7", "lan-writer-v6"))
         mappings = {"receiptRequest": "receipt_status", "purchaseQuestion": "purchase_history",
                     "conditionQuestion": "shoe_condition", "socksQuestion": "socks",
                     "previousShoesQuestion": "previous_shoes", "productQuestion": "product_details",
@@ -107,7 +107,7 @@ class ConfigurationTests(unittest.TestCase):
         self.assertNotIn("secret", repr(config))
 
     def test_schema_has_independent_promises_and_never_invents_derived_labels(self):
-        self.assertEqual(len(QUESTIONS), 46)
+        self.assertEqual(len(QUESTIONS), 47)
         self.assertTrue({"unauthorizedRefund", "unauthorizedDiscount", "unauthorizedCompensation",
                          "absoluteGuarantee", "maintainsUnauthorizedPromise"}.issubset(QUESTIONS))
         self.assertNotIn("unauthorizedPromise", QUESTIONS)

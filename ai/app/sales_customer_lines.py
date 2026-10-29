@@ -77,6 +77,11 @@ CONCERN_LINES: dict[int, dict[str, tuple[tuple[str, ...], ...]]] = {
         ),
     },
     3: {
+        "receipt": (
+            ("Còn chuyện hóa đơn thì em định xử lý thế nào?",),
+            ("Em vừa hỏi hóa đơn, giờ em tính xử lý vướng mắc đó ra sao?",),
+            ("Chị cần em nói rõ cách xử lý chuyện hóa đơn cho đúng chính sách đã.",),
+        ),
         "offer": (
             ("Giờ chị hiểu rồi, vậy tiệm định xử lý chuyện này thế nào?",
              "Biết nguyên nhân rồi thì em tính giải quyết cho chị ra sao?",

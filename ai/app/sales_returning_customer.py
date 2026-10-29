@@ -633,6 +633,7 @@ class ReturningSessionStore:
             assessmentReviewDecisions={}, assessmentReviewMetadata={}, assessmentResolvedReviewItems=[], diagnosticsDeleted=True,
             diagnosticsDeletedAtUtc=_now(), diagnosticDeletionAudit={"deletedFiles": count, "atUtc": _now()})
         session.pop("customerMemory", None)
+        session.pop("adaptiveDiagnostics", None)
         for entry in session.get("evidenceLedger", []):
             entry.pop("factTexts", None)
             entry.pop("dialogueMemory", None)
@@ -1853,12 +1854,16 @@ def public_session(session: Mapping[str, Any]) -> dict[str, Any]:
     result.pop("customerMemory", None)
     result.pop("adaptiveMemory", None)
     result.pop("adaptiveDialogue", None)
+    result.pop("adaptiveDiagnostics", None)
     from app.sales_rubric import remaining
     result["maxTurns"] = session.get("maxTurns", MAX_TURNS)
     result["remainingTurns"] = remaining(session)
     if session.get("pipelineMode") == "openrouter" and session.get("completionStatus") != "completed":
         from app.sales_rubric import supports_versions
         result["pipelineSupported"] = supports_versions(session)
+        if session.get("adaptiveDialogue") is not None:
+            from app.sales_adaptive_versions import module_for
+            result["pipelineSupported"] = result["pipelineSupported"] and module_for(session) is not None
         if not result["pipelineSupported"]:
             result["pipelineUnavailableReason"] = "pipeline_version_unsupported"
     result["activeObjective"] = session.get("phase", 1)

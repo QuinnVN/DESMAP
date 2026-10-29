@@ -49,7 +49,8 @@ from app.sales_adaptive import (PROMPT_SHA256, SCHEMA_SHA256, AdaptiveLanRespond
 from app.sales_openrouter import QWEN_MODEL, QwenSalesWriter, customer_text_rejections  # noqa: E402
 from scripts.sales_adaptive_replay import effective_manifest, reconstruct_case, sha256_file  # noqa: E402
 
-OUTPUT_ROOT = Path(r"D:\NCKH\output\sales-adaptive-benchmark")
+# The checkout's output folder (formerly D:\NCKH\output). Existing artifacts there are never rewritten.
+OUTPUT_ROOT = ROOT.parent / "output" / "sales-adaptive-benchmark"
 DEFAULT_MANIFEST = OUTPUT_ROOT / "discovery" / "selection_manifest.json"
 ADAPTIVE_ARMS = ("adaptive_off", "adaptive_on")
 LEGACY_ARM = "legacy_220_off"
@@ -542,7 +543,6 @@ async def main_async(args) -> int:
         return 2
     case_filter = set(args.cases.split(",")) if args.cases else None
     effective, cases, checks = build_cases(args.manifest, args.project_root, case_filter)
-    _write_json(args.out_root / "effective_manifest.json", effective)
     if checks["errors"]:
         print("case checks failed: " + "; ".join(checks["errors"]), file=sys.stderr)
         return 3
@@ -563,6 +563,7 @@ async def main_async(args) -> int:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     run_dir = args.resume or args.run_dir or args.out_root / "runs" / f"{args.mode}-{stamp}"
     run_dir.mkdir(parents=True, exist_ok=True)
+    _write_json(run_dir / "effective_manifest.json", effective)
     by_id = {item["case"]["caseId"]: item for item in cases}
     slots = schedule(sorted(by_id), args.repeats, args.seed, args.include_legacy)
     provider_extra = None if args.no_provider_pin else {"order": [args.provider], "allow_fallbacks": False,
@@ -578,7 +579,7 @@ async def main_async(args) -> int:
                              "provider": provider_extra} if args.include_legacy else None,
             "rateCardReference": RATE_CARD_REFERENCE, "plannedRequests": len(slots)}
     _write_json(run_dir / "config.json", {**meta, "checks": checks, "schedule": slots,
-                                          "effectiveManifest": str(args.out_root / "effective_manifest.json")})
+                                          "effectiveManifest": str(run_dir / "effective_manifest.json")})
     for case_id, item in by_id.items():
         _write_json(run_dir / "cases" / f"{case_id}.json", {
             "caseId": case_id, "provenance": item["rebuilt"]["provenance"], "policy": item["policy"],

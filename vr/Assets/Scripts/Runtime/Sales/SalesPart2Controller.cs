@@ -26,7 +26,8 @@ namespace NCKH.VR.Sales
         FinalAnalysis,
         Incomplete,
         Completed,
-        Stopped
+        Stopped,
+        Failed
     }
 
     /// <summary>
@@ -102,6 +103,7 @@ namespace NCKH.VR.Sales
         public float ActiveTimeSeconds => activeTimeSeconds;
         public bool RequestInFlight => requestInFlight;
         public bool IsCompleted => Stage == SalesPart2Stage.Completed;
+        public bool IsFinished => IsCompleted || Stage == SalesPart2Stage.Failed;
 
         public event Action<string, GameplayTelemetryData> TelemetryRaised;
         public event Action<SalesPart2TrustState> TrustResolved;
@@ -302,6 +304,7 @@ namespace NCKH.VR.Sales
             if (!IsCurrentCallback(token, RequestKind.StartSession))
                 return;
             EndRequest();
+            if (response?.terminalError != null) { ShowTerminalError(response.terminalError); return; }
             if (response == null || (!response.success && string.IsNullOrWhiteSpace(response.sessionId)
                 && string.IsNullOrWhiteSpace(response.salesSessionId)))
             {
@@ -590,6 +593,7 @@ namespace NCKH.VR.Sales
                 llmModel = SafeMetadata(response.llmModel);
                 llmVersion = SafeMetadata(response.llmVersion);
             }
+            if (response?.terminalError != null) { ShowTerminalError(response.terminalError); return; }
             if (response == null || response.IsFailure)
             {
                 EmitError("turn_processing_failed", response != null ? response.FailureMessage : string.Empty);
@@ -646,7 +650,8 @@ namespace NCKH.VR.Sales
 
             if (string.IsNullOrWhiteSpace(response.customerText)) { ShowIncomplete("Máy chủ trả về dữ liệu không hợp lệ. Nhấn A để thử lại."); return; }
             pendingTurn = null;
-            AcceptedTurnCount = Mathf.Max(AcceptedTurnCount + 1, response.acceptedTurnCount);
+            AcceptedTurnCount = Mathf.Max(AcceptedTurnCount + (response.clarificationRequested ? 0 : 1),
+                response.acceptedTurnCount);
             CurrentObjective = (SalesPart2Objective)returnedObjective;
             if (previousObjective == SalesPart2Objective.ProposeSuitableSolution
                 && CurrentObjective == SalesPart2Objective.RebuildTrust && !challengeShown)
@@ -744,6 +749,7 @@ namespace NCKH.VR.Sales
             if (!IsCurrentCallback(token, RequestKind.Analysis))
                 return;
             EndRequest();
+            if (response?.terminalError != null) { ShowTerminalError(response.terminalError); return; }
             failedRequestKind = RequestKind.Analysis;
             if (response == null || response.ParsedTrustState == SalesPart2TrustState.Unknown)
             {
@@ -833,6 +839,7 @@ namespace NCKH.VR.Sales
             if (!IsCurrentCallback(token, RequestKind.ReadState))
                 return;
             EndRequest();
+            if (response?.terminalError != null) { ShowTerminalError(response.terminalError); return; }
             if (response == null || (!response.success && string.IsNullOrEmpty(response.sessionId)))
             {
                 ShowIncomplete("Không thể khôi phục tình huống. Hãy thử lại.");
@@ -860,6 +867,36 @@ namespace NCKH.VR.Sales
                 ShowIncomplete("Không thể hoàn thành tình huống. Hãy thử lại.");
             else
                 ShowIncomplete("Không thể hoàn thành tình huống. Hãy thử lại.");
+        }
+
+        private void ShowTerminalError(SalesPart2Error error)
+        {
+            callbackGeneration++;
+            CancelActiveRequest();
+            activeTimerRunning = false;
+            finalCompletionRequested = true;
+            pendingTurn = null;
+            StopRoutine(ref presentationRoutine);
+            StopRoutine(ref recordingRoutine);
+            StopRoutine(ref replyRoutine);
+            StopRoutine(ref finalRoutine);
+            SetRecordingIndicator(false);
+            StopAndReleaseMicrophone();
+            TrustState = SalesPart2TrustState.Unknown;
+            Stage = SalesPart2Stage.Failed;
+            if (incompleteRoot != null) incompleteRoot.SetActive(true);
+            if (retryTarget != null) retryTarget.gameObject.SetActive(false);
+            SetStatus("PHIÊN ĐÃ KẾT THÚC");
+            if (customerText != null) customerText.text = string.Empty;
+            if (trustStateText != null) trustStateText.text = string.Empty;
+            if (timerText != null) timerText.text = string.Empty;
+            if (objectiveText != null) objectiveText.text = string.Empty;
+            if (resultText != null) resultText.text = string.IsNullOrWhiteSpace(error.message)
+                ? "Không thể đánh giá phiên vì lời nói không rõ. Vui lòng kiểm tra mic và bắt đầu phiên mới."
+                : error.message;
+            SetLocomotionLocked(false);
+            EmitError(error.code, error.message);
+            Emit("sales.part2.failed");
         }
 
         private void ShowIncomplete(string message)
@@ -1168,7 +1205,7 @@ namespace NCKH.VR.Sales
         {
             if (!paused)
                 return;
-            if (Stage == SalesPart2Stage.Waiting || Stage == SalesPart2Stage.Stopped || Stage == SalesPart2Stage.Completed) return;
+            if (Stage == SalesPart2Stage.Waiting || Stage == SalesPart2Stage.Stopped || IsFinished) return;
             if (requestInFlight) failedRequestKind = requestKind;
             CancelActiveRequest();
             StopRoutine(ref presentationRoutine);

@@ -12,12 +12,26 @@ from collections.abc import Mapping, Sequence
 from app.sales_openrouter import (ARBITRATOR_VERSION, CHAT_ENDPOINT, LUNA_MODEL,
     QUESTION_TEXT, SalesClassifierError, _OpenRouterAdapter, _SCOPE,
     _fact_ids, _history, _metadata, _text)
-from app.sales_concerns import (BAD_TURN_LABELS, FACT_QUESTIONS, RETRACTIONS, VIOLATIONS, critical_labels,
+from app.sales_concerns import (BAD_TURN_LABELS, FACT_QUESTIONS, MISMATCH_LABEL, RETRACTIONS, VIOLATIONS, critical_labels,
     score_ledger)
 from app.sales_memory import QUESTION_FACTS as MEMORY_QUESTIONS, RECALL_FACTS
 
 MAX_LABELS = 8
 QUESTION_FACTS = {label: fact for label, fact in (*MEMORY_QUESTIONS, *FACT_QUESTIONS) if fact != "appearance"}
+
+
+def required_verification_labels(state: Mapping, labels: Mapping) -> list[str]:
+    """Certain-looking overlapping claims need verification before penalties."""
+    from app.sales_adaptive_reliability import enabled
+    if not enabled(state):
+        return []
+    required = []
+    monetary = [labels.get(name, {}).get("status") == "true" for name in ("unauthorizedRefund", "unauthorizedCompensation")]
+    if all(monetary) or (state.get("lunaArbitrationEnabled") and any(monetary)):
+        required += ["unauthorizedRefund", "unauthorizedCompensation"]
+    if state.get("lunaArbitrationEnabled") and labels.get("exchangeConditions", {}).get("status") == "true":
+        required.append("exchangeConditions")
+    return required
 
 
 def select_arbitration_labels(state: Mapping, labels: Mapping) -> list[str]:
@@ -28,6 +42,9 @@ def select_arbitration_labels(state: Mapping, labels: Mapping) -> list[str]:
         for name in names:
             if name in QUESTION_TEXT and name not in selected:
                 selected.append(name)
+    from app.sales_adaptive_reliability import enabled
+    if enabled(state):
+        add(*required_verification_labels(state, labels))
     if status("exchangeOffer") == status("refusesRemedy") == "true":
         add("refusesRemedy", "exchangeOffer")
     active = set(state.get("unresolvedPromises", []))
@@ -62,10 +79,14 @@ def select_arbitration_labels(state: Mapping, labels: Mapping) -> list[str]:
         for name in ("receiptRequest", "inspectionRequest", "physicalActionRequest", "confirmationQuestion"):
             if status(name) == "uncertain":
                 add(name)
+    # A mismatch only lowers satisfaction and never holds the turn, so it is
+    # verified last instead of prompting Lan to clarify.
+    if status(MISMATCH_LABEL) == "uncertain" and 3 not in customer["resolved"]:
+        add(MISMATCH_LABEL)
     return selected[:MAX_LABELS]
 
 
-def merge_adjudication(classification: Mapping, adjudication: Mapping) -> dict:
+def merge_adjudication(classification: Mapping, adjudication: Mapping, *, required: Sequence[str] = ()) -> dict:
     """Keep raw Jev probabilities; only validated, determinate Luna acts override."""
     result = copy.deepcopy(dict(classification))
     accepted = []
@@ -79,6 +100,11 @@ def merge_adjudication(classification: Mapping, adjudication: Mapping) -> dict:
         raw.update(source="luna", arbitration={"version": ARBITRATOR_VERSION,
                    "status": decision["status"], "evidence": decision["evidence"], "model": LUNA_MODEL})
         accepted.append(name)
+    for name in required:
+        if name not in accepted:
+            # Do not trust a disputed certain Jev act if verification failed.
+            raw = result.setdefault("labels", {}).setdefault(name, {})
+            raw.update(source="verification_pending", status="uncertain", noul=None)
     metadata = copy.deepcopy(adjudication.get("metadata", {})) if isinstance(adjudication, Mapping) else {}
     metadata.update(version=ARBITRATOR_VERSION, acceptedLabels=accepted)
     result.setdefault("metadata", {})["arbitration"] = metadata
@@ -156,6 +182,13 @@ class LunaSalesArbitrator(_OpenRouterAdapter):
             "unresolved_promise_types": [name for name in unresolved if name in VIOLATIONS],
             "questions": {name: QUESTION_TEXT[name] for name in selected}}
         data.update(memory)
+        from app.sales_adaptive_reliability import REVISION
+        if context.get("reliabilityRevision") == REVISION:
+            corrected = {
+                "exchangeConditions": "Does the final position correctly offer exchange within seven days for intact shoes, without adding mandatory receipt, box, tags or unworn conditions? Asking to look up a receipt optionally is fine. A mandatory receipt is an extra condition, so false even when seven days and intactness are also stated.",
+                "unauthorizedRefund": "Does the final position offer returning the purchase payment to Lan? A separate goodwill compensation payment is not a refund. Denials, quoted requests and same-turn withdrawals do not count.",
+                "unauthorizedCompensation": "Does the final position offer a separate compensation or goodwill payment to Lan? Returning her purchase payment alone is a refund, not compensation. Both are true only when distinct commitments to both exist. Denials, quoted requests and same-turn withdrawals do not count."}
+            data["questions"].update({name: corrected[name] for name in selected if name in corrected})
         instruction = (_SCOPE + "Classify each supplied independent act as true, false or uncertain. "
             "Output only the requested JSON object. For true, quote a short exact span from "
             "current_player_utterance as evidence. For false, use an empty evidence string if the act is absent, "

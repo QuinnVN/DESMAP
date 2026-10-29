@@ -29,9 +29,10 @@ from app.tests.test_sales_returning_customer import FakeTranscriber, request
 
 LEGACY = SimpleNamespace(pipeline_mode="openrouter", sales_max_turns=8, sales_luna_arbitration_enabled=False,
                          sales_jev_timeout_seconds=2, sales_writer_timeout_seconds=2)
+# These are lan-adaptive-v1 regression tests; v2 is covered in test_sales_adaptive_v2.py.
 ADAPTIVE = SimpleNamespace(**vars(LEGACY), sales_adaptive_dialogue_enabled=True, sales_adaptive_reasoning="off",
                            sales_adaptive_max_tokens=4096, sales_adaptive_reasoning_max_tokens=1024,
-                           sales_adaptive_timeout_seconds=45.0)
+                           sales_adaptive_timeout_seconds=45.0, sales_adaptive_version=ADAPTIVE_VERSION)
 NEXT_STEPS = ("Vậy em có cách nào khác để giải quyết chuyện chân chị bị đau không?",
               "Em nói thử xem bên mình kiểm tra độ vừa cho chị theo cách nào được không?",
               "Chị muốn biết em định xử lý tiếp chuyện đôi giày này ra sao?")
@@ -129,8 +130,9 @@ class DefaultLegacyTests(Harness):
         settings = get_settings()
         self.assertFalse(settings.sales_adaptive_dialogue_enabled)
         self.assertEqual((settings.sales_adaptive_reasoning, settings.sales_adaptive_max_tokens,
-                          settings.sales_adaptive_reasoning_max_tokens, settings.sales_adaptive_timeout_seconds),
-                         ("off", 4096, 1024, 45.0))
+                          settings.sales_adaptive_reasoning_max_tokens, settings.sales_adaptive_timeout_seconds,
+                          settings.sales_adaptive_version),
+                         ("off", 4096, 1024, 45.0, "lan-adaptive-v2"))
         self.assertEqual(settings.sales_writer_timeout_seconds, 4.0)
 
     async def test_legacy_session_never_calls_adaptive_responder(self):

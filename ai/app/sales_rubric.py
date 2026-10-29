@@ -79,7 +79,7 @@ def initialize(session: dict, settings: Any) -> None:
         from app.sales_memory import initialize_memory
         initialize_memory(session)
         if getattr(settings, "sales_adaptive_dialogue_enabled", False) is True:
-            from app.sales_adaptive import frozen_config
+            from app.sales_adaptive_versions import frozen_config
             session["adaptiveDialogue"] = frozen_config(settings)
     else:
         session.update(pipelineVersion="sales-legacy-v1", rubricVersion="sales-legacy-v1",
@@ -100,10 +100,16 @@ def outcome(session: Mapping) -> dict:
     return score_session(session)["outcome"]
 
 
-def evaluate(session: Mapping, labels: Mapping, turn_id: str) -> tuple[dict, dict]:
-    """Compute a candidate state. Only the turn commit makes it authoritative."""
+def evaluate(session: Mapping, labels: Mapping, turn_id: str, *, clarification_requested: bool = False,
+             speech_unintelligible: bool = False) -> tuple[dict, dict]:
+    """Compute a candidate state. Only the turn commit makes it authoritative.
+
+    The verified v2 repeat action can preserve the budget. Labels still earn
+    their normal evidence and violations; clarification never rewrites them.
+    """
     state = copy.deepcopy(dict(session))
-    state["dialogueTurnCount"] = state.get("dialogueTurnCount", state.get("evaluableTurnCount", 0)) + 1
+    state["dialogueTurnCount"] = (state.get("dialogueTurnCount", state.get("evaluableTurnCount", 0))
+                                 + (0 if clarification_requested else 1))
     previous = int(state.get("phase", 1))
     entry = {"turnId": turn_id, "transcriptRef": turn_id, "objective": previous,
              "labels": copy.deepcopy(dict(labels)), "contextVersion": SCENARIO_VERSION,
@@ -111,6 +117,12 @@ def evaluate(session: Mapping, labels: Mapping, turn_id: str) -> tuple[dict, dic
              "unresolvedPromiseTypesBefore": [name for name, code in VIOLATIONS.items()
                                               if code in state.get("unresolvedPromises", [])],
              "challengeShownBefore": bool(state.get("challengeShown"))}
+    if clarification_requested:
+        entry["clarificationRequested"] = True
+    from app.sales_adaptive_reliability import REVISION, enabled
+    if enabled(session):
+        entry["reliabilityRevision"] = REVISION
+        entry["speechUnintelligible"] = bool(speech_unintelligible)
     from app.sales_memory import MEMORY_VERSION, confirmed_facts, model_context, update_memory
     if state.get("customerMemory"):
         entry.update(memoryVersion=MEMORY_VERSION, confirmedFactIds=confirmed_facts(state, labels),
@@ -142,7 +154,7 @@ def evaluate(session: Mapping, labels: Mapping, turn_id: str) -> tuple[dict, dic
     else:
         state.update(clarificationCount=0, clarificationIssue=None, clarificationIssues={},
                      assessmentStatus="needs-review" if session.get("assessmentStatus") == "needs-review" else "pending")
-        state["evaluableTurnCount"] = state.get("evaluableTurnCount", 0) + 1
+        state["evaluableTurnCount"] = state.get("evaluableTurnCount", 0) + (0 if clarification_requested else 1)
     ending = turn["endingReason"]
     challenge_now = False
     if not ending and remaining(state) == 0:
@@ -172,6 +184,8 @@ def evaluate(session: Mapping, labels: Mapping, turn_id: str) -> tuple[dict, dic
     decision.update(turnQuality=turn["turnQuality"], assessmentUncertain=turn["assessmentUncertain"],
                     objectiveCompleted=display > previous, conversationComplete=bool(ending),
                     endingReason=ending, disclosedFactIds=list(turn["disclosedFactIds"]))
+    if clarification_requested:
+        decision["clarificationRequested"] = True
     update_memory(state, labels, decision, turn_id)
     return state, decision
 

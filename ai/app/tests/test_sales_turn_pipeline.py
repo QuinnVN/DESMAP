@@ -134,7 +134,7 @@ class CustomerStateTests(TurnPipelineHarness):
         self.assertEqual(turns[-1]["endingReason"], "objectives_completed")
         self.assertNotEqual(self.writer.plans[-1]["intent"], "trust_challenge")
         final = await self.complete()
-        self.assertEqual((final["score"], final["trustState"]), (80, "restored"))
+        self.assertEqual((final["score"], final["trustState"]), (85, "restored"))
         self.assertTrue(all(final[flag] for flag in ("emotionalHandling", "causeIdentification", "solutionSuitability")))
         self.assertFalse(final["trustRebuilding"])
 
@@ -224,7 +224,7 @@ class RegressionFixtureTests(TurnPipelineHarness):
                                      (4, "exchange_accepted", 4))
                     final = await self.complete()
                     self.assertEqual((final["score"], final["trustState"], final["resolutionAccepted"]),
-                                     (30, "partially_restored", True))
+                                     (60, "partially_restored", True))
                     self.assertFalse(final["causeIdentification"])
 
 

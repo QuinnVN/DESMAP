@@ -23,9 +23,9 @@ import httpx
 from app.config import Settings, get_settings
 
 PIPELINE_VERSION = "sales-openrouter-v3.1"
-RUBRIC_VERSION = "sales-rubric-v3.2"
+RUBRIC_VERSION = "sales-rubric-v3.3"
 SCENARIO_VERSION = "returning-shoes-v4"
-QUESTION_SET_VERSION = "sales-jev-v6"
+QUESTION_SET_VERSION = "sales-jev-v7"
 THRESHOLD_VERSION = "sales-thresholds-v2.1"
 PROMPT_VERSION = "lan-writer-v6"
 JEV_MODEL = "typesafe/jev-1.13"
@@ -90,6 +90,7 @@ QUESTION_TEXT = {
     "lightweightForWalking": "Does the salesperson propose a concrete remedy suited to Lan's already-shared use and the purchased shoe, such as another size or model matched to that use, an insole or heel cushioning, suitable sports socks, or a fit adjustment? Do not require a lighter or walking shoe. Generic comfort claims or a shoe made for a different activity do not count.",
     "fitOrWalkTrial": "Does the salesperson propose a concrete check of replacement shoe fit or comfort before deciding, such as trying them on, checking fit or walking in them? Showing other models alone does not count.",
     "originalSaleResponsibility": "Does the salesperson take responsibility for the earlier advice or for failing to ask about Lan's needs during the original sale? A generic apology is insufficient.",
+    "remedyContradictsFit": "Does the salesperson claim the current shoes are the wrong size, too tight or too loose, or propose a different size for that reason, although Lan has not reported any size or fit problem? Asking about fit, offering to check fit by trying shoes on, or accurately recalling a fit problem Lan reported does not count.",
     "routineMatchExplanation": "Does the salesperson explain WHY the proposed remedy or replacement fits Lan's already-shared use, such as her running or walking routine, the road surface or her stated preferences?",
     "unauthorizedRefund": "Does the salesperson offer or commit to a monetary refund, including conditional offers? Explicit denial, quoted customer requests and same-turn withdrawal do not count.",
     "unauthorizedDiscount": "Does the salesperson offer or commit to a discount, including conditional offers? Explicit denial, quoted requests and same-turn withdrawal do not count.",
