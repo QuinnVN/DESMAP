@@ -174,7 +174,8 @@ class LunaSalesArbitrator(_OpenRouterAdapter):
         from app.sales_memory import bounded_model_memory
         memory = bounded_model_memory(context)
         scenario = scenario_context({"factTexts": memory["known_fact_texts"],
-                                     "dialogueMemory": memory["dialogue_memory"]})
+                                     "dialogueMemory": memory["dialogue_memory"],
+                                     "actualCause": memory.pop("actual_cause", None)})
         data = {"scenario": scenario, "current_player_utterance": _text(transcript),
             "objective": objective if type(objective) is int and 1 <= objective <= 4 else None,
             "known_fact_ids": _fact_ids(context.get("knownFacts", [])),

@@ -44,8 +44,8 @@ class ConfigurationTests(unittest.TestCase):
     def test_part2_versions_and_question_mappings(self):
         self.assertEqual((PIPELINE_VERSION, RUBRIC_VERSION, SCENARIO_VERSION,
                           QUESTION_SET_VERSION, PROMPT_VERSION),
-                         ("sales-openrouter-v3.1", "sales-rubric-v3.3", "returning-shoes-v4",
-                          "sales-jev-v7", "lan-writer-v6"))
+                         ("sales-openrouter-v3.1", "sales-rubric-v3.3", "returning-shoes-v5",
+                          "sales-jev-v8", "lan-writer-v6"))
         mappings = {"receiptRequest": "receipt_status", "purchaseQuestion": "purchase_history",
                     "conditionQuestion": "shoe_condition", "socksQuestion": "socks",
                     "previousShoesQuestion": "previous_shoes", "productQuestion": "product_details",
@@ -160,12 +160,17 @@ class ClassifierTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(state["dialogueMemory"]["actions"]["inspection"], "deferred")
         self.assertEqual(state["dialogueMemory"]["purchasedShoe"]["price"], 850000)
         self.assertEqual(state["dialogueMemory"]["unknownFactIds"], ["medical_history"])
-        self.assertIn("Do not require a heavy-shoe diagnosis", captured[0]["questions"]["causeStatement"]["instructions"])
+        self.assertIn("scenario.actualCause", captured[0]["questions"]["causeStatement"]["instructions"])
         self.assertIn("Do not require a lighter or walking shoe",
                       captured[0]["questions"]["lightweightForWalking"]["instructions"])
         self.assertIn("already-shared use", captured[0]["questions"]["routineMatchExplanation"]["instructions"])
+        # Without a linked cause, the unspecific default remains.
         self.assertIn("chưa được xác minh", state["scenario"]["actualCause"])
         self.assertNotIn("PRIVATE", json.dumps(captured))
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            await JevSalesClassifier(settings(), client=client).classify(
+                "Em sẽ xem đôi giày này.", {**context, "actualCause": "Gót chân trượt khi chạy."})
+        self.assertEqual(captured[1]["state"]["scenario"]["actualCause"], "Gót chân trượt khi chạy.")
 
     async def test_quality_labels_use_ordinary_thresholds_without_lowering_penalty_thresholds(self):
         body = decisions(disrespect={"type": "noul", "noul": .82},

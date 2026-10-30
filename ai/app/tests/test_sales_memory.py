@@ -76,10 +76,40 @@ class SalesMemoryTests(TurnPipelineHarness):
         context = model_context(state)
         scenario = scenario_context(context)
         self.assertNotIn("use_duration", scenario["facts"])
-        self.assertIn("chưa được xác minh", scenario["actualCause"])
+        # Selling the right kind of shoe leaves a concrete fit-in-use cause.
+        self.assertEqual(state["customerMemory"]["cause"]["kind"], "fit_in_use")
+        self.assertIn("gót chân trượt", scenario["actualCause"])
+        self.assertNotIn("nặng", scenario["actualCause"])
         reply = await self.turn("durationQuestion")
         self.assertIn("chưa nói rõ", reply["customerText"])
         self.assertNotIn("trường", reply["customerText"])
+
+    async def test_fit_cause_clue_is_private_until_fit_is_asked_and_never_reaches_lan(self):
+        state = await self.linked_session()
+        self.assertNotIn("fit_condition", state["investigationEvidence"])
+        reply = await self.turn("fitQuestion")
+        self.assertIn("gót chị bị trượt", reply["customerText"])
+        self.assertIn("fit_condition", (await self.state())["investigationEvidence"])
+        plan = json.dumps(self.writer.plans[-1], ensure_ascii=False)
+        self.assertNotIn("actualCause", plan)
+        self.assertNotIn("khóa gót", plan)
+        ledger = (await self.state())["evidenceLedger"][-1]
+        self.assertIn("gót chân trượt", ledger["actualCause"])
+
+    def test_wrong_kind_of_shoe_gets_a_category_cause_and_matching_symptoms(self):
+        from app.sales_memory import prior_sale_cause
+        sold = {"shoeId": "Nyke", "name": "Nyke", "details": "Bóng rổ trong nhà\nÔm cổ chân · Đế chắc\nGiá: 1.450.000 đ"}
+        best = {"shoeId": "Adudu", "name": "Adudu", "details": "Chạy bộ đường nhựa\nĐệm êm · Nhẹ · Thoáng"}
+        cause = prior_sale_cause(sold, best, "chạy", "Chị dùng giày để chạy bộ mỗi sáng.")
+        self.assertEqual(cause["kind"], "category_mismatch")
+        self.assertIn("bóng rổ trong nhà", cause["text"])
+        self.assertIn("Adudu (chạy bộ đường nhựa)", cause["text"])
+        self.assertIn("gót bị dội", cause["facts"]["late_discomfort"])
+        same = prior_sale_cause(best, best, "chạy", "Chị dùng giày để chạy bộ mỗi sáng.")
+        self.assertEqual(same["kind"], "fit_in_use")
+        self.assertIn("gót chị bị trượt", same["facts"]["fit_condition"])
+        other = prior_sale_cause({"shoeId": "X", "details": "Đi làm văn phòng"}, best, "đi", "Chị đi bộ hằng ngày.")
+        self.assertEqual(set(other["facts"]), {"late_discomfort"})
 
     async def test_customer_asks_for_a_fitted_remedy_instead_of_a_lighter_pair(self):
         from app.sales_customer_lines import choose_customer_line

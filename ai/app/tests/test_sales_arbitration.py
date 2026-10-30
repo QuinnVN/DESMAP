@@ -82,13 +82,16 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
         context = {"knownFacts": ["walking_routine"], "factTexts": {
             "walking_routine": "Chị chạy bộ mỗi sáng.", "receipt_status": "PRIVATE-UNSHARED"},
             "dialogueMemory": {"priorSaleLinked": True, "runId": "PRIVATE-RUN",
-                               "actions": {"inspection": "requested"}}}
+                               "actions": {"inspection": "requested"}},
+            "actualCause": "Gót chân trượt khi chạy."}
         async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
             await LunaSalesArbitrator(settings, client=client).adjudicate("Em xin kiểm tra giày.", context,
                                                                       ("causeStatement", "lightweightForWalking"))
         data = json.loads(captured[0]["messages"][1]["content"])
         self.assertEqual(data["scenario"]["facts"], {"walking_routine": "Chị chạy bộ mỗi sáng."})
-        self.assertIn("Do not require a heavy-shoe diagnosis", data["questions"]["causeStatement"])
+        self.assertIn("scenario.actualCause", data["questions"]["causeStatement"])
+        self.assertEqual(data["scenario"]["actualCause"], "Gót chân trượt khi chạy.")
+        self.assertNotIn("actual_cause", data)
         self.assertIn("Do not require a lighter or walking shoe", data["questions"]["lightweightForWalking"])
         self.assertEqual(data["dialogue_memory"]["actions"]["inspection"], "requested")
         self.assertNotIn("PRIVATE", json.dumps(captured))

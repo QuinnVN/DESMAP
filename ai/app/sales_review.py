@@ -140,6 +140,8 @@ async def resolve_review(session: dict, store, arbitrator=None) -> dict:
                            "unresolvedPromiseTypes": prior.get("unresolvedPromiseTypesBefore", []),
                            "history": session["turns"][max(0, index - 3):index],
                            "factTexts": prior.get("factTexts", {}), "dialogueMemory": prior.get("dialogueMemory", {})}
+                if prior.get("actualCause"):
+                    context["actualCause"] = prior["actualCause"]
                 if prior.get("reliabilityRevision"):
                     context["reliabilityRevision"] = prior["reliabilityRevision"]
                 adjudicated = await service.adjudicate(turn.get("transcript", ""), context, requested)

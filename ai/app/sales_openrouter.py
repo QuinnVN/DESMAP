@@ -24,8 +24,8 @@ from app.config import Settings, get_settings
 
 PIPELINE_VERSION = "sales-openrouter-v3.1"
 RUBRIC_VERSION = "sales-rubric-v3.3"
-SCENARIO_VERSION = "returning-shoes-v4"
-QUESTION_SET_VERSION = "sales-jev-v7"
+SCENARIO_VERSION = "returning-shoes-v5"
+QUESTION_SET_VERSION = "sales-jev-v8"
 THRESHOLD_VERSION = "sales-thresholds-v2.1"
 PROMPT_VERSION = "lan-writer-v6"
 JEV_MODEL = "typesafe/jev-1.13"
@@ -83,13 +83,13 @@ _SCOPE = (
 QUESTION_TEXT = {
     "acknowledgment": "Does the salesperson apologize, express regret, or explicitly recognize Lan's disappointment, worry or discomfort without dismissing it? Greetings, thanks or a short polite acknowledgment alone do not count.",
     "openQuestion": "Does the salesperson ask an open question to understand this shoe complaint? A greeting or an unrelated question does not count.",
-    "causeStatement": "Does the salesperson connect the reported discomfort to Lan's already-shared use or fit needs, explain a plausible suitability issue and propose verifying it? Do not require a heavy-shoe diagnosis. An unverified claim that the purchased shoe is heavy, defective or causes a disease does not count.",
+    "causeStatement": "Does the salesperson explain why the shoes hurt Lan with the cause in scenario.actualCause, in substance and connected to what Lan has shared? Plain or partial wording of that mechanism counts, such as the heel slipping and rubbing, or the shoe being made for another activity than her running or walking. A different or contradicting cause, a generic claim, blaming Lan or claiming the shoe is defective or causes a disease does not count. When scenario.actualCause names no specific cause, a plausible suitability issue connected to Lan's shared use or fit needs with a proposal to verify it counts.",
     "exchangeOffer": "Does the salesperson propose exchanging the shoes? Mentioning or denying an exchange without offering one does not count.",
     "refusesRemedy": "Does the salesperson explicitly refuse or withdraw an exchange, or send Lan away without an appropriate next step? Mere absence of an offer, declining further investigation while maintaining an exchange, complaints about repeated questions, denying unauthorized refunds or discounts, valid exchange conditions, inspection before exchange and same-turn correction to a valid remedy do not count.",
     "exchangeConditions": "Does the salesperson correctly state exchanges within seven days for intact shoes, without adding unworn-shoe or attached-tag conditions? An exchange offer alone does not count.",
-    "lightweightForWalking": "Does the salesperson propose a concrete remedy suited to Lan's already-shared use and the purchased shoe, such as another size or model matched to that use, an insole or heel cushioning, suitable sports socks, or a fit adjustment? Do not require a lighter or walking shoe. Generic comfort claims or a shoe made for a different activity do not count.",
+    "lightweightForWalking": "Does the salesperson propose a concrete remedy suited to Lan's already-shared use and the purchased shoe that addresses the cause in scenario.actualCause when it names one, such as another size or model matched to that use, an insole or heel cushioning, suitable sports socks, or a fit adjustment? Do not require a lighter or walking shoe. Generic comfort claims, a remedy that ignores that cause or a shoe made for a different activity do not count.",
     "fitOrWalkTrial": "Does the salesperson propose a concrete check of replacement shoe fit or comfort before deciding, such as trying them on, checking fit or walking in them? Showing other models alone does not count.",
-    "originalSaleResponsibility": "Does the salesperson take responsibility for the earlier advice or for failing to ask about Lan's needs during the original sale? A generic apology is insufficient.",
+    "originalSaleResponsibility": "Does the salesperson take responsibility for the earlier advice, for failing to ask about Lan's needs or for what scenario.actualCause says the original sale missed? A generic apology is insufficient.",
     "remedyContradictsFit": "Does the salesperson claim the current shoes are the wrong size, too tight or too loose, or propose a different size for that reason, although Lan has not reported any size or fit problem? Asking about fit, offering to check fit by trying shoes on, or accurately recalling a fit problem Lan reported does not count.",
     "routineMatchExplanation": "Does the salesperson explain WHY the proposed remedy or replacement fits Lan's already-shared use, such as her running or walking routine, the road surface or her stated preferences?",
     "unauthorizedRefund": "Does the salesperson offer or commit to a monetary refund, including conditional offers? Explicit denial, quoted customer requests and same-turn withdrawal do not count.",
@@ -300,7 +300,8 @@ class JevSalesClassifier(_OpenRouterAdapter):
         allowed = _fact_ids(context.get("allowedNewFacts", []))
         texts = fact_texts(known + allowed, context.get("factTexts"))
         memory = _dialogue_memory(context.get("dialogueMemory"))
-        scenario = scenario_context({"factTexts": texts, "dialogueMemory": memory})
+        scenario = scenario_context({"factTexts": texts, "dialogueMemory": memory,
+                                     "actualCause": context.get("actualCause")})
         scenario["facts"] = texts
         questions = QUESTIONS
         state = {"scenario": scenario, "current_player_utterance": _text(transcript),
@@ -659,7 +660,7 @@ _CONCERN_TEXT = {
                                     "problem_question": "The salesperson has not asked about her problem with the shoes."}),
     2: ("Lan does not understand why the shoes hurt.", {"walking": "Nobody asked how she uses the shoes each day.",
                                                        "fit": "Nobody asked about size, fit or the kind of shoes she is used to.",
-                                                       "cause": "The salesperson has not explained why this pair does not suit her."}),
+                                                       "cause": "The salesperson has not found out and explained why this pair hurts her."}),
     3: ("Lan has no suitable remedy yet.", {"offer": "No remedy has been offered.",
                                            "conditions": "The exchange conditions were not explained.",
                                            "lightweight": "No remedy fitted to how Lan uses the shoes has been proposed. Do not ask for a lighter pair.",

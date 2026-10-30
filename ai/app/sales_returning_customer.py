@@ -637,6 +637,7 @@ class ReturningSessionStore:
         for entry in session.get("evidenceLedger", []):
             entry.pop("factTexts", None)
             entry.pop("dialogueMemory", None)
+            entry.pop("actualCause", None)
         self._save_unlocked(session)
         return count
 
